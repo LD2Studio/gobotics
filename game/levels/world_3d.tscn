@@ -1,7 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://cuau3j4kfnes"]
+[gd_scene load_steps=6 format=3 uid="uid://cuau3j4kfnes"]
 
 [ext_resource type="Script" path="res://game/levels/world_3d.gd" id="1_rolur"]
-[ext_resource type="Script" path="res://assets/orbital_cam/orbital_camera_3d.gd" id="2_38ll1"]
+[ext_resource type="Script" path="res://assets/orbital_cam/orbital_camera_3d.gd" id="2_f8jrp"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ej37b"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -16,8 +16,6 @@ sky = SubResource("Sky_se2et")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="BoxMesh" id="BoxMesh_37x2p"]
-
 [node name="World3D" type="Node3D"]
 script = ExtResource("1_rolur")
 
@@ -28,9 +26,9 @@ environment = SubResource("Environment_bh7bd")
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
 shadow_enabled = true
 
-[node name="OrbitalCamera3D" type="Node3D" parent="."]
-script = ExtResource("2_38ll1")
-current = true
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.22754, 7.24342)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_37x2p")
+[node name="OrbitalCamera3D" type="Node3D" parent="."]
+script = ExtResource("2_f8jrp")
+current = true

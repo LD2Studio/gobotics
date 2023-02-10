@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://cejk4ujk1uo7f"]
 
-[ext_resource type="Material" uid="uid://doqsg16cwa617" path="res://game/blocks/materials/outline.material" id="1_2abey"]
 [ext_resource type="Script" path="res://game/blocks/generic/cube.gd" id="1_mevhn"]
+[ext_resource type="Material" uid="uid://x27dfm7adpfw" path="res://game/blocks/materials/outline.tres" id="2_nf1bh"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_oweyw"]
 
@@ -27,7 +27,7 @@ script = ExtResource("1_mevhn")
 [node name="Outline" type="MeshInstance3D" parent="."]
 visible = false
 mesh = SubResource("ArrayMesh_ummm1")
-surface_material_override/0 = ExtResource("1_2abey")
+surface_material_override/0 = ExtResource("2_nf1bh")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 
