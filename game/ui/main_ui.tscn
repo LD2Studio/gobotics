@@ -1,4 +1,7 @@
-[gd_scene format=3 uid="uid://64540agldab0"]
+[gd_scene load_steps=3 format=3 uid="uid://64540agldab0"]
+
+[ext_resource type="Script" path="res://game/ui/main_ui.gd" id="1_o6jfk"]
+[ext_resource type="PackedScene" uid="uid://cuau3j4kfnes" path="res://game/levels/world_3d.tscn" id="2_3ha60"]
 
 [node name="MainUI" type="Control"]
 layout_mode = 3
@@ -7,3 +10,28 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_o6jfk")
+
+[node name="SplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="SplitContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="LevelContainer" type="SubViewportContainer" parent="SplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SplitContainer/LevelContainer"]
+handle_input_locally = false
+size = Vector2i(940, 648)
+render_target_update_mode = 4
+
+[node name="World3D" parent="SplitContainer/LevelContainer/SubViewport" instance=ExtResource("2_3ha60")]
