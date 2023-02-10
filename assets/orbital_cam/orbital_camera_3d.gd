@@ -35,7 +35,7 @@ func _ready() -> void:
 	cam.position = Vector3.BACK * distance_to_pivot
 	
 	
-func _process(delta):
+func _process(_delta):
 	get_node("Cam").position = Vector3.BACK * distance_to_pivot
 	
 
@@ -74,6 +74,6 @@ func state_changed():
 		Cam.IDLE:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		Cam.ROTATED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 		Cam.TRANSLATED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
