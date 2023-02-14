@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dqri6gijob750"]
+
+[ext_resource type="Texture2D" uid="uid://p6xa7komn25p" path="res://assets/vinyles/vinyle_table_2023.svg" id="1_s1csm"]
+
+[resource]
+albedo_texture = ExtResource("1_s1csm")

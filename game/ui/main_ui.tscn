@@ -1,9 +1,25 @@
-[gd_scene load_steps=5 format=3 uid="uid://64540agldab0"]
+[gd_scene load_steps=10 format=3 uid="uid://64540agldab0"]
 
 [ext_resource type="Script" path="res://game/ui/main_ui.gd" id="1_o6jfk"]
-[ext_resource type="PackedScene" uid="uid://cuau3j4kfnes" path="res://game/levels/world_3d.tscn" id="2_3ha60"]
 [ext_resource type="Script" path="res://game/ui/BlocksList.gd" id="2_bl63q"]
 [ext_resource type="Script" path="res://game/ui/LevelContainer.gd" id="3_lmwaj"]
+[ext_resource type="Script" path="res://game/ui/game_scene.gd" id="4_64ri1"]
+[ext_resource type="Script" path="res://assets/orbital_cam/orbital_camera_3d.gd" id="5_k713u"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_j40fb"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_87cqo"]
+sky_material = SubResource("ProceduralSkyMaterial_j40fb")
+
+[sub_resource type="Environment" id="Environment_h33mq"]
+background_mode = 2
+sky = SubResource("Sky_87cqo")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_3g53y"]
 
 [node name="MainUI" type="Control"]
 layout_mode = 3
@@ -23,41 +39,100 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Control" type="VBoxContainer" parent="SplitContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+
+[node name="Control" type="VBoxContainer" parent="SplitContainer/MarginContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="BlocksList" type="ItemList" parent="SplitContainer/Control"]
+[node name="FilenameLabel" type="Label" parent="SplitContainer/MarginContainer/Control"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LoadSceneButton" type="Button" parent="SplitContainer/MarginContainer/Control"]
+layout_mode = 2
+text = "Load Scene"
+
+[node name="LoadSceneDialog" type="FileDialog" parent="SplitContainer/MarginContainer/Control/LoadSceneButton"]
+unique_name_in_owner = true
+title = "Open a File"
+ok_button_text = "Open"
+file_mode = 0
+root_subfolder = "scenes"
+
+[node name="SaveSceneButton" type="Button" parent="SplitContainer/MarginContainer/Control"]
+layout_mode = 2
+text = "Save Scene"
+
+[node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/MarginContainer/Control/SaveSceneButton"]
+unique_name_in_owner = true
+root_subfolder = "scenes"
+
+[node name="BlocksList" type="ItemList" parent="SplitContainer/MarginContainer/Control"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 item_count = 2
 item_0/text = "Cube"
-item_1/text = "Cylindre"
+item_1/text = "Cylinder"
 script = ExtResource("2_bl63q")
 
-[node name="PositionContainer" type="VBoxContainer" parent="SplitContainer/Control"]
+[node name="PositionContainer" type="VBoxContainer" parent="SplitContainer/MarginContainer/Control"]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 
-[node name="BlockName" type="Label" parent="SplitContainer/Control/PositionContainer"]
+[node name="BlockName" type="Label" parent="SplitContainer/MarginContainer/Control/PositionContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="X_pos" type="SpinBox" parent="SplitContainer/Control/PositionContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = -100.0
-step = 0.1
-
-[node name="Y_pos" type="SpinBox" parent="SplitContainer/Control/PositionContainer"]
-unique_name_in_owner = true
+[node name="X Container" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/PositionContainer"]
 layout_mode = 2
 
-[node name="Z_pos" type="SpinBox" parent="SplitContainer/Control/PositionContainer"]
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/PositionContainer/X Container"]
+layout_mode = 2
+text = "X [m] : "
+
+[node name="X_pos" type="SpinBox" parent="SplitContainer/MarginContainer/Control/PositionContainer/X Container"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
+min_value = -10.0
+max_value = 10.0
+step = 0.01
 
-[node name="SaveButton" type="Button" parent="SplitContainer/Control/PositionContainer"]
+[node name="Y Container" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/PositionContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/PositionContainer/Y Container"]
+layout_mode = 2
+text = "Y [m] : "
+
+[node name="Y_pos" type="SpinBox" parent="SplitContainer/MarginContainer/Control/PositionContainer/Y Container"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -10.0
+max_value = 10.0
+step = 0.01
+
+[node name="Z Container" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/PositionContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/PositionContainer/Z Container"]
+layout_mode = 2
+text = "Z [m] : "
+
+[node name="Z_pos" type="SpinBox" parent="SplitContainer/MarginContainer/Control/PositionContainer/Z Container"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -10.0
+max_value = 10.0
+step = 0.01
+
+[node name="SaveInitButton" type="Button" parent="SplitContainer/MarginContainer/Control/PositionContainer"]
 layout_mode = 2
 text = "Save parameters"
 
@@ -67,14 +142,67 @@ size_flags_horizontal = 3
 stretch = true
 script = ExtResource("3_lmwaj")
 
-[node name="SubViewport" type="SubViewport" parent="SplitContainer/LevelContainer"]
+[node name="SceneViewport" type="SubViewport" parent="SplitContainer/LevelContainer"]
+unique_name_in_owner = true
 handle_input_locally = false
+msaa_3d = 2
+screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(940, 648)
+size = Vector2i(930, 648)
 render_target_update_mode = 4
 
-[node name="World3D" parent="SplitContainer/LevelContainer/SubViewport" instance=ExtResource("2_3ha60")]
+[node name="GameScene" type="Node3D" parent="SplitContainer/LevelContainer/SceneViewport"]
+unique_name_in_owner = true
+script = ExtResource("4_64ri1")
 
-[connection signal="item_clicked" from="SplitContainer/Control/BlocksList" to="." method="_on_blocks_list_item_clicked"]
-[connection signal="value_changed" from="SplitContainer/Control/PositionContainer/X_pos" to="." method="_on_x_pos_value_changed"]
-[connection signal="pressed" from="SplitContainer/Control/PositionContainer/SaveButton" to="." method="_on_save_button_pressed"]
+[node name="OrbitalCamera3D" type="Node3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+script = ExtResource("5_k713u")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+transform = Transform3D(-0.866024, -0.433016, 0.250001, 0.368369, -0.21446, 0.904605, -0.338093, 0.875502, 0.345237, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+environment = SubResource("Environment_h33mq")
+
+[node name="PhysicsGround" type="StaticBody3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+input_ray_pickable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/PhysicsGround"]
+shape = SubResource("WorldBoundaryShape3D_3g53y")
+
+[node name="ToolBar" type="HBoxContainer" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -47.0
+offset_top = 20.0
+offset_right = 47.0
+offset_bottom = 60.0
+grow_horizontal = 2
+
+[node name="RunButton" type="Button" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar"]
+layout_mode = 2
+text = "Run"
+
+[node name="StopButton" type="Button" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar"]
+layout_mode = 2
+text = "Stop"
+
+[node name="ResetButton" type="Button" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar"]
+layout_mode = 2
+text = "Reset"
+
+[connection signal="pressed" from="SplitContainer/MarginContainer/Control/LoadSceneButton" to="." method="_on_load_scene_button_pressed"]
+[connection signal="file_selected" from="SplitContainer/MarginContainer/Control/LoadSceneButton/LoadSceneDialog" to="." method="_on_load_scene_dialog_file_selected"]
+[connection signal="pressed" from="SplitContainer/MarginContainer/Control/SaveSceneButton" to="." method="_on_save_scene_button_pressed"]
+[connection signal="file_selected" from="SplitContainer/MarginContainer/Control/SaveSceneButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
+[connection signal="item_clicked" from="SplitContainer/MarginContainer/Control/BlocksList" to="." method="_on_blocks_list_item_clicked"]
+[connection signal="value_changed" from="SplitContainer/MarginContainer/Control/PositionContainer/X Container/X_pos" to="." method="_on_x_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/MarginContainer/Control/PositionContainer/Y Container/Y_pos" to="." method="_on_y_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/MarginContainer/Control/PositionContainer/Z Container/Z_pos" to="." method="_on_z_pos_value_changed"]
+[connection signal="pressed" from="SplitContainer/MarginContainer/Control/PositionContainer/SaveInitButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/RunButton" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_run_button_pressed"]
+[connection signal="pressed" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/StopButton" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_stop_button_pressed"]
+[connection signal="pressed" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/ResetButton" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_reset_button_pressed"]

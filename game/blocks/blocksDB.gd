@@ -1,15 +1,20 @@
 # Singleton BlocksDB
 extends Node
 
-var list = []
-
-func _init():
-	list.append(
-		{
-			name="Cube",
-			path="res://game/blocks/generic/cube.tscn"
-		}
-	)
+var list = [
+	{
+		name="Cube",
+		path="res://game/blocks/generic/cube.tscn"
+	},
+	{
+		name="Cylinder",
+		path="res://game/blocks/generic/cylinder.tscn"
+	},
+	{
+		name="GenoiseLayer",
+		path="res://game/blocks/robotics_cup/sponge_cake_layer.tscn"
+	},
+]
 
 func get_block_path(block_name: String):
 	for block in list:

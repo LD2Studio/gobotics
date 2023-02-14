@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3 uid="uid://swc1ljxo17p8"]
+
+[ext_resource type="Material" uid="uid://dqri6gijob750" path="res://assets/vinyles/vinyle_floor.tres" id="1_j03c5"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ogakp"]
+size = Vector2(20, 30)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lwrfd"]
+size = Vector3(30, 0.2, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_olw1o"]
+size = Vector3(30.44, 0.7, 0.22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_by0mj"]
+size = Vector3(0.22, 0.7, 20.44)
+
+[node name="GamingTable" type="StaticBody3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("PlaneMesh_ogakp")
+surface_material_override/0 = ExtResource("1_j03c5")
+metadata/_edit_lock_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("BoxShape3D_lwrfd")
+metadata/_edit_lock_ = true
+
+[node name="BackBorder" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 10.11)
+mesh = SubResource("BoxMesh_olw1o")
+metadata/_edit_lock_ = true
+
+[node name="ForwardBorder" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -10.11)
+mesh = SubResource("BoxMesh_olw1o")
+metadata/_edit_lock_ = true
+
+[node name="RightBorder" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.11, 0.35, 0)
+mesh = SubResource("BoxMesh_by0mj")
+metadata/_edit_lock_ = true
+
+[node name="LeftBorder" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.11, 0.35, 0)
+mesh = SubResource("BoxMesh_by0mj")
+
+[node name="Coord3D" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -15, 0, 10)
