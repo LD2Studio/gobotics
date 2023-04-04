@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_4uqlp"]
+[ext_resource type="PackedScene" path="res://robots/robot_beta/robot_beta.tscn" id="2_qnauw"]
+[ext_resource type="Script" path="res://robots/robot_beta/robot_beta.gd" id="3_ofus5"]
+
+[node name="GameLevel" type="Node3D"]
+
+[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_4uqlp")]
+process_mode = 4
+
+[node name="Block0" type="RigidBody3D" parent="." instance=ExtResource("2_qnauw")]
+transform = Transform3D(-0.985882, -0.000357063, 0.167444, -0.000360518, 1, 9.76781e-06, -0.167444, -5.07367e-05, -0.985882, -11.4475, 1.88926, 1.72729)
+mass = 50.0
+sleeping = true
+freeze = true
+script = ExtResource("3_ofus5")
+R_angular_vel = 5.0
+L_angular_vel = 5.0
+UDP_port = 4242

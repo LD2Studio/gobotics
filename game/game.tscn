@@ -1,0 +1,277 @@
+[gd_scene load_steps=11 format=3 uid="uid://dmjlbnbyp7ula"]
+
+[ext_resource type="Script" path="res://game/game.gd" id="1_85jys"]
+[ext_resource type="Script" path="res://game/BlocksList.gd" id="2_alxfa"]
+[ext_resource type="Script" path="res://game/LevelContainer.gd" id="3_n66nd"]
+[ext_resource type="Script" path="res://game/game_scene.gd" id="4_htgp6"]
+[ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="5_i338u"]
+
+[sub_resource type="Environment" id="Environment_5axc7"]
+background_energy_multiplier = 0.89
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_j40fb"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_87cqo"]
+sky_material = SubResource("ProceduralSkyMaterial_j40fb")
+
+[sub_resource type="Environment" id="Environment_h33mq"]
+background_mode = 2
+sky = SubResource("Sky_87cqo")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_3g53y"]
+
+[node name="Game" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_85jys")
+
+[node name="SplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Control" type="VBoxContainer" parent="SplitContainer/MarginContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="FilenameLabel" type="Label" parent="SplitContainer/MarginContainer/Control"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LoadSceneButton" type="Button" parent="SplitContainer/MarginContainer/Control"]
+layout_mode = 2
+text = "Load Scene"
+
+[node name="LoadSceneDialog" type="FileDialog" parent="SplitContainer/MarginContainer/Control/LoadSceneButton"]
+unique_name_in_owner = true
+title = "Open a File"
+ok_button_text = "Open"
+file_mode = 0
+root_subfolder = "scenes"
+
+[node name="SaveSceneButton" type="Button" parent="SplitContainer/MarginContainer/Control"]
+layout_mode = 2
+text = "Save Scene"
+
+[node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/MarginContainer/Control/SaveSceneButton"]
+unique_name_in_owner = true
+root_subfolder = "scenes"
+
+[node name="BlocksList" type="ItemList" parent="SplitContainer/MarginContainer/Control"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+item_count = 2
+item_0/text = "Cube"
+item_1/text = "Cylinder"
+script = ExtResource("2_alxfa")
+
+[node name="ObjectInspector" type="VBoxContainer" parent="SplitContainer/MarginContainer/Control"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="BlockName" type="Label" parent="SplitContainer/MarginContainer/Control/ObjectInspector"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PosContainer" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/ObjectInspector"]
+layout_mode = 2
+
+[node name="X Container" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/X Container"]
+layout_mode = 2
+text = "X : "
+
+[node name="X_pos" type="SpinBox" parent="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/X Container"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -10.0
+max_value = 10.0
+step = 0.01
+
+[node name="Y Container" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Y Container"]
+layout_mode = 2
+text = "Y : "
+
+[node name="Y_pos" type="SpinBox" parent="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Y Container"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -10.0
+max_value = 10.0
+step = 0.01
+
+[node name="Z Container" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Z Container"]
+layout_mode = 2
+text = "Z : "
+
+[node name="Z_pos" type="SpinBox" parent="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Z Container"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -10.0
+max_value = 10.0
+step = 0.01
+
+[node name="Rotation Container" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/ObjectInspector"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/ObjectInspector/Rotation Container"]
+layout_mode = 2
+text = "RotZ [°] : "
+
+[node name="Z_rot" type="SpinBox" parent="SplitContainer/MarginContainer/Control/ObjectInspector/Rotation Container"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = -180.0
+max_value = 180.0
+
+[node name="SaveInitButton" type="Button" parent="SplitContainer/MarginContainer/Control/ObjectInspector"]
+layout_mode = 2
+text = "Save parameters"
+
+[node name="JoystickContainer" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/ObjectInspector"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="JoystickEnableButton" type="CheckBox" parent="SplitContainer/MarginContainer/Control/ObjectInspector/JoystickContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/ObjectInspector/JoystickContainer"]
+layout_mode = 2
+text = "Joystick Control"
+
+[node name="UDPPortContainer" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/ObjectInspector"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/ObjectInspector/UDPPortContainer"]
+layout_mode = 2
+text = "UDP Port :"
+
+[node name="UDPPortNumber" type="SpinBox" parent="SplitContainer/MarginContainer/Control/ObjectInspector/UDPPortContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 1024.0
+max_value = 65535.0
+value = 1024.0
+
+[node name="LevelContainer" type="SubViewportContainer" parent="SplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+stretch = true
+script = ExtResource("3_n66nd")
+
+[node name="SceneViewport" type="SubViewport" parent="SplitContainer/LevelContainer"]
+unique_name_in_owner = true
+handle_input_locally = false
+msaa_3d = 2
+screen_space_aa = 1
+physics_object_picking = true
+size = Vector2i(1241, 800)
+render_target_update_mode = 4
+
+[node name="GameScene" type="Node3D" parent="SplitContainer/LevelContainer/SceneViewport"]
+unique_name_in_owner = true
+script = ExtResource("4_htgp6")
+
+[node name="ControlCamera3D" type="Camera3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+unique_name_in_owner = true
+transform = Transform3D(-1, 2.92111e-08, -8.23981e-08, 0, 0.942525, 0.334136, 8.74228e-08, 0.334136, -0.942525, 0, 4.95161, -13.9674)
+current = true
+script = ExtResource("5_i338u")
+translation_speed = 1.9
+zoom_speed = 1.6
+zoom_out = 20.0
+
+[node name="TopCamera2D" type="Camera3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10, 0)
+environment = SubResource("Environment_5axc7")
+projection = 1
+size = 30.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+transform = Transform3D(-0.866024, -0.433016, 0.250001, 0.368369, -0.21446, 0.904605, -0.338093, 0.875502, 0.345237, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+environment = SubResource("Environment_h33mq")
+
+[node name="PhysicsGround" type="StaticBody3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+input_ray_pickable = false
+
+[node name="FloorCollision" type="CollisionShape3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/PhysicsGround"]
+unique_name_in_owner = true
+shape = SubResource("WorldBoundaryShape3D_3g53y")
+disabled = true
+
+[node name="ToolBar" type="HBoxContainer" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -47.0
+offset_top = 20.0
+offset_right = 47.0
+offset_bottom = 60.0
+grow_horizontal = 2
+
+[node name="RunStopButton" type="Button" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "RUN"
+
+[node name="ResetButton" type="Button" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar"]
+layout_mode = 2
+text = "Reload"
+
+[node name="ViewButton" type="Button" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar"]
+layout_mode = 2
+toggle_mode = true
+text = "TopView"
+
+[connection signal="pressed" from="SplitContainer/MarginContainer/Control/LoadSceneButton" to="." method="_on_load_scene_button_pressed"]
+[connection signal="file_selected" from="SplitContainer/MarginContainer/Control/LoadSceneButton/LoadSceneDialog" to="." method="_on_load_scene_dialog_file_selected"]
+[connection signal="pressed" from="SplitContainer/MarginContainer/Control/SaveSceneButton" to="." method="_on_save_scene_button_pressed"]
+[connection signal="file_selected" from="SplitContainer/MarginContainer/Control/SaveSceneButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
+[connection signal="item_clicked" from="SplitContainer/MarginContainer/Control/BlocksList" to="." method="_on_blocks_list_item_clicked"]
+[connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/X Container/X_pos" to="." method="_on_x_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Y Container/Y_pos" to="." method="_on_y_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Z Container/Z_pos" to="." method="_on_z_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/Rotation Container/Z_rot" to="." method="_on_z_rot_value_changed"]
+[connection signal="pressed" from="SplitContainer/MarginContainer/Control/ObjectInspector/SaveInitButton" to="." method="_on_save_button_pressed"]
+[connection signal="toggled" from="SplitContainer/MarginContainer/Control/ObjectInspector/JoystickContainer/JoystickEnableButton" to="." method="_on_joystick_enable_button_toggled"]
+[connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/UDPPortContainer/UDPPortNumber" to="." method="_on_udp_port_number_value_changed"]
+[connection signal="toggled" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/RunStopButton" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
+[connection signal="pressed" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/ResetButton" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_reset_button_pressed"]
+[connection signal="toggled" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/ViewButton" to="." method="_on_view_button_toggled"]

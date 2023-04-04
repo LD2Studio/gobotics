@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_ei5l7"]
+[ext_resource type="PackedScene" path="res://robots/robot_alpha/robot_alpha.tscn" id="2_csgkj"]
+[ext_resource type="Script" path="res://robots/robot_alpha/robot_alpha.gd" id="3_mytqu"]
+
+[node name="GameLevel" type="Node3D"]
+
+[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_ei5l7")]
+process_mode = 4
+
+[node name="Block0" type="RigidBody3D" parent="." instance=ExtResource("2_csgkj")]
+transform = Transform3D(-0.292372, 0, 0.956305, 0, 1, 0, -0.956305, 0, -0.292372, 6.3, 1.9, -8.30516e-08)
+disable_mode = 2
+mass = 50.0
+freeze = true
+script = ExtResource("3_mytqu")
+R_angular_vel = 5.0
+L_angular_vel = 5.0
+UDP_port = 4243
+
+[node name="Block1" type="RigidBody3D" parent="." instance=ExtResource("2_csgkj")]
+transform = Transform3D(-0.190809, 0, -0.981627, 0, 1, 0, 0.981627, 0, -0.190809, -5, 1.90932, -8.3459e-08)
+disable_mode = 2
+mass = 50.0
+freeze = true
+script = ExtResource("3_mytqu")
+R_angular_vel = 5.0
+L_angular_vel = 5.0
+UDP_port = 4242

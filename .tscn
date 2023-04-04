@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_f478h"]
+[ext_resource type="PackedScene" path="res://robots/robot_alpha/robot_alpha.tscn" id="2_vluvi"]
+[ext_resource type="Script" path="res://robots/robot_alpha/robot_alpha.gd" id="3_hypk5"]
+
+[node name="GameLevel" type="Node3D"]
+
+[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_f478h")]
+process_mode = 4
+
+[node name="Block0" type="RigidBody3D" parent="." instance=ExtResource("2_vluvi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, -8.30516e-08)
+disable_mode = 2
+mass = 50.0
+freeze = true
+script = ExtResource("3_hypk5")

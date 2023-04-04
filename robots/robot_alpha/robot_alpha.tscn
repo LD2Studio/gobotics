@@ -1,0 +1,157 @@
+[gd_scene load_steps=22 format=3 uid="uid://cmfpedy1r220d"]
+
+[ext_resource type="Script" path="res://robots/robot_alpha/robot_alpha.gd" id="1_2fcwt"]
+[ext_resource type="Texture2D" uid="uid://ba5pdfkr8r243" path="res://icon.svg" id="2_hg8do"]
+[ext_resource type="Shader" path="res://robots/parts/connect_light.gdshader" id="3_1w02k"]
+[ext_resource type="Script" path="res://robots/parts/connect_light.gd" id="4_2gm3y"]
+[ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="5_clt3t"]
+[ext_resource type="Script" path="res://robots/robot_alpha/RemotePython.gd" id="6_tyaf6"]
+[ext_resource type="Script" path="res://addon/capture_camera/capture_camera_3d.gd" id="7_tp1sj"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_d4bg2"]
+size = Vector3(3, 3.5, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ydov1"]
+albedo_color = Color(0.0745098, 0.313726, 0.121569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e1s6i"]
+albedo_texture = ExtResource("2_hg8do")
+
+[sub_resource type="QuadMesh" id="QuadMesh_uaou6"]
+material = SubResource("StandardMaterial3D_e1s6i")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_sk0kp"]
+_surfaces = [{
+"aabb": AABB(-1.55773, -1.80773, -1.55773, 3.11547, 3.61548, 3.11548),
+"attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 171, 170, 42, 63, 0, 0, 0, 0, 171, 170, 170, 62, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 171, 170, 42, 63, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 171, 170, 42, 63, 0, 0, 0, 0, 171, 170, 170, 62, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 128, 63, 171, 170, 42, 63, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 128, 63, 171, 170, 170, 62, 0, 0, 0, 63, 171, 170, 42, 63, 0, 0, 0, 63, 171, 170, 42, 63, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 128, 63, 171, 170, 42, 63, 0, 0, 128, 63, 171, 170, 42, 63, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 128, 63),
+"format": 4119,
+"index_count": 36,
+"index_data": PackedByteArray(0, 0, 4, 0, 2, 0, 2, 0, 4, 0, 6, 0, 1, 0, 5, 0, 3, 0, 3, 0, 5, 0, 7, 0, 8, 0, 12, 0, 10, 0, 10, 0, 12, 0, 14, 0, 9, 0, 13, 0, 11, 0, 11, 0, 13, 0, 15, 0, 16, 0, 20, 0, 18, 0, 18, 0, 20, 0, 22, 0, 17, 0, 21, 0, 19, 0, 19, 0, 21, 0, 23, 0),
+"primitive": 3,
+"vertex_count": 24,
+"vertex_data": PackedByteArray(220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 63, 255, 127, 255, 127, 255, 255, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 191, 255, 255, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 63, 255, 127, 255, 127, 255, 255, 255, 191, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 191, 255, 255, 255, 255, 0, 0, 255, 191, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 63, 255, 127, 255, 127, 255, 255, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 191, 255, 255, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 63, 255, 127, 255, 127, 255, 255, 255, 191, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 191, 255, 255, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 63, 255, 255, 0, 128, 255, 255, 255, 255, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 191, 0, 0, 0, 128, 255, 127, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 191, 255, 255, 0, 128, 255, 255, 255, 255, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 63, 0, 0, 0, 128, 255, 127, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 63, 255, 255, 0, 128, 255, 255, 255, 255, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 191, 0, 0, 0, 128, 255, 127, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 191, 255, 255, 0, 128, 255, 255, 255, 255, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 63, 0, 0, 0, 128, 255, 127, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 63, 0, 128, 255, 255, 0, 0, 255, 191, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 63, 0, 128, 0, 0, 255, 255, 255, 191, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 63, 0, 128, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 63, 0, 128, 0, 0, 255, 255, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 191, 0, 128, 255, 255, 0, 0, 255, 191, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 191, 0, 128, 0, 0, 255, 255, 255, 191, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 191, 0, 128, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 191, 0, 128, 0, 0, 255, 255, 255, 191)
+}]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_f5xy8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jp2tv"]
+render_priority = 0
+shader = ExtResource("3_1w02k")
+shader_parameter/speed = 1.0
+shader_parameter/enable = false
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_e57wj"]
+size = Vector3(3, 3.5, 3)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_p0jxb"]
+height = 0.05
+
+[sub_resource type="Gradient" id="Gradient_6vwxp"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.506329)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_fpbrj"]
+gradient = SubResource("Gradient_6vwxp")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h8d11"]
+albedo_texture = SubResource("GradientTexture1D_fpbrj")
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_jdn4o"]
+height = 0.05
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_orwha"]
+
+[node name="RobotAlpha" type="RigidBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
+mass = 20.0
+script = ExtResource("1_2fcwt")
+
+[node name="Frame" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_d4bg2")
+surface_material_override/0 = SubResource("StandardMaterial3D_ydov1")
+
+[node name="ForwardFace" type="MeshInstance3D" parent="Frame"]
+transform = Transform3D(-2.186, 0, 1.91106e-07, 0, 2.186, 0, -1.91106e-07, 0, -2.186, -1.73907e-08, 0, -1.53968)
+mesh = SubResource("QuadMesh_uaou6")
+
+[node name="Outline" type="MeshInstance3D" parent="Frame"]
+unique_name_in_owner = true
+visible = false
+mesh = SubResource("ArrayMesh_sk0kp")
+
+[node name="ConnectLight" type="MeshInstance3D" parent="Frame"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.51044, 0)
+mesh = SubResource("CapsuleMesh_f5xy8")
+surface_material_override/0 = SubResource("ShaderMaterial_jp2tv")
+script = ExtResource("4_2gm3y")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_e57wj")
+
+[node name="RightMotor" type="RigidBody3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 1.2, -1.4, 0)
+can_sleep = false
+script = ExtResource("5_clt3t")
+exclude_nodes_from_collision = true
+torque_constant = 20.0
+metadata/_edit_group_ = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RightMotor"]
+transform = Transform3D(1, 1.06581e-14, -4.23516e-22, 0, -4.37114e-08, -1, -1.06581e-14, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_p0jxb")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_h8d11")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RightMotor"]
+transform = Transform3D(1, 1.06581e-14, -4.23516e-22, 0, -4.37114e-08, -1, -1.06581e-14, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("CylinderShape3D_jdn4o")
+
+[node name="LeftMotor" type="RigidBody3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -1.2, -1.4, 0)
+can_sleep = false
+script = ExtResource("5_clt3t")
+exclude_nodes_from_collision = true
+torque_constant = 20.0
+metadata/_edit_group_ = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="LeftMotor"]
+transform = Transform3D(1, 1.06581e-14, -4.23516e-22, 0, -4.37114e-08, -1, -1.06581e-14, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_p0jxb")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_h8d11")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LeftMotor"]
+transform = Transform3D(1, 1.06581e-14, -4.23516e-22, 0, -4.37114e-08, -1, -1.06581e-14, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("CylinderShape3D_jdn4o")
+
+[node name="FrontFreeJoint" type="PinJoint3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.39, -1.05)
+node_a = NodePath("..")
+node_b = NodePath("BallBearing")
+
+[node name="BallBearing" type="RigidBody3D" parent="FrontFreeJoint"]
+
+[node name="ForwardFreeWheel" type="CollisionShape3D" parent="FrontFreeJoint/BallBearing"]
+shape = SubResource("SphereShape3D_orwha")
+
+[node name="BackFreeJoint" type="PinJoint3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.39, 1.052)
+node_a = NodePath("..")
+node_b = NodePath("BallBearing")
+
+[node name="BallBearing" type="RigidBody3D" parent="BackFreeJoint"]
+
+[node name="ForwardFreeWheel" type="CollisionShape3D" parent="BackFreeJoint/BallBearing"]
+shape = SubResource("SphereShape3D_orwha")
+
+[node name="RemotePython" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("6_tyaf6")
+
+[node name="CaptureCamera3D" type="Camera3D" parent="."]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -5.36835)
+script = ExtResource("7_tp1sj")
+img_path = "res://robots/robot_alpha"

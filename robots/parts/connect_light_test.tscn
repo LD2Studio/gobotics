@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://d4gpuwm4x028g"]
+
+[ext_resource type="Shader" path="res://robots/parts/connect_light.gdshader" id="1_leky1"]
+[ext_resource type="Script" path="res://robots/parts/connect_light.gd" id="1_xsm8j"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_f7pct"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a8wye"]
+render_priority = 0
+shader = ExtResource("1_leky1")
+shader_parameter/speed = 1.0
+
+[node name="ConnectLightTest" type="Node3D"]
+
+[node name="ConnectLight" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_f7pct")
+surface_material_override/0 = SubResource("ShaderMaterial_a8wye")
+script = ExtResource("1_xsm8j")
