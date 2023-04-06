@@ -1,20 +1,30 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
-[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_4uqlp"]
-[ext_resource type="PackedScene" path="res://robots/robot_beta/robot_beta.tscn" id="2_qnauw"]
-[ext_resource type="Script" path="res://robots/robot_beta/robot_beta.gd" id="3_ofus5"]
+[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_ujki8"]
+[ext_resource type="PackedScene" path="res://robots/robot_beta/robot_beta.tscn" id="2_lcs6n"]
+[ext_resource type="Script" path="res://robots/robot_beta/robot_beta.gd" id="3_fm4fs"]
+[ext_resource type="PackedScene" path="res://Cup2023/sponge_cake_layer.tscn" id="4_j3t0g"]
+[ext_resource type="Script" path="res://Cup2023/cup_item.gd" id="5_r1t88"]
 
 [node name="GameLevel" type="Node3D"]
 
-[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_4uqlp")]
+[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_ujki8")]
 process_mode = 4
 
-[node name="Block0" type="RigidBody3D" parent="." instance=ExtResource("2_qnauw")]
-transform = Transform3D(-0.985882, -0.000357063, 0.167444, -0.000360518, 1, 9.76781e-06, -0.167444, -5.07367e-05, -0.985882, -11.4475, 1.88926, 1.72729)
-mass = 50.0
+[node name="Block0" type="RigidBody3D" parent="." instance=ExtResource("2_lcs6n")]
+transform = Transform3D(-0.967322, -0.0010613, 0.253549, -0.00109616, 0.999999, 3.79293e-06, -0.253549, -0.000274261, -0.967323, 0.279712, -0.00258335, -4.97048)
+mass = 20.0
 sleeping = true
 freeze = true
-script = ExtResource("3_ofus5")
+script = ExtResource("3_fm4fs")
 R_angular_vel = 5.0
 L_angular_vel = 5.0
 UDP_port = 4242
+
+[node name="Block1" type="RigidBody3D" parent="." instance=ExtResource("4_j3t0g")]
+transform = Transform3D(0.460007, -0.00123391, 0.887914, 0.000474561, 0.999999, 0.00114382, -0.887915, -0.000104794, 0.460007, -2.43163, 0.0895761, -1.28266)
+mass = 0.1
+sleeping = true
+freeze = true
+script = ExtResource("5_r1t88")
+metadata/_edit_group_ = true

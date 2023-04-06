@@ -34,8 +34,8 @@ func _ready() -> void:
 	add_to_group("BLOCKS")
 	add_to_group("ROBOTS")
 	frozen = true
-	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)
+	%PickArea.mouse_entered.connect(_on_mouse_entered)
+	%PickArea.mouse_exited.connect(_on_mouse_exited)
 	if get_tree().get_nodes_in_group("TABLE").size() != 0:
 		table_xy_coord = get_tree().get_nodes_in_group("TABLE")[0].get_node("Coord3D")
 	listen_on_UDP(UDP_port)

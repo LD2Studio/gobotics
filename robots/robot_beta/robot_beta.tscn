@@ -1,142 +1,129 @@
-[gd_scene load_steps=22 format=3 uid="uid://dq2dw0sbyuvyp"]
+[gd_scene load_steps=24 format=3 uid="uid://dq2dw0sbyuvyp"]
 
 [ext_resource type="Script" path="res://robots/robot_beta/robot_beta.gd" id="1_kbgwg"]
-[ext_resource type="Texture2D" uid="uid://ba5pdfkr8r243" path="res://icon.svg" id="1_opc2i"]
 [ext_resource type="Shader" path="res://robots/parts/connect_light.gdshader" id="2_ptl37"]
 [ext_resource type="Script" path="res://robots/parts/connect_light.gd" id="3_fophd"]
 [ext_resource type="Script" path="res://robots/robot_alpha/RemotePython.gd" id="5_3l1r0"]
 [ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="5_6fxtk"]
 [ext_resource type="Script" path="res://addon/capture_camera/capture_camera_3d.gd" id="6_fjfxr"]
+[ext_resource type="PackedScene" uid="uid://ck187j4vaav72" path="res://robots/parts/wheels/Wheel_WH100.glb" id="6_rd24k"]
+[ext_resource type="Material" uid="uid://x27dfm7adpfw" path="res://game/blocks/materials/outline.tres" id="8_popmu"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_21r3g"]
-size = Vector3(3, 3.5, 3)
+size = Vector3(3, 0.2, 3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lnxj1"]
-albedo_color = Color(0.321569, 0.215686, 0.337255, 1)
+albedo_color = Color(0.745098, 0.529412, 0.203922, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sudya"]
-albedo_texture = ExtResource("1_opc2i")
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_4h6yu"]
 
-[sub_resource type="QuadMesh" id="QuadMesh_4rt1c"]
-material = SubResource("StandardMaterial3D_sudya")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g27ve"]
+render_priority = 0
+shader = ExtResource("2_ptl37")
+shader_parameter/speed = 1.0
+shader_parameter/enable = false
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_b1tdg"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_yifgm"]
+top_radius = 0.181
+bottom_radius = 0.304
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g0yl6"]
+size = Vector3(3, 0.190019, 3)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_uynv1"]
+height = 0.3
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_lls1w"]
+radius = 0.3
+
+[sub_resource type="SphereMesh" id="SphereMesh_dys7f"]
+radius = 0.3
+height = 0.6
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fbrf6"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_e1h0a"]
+noise = SubResource("FastNoiseLite_fbrf6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vswk7"]
+albedo_texture = SubResource("NoiseTexture2D_e1h0a")
+metallic = 1.0
+roughness = 0.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_myn2y"]
+size = Vector3(3, 3.5, 3)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_sgm4n"]
 _surfaces = [{
-"aabb": AABB(-1.55773, -1.80773, -1.55773, 3.11547, 3.61548, 3.11548),
+"aabb": AABB(-1.50577, -1.75577, -1.50577, 3.01155, 3.51156, 3.01156),
 "attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 171, 170, 42, 63, 0, 0, 0, 0, 171, 170, 170, 62, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 171, 170, 42, 63, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 171, 170, 42, 63, 0, 0, 0, 0, 171, 170, 170, 62, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 128, 63, 171, 170, 42, 63, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 128, 63, 171, 170, 170, 62, 0, 0, 0, 63, 171, 170, 42, 63, 0, 0, 0, 63, 171, 170, 42, 63, 0, 0, 0, 63, 0, 0, 128, 63, 0, 0, 0, 63, 171, 170, 170, 62, 0, 0, 128, 63, 171, 170, 42, 63, 0, 0, 128, 63, 171, 170, 42, 63, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 128, 63),
 "format": 4119,
 "index_count": 36,
 "index_data": PackedByteArray(0, 0, 4, 0, 2, 0, 2, 0, 4, 0, 6, 0, 1, 0, 5, 0, 3, 0, 3, 0, 5, 0, 7, 0, 8, 0, 12, 0, 10, 0, 10, 0, 12, 0, 14, 0, 9, 0, 13, 0, 11, 0, 11, 0, 13, 0, 15, 0, 16, 0, 20, 0, 18, 0, 18, 0, 20, 0, 22, 0, 17, 0, 21, 0, 19, 0, 19, 0, 21, 0, 23, 0),
 "primitive": 3,
 "vertex_count": 24,
-"vertex_data": PackedByteArray(220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 63, 255, 127, 255, 127, 255, 255, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 191, 255, 255, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 63, 255, 127, 255, 127, 255, 255, 255, 191, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 191, 255, 255, 255, 255, 0, 0, 255, 191, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 63, 255, 127, 255, 127, 255, 255, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 191, 255, 255, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 63, 255, 127, 255, 127, 255, 255, 255, 191, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 191, 255, 255, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 63, 255, 255, 0, 128, 255, 255, 255, 255, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 191, 0, 0, 0, 128, 255, 127, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 191, 255, 255, 0, 128, 255, 255, 255, 255, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 63, 0, 0, 0, 128, 255, 127, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 63, 255, 255, 0, 128, 255, 255, 255, 255, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 191, 0, 0, 0, 128, 255, 127, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 191, 255, 255, 0, 128, 255, 255, 255, 255, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 63, 0, 0, 0, 128, 255, 127, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 63, 0, 128, 255, 255, 0, 0, 255, 191, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 63, 0, 128, 0, 0, 255, 255, 255, 191, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 63, 0, 128, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 63, 0, 128, 0, 0, 255, 255, 255, 191, 220, 99, 199, 63, 220, 99, 231, 63, 220, 99, 199, 191, 0, 128, 255, 255, 0, 0, 255, 191, 220, 99, 199, 191, 220, 99, 231, 191, 220, 99, 199, 191, 0, 128, 0, 0, 255, 255, 255, 191, 220, 99, 199, 191, 220, 99, 231, 63, 220, 99, 199, 191, 0, 128, 255, 255, 0, 0, 255, 191, 220, 99, 199, 63, 220, 99, 231, 191, 220, 99, 199, 191, 0, 128, 0, 0, 255, 255, 255, 191)
+"vertex_data": PackedByteArray(48, 189, 192, 191, 48, 189, 224, 63, 48, 189, 192, 63, 255, 127, 255, 127, 255, 255, 255, 191, 48, 189, 192, 63, 48, 189, 224, 63, 48, 189, 192, 191, 255, 255, 255, 255, 0, 0, 255, 191, 48, 189, 192, 63, 48, 189, 224, 63, 48, 189, 192, 63, 255, 127, 255, 127, 255, 255, 255, 191, 48, 189, 192, 191, 48, 189, 224, 63, 48, 189, 192, 191, 255, 255, 255, 255, 0, 0, 255, 191, 48, 189, 192, 191, 48, 189, 224, 191, 48, 189, 192, 63, 255, 127, 255, 127, 255, 255, 255, 191, 48, 189, 192, 63, 48, 189, 224, 191, 48, 189, 192, 191, 255, 255, 255, 255, 0, 0, 255, 191, 48, 189, 192, 63, 48, 189, 224, 191, 48, 189, 192, 63, 255, 127, 255, 127, 255, 255, 255, 191, 48, 189, 192, 191, 48, 189, 224, 191, 48, 189, 192, 191, 255, 255, 255, 255, 0, 0, 255, 191, 48, 189, 192, 63, 48, 189, 224, 63, 48, 189, 192, 63, 255, 255, 0, 128, 255, 255, 255, 255, 48, 189, 192, 191, 48, 189, 224, 63, 48, 189, 192, 191, 0, 0, 0, 128, 255, 127, 255, 191, 48, 189, 192, 63, 48, 189, 224, 63, 48, 189, 192, 191, 255, 255, 0, 128, 255, 255, 255, 255, 48, 189, 192, 191, 48, 189, 224, 63, 48, 189, 192, 63, 0, 0, 0, 128, 255, 127, 255, 191, 48, 189, 192, 63, 48, 189, 224, 191, 48, 189, 192, 63, 255, 255, 0, 128, 255, 255, 255, 255, 48, 189, 192, 191, 48, 189, 224, 191, 48, 189, 192, 191, 0, 0, 0, 128, 255, 127, 255, 191, 48, 189, 192, 63, 48, 189, 224, 191, 48, 189, 192, 191, 255, 255, 0, 128, 255, 255, 255, 255, 48, 189, 192, 191, 48, 189, 224, 191, 48, 189, 192, 63, 0, 0, 0, 128, 255, 127, 255, 191, 48, 189, 192, 63, 48, 189, 224, 63, 48, 189, 192, 63, 0, 128, 255, 255, 0, 0, 255, 191, 48, 189, 192, 191, 48, 189, 224, 191, 48, 189, 192, 63, 0, 128, 0, 0, 255, 255, 255, 191, 48, 189, 192, 191, 48, 189, 224, 63, 48, 189, 192, 63, 0, 128, 255, 255, 0, 0, 255, 191, 48, 189, 192, 63, 48, 189, 224, 191, 48, 189, 192, 63, 0, 128, 0, 0, 255, 255, 255, 191, 48, 189, 192, 63, 48, 189, 224, 63, 48, 189, 192, 191, 0, 128, 255, 255, 0, 0, 255, 191, 48, 189, 192, 191, 48, 189, 224, 191, 48, 189, 192, 191, 0, 128, 0, 0, 255, 255, 255, 191, 48, 189, 192, 191, 48, 189, 224, 63, 48, 189, 192, 191, 0, 128, 255, 255, 0, 0, 255, 191, 48, 189, 192, 63, 48, 189, 224, 191, 48, 189, 192, 191, 0, 128, 0, 0, 255, 255, 255, 191)
 }]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_4h6yu"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_fjcs7"]
-render_priority = 0
-shader = ExtResource("2_ptl37")
-shader_parameter/speed = 1.0
-shader_parameter/enable = false
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_g0yl6"]
+[sub_resource type="BoxMesh" id="BoxMesh_qd45y"]
 size = Vector3(3, 3.5, 3)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_7kln0"]
-height = 0.3
-
-[sub_resource type="Gradient" id="Gradient_mp8k6"]
-interpolation_mode = 1
-offsets = PackedFloat32Array(0, 0.506329)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_ftx5r"]
-gradient = SubResource("Gradient_mp8k6")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2m8ia"]
-albedo_texture = SubResource("GradientTexture1D_ftx5r")
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_uynv1"]
-height = 0.3
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_lls1w"]
-
 [node name="RobotBeta" type="RigidBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
 mass = 20.0
 script = ExtResource("1_kbgwg")
 
 [node name="Frame" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.323686, 0.0110257)
 mesh = SubResource("BoxMesh_21r3g")
 surface_material_override/0 = SubResource("StandardMaterial3D_lnxj1")
 
-[node name="ForwardFace" type="MeshInstance3D" parent="Frame"]
-transform = Transform3D(-2.186, 0, 1.91106e-07, 0, 2.186, 0, -1.91106e-07, 0, -2.186, -1.73907e-08, 0, -1.53968)
-mesh = SubResource("QuadMesh_4rt1c")
-
-[node name="Outline" type="MeshInstance3D" parent="Frame"]
-unique_name_in_owner = true
-visible = false
-mesh = SubResource("ArrayMesh_b1tdg")
-
 [node name="ConnectLight" type="MeshInstance3D" parent="Frame"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.51044, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05367, 0)
 mesh = SubResource("CapsuleMesh_4h6yu")
-surface_material_override/0 = SubResource("ShaderMaterial_fjcs7")
+surface_material_override/0 = SubResource("ShaderMaterial_g27ve")
 script = ExtResource("3_fophd")
 
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Frame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.09283, 0)
+mesh = SubResource("CylinderMesh_yifgm")
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.316357, 0.000796795)
 shape = SubResource("BoxShape3D_g0yl6")
 
 [node name="RightMotor" type="RigidBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 1.2, -1.4, 0)
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 1.2, 0.499964, -0.728199)
 can_sleep = false
 script = ExtResource("5_6fxtk")
 exclude_nodes_from_collision = true
 torque_constant = 20.0
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RightMotor"]
-transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, 0)
-mesh = SubResource("CylinderMesh_7kln0")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("StandardMaterial3D_2m8ia")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RightMotor"]
 transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, 0)
 shape = SubResource("CylinderShape3D_uynv1")
 
+[node name="Wheel_WH100" parent="RightMotor" instance=ExtResource("6_rd24k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0)
+
 [node name="LeftMotor" type="RigidBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -1.2, -1.4, 0)
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -1.2, 0.499964, -0.728199)
 can_sleep = false
 script = ExtResource("5_6fxtk")
 exclude_nodes_from_collision = true
 torque_constant = 20.0
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="LeftMotor"]
-transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, 0)
-mesh = SubResource("CylinderMesh_7kln0")
-skeleton = NodePath("")
-surface_material_override/0 = SubResource("StandardMaterial3D_2m8ia")
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="LeftMotor"]
 transform = Transform3D(-1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, -1, 4.37114e-08, 0, 0, 0)
 shape = SubResource("CylinderShape3D_uynv1")
 
-[node name="FrontFreeJoint" type="PinJoint3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.39, -1.05)
-node_a = NodePath("..")
-node_b = NodePath("BallBearing")
-
-[node name="BallBearing" type="RigidBody3D" parent="FrontFreeJoint"]
-
-[node name="ForwardFreeWheel" type="CollisionShape3D" parent="FrontFreeJoint/BallBearing"]
-shape = SubResource("SphereShape3D_lls1w")
+[node name="Wheel_WH100" parent="LeftMotor" instance=ExtResource("6_rd24k")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 
 [node name="BackFreeJoint" type="PinJoint3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.39, 1.052)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.300981, 0.965282)
 node_a = NodePath("..")
 node_b = NodePath("BallBearing")
 
@@ -145,11 +132,33 @@ node_b = NodePath("BallBearing")
 [node name="ForwardFreeWheel" type="CollisionShape3D" parent="BackFreeJoint/BallBearing"]
 shape = SubResource("SphereShape3D_lls1w")
 
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BackFreeJoint/BallBearing"]
+mesh = SubResource("SphereMesh_dys7f")
+surface_material_override/0 = SubResource("StandardMaterial3D_vswk7")
+
+[node name="PickArea" type="Area3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.76581, 0.02314)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickArea"]
+shape = SubResource("BoxShape3D_myn2y")
+
+[node name="Outline" type="MeshInstance3D" parent="PickArea"]
+unique_name_in_owner = true
+visible = false
+mesh = SubResource("ArrayMesh_sgm4n")
+skeleton = NodePath("../MeshInstance3D")
+surface_material_override/0 = ExtResource("8_popmu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PickArea"]
+visible = false
+mesh = SubResource("BoxMesh_qd45y")
+
 [node name="RemotePython" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("5_3l1r0")
 
 [node name="CaptureCamera3D" type="Camera3D" parent="."]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -5.36835)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1.32726, -6.09655)
 script = ExtResource("6_fjfxr")
 img_path = "res://robots/robot_beta"
