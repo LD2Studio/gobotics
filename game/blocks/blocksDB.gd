@@ -18,6 +18,11 @@ var list = [
 		preview="res://robots/robot_beta/RobotBeta.png"
 	},
 	{
+		name="Robot Gamma",
+		path="res://robots/robot_gamma.tscn",
+		preview="res://robots/robot_beta/RobotBeta.png"
+	},
+	{
 		name="Sphere",
 		path="res://Cup2023/ball.tscn",
 		preview="res://Cup2023/Ball.png"

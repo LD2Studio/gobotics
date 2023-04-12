@@ -13,7 +13,6 @@ func _ready() -> void:
 	add_child(game_level)
 	gaming_table = load("res://game/blocks/robotics_cup/gaming_table.tscn").instantiate()
 	game_level.add_child(gaming_table)
-	gaming_table.process_mode = Node.PROCESS_MODE_DISABLED
 	%RunStopButton.modulate = Color.GREEN
 
 
@@ -21,7 +20,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		var blocks = get_tree().get_nodes_in_group("BLOCKS")
 		for block in blocks:
-			if block.focused:
+			if block.get("focused"):
 				emit_signal("focused_block", block)
 				return
 		emit_signal("focused_block", null)
@@ -60,7 +59,7 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
 		%FloorCollision.disabled = false
-		gaming_table.process_mode = Node.PROCESS_MODE_INHERIT
+#		gaming_table.process_mode = Node.PROCESS_MODE_INHERIT
 		var robots = get_tree().get_nodes_in_group("ROBOTS")
 		for robot in robots:
 			robot.frozen = false
@@ -72,7 +71,7 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
 		%FloorCollision.disabled = true
-		gaming_table.process_mode = Node.PROCESS_MODE_DISABLED
+#		gaming_table.process_mode = Node.PROCESS_MODE_DISABLED
 		var robots = get_tree().get_nodes_in_group("ROBOTS")
 		for robot in robots:
 			robot.frozen = true

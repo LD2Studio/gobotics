@@ -82,5 +82,13 @@ func get_xy_dir() -> Vector2:
 	var xy_dir:= Vector2(xyz_basis.y.x, -xyz_basis.y.z)
 	return xy_dir
 	
+func get_localisation() -> PackedFloat32Array:
+	var robot_local_tr: Transform3D = table_xy_coord.global_transform.inverse() * global_transform
+
+	var xy_pos := Vector2(robot_local_tr.origin.x, robot_local_tr.origin.y)/10
+	var angle: float = global_rotation.y
+#	print([xy_pos.x, xy_pos.y, angle])
+	return PackedFloat32Array([xy_pos.x, xy_pos.y, angle])
+	
 func listen_on_UDP(port: int):
-	%RemotePython.activate(port)
+	%PythonControl.activate(port)

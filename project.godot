@@ -86,6 +86,11 @@ DELETE={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_1="Robots"
+3d_physics/layer_2="Table"
+
 [physics]
 
 common/physics_ticks_per_second=240

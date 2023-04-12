@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://game/blocks/make_screenshot.gd" id="1_spc3p"]
-[ext_resource type="PackedScene" path="res://robots/robot_alpha/robot_alpha.tscn" id="2_miw0g"]
+[ext_resource type="PackedScene" uid="uid://cmfpedy1r220d" path="res://robots/robot_alpha/robot_alpha_old.tscn" id="2_miw0g"]
 
 [node name="MakeScreenshot" type="Node3D"]
 script = ExtResource("1_spc3p")

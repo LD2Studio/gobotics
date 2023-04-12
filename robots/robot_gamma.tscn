@@ -1,0 +1,101 @@
+[gd_scene load_steps=7 format=3 uid="uid://bv2wje3qaie4j"]
+
+[ext_resource type="PackedScene" uid="uid://bvb8efso3olbd" path="res://robots/robot_gamma/robot_gamma.glb" id="1_k2p6g"]
+
+[sub_resource type="GDScript" id="GDScript_y3tfo"]
+resource_name = "RobotGamma"
+script/source = "@tool
+extends DifferentialRobot
+
+func _ready():
+	initialize()
+	right_wheel = $Frame/RightWheel
+	left_wheel = $Frame/LeftWheel
+	
+func _process(delta: float):
+	update_input()
+
+"
+
+[sub_resource type="GDScript" id="GDScript_kecaw"]
+resource_name = "Arm"
+script/source = "@tool
+extends RotationActuator3D
+
+"
+
+[sub_resource type="GDScript" id="GDScript_awjvr"]
+resource_name = "FrontWheel"
+script/source = "extends FreeWheel3D
+"
+
+[sub_resource type="GDScript" id="GDScript_0vkk6"]
+resource_name = "LeftWheel"
+script/source = "@tool
+extends RotationActuator3D
+"
+
+[sub_resource type="GDScript" id="GDScript_33nba"]
+resource_name = "RightWheel"
+script/source = "@tool
+extends RotationActuator3D
+
+"
+
+[node name="RobotGamma" instance=ExtResource("1_k2p6g")]
+script = SubResource("GDScript_y3tfo")
+speed = 5.0
+
+[node name="Frame" parent="." index="0"]
+mass = 5.0
+freeze = true
+
+[node name="Arm" parent="Frame" index="0"]
+process_mode = 4
+mass = 0.2
+can_sleep = false
+script = SubResource("GDScript_kecaw")
+actuator_type = "SERVO"
+angle = 0.0
+torque_constant = 200.0
+servo_damping = 10.0
+angle_profile = 1.0
+profile_duration = 1.0
+
+[node name="FrontWheel" parent="Frame" index="1"]
+process_mode = 4
+mass = 2.0
+script = SubResource("GDScript_awjvr")
+exclude_nodes_from_collision = true
+
+[node name="LeftWheel" parent="Frame" index="2"]
+process_mode = 4
+can_sleep = false
+script = SubResource("GDScript_0vkk6")
+exclude_nodes_from_collision = true
+rotation_axis = "X"
+helper_size = 0.6
+desired_velocity = 0.0
+torque_constant = 10.0
+servo_damping = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
+
+[node name="CollisionShape3D" parent="Frame/LeftWheel" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="RightWheel" parent="Frame" index="3"]
+process_mode = 4
+can_sleep = false
+script = SubResource("GDScript_33nba")
+exclude_nodes_from_collision = true
+rotation_axis = "X"
+helper_size = 0.6
+desired_velocity = 0.0
+torque_constant = 10.0
+servo_damping = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
+
+[node name="CollisionShape3D" parent="Frame/RightWheel" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)

@@ -264,7 +264,6 @@ text = "TopView"
 [connection signal="file_selected" from="SplitContainer/MarginContainer/Control/LoadSceneButton/LoadSceneDialog" to="." method="_on_load_scene_dialog_file_selected"]
 [connection signal="pressed" from="SplitContainer/MarginContainer/Control/SaveSceneButton" to="." method="_on_save_scene_button_pressed"]
 [connection signal="file_selected" from="SplitContainer/MarginContainer/Control/SaveSceneButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
-[connection signal="item_clicked" from="SplitContainer/MarginContainer/Control/BlocksList" to="." method="_on_blocks_list_item_clicked"]
 [connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/X Container/X_pos" to="." method="_on_x_pos_value_changed"]
 [connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Y Container/Y_pos" to="." method="_on_y_pos_value_changed"]
 [connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Z Container/Z_pos" to="." method="_on_z_pos_value_changed"]

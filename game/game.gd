@@ -14,6 +14,10 @@ var current_filename: String:
 		
 var connected_joystick: Array[int]
 
+func _enter_tree():
+	print_debug(name)
+	
+
 func _ready():
 	game_scene.focused_block.connect(_on_selected_block)
 	connected_joystick = Input.get_connected_joypads()
@@ -28,11 +32,6 @@ func _input(event: InputEvent) -> void:
 		if game_level:
 			game_level.remove_child(selected_block)
 			selected_block.queue_free()
-		
-
-func _on_blocks_list_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
-	pass
-#	print("Item clicked")
 
 # Call when a block is selected in the scene
 func _on_selected_block(block: Node):

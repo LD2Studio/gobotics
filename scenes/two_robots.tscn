@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3]
 
-[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_ei5l7"]
-[ext_resource type="PackedScene" path="res://robots/robot_alpha/robot_alpha.tscn" id="2_csgkj"]
-[ext_resource type="Script" path="res://robots/robot_alpha/robot_alpha.gd" id="3_mytqu"]
+[ext_resource type="PackedScene" uid="uid://swc1ljxo17p8" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_ei5l7"]
+[ext_resource type="PackedScene" uid="uid://cmfpedy1r220d" path="res://robots/robot_alpha/robot_alpha_old.tscn" id="2_csgkj"]
+[ext_resource type="Script" path="res://robots/robot_alpha/robot_alpha_old.gd" id="3_mytqu"]
 
 [node name="GameLevel" type="Node3D"]
 

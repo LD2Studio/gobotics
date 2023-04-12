@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://swc1ljxo17p8"]
+[gd_scene load_steps=11 format=3 uid="uid://swc1ljxo17p8"]
 
 [ext_resource type="Material" uid="uid://dqri6gijob750" path="res://assets/vinyles/vinyle_floor.tres" id="1_j03c5"]
+[ext_resource type="Script" path="res://game/blocks/robotics_cup/gaming_table.gd" id="1_ys10k"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ogakp"]
 size = Vector2(20, 30)
@@ -27,6 +28,9 @@ points = PackedVector3Array(-0.11, -0.35, -10.22, 0.11, -0.35, -10.22, -0.11, -0
 points = PackedVector3Array(-0.11, -0.35, -10.22, 0.11, -0.35, -10.22, -0.11, -0.35, 10.22, -0.11, 0.349932, -10.22, 0.11, 0.349932, -10.22, 0.11, -0.35, 10.22, -0.11, 0.349932, 10.22, 0.11, 0.349932, 10.22)
 
 [node name="GamingTable" type="StaticBody3D" groups=["TABLE"]]
+collision_layer = 3
+collision_mask = 0
+script = ExtResource("1_ys10k")
 
 [node name="Floor" type="MeshInstance3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
@@ -76,3 +80,7 @@ shape = SubResource("ConvexPolygonShape3D_wypmx")
 
 [node name="Coord3D" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -15, 0, 10)
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
