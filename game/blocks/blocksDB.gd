@@ -7,21 +7,21 @@ var list = [
 		path="res://Cup2023/sponge_cake_layer.tscn",
 		preview="res://Cup2023/SpongeCakeLayer.png"
 	},
-	{
-		name="Robot Alpha",
-		path="res://robots/robot_alpha/robot_alpha.tscn",
-		preview="res://robots/robot_alpha/RobotAlpha.png"
-	},
-	{
-		name="Robot Beta",
-		path="res://robots/robot_beta/robot_beta.tscn",
-		preview="res://robots/robot_beta/RobotBeta.png"
-	},
-	{
-		name="Robot Gamma",
-		path="res://robots/robot_gamma.tscn",
-		preview="res://robots/robot_beta/RobotBeta.png"
-	},
+#	{
+#		name="Robot Alpha",
+#		path="res://robots/robot_alpha.tscn",
+#		preview="res://robots/robot_alpha/RobotAlpha.png"
+#	},
+#	{
+#		name="Robot Beta",
+#		path="res://robots/robot_beta/robot_beta.tscn",
+#		preview="res://robots/robot_beta/RobotBeta.png"
+#	},
+#	{
+#		name="Robot Gamma",
+#		path="res://robots/robot_gamma.tscn",
+#		preview="res://robots/robot_beta/RobotBeta.png"
+#	},
 	{
 		name="Sphere",
 		path="res://Cup2023/ball.tscn",

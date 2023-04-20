@@ -53,12 +53,10 @@ func _enter_tree() -> void:
 	_joint.node_b = ^"../"
 	add_child(_joint)
 
-
 func _ready() -> void:
 	can_sleep = false
 	current_pos_x = (transform.inverse().basis * (position - _pose_position)).x
 
-	
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 #	print("linear velocity: ", transform.inverse().basis * linear_velocity)
 #	print("local pos x: ", (transform.inverse().basis * (position - _pose_position)).x)

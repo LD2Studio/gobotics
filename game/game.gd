@@ -13,17 +13,18 @@ var current_filename: String:
 		%FilenameLabel.text = current_filename.get_file().get_basename()
 		
 var connected_joystick: Array[int]
+#var robots_res: RobotsDB = RobotsDB.new()
+var database: GoboticsDB = GoboticsDB.new()
 
 func _enter_tree():
-	print_debug(name)
-	
+#	robots_res.create()
+	database.create()
 
 func _ready():
 	game_scene.focused_block.connect(_on_selected_block)
 	connected_joystick = Input.get_connected_joypads()
 #	print_debug(connected_joystick)
 	%ObjectInspector.visible = false
-	
 	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("DELETE"):

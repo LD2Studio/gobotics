@@ -35,9 +35,6 @@ var left_wheel: RotationActuator3D:
 
 @onready var frame:RigidBody3D
 
-func _init():
-	add_to_group("ROBOTS")
-
 func initialize():
 	frame = get_child(0)
 	frozen = true
@@ -51,17 +48,23 @@ func update_input():
 	assert(left_wheel is RigidBody3D, "Left Wheel must be referenced")
 	if true:
 		if Input.is_action_pressed("FORWARD"):
-			right_wheel.desired_velocity = speed if not Input.is_action_pressed("RIGHT") else 0
-			left_wheel.desired_velocity = speed if not Input.is_action_pressed("LEFT") else 0
+			if Input.is_action_pressed("RIGHT"):
+				right_wheel.rotation_speed = 0
+			else:
+				right_wheel.rotation_speed = speed
+			if Input.is_action_pressed("LEFT"):
+				left_wheel.rotation_speed = 0
+			else:
+				left_wheel.rotation_speed = speed
 		elif Input.is_action_pressed("BACKWARD"):
-			right_wheel.desired_velocity = -speed
-			left_wheel.desired_velocity = -speed
+			right_wheel.rotation_speed = -speed
+			left_wheel.rotation_speed = -speed
 		elif Input.is_action_pressed("RIGHT"):
-			right_wheel.desired_velocity = -speed
-			left_wheel.desired_velocity = speed
+			right_wheel.rotation_speed = -speed
+			left_wheel.rotation_speed = speed
 		elif Input.is_action_pressed("LEFT"):
-			right_wheel.desired_velocity = speed
-			left_wheel.desired_velocity = -speed
+			right_wheel.rotation_speed = speed
+			left_wheel.rotation_speed = -speed
 		else:
-			right_wheel.desired_velocity = 0
-			left_wheel.desired_velocity = 0
+			right_wheel.rotation_speed = 0
+			left_wheel.rotation_speed = 0

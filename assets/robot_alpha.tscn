@@ -1,0 +1,91 @@
+[gd_scene load_steps=7 format=3 uid="uid://buqf71gwo7c1v"]
+
+[ext_resource type="PackedScene" uid="uid://0uh5q4w4hstm" path="res://assets/robots/robot_alpha.blend" id="1_u8323"]
+[ext_resource type="Script" path="res://game/robots/preview.gd" id="2_31lpr"]
+
+[sub_resource type="GDScript" id="GDScript_h3gv0"]
+resource_name = "RobotAlpha"
+script/source = "extends DifferentialRobot
+
+func _ready():
+	initialize()
+	right_wheel = $Frame/RightWheel
+	left_wheel = $Frame/LeftWheel
+	right_wheel.torque_constant = 10
+	left_wheel.torque_constant = 10
+	
+func _process(delta):
+	update_input()
+
+"
+
+[sub_resource type="GDScript" id="GDScript_uupj6"]
+resource_name = "BackWheel"
+script/source = "extends FreeWheel3D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+"
+
+[sub_resource type="GDScript" id="GDScript_j08mp"]
+resource_name = "LeftWheel"
+script/source = "@tool
+extends RotationActuator3D
+
+"
+
+[sub_resource type="GDScript" id="GDScript_8a66v"]
+resource_name = "RightWheel"
+script/source = "@tool
+extends RotationActuator3D
+
+"
+
+[node name="Robot Alpha" groups=["ROBOTS"] instance=ExtResource("1_u8323")]
+script = SubResource("GDScript_h3gv0")
+speed = 6.0
+
+[node name="BackWheel" parent="Frame" index="0"]
+script = SubResource("GDScript_uupj6")
+exclude_nodes_from_collision = true
+
+[node name="LeftWheel" parent="Frame" index="2"]
+can_sleep = false
+script = SubResource("GDScript_j08mp")
+rotation_axis = "-X"
+helper_size = 0.6
+rotation_speed = 0.0
+torque_constant = 1.0
+angle_profile = 1.0
+profile_duration = 1.0
+
+[node name="CollisionShape3D" parent="Frame/LeftWheel" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="RightWheel" parent="Frame" index="3"]
+can_sleep = false
+script = SubResource("GDScript_8a66v")
+rotation_axis = "-X"
+helper_size = 0.6
+rotation_speed = 0.0
+torque_constant = 1.0
+angle_profile = 1.0
+profile_duration = 1.0
+
+[node name="CollisionShape3D" parent="Frame/RightWheel" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Frame" parent="Frame" index="4"]
+visible = false
+
+[node name="Preview" type="Camera3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.14588, 2.7401)
+script = ExtResource("2_31lpr")
+preview = true

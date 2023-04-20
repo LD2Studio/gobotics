@@ -7,6 +7,7 @@
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_5pxu3"]
 friction = 0.5
+bounce = 0.5
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_xuuwk"]
 _surfaces = [{
@@ -49,6 +50,7 @@ background_mode = 1
 
 [node name="SpongeCakeLayer" type="RigidBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.102531, 0)
+collision_priority = 2.0
 mass = 0.05
 physics_material_override = SubResource("PhysicsMaterial_5pxu3")
 script = ExtResource("1_ugj40")

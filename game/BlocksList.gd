@@ -1,26 +1,31 @@
 extends ItemList
 
+@onready var database: GoboticsDB = owner.database
+
 func _ready():
 	clear()
-	for block in BlocksDB.list:
-		add_item(block.name)
+	for asset in database.assets:
+		add_item(asset.name)
 
 func _get_drag_data(at_position: Vector2):
-	var item_idx = get_item_at_position(at_position, true)
-	if item_idx == -1 or %GameScene.running:
+	var idx = get_item_at_position(at_position, true)
+	if idx == -1 or %GameScene.running:
 		return null
-	var item_text = get_item_text(item_idx)
-#	print_debug("item text : %s" % [item_text])
-#	print("block path: %s" % BlocksDB.get_block_path(item_text))
-	var block_path = BlocksDB.get_block_path(item_text)
-	if block_path:
-		var node = load(block_path).instantiate()
-		node.add_to_group("BLOCKS")
-		var preview_path = BlocksDB.get_preview(item_text)
-		if preview_path:
-			var preview = TextureRect.new()
-			preview.texture = load(preview_path)
-			set_drag_preview(preview)
+
+	var asset_name = get_item_text(idx)
+	var asset = database.get_scene(asset_name)
+	
+	if asset:
+		var node = load(asset).instantiate()
+		if node.get_node_or_null("./Preview"):
+#			print("Preview exist")
+			node.get_node("./Preview").preview = false
+
+		var preview = database.get_preview(asset_name)
+		if preview:
+			var preview_control = TextureRect.new()
+			preview_control.texture = ImageTexture.create_from_image(Image.load_from_file(preview))
+			set_drag_preview(preview_control)
 		return node
 	else:
 		return null

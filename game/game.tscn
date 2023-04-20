@@ -64,7 +64,8 @@ unique_name_in_owner = true
 title = "Open a File"
 ok_button_text = "Open"
 file_mode = 0
-root_subfolder = "scenes"
+access = 2
+filters = PackedStringArray("*.tscn")
 
 [node name="SaveSceneButton" type="Button" parent="SplitContainer/MarginContainer/Control"]
 layout_mode = 2
@@ -72,7 +73,8 @@ text = "Save Scene"
 
 [node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/MarginContainer/Control/SaveSceneButton"]
 unique_name_in_owner = true
-root_subfolder = "scenes"
+access = 2
+filters = PackedStringArray("*.tscn")
 
 [node name="BlocksList" type="ItemList" parent="SplitContainer/MarginContainer/Control"]
 unique_name_in_owner = true

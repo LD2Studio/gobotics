@@ -1,12 +1,12 @@
-class_name CaptureCamera3D
+class_name Preview
 extends Camera3D
 
 @export var preview: bool = false
-@export_dir var img_path: String
 
 func _ready():
 	current = false
-	if preview: make_preview()
+	if owner.get_parent().name == "root" and preview:
+		make_preview()
 	
 func make_preview():
 	var light := DirectionalLight3D.new()
@@ -18,5 +18,6 @@ func make_preview():
 	await RenderingServer.frame_post_draw
 	var img = get_viewport().get_texture().get_image()
 	var object_name = owner.name
-	img.save_png(img_path.path_join(object_name+".png"))
+	var base_dir: String = owner.scene_file_path.get_base_dir()
+	img.save_png(base_dir.path_join(object_name+".png"))
 

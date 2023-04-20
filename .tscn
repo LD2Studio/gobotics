@@ -1,17 +1,67 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=8 format=3]
 
-[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_f478h"]
-[ext_resource type="PackedScene" path="res://robots/robot_alpha/robot_alpha.tscn" id="2_vluvi"]
-[ext_resource type="Script" path="res://robots/robot_alpha/robot_alpha.gd" id="3_hypk5"]
+[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_l3adt"]
+[ext_resource type="Script" path="res://game/blocks/robotics_cup/gaming_table.gd" id="2_h2ddj"]
+[ext_resource type="PackedScene" path="res://Cup2023/sponge_cake_layer.tscn" id="3_k86ec"]
+[ext_resource type="Script" path="res://Cup2023/cup_item.gd" id="4_tvoxl"]
+[ext_resource type="PackedScene" path="res://robots/robot_gamma.tscn" id="5_1ak1w"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_5pxu3"]
+friction = 0.5
+bounce = 0.5
+
+[sub_resource type="GDScript" id="GDScript_y3tfo"]
+resource_name = "RobotGamma"
+script/source = "extends DifferentialRobot
+
+@onready var arm = $Frame/Arm
+
+func _ready():
+	initialize()
+	right_wheel = $Frame/RightWheel
+	left_wheel = $Frame/LeftWheel
+	
+func _process(delta: float):
+	update_input()
+	if Input.is_action_just_pressed(\"ARM\"):
+		arm.opened = not arm.opened
+"
 
 [node name="GameLevel" type="Node3D"]
 
-[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_f478h")]
-process_mode = 4
+[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_l3adt")]
+collision_layer = 3
+collision_mask = 0
+script = ExtResource("2_h2ddj")
 
-[node name="Block0" type="RigidBody3D" parent="." instance=ExtResource("2_vluvi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, -8.30516e-08)
-disable_mode = 2
-mass = 50.0
+[node name="Block0" type="RigidBody3D" parent="." instance=ExtResource("3_k86ec")]
+transform = Transform3D(0.559182, -0.00455744, 0.829032, 0.00286807, 0.99999, 0.00356273, -0.82904, 0.000385504, 0.559189, -4.4, -0.00322379, 3.3)
+collision_priority = 2.0
+mass = 0.05
+physics_material_override = SubResource("PhysicsMaterial_5pxu3")
+sleeping = true
 freeze = true
-script = ExtResource("3_hypk5")
+linear_velocity = Vector3(-2.09576e-05, -6.01113e-05, 5.103e-05)
+angular_velocity = Vector3(3.85178e-05, 9.11961e-05, -6.68901e-05)
+script = ExtResource("4_tvoxl")
+metadata/_edit_group_ = true
+
+[node name="Block1" type="Node3D" parent="." instance=ExtResource("5_1ak1w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.86505, -9.68575e-08, -0.85928)
+script = SubResource("GDScript_y3tfo")
+speed = 5.0
+collision_groups = 1
+
+[node name="Block2" type="RigidBody3D" parent="." instance=ExtResource("3_k86ec")]
+transform = Transform3D(0.89826, 6.1835e-05, -0.439464, 0.000376932, 1, 0.00091115, 0.439464, -0.000984097, 0.89826, -14.4, 0.0900554, 0.0542463)
+collision_priority = 2.0
+mass = 0.05
+physics_material_override = SubResource("PhysicsMaterial_5pxu3")
+sleeping = true
+freeze = true
+script = ExtResource("4_tvoxl")
+metadata/_edit_group_ = true
+
+[connection signal="input_event" from="GamingTable" to="GamingTable" method="_on_input_event" flags=18]
+[connection signal="mouse_entered" from="GamingTable" to="GamingTable" method="_on_mouse_entered" flags=18]
+[connection signal="mouse_exited" from="GamingTable" to="GamingTable" method="_on_mouse_exited" flags=18]

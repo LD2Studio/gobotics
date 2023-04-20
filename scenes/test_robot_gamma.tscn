@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_02mye"]
+[ext_resource type="Script" path="res://game/blocks/robotics_cup/gaming_table.gd" id="2_cj7eb"]
+[ext_resource type="PackedScene" path="res://robots/robot_gamma.tscn" id="3_l11po"]
+
+[sub_resource type="GDScript" id="GDScript_fenbm"]
+resource_name = "RobotGamma"
+script/source = "extends DifferentialRobot
+@onready var arm = $Frame/Arm
+
+func _ready():
+	initialize()
+	right_wheel = $Frame/RightWheel
+	left_wheel = $Frame/LeftWheel
+	
+func _process(delta):
+	update_input()
+	if Input.is_action_just_pressed(\"ARM\"):
+		arm.is_up = not arm.is_up
+"
+
+[node name="GameLevel" type="Node3D"]
+
+[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_02mye")]
+collision_layer = 3
+collision_mask = 0
+script = ExtResource("2_cj7eb")
+
+[node name="Block0" type="Node3D" parent="." instance=ExtResource("3_l11po")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.22269, -9.68575e-08, -4.45209)
+script = SubResource("GDScript_fenbm")
+speed = 5.0
+collision_groups = 1
+
+[connection signal="input_event" from="GamingTable" to="GamingTable" method="_on_input_event" flags=18]
+[connection signal="mouse_entered" from="GamingTable" to="GamingTable" method="_on_mouse_entered" flags=18]
+[connection signal="mouse_exited" from="GamingTable" to="GamingTable" method="_on_mouse_exited" flags=18]

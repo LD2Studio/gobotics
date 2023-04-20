@@ -1,83 +1,105 @@
-[gd_scene load_steps=7 format=3 uid="uid://bv2wje3qaie4j"]
+[gd_scene load_steps=10 format=3 uid="uid://bv2wje3qaie4j"]
 
-[ext_resource type="PackedScene" uid="uid://bvb8efso3olbd" path="res://robots/robot_gamma/robot_gamma.glb" id="1_k2p6g"]
+[ext_resource type="PackedScene" uid="uid://d1h186k8efec" path="res://assets/robots/robot_gamma.blend" id="1_q70j5"]
+[ext_resource type="Script" path="res://game/robots/preview.gd" id="2_dyqgr"]
 
-[sub_resource type="GDScript" id="GDScript_y3tfo"]
+[sub_resource type="GDScript" id="GDScript_fenbm"]
 resource_name = "RobotGamma"
-script/source = "@tool
-extends DifferentialRobot
+script/source = "extends DifferentialRobot
+@onready var arm = $Frame/Arm
 
 func _ready():
 	initialize()
 	right_wheel = $Frame/RightWheel
 	left_wheel = $Frame/LeftWheel
+	right_wheel.torque_constant = 10
+	left_wheel.torque_constant = 10
+	arm.torque_constant = 20
 	
-func _process(delta: float):
+func _process(delta):
 	update_input()
-
+	if Input.is_action_just_pressed(\"ARM\"):
+		arm.is_up = not arm.is_up
 "
 
-[sub_resource type="GDScript" id="GDScript_kecaw"]
+[sub_resource type="GDScript" id="GDScript_c5e1w"]
 resource_name = "Arm"
 script/source = "@tool
 extends RotationActuator3D
 
+var is_up: bool = false:
+	set(value):
+		is_up = value
+		if is_up:
+			desired_angle = -30
+		else:
+			desired_angle = 0
 "
 
-[sub_resource type="GDScript" id="GDScript_awjvr"]
-resource_name = "FrontWheel"
+[sub_resource type="BoxShape3D" id="BoxShape3D_dfh64"]
+size = Vector3(0.172013, 1.73844, 0.20803)
+
+[sub_resource type="GDScript" id="GDScript_j4g2q"]
+resource_name = "FreeWheel"
 script/source = "extends FreeWheel3D
+
 "
 
-[sub_resource type="GDScript" id="GDScript_0vkk6"]
+[sub_resource type="GDScript" id="GDScript_l38n2"]
 resource_name = "LeftWheel"
 script/source = "@tool
 extends RotationActuator3D
+
 "
 
-[sub_resource type="GDScript" id="GDScript_33nba"]
+[sub_resource type="GDScript" id="GDScript_41qoi"]
 resource_name = "RightWheel"
 script/source = "@tool
 extends RotationActuator3D
 
 "
 
-[node name="RobotGamma" instance=ExtResource("1_k2p6g")]
-script = SubResource("GDScript_y3tfo")
+[sub_resource type="BoxShape3D" id="BoxShape3D_g38j3"]
+size = Vector3(3.00866, 0.263385, 2.97139)
+
+[node name="Robot Gamma" groups=["ROBOTS"] instance=ExtResource("1_q70j5")]
+script = SubResource("GDScript_fenbm")
 speed = 5.0
 
 [node name="Frame" parent="." index="0"]
 mass = 5.0
-freeze = true
 
 [node name="Arm" parent="Frame" index="0"]
-process_mode = 4
-mass = 0.2
+mass = 0.1
 can_sleep = false
-script = SubResource("GDScript_kecaw")
+script = SubResource("GDScript_c5e1w")
 actuator_type = "SERVO"
-angle = 0.0
-torque_constant = 200.0
-servo_damping = 10.0
+helper_size = 0.5
+only_debug = false
+desired_angle = 0.0
+max_angle = 90.0
+min_angle = -90.0
+torque_constant = 1.0
+servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
 
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Frame/Arm" index="16"]
+transform = Transform3D(1, 1.11759e-08, 0, 5.58794e-09, 1, 0, 3.05533e-13, 1.33227e-15, 1, -1.54083, -0.82038, -0.00160365)
+shape = SubResource("BoxShape3D_dfh64")
+
 [node name="FrontWheel" parent="Frame" index="1"]
-process_mode = 4
 mass = 2.0
-script = SubResource("GDScript_awjvr")
+script = SubResource("GDScript_j4g2q")
 exclude_nodes_from_collision = true
 
 [node name="LeftWheel" parent="Frame" index="2"]
-process_mode = 4
 can_sleep = false
-script = SubResource("GDScript_0vkk6")
-exclude_nodes_from_collision = true
-rotation_axis = "X"
+script = SubResource("GDScript_l38n2")
+rotation_axis = "-X"
 helper_size = 0.6
-desired_velocity = 0.0
-torque_constant = 10.0
-servo_damping = 5.0
+rotation_speed = 0.0
+torque_constant = 1.0
 angle_profile = 1.0
 profile_duration = 1.0
 
@@ -85,17 +107,22 @@ profile_duration = 1.0
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="RightWheel" parent="Frame" index="3"]
-process_mode = 4
 can_sleep = false
-script = SubResource("GDScript_33nba")
-exclude_nodes_from_collision = true
-rotation_axis = "X"
+script = SubResource("GDScript_41qoi")
+rotation_axis = "-X"
 helper_size = 0.6
-desired_velocity = 0.0
-torque_constant = 10.0
-servo_damping = 5.0
+rotation_speed = 0.0
+torque_constant = 1.0
 angle_profile = 1.0
 profile_duration = 1.0
 
 [node name="CollisionShape3D" parent="Frame/RightWheel" index="1"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Frame" index="6"]
+shape = SubResource("BoxShape3D_g38j3")
+
+[node name="Preview" type="Camera3D" parent="." index="1"]
+transform = Transform3D(0.759294, -0.183929, 0.624214, 0, 0.959225, 0.282643, -0.650748, -0.214609, 0.728334, 2.06684, 1.91485, 3.80655)
+script = ExtResource("2_dyqgr")
+preview = true
