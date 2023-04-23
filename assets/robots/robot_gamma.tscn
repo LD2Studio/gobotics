@@ -77,14 +77,14 @@ actuator_type = "SERVO"
 helper_size = 0.5
 only_debug = false
 desired_angle = 0.0
-max_angle = 90.0
-min_angle = -90.0
-torque_constant = 1.0
+max_angle = 1.0
+min_angle = -30.0
+torque_constant = 30.0
 servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="Frame/Arm" index="16"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Frame/Arm" index="2"]
 transform = Transform3D(1, 1.11759e-08, 0, 5.58794e-09, 1, 0, 3.05533e-13, 1.33227e-15, 1, -1.54083, -0.82038, -0.00160365)
 shape = SubResource("BoxShape3D_dfh64")
 

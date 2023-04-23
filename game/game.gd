@@ -1,5 +1,7 @@
 extends Control
 
+var res_pack_path: String = "robots.pck"
+
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
 @onready var control_camera_3d: Camera3D = %ControlCamera3D
@@ -13,14 +15,19 @@ var current_filename: String:
 		%FilenameLabel.text = current_filename.get_file().get_basename()
 		
 var connected_joystick: Array[int]
-#var robots_res: RobotsDB = RobotsDB.new()
 var database: GoboticsDB = GoboticsDB.new()
 
 func _enter_tree():
-#	robots_res.create()
+	if not OS.has_feature("editor"):
+		var executable_path: String = OS.get_executable_path().get_base_dir()
+		var res_pack = executable_path.path_join(res_pack_path)
+		if not ProjectSettings.load_resource_pack(res_pack):
+			print("Packed resource not loading")
+	
 	database.create()
 
 func _ready():
+	
 	game_scene.focused_block.connect(_on_selected_block)
 	connected_joystick = Input.get_connected_joypads()
 #	print_debug(connected_joystick)

@@ -1,15 +1,9 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=7 format=3]
 
-[ext_resource type="PackedScene" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_o612s"]
-[ext_resource type="Script" path="res://game/blocks/robotics_cup/gaming_table.gd" id="2_jvuym"]
-[ext_resource type="PackedScene" path="res://Cup2023/sponge_cake_layer.tscn" id="3_pdnjq"]
-[ext_resource type="Script" path="res://Cup2023/cup_item.gd" id="4_f2rtp"]
-[ext_resource type="PackedScene" path="res://robots/robot_alpha.tscn" id="5_dhqxv"]
-[ext_resource type="PackedScene" path="res://robots/robot_gamma.tscn" id="6_4ehlr"]
-
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_5pxu3"]
-friction = 0.5
-bounce = 0.5
+[ext_resource type="PackedScene" uid="uid://swc1ljxo17p8" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_nx7q1"]
+[ext_resource type="Script" path="res://game/blocks/robotics_cup/gaming_table.gd" id="2_po1bw"]
+[ext_resource type="PackedScene" uid="uid://buqf71gwo7c1v" path="res://assets/robots/robot_alpha.tscn" id="3_0ncy5"]
+[ext_resource type="PackedScene" uid="uid://bv2wje3qaie4j" path="res://assets/robots/robot_gamma.tscn" id="4_qj0ee"]
 
 [sub_resource type="GDScript" id="GDScript_h3gv0"]
 resource_name = "RobotAlpha"
@@ -36,6 +30,9 @@ func _ready():
 	initialize()
 	right_wheel = $Frame/RightWheel
 	left_wheel = $Frame/LeftWheel
+	right_wheel.torque_constant = 10
+	left_wheel.torque_constant = 10
+	arm.torque_constant = 20
 	
 func _process(delta):
 	update_input()
@@ -43,55 +40,21 @@ func _process(delta):
 		arm.is_up = not arm.is_up
 "
 
-[node name="GameLevel" type="Node3D"]
+[node name="Scene" type="Node3D"]
 
-[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_o612s")]
+[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_nx7q1")]
 collision_layer = 3
 collision_mask = 0
-script = ExtResource("2_jvuym")
+script = ExtResource("2_po1bw")
 
-[node name="Block0" type="RigidBody3D" parent="." instance=ExtResource("3_pdnjq")]
-transform = Transform3D(-0.445346, 0.000846105, -0.895358, 0.000314356, 1, 0.000788632, 0.895358, 6.97533e-05, -0.445346, -3.20931, 0.0900557, 2.17116)
-collision_priority = 2.0
-mass = 0.05
-physics_material_override = SubResource("PhysicsMaterial_5pxu3")
-linear_velocity = Vector3(0.0295424, -0.0170461, 0.00346946)
-angular_velocity = Vector3(0.0242106, -0.00285581, -0.308411)
-script = ExtResource("4_f2rtp")
-metadata/_edit_group_ = true
-
-[node name="Block1" type="Node3D" parent="." instance=ExtResource("5_dhqxv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.94927, -9.68575e-08, -3.54689)
+[node name="Block0" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("3_0ncy5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.39739, -9.68575e-08, 0.347837)
 script = SubResource("GDScript_h3gv0")
 speed = 6.0
 collision_groups = 1
 
-[node name="Block2" type="Node3D" parent="." instance=ExtResource("6_4ehlr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.960186, -9.68575e-08, -4.30986)
+[node name="Block1" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("4_qj0ee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.73997, -9.68575e-08, -2.06876)
 script = SubResource("GDScript_fenbm")
 speed = 5.0
 collision_groups = 1
-
-[node name="Block3" type="RigidBody3D" parent="." instance=ExtResource("3_pdnjq")]
-transform = Transform3D(0.77626, -0.000469064, -0.630413, 0.000909374, 1, 0.0003757, 0.630413, -0.000864921, 0.77626, -1.90748, 0.0900566, 3.19957)
-collision_priority = 2.0
-mass = 0.05
-physics_material_override = SubResource("PhysicsMaterial_5pxu3")
-linear_velocity = Vector3(-0.0167154, -0.0268798, -0.0309373)
-angular_velocity = Vector3(-0.309071, -3.56408e-05, 0.167249)
-script = ExtResource("4_f2rtp")
-metadata/_edit_group_ = true
-
-[node name="Block4" type="RigidBody3D" parent="." instance=ExtResource("3_pdnjq")]
-transform = Transform3D(-0.162785, 0.000958753, 0.986661, 0.000376139, 1, -0.000909657, -0.986662, 0.000223044, -0.162785, 0.201763, 0.0900564, 5.38017)
-collision_priority = 2.0
-mass = 0.05
-physics_material_override = SubResource("PhysicsMaterial_5pxu3")
-linear_velocity = Vector3(0.0342079, -0.0268903, 0.00799223)
-angular_velocity = Vector3(0.0798412, 1.22589e-05, -0.342247)
-script = ExtResource("4_f2rtp")
-metadata/_edit_group_ = true
-
-[connection signal="input_event" from="GamingTable" to="GamingTable" method="_on_input_event" flags=18]
-[connection signal="mouse_entered" from="GamingTable" to="GamingTable" method="_on_mouse_entered" flags=18]
-[connection signal="mouse_exited" from="GamingTable" to="GamingTable" method="_on_mouse_exited" flags=18]

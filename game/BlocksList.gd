@@ -21,10 +21,11 @@ func _get_drag_data(at_position: Vector2):
 #			print("Preview exist")
 			node.get_node("./Preview").preview = false
 
-		var preview = database.get_preview(asset_name)
-		if preview:
+		var preview_path = database.get_preview(asset_name)
+#		print("preview: ", preview_path)
+		if ResourceLoader.exists(preview_path):
 			var preview_control = TextureRect.new()
-			preview_control.texture = ImageTexture.create_from_image(Image.load_from_file(preview))
+			preview_control.texture = load(preview_path)
 			set_drag_preview(preview_control)
 		return node
 	else:

@@ -2,6 +2,7 @@ class_name Preview
 extends Camera3D
 
 @export var preview: bool = false
+@export var texture: Texture2D
 
 func _ready():
 	current = false
@@ -16,8 +17,10 @@ func make_preview():
 	get_viewport().size = Vector2(128, 128)
 	get_viewport().transparent_bg = true
 	await RenderingServer.frame_post_draw
-	var img = get_viewport().get_texture().get_image()
-	var object_name = owner.name
+	texture = get_viewport().get_texture()
 	var base_dir: String = owner.scene_file_path.get_base_dir()
+	var object_name = owner.name
+	
+	var img = texture.get_image()
 	img.save_png(base_dir.path_join(object_name+".png"))
 

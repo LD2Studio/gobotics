@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="GoboticsDB" load_steps=2 format=3 uid="uid://6jhp7qoolt77"]
+
+[ext_resource type="Script" path="res://game/database/database.gd" id="1_o3a5j"]
+
+[resource]
+script = ExtResource("1_o3a5j")
+assets_base_path = "res://assets"
+assets = [{
+"base_dir": "res://assets/cakes",
+"group": "NOGROUP",
+"name": "SpongeCake",
+"scene": "sponge_cake.tscn"
+}, {
+"base_dir": "res://assets/robots",
+"group": "ROBOTS",
+"name": "Robot Alpha",
+"scene": "robot_alpha.tscn"
+}, {
+"base_dir": "res://assets/robots",
+"group": "ROBOTS",
+"name": "Robot Gamma",
+"scene": "robot_gamma.tscn"
+}]
