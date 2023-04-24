@@ -2,12 +2,12 @@ extends Node3D
 
 signal focused_block(block: Node)
 
-var gaming_table : Node3D
 var scene : Node3D
 var running: bool = false
+var mouse_pos_on_area: Vector3
+var game_area_pointed: bool = false
 
 func _ready() -> void:
-	%FloorCollision.disabled = true
 	%RunStopButton.modulate = Color.GREEN
 	init_scene()
 	
@@ -15,9 +15,6 @@ func init_scene():
 	scene = Node3D.new()
 	scene.name = &"Scene"
 	add_child(scene)
-	
-	gaming_table = load("res://game/blocks/robotics_cup/gaming_table.tscn").instantiate()
-	scene.add_child(gaming_table)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -34,6 +31,9 @@ func save_scene(path: String):
 	var items = scene.get_children()
 	for item in items:
 		item.owner = scene
+		if %PositionSavedCheck.button_pressed:
+			item.set_meta("transform", item.get_child(0).transform)
+			
 	if not path.ends_with(".tscn"):
 		path = path + ".tscn"
 	var scene_packed := PackedScene.new()
@@ -53,32 +53,51 @@ func load_scene(path):
 		node.queue_free()
 	remove_child(scene_node)
 	scene_node.queue_free()
-		
+	
 	scene = ResourceLoader.load(path).instantiate()
 	add_child(scene)
+	for node in scene.get_children():
+		var transform_saved = node.get_meta("transform", Transform3D())
+		if  transform_saved != Transform3D():
+			node.get_child(0).transform = transform_saved
+#		freeze_item(node, true)
+		
+	%RunStopButton.button_pressed = false
+	
+func freeze_item(node, frozen):
+	freeze_children(node, frozen)
+
+func freeze_children(node, frozen):
+	if node is RigidBody3D:
+		node.freeze = frozen
+	for child in node.get_children():
+		freeze_children(child, frozen)
 	
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	if button_pressed:
 		running = true
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
-		%FloorCollision.disabled = false
-
-		var robots = get_tree().get_nodes_in_group("ROBOTS")
-		for robot in robots:
-			robot.frozen = false
+		for node in scene.get_children():
+			freeze_item(node, false)
 	else:
 		running = false
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
-		%FloorCollision.disabled = true
-#		gaming_table.process_mode = Node.PROCESS_MODE_DISABLED
-		var robots = get_tree().get_nodes_in_group("ROBOTS")
-		for robot in robots:
-			robot.frozen = true
+		for node in scene.get_children():
+			freeze_item(node, true)
 
 func _on_reset_button_pressed():
 	load_scene(owner.current_filename)
 
+func _on_ground_input_event(_camera, _event, mouse_position, _normal, _shape_idx):
+#	print(mouse_position)
+	mouse_pos_on_area = mouse_position
 
+func _on_ground_mouse_entered():
+#	print("mouse_entered")
+	game_area_pointed = true
+
+func _on_ground_mouse_exited():
+	game_area_pointed = false
 

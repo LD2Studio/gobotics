@@ -217,6 +217,7 @@ func _exit_tree() -> void:
 	remove_child(_joint)
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
+#	print("actuator...")
 	_inertia_shaft = PhysicsServer3D.body_get_direct_state(get_node(".").get_rid()).inverse_inertia.inverse().z
 	match actuator_type:
 		"MOTOR":

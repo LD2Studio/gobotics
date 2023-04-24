@@ -1,12 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://ermkokdo1q4k"]
-
-[ext_resource type="Script" path="res://robots/robot_alpha/RightWheel.gd" id="1_b0i2j"]
+[gd_scene load_steps=5 format=3 uid="uid://cqq7yiaeq56lt"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_u0cnl"]
 size = Vector3(3, 0.2, 3)
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_36bre"]
 points = PackedVector3Array(-1.5, -0.1, -1.5, -1.5, 0.1, -1.5, 1.5, -0.1, -1.5, -1.5, -0.1, 1.5, -1.5, 0.1, 1.5, 1.5, 0.1, -1.5, 1.5, -0.1, 1.5, 1.5, 0.1, 1.5)
+
+[sub_resource type="GDScript" id="GDScript_akeh2"]
+script/source = "@tool
+extends RotationActuator3D
+"
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_skind"]
 height = 0.500081
@@ -25,12 +28,11 @@ shape = SubResource("ConvexPolygonShape3D_36bre")
 [node name="RightWheel" type="RigidBody3D" parent="Frame"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 1.2, 0, 0)
 can_sleep = false
-script = ExtResource("1_b0i2j")
+script = SubResource("GDScript_akeh2")
 rotation_axis = "Y"
 helper_size = 0.5
-desired_velocity = 0.0
+rotation_speed = 0.0
 torque_constant = 1.0
-servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
 
@@ -40,12 +42,11 @@ shape = SubResource("CylinderShape3D_skind")
 [node name="LeftWheel" type="RigidBody3D" parent="Frame"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -1.2, 0, 0)
 can_sleep = false
-script = ExtResource("1_b0i2j")
+script = SubResource("GDScript_akeh2")
 rotation_axis = "Y"
 helper_size = 0.5
-desired_velocity = 0.0
+rotation_speed = 0.0
 torque_constant = 1.0
-servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
 

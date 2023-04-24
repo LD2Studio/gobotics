@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=3]
 
-[ext_resource type="PackedScene" uid="uid://swc1ljxo17p8" path="res://game/blocks/robotics_cup/gaming_table.tscn" id="1_nx7q1"]
-[ext_resource type="Script" path="res://game/blocks/robotics_cup/gaming_table.gd" id="2_po1bw"]
-[ext_resource type="PackedScene" uid="uid://buqf71gwo7c1v" path="res://assets/robots/robot_alpha.tscn" id="3_0ncy5"]
-[ext_resource type="PackedScene" uid="uid://bv2wje3qaie4j" path="res://assets/robots/robot_gamma.tscn" id="4_qj0ee"]
+[ext_resource type="PackedScene" path="res://assets/demo/sphere_rigid.tscn" id="1_wpfmk"]
+[ext_resource type="PackedScene" path="res://assets/demo/sphere_blender.tscn" id="2_nkhil"]
+[ext_resource type="PackedScene" path="res://assets/robots/robot_alpha.tscn" id="3_xcbdd"]
+[ext_resource type="PackedScene" path="res://assets/robots/robot_gamma.tscn" id="4_ccoyl"]
 
 [sub_resource type="GDScript" id="GDScript_h3gv0"]
 resource_name = "RobotAlpha"
@@ -13,10 +13,10 @@ func _ready():
 	initialize()
 	right_wheel = $Frame/RightWheel
 	left_wheel = $Frame/LeftWheel
-	right_wheel.torque_constant = 10
-	left_wheel.torque_constant = 10
+	right_wheel.torque_constant = 30
+	left_wheel.torque_constant = 30
 	
-func _process(delta):
+func _process(_delta):
 	update_input()
 
 "
@@ -34,7 +34,7 @@ func _ready():
 	left_wheel.torque_constant = 10
 	arm.torque_constant = 20
 	
-func _process(delta):
+func _process(_delta):
 	update_input()
 	if Input.is_action_just_pressed(\"ARM\"):
 		arm.is_up = not arm.is_up
@@ -42,19 +42,24 @@ func _process(delta):
 
 [node name="Scene" type="Node3D"]
 
-[node name="GamingTable" type="StaticBody3D" parent="." groups=["TABLE"] instance=ExtResource("1_nx7q1")]
-collision_layer = 3
-collision_mask = 0
-script = ExtResource("2_po1bw")
+[node name="Block0" type="Node3D" parent="." instance=ExtResource("1_wpfmk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.44894, 0.490012, 0.120263)
+metadata/transform = Transform3D(-0.490126, -0.364473, 0.791793, -0.302804, 0.923004, 0.237433, -0.817365, -0.123386, -0.562752, -22.4635, 0.00704888, 22.0989)
 
-[node name="Block0" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("3_0ncy5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.39739, -9.68575e-08, 0.347837)
+[node name="Block1" type="Node3D" parent="." instance=ExtResource("2_nkhil")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.76643, 0.490012, 27.8764)
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.68221e-07, 0)
+
+[node name="Block2" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("3_xcbdd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.11737, 0.49188, 0.798357)
 script = SubResource("GDScript_h3gv0")
 speed = 6.0
 collision_groups = 1
+metadata/transform = Transform3D(0.823067, -4.11879e-05, -0.567944, 0.000423215, 1, 0.000540804, 0.567944, -0.00068548, 0.823067, -10.5254, 0.0075537, 6.74688)
 
-[node name="Block1" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("4_qj0ee")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.73997, -9.68575e-08, -2.06876)
+[node name="Block3" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("4_ccoyl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.30779, 0.49238, 7.34691)
 script = SubResource("GDScript_fenbm")
 speed = 5.0
 collision_groups = 1
+metadata/transform = Transform3D(0.698132, 0.00583858, 0.715945, -0.0018772, 0.999978, -0.00632439, -0.715967, 0.00307128, 0.698128, -6.2169, 0.000568897, 3.33551)

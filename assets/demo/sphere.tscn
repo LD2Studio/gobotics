@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgv8vhjsm63op"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_qljgo"]
+
+[node name="Sphere" type="Node3D"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("SphereMesh_qljgo")

@@ -1,6 +1,6 @@
 extends Control
 
-var res_pack_path: String = "robots.pck"
+@export var pck_dir: String = "assets"
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
@@ -19,15 +19,22 @@ var database: GoboticsDB = GoboticsDB.new()
 
 func _enter_tree():
 	if not OS.has_feature("editor"):
-		var executable_path: String = OS.get_executable_path().get_base_dir()
-		var res_pack = executable_path.path_join(res_pack_path)
-		if not ProjectSettings.load_resource_pack(res_pack):
-			print("Packed resource not loading")
-	
+		load_pck()
 	database.create()
+	
+func load_pck():
+	var executable_path: String = OS.get_executable_path().get_base_dir()
+	var assets_dir: String = executable_path.path_join(pck_dir)
+	var files = Array(DirAccess.get_files_at(assets_dir))
+	var pck_files = files.filter(func(file): return file.get_extension() == "pck")
+#	print(pck_files)
+	
+	for pck_file in pck_files:
+		var pck_path: String = assets_dir.path_join(pck_file)
+		if not ProjectSettings.load_resource_pack(pck_path, false):
+			print("Packed resource not loading")
 
 func _ready():
-	
 	game_scene.focused_block.connect(_on_selected_block)
 	connected_joystick = Input.get_connected_joypads()
 #	print_debug(connected_joystick)
@@ -141,3 +148,4 @@ func _on_save_scene_dialog_file_selected(path):
 
 func _on_view_button_toggled(button_pressed: bool) -> void:
 	top_camera_2d.current = true if button_pressed else false
+

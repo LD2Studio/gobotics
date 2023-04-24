@@ -15,10 +15,6 @@ run/main_scene="res://game/game.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.png"
 
-[autoload]
-
-BlocksDB="*res://game/blocks/blocksDB.gd"
-
 [display]
 
 window/size/viewport_width=1600
@@ -126,6 +122,7 @@ cam_barrel_roll={
 
 3d_physics/layer_1="Robots"
 3d_physics/layer_2="Table"
+3d_physics/layer_3="GameArea"
 
 [physics]
 

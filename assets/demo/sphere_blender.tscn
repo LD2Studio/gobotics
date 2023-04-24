@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://n13eyvcgqyfa"]
+
+[ext_resource type="PackedScene" uid="uid://co1xtfjb4supv" path="res://assets/demo/sphere.blend" id="1_jkkw8"]
+
+[node name="SphereBlender" instance=ExtResource("1_jkkw8")]

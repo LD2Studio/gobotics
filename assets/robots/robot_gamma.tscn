@@ -16,7 +16,7 @@ func _ready():
 	left_wheel.torque_constant = 10
 	arm.torque_constant = 20
 	
-func _process(delta):
+func _process(_delta):
 	update_input()
 	if Input.is_action_just_pressed(\"ARM\"):
 		arm.is_up = not arm.is_up

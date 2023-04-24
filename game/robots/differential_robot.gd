@@ -6,23 +6,6 @@ extends Node3D
 
 var focused: bool = false
 
-var frozen: bool:
-	set(value):
-		assert(frame != null, "Frame is not defined! Call initialize() function")
-		frozen = value
-		if frozen:
-			frame.freeze = true
-			set_physics_process(false)
-			for child in frame.get_children():
-				if child is RigidBody3D:
-					child.process_mode = Node.PROCESS_MODE_DISABLED
-		else:
-			frame.freeze = false
-			set_physics_process(true)
-			for child in frame.get_children():
-				if child is RigidBody3D:
-					child.process_mode = Node.PROCESS_MODE_INHERIT
-					
 var right_wheel: RotationActuator3D:
 	set(object):
 		right_wheel = object
@@ -37,13 +20,13 @@ var left_wheel: RotationActuator3D:
 
 func initialize():
 	frame = get_child(0)
-	frozen = true
 	frame.collision_mask = collision_groups
 	for child in frame.get_children():
 		if child is RigidBody3D:
 			child.collision_mask = collision_groups
 
 func update_input():
+#	print("update_input")
 	assert(right_wheel is RigidBody3D, "Right Wheel must be referenced")
 	assert(left_wheel is RigidBody3D, "Left Wheel must be referenced")
 	if true:

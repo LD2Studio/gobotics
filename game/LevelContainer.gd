@@ -1,16 +1,17 @@
 extends SubViewportContainer
+@onready var game_scene = %GameScene as Node3D
 
 func _can_drop_data(_at_position: Vector2, _data) -> bool:
-	var table = get_tree().get_nodes_in_group("TABLE").front()
-	if table and table.mouse_on_area:
+	if game_scene.game_area_pointed:
 		return true
-	return false
+	else:
+		return false
 
 func _drop_data(_at_position: Vector2, data) -> void:
-	var table = get_tree().get_nodes_in_group("TABLE").front()
 	data.name = get_new_name()
-	data.position = table.mouse_pos_on_area
-	%GameScene.get_node("Scene").add_child(data)
+	data.position = game_scene.mouse_pos_on_area
+	game_scene.freeze_item(data, true)
+	game_scene.get_node("Scene").add_child(data)
 
 func get_new_name() -> StringName:
 	## Get used block name

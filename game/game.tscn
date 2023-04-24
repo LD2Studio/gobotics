@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dmjlbnbyp7ula"]
+[gd_scene load_steps=12 format=3 uid="uid://dmjlbnbyp7ula"]
 
 [ext_resource type="Script" path="res://game/game.gd" id="1_85jys"]
 [ext_resource type="Script" path="res://game/BlocksList.gd" id="2_alxfa"]
@@ -22,7 +22,10 @@ sky = SubResource("Sky_87cqo")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_3g53y"]
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_5e4tg"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_w77q5"]
+size = Vector2(50, 50)
 
 [node name="Game" type="Control"]
 layout_mode = 3
@@ -62,7 +65,7 @@ text = "Load Scene"
 [node name="LoadSceneDialog" type="FileDialog" parent="SplitContainer/MarginContainer/Control/LoadSceneButton"]
 unique_name_in_owner = true
 title = "Open a File"
-ok_button_text = "Open"
+ok_button_text = "Ouvrir"
 file_mode = 0
 access = 2
 filters = PackedStringArray("*.tscn")
@@ -75,6 +78,18 @@ text = "Save Scene"
 unique_name_in_owner = true
 access = 2
 filters = PackedStringArray("*.tscn")
+
+[node name="PositionSavedCheck" type="CheckBox" parent="SplitContainer/MarginContainer/Control"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+
+[node name="Label" type="Label" parent="SplitContainer/MarginContainer/Control/PositionSavedCheck"]
+layout_mode = 0
+offset_left = 31.0
+offset_right = 143.0
+offset_bottom = 26.0
+text = "Position saved"
 
 [node name="BlocksList" type="ItemList" parent="SplitContainer/MarginContainer/Control"]
 unique_name_in_owner = true
@@ -222,20 +237,23 @@ projection = 1
 size = 30.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
-transform = Transform3D(-0.866024, -0.433016, 0.250001, 0.368369, -0.21446, 0.904605, -0.338093, 0.875502, 0.345237, 0, 0, 0)
+transform = Transform3D(-0.866024, -0.433015, 0.25, 0.108816, 0.32479, 0.939505, -0.488018, 0.840838, -0.234157, 0, 0, 0)
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
 environment = SubResource("Environment_h33mq")
 
-[node name="PhysicsGround" type="StaticBody3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
-input_ray_pickable = false
-
-[node name="FloorCollision" type="CollisionShape3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/PhysicsGround"]
+[node name="Ground" type="StaticBody3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
 unique_name_in_owner = true
-shape = SubResource("WorldBoundaryShape3D_3g53y")
-disabled = true
+collision_layer = 5
+collision_mask = 0
+
+[node name="FloorCollision" type="CollisionShape3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/Ground"]
+unique_name_in_owner = true
+shape = SubResource("WorldBoundaryShape3D_5e4tg")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SplitContainer/LevelContainer/SceneViewport/GameScene/Ground"]
+mesh = SubResource("PlaneMesh_w77q5")
 
 [node name="ToolBar" type="HBoxContainer" parent="SplitContainer/LevelContainer/SceneViewport/GameScene"]
 anchors_preset = 5
@@ -273,6 +291,9 @@ text = "TopView"
 [connection signal="pressed" from="SplitContainer/MarginContainer/Control/ObjectInspector/SaveInitButton" to="." method="_on_save_button_pressed"]
 [connection signal="toggled" from="SplitContainer/MarginContainer/Control/ObjectInspector/JoystickContainer/JoystickEnableButton" to="." method="_on_joystick_enable_button_toggled"]
 [connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/UDPPortContainer/UDPPortNumber" to="." method="_on_udp_port_number_value_changed"]
+[connection signal="input_event" from="SplitContainer/LevelContainer/SceneViewport/GameScene/Ground" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_ground_input_event"]
+[connection signal="mouse_entered" from="SplitContainer/LevelContainer/SceneViewport/GameScene/Ground" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_ground_mouse_entered"]
+[connection signal="mouse_exited" from="SplitContainer/LevelContainer/SceneViewport/GameScene/Ground" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_ground_mouse_exited"]
 [connection signal="toggled" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/RunStopButton" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
 [connection signal="pressed" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/ResetButton" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_reset_button_pressed"]
 [connection signal="toggled" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/ViewButton" to="." method="_on_view_button_toggled"]

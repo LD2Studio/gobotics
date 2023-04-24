@@ -15,7 +15,7 @@ func _ready():
 	right_wheel.torque_constant = 30
 	left_wheel.torque_constant = 30
 	
-func _process(delta):
+func _process(_delta):
 	update_input()
 
 "
@@ -23,16 +23,6 @@ func _process(delta):
 [sub_resource type="GDScript" id="GDScript_uupj6"]
 resource_name = "BackWheel"
 script/source = "extends FreeWheel3D
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
 "
 
 [sub_resource type="GDScript" id="GDScript_j08mp"]
@@ -61,7 +51,6 @@ exclude_nodes_from_collision = true
 can_sleep = false
 script = SubResource("GDScript_j08mp")
 rotation_axis = "-X"
-helper_size = 0.6
 rotation_speed = 0.0
 torque_constant = 1.0
 angle_profile = 1.0
@@ -74,7 +63,6 @@ transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 
 can_sleep = false
 script = SubResource("GDScript_8a66v")
 rotation_axis = "-X"
-helper_size = 0.6
 rotation_speed = 0.0
 torque_constant = 1.0
 angle_profile = 1.0

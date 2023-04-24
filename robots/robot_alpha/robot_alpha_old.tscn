@@ -34,7 +34,7 @@ _surfaces = [{
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_f5xy8"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_we0ci"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1xgds"]
 render_priority = 0
 shader = ExtResource("3_wfqrx")
 shader_parameter/speed = 1.0
@@ -83,7 +83,7 @@ mesh = SubResource("ArrayMesh_sk0kp")
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.51044, 0)
 mesh = SubResource("CapsuleMesh_f5xy8")
-surface_material_override/0 = SubResource("ShaderMaterial_we0ci")
+surface_material_override/0 = SubResource("ShaderMaterial_1xgds")
 script = ExtResource("4_wysow")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -94,10 +94,8 @@ unique_name_in_owner = true
 transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 1.2, -1.4, 0)
 can_sleep = false
 script = ExtResource("5_gnieu")
-exclude_nodes_from_collision = true
-desired_velocity = 0.0
+rotation_speed = 0.0
 torque_constant = 20.0
-servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
 metadata/_edit_group_ = true
@@ -117,10 +115,8 @@ unique_name_in_owner = true
 transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -1.2, -1.4, 0)
 can_sleep = false
 script = ExtResource("5_gnieu")
-exclude_nodes_from_collision = true
-desired_velocity = 0.0
+rotation_speed = 0.0
 torque_constant = 20.0
-servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
 metadata/_edit_group_ = true
