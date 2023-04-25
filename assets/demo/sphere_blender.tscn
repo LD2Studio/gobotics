@@ -2,4 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://co1xtfjb4supv" path="res://assets/demo/sphere.blend" id="1_jkkw8"]
 
-[node name="SphereBlender" instance=ExtResource("1_jkkw8")]
+[node name="SphereBlender" groups=["PROPS"] instance=ExtResource("1_jkkw8")]
+
+[node name="Sphere" parent="." index="0" groups=["EDITABLE"]]

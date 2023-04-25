@@ -6,6 +6,7 @@ extends Control
 @onready var game_scene = %GameScene
 @onready var control_camera_3d: Camera3D = %ControlCamera3D
 @onready var top_camera_2d: Camera3D = %TopCamera2D
+@onready var object_inspector = %ObjectInspector
 
 
 var selected_block: Node
@@ -23,10 +24,9 @@ func _enter_tree():
 	database.create()
 
 func _ready():
-	game_scene.focused_block.connect(_on_selected_block)
+	game_scene.block_selected.connect(_on_selected_block)
 	connected_joystick = Input.get_connected_joypads()
 #	print_debug(connected_joystick)
-	%ObjectInspector.visible = false
 	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("DELETE"):
@@ -38,32 +38,31 @@ func _input(event: InputEvent) -> void:
 
 # Call when a block is selected in the scene
 func _on_selected_block(block: Node):
-#	print_debug(block)
-	if block == null or %GameScene.running:
-		selected_block = null
-		%ObjectInspector.visible = false
-	else:
-		selected_block = block
-		%ObjectInspector.visible = true
-		%BlockName.text = block.name
-		var table_xy_tr: Transform3D = get_tree().get_nodes_in_group("TABLE")[0].get_node("Coord3D").transform
-		var xyz_pos: Vector3 = block.transform.origin * table_xy_tr
-		
-		%X_pos.value = xyz_pos.x / 10.0
-		%Y_pos.value = xyz_pos.y / 10.0
-		%Z_pos.value = xyz_pos.z / 10.0
-		%Z_rot.value = block.rotation_degrees.y
-		if block.get("joystick_enable") == null or connected_joystick.size() == 0:
-			%JoystickContainer.visible = false
-		else:
-			%JoystickContainer.visible = true
-			if block.joystick_enable: %JoystickEnableButton.set_pressed_no_signal(true)
-			else: %JoystickEnableButton.set_pressed_no_signal(false)
-		if block.get("UDP_port") == null:
-			%UDPPortContainer.visible = false
-		else:
-			%UDPPortContainer.visible = true
-			%UDPPortNumber.value = block.UDP_port
+#	print(block)
+	%X_pos.value = block.global_position.x / 10.0
+	%Y_pos.value = block.global_position.y / 10.0
+	%Z_pos.value = block.global_position.z / 10.0
+	%Z_rot.value = block.rotation_degrees.y
+	%BlockName.text = block.owner.name
+#	else:
+##		var table_xy_tr: Transform3D = get_tree().get_nodes_in_group("TABLE")[0].get_node("Coord3D").transform
+##		var xyz_pos: Vector3 = block.transform.origin * table_xy_tr
+#
+#		%X_pos.value = xyz_pos.x / 10.0
+#		%Y_pos.value = xyz_pos.y / 10.0
+#		%Z_pos.value = xyz_pos.z / 10.0
+#		%Z_rot.value = block.rotation_degrees.y
+#		if block.get("joystick_enable") == null or connected_joystick.size() == 0:
+#			%JoystickContainer.visible = false
+#		else:
+#			%JoystickContainer.visible = true
+#			if block.joystick_enable: %JoystickEnableButton.set_pressed_no_signal(true)
+#			else: %JoystickEnableButton.set_pressed_no_signal(false)
+#		if block.get("UDP_port") == null:
+#			%UDPPortContainer.visible = false
+#		else:
+#			%UDPPortContainer.visible = true
+#			%UDPPortNumber.value = block.UDP_port
 
 func _on_x_pos_value_changed(value: float) -> void:
 	if selected_block == null:

@@ -66,7 +66,7 @@ size = Vector3(3.00866, 0.263385, 2.97139)
 script = SubResource("GDScript_fenbm")
 speed = 5.0
 
-[node name="Frame" parent="." index="0"]
+[node name="Frame" parent="." index="0" groups=["EDITABLE"]]
 mass = 5.0
 
 [node name="Arm" parent="Frame" index="0"]

@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="GoboticsDB" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://game/database/database.gd" id="1_yq8qh"]
+[ext_resource type="Script" path="res://game/database/database.gd" id="1_miav6"]
 
 [resource]
-script = ExtResource("1_yq8qh")
+script = ExtResource("1_miav6")
 assets_base_path = "res://assets"
 assets = [{
 "base_dir": "res://assets/builtin",
@@ -37,7 +37,7 @@ assets = [{
 "scene": "sphere.tscn"
 }, {
 "base_dir": "res://assets/demo",
-"group": "NOGROUP",
+"group": "PROPS",
 "name": "SphereBlender",
 "scene": "sphere_blender.tscn"
 }, {

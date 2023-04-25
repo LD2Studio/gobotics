@@ -47,6 +47,8 @@ extends RotationActuator3D
 script = SubResource("GDScript_h3gv0")
 speed = 6.0
 
+[node name="Frame" parent="." index="0" groups=["EDITABLE"]]
+
 [node name="BackWheel" parent="Frame" index="0"]
 script = SubResource("GDScript_uupj6")
 exclude_nodes_from_collision = true

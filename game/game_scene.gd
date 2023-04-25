@@ -1,6 +1,6 @@
 extends Node3D
 
-signal focused_block(block: Node)
+signal block_selected(block: Node)
 
 var scene : Node3D
 var running: bool = false
@@ -16,17 +16,16 @@ func init_scene():
 	scene.name = &"Scene"
 	add_child(scene)
 
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		var blocks = get_tree().get_nodes_in_group("BLOCKS")
-		for block in blocks:
-			if block.get("focused"):
-				emit_signal("focused_block", block)
-				return
-		emit_signal("focused_block", null)
+#func _input(event: InputEvent) -> void:
+#	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+#		var blocks = get_tree().get_nodes_in_group("BLOCKS")
+#		for block in blocks:
+#			if block.get("focused"):
+#				emit_signal("focused_block", block)
+#				return
+#		emit_signal("focused_block", null)
 
 func new_scene(environment_path: String) -> void:
-#	print(environment_path)
 	delete_scene()
 	init_scene()
 	var environment = ResourceLoader.load(environment_path).instantiate()
@@ -45,7 +44,13 @@ func connect_pickable():
 			node.mouse_exited.connect(_on_ground_mouse_exited)
 		if not node.is_connected("input_event", _on_ground_input_event):
 			node.input_event.connect(_on_ground_input_event)
-	
+
+func connect_editable():
+	var nodes = get_tree().get_nodes_in_group("EDITABLE")
+#	print(nodes)
+	for node in nodes:
+		if not node.is_connected("input_event", _on_editable_block_input_event):
+			node.input_event.connect(_on_editable_block_input_event.bind(node))
 
 func save_scene(path: String):
 	assert(scene != null)
@@ -78,6 +83,7 @@ func load_scene(path):
 			node.get_child(0).transform = transform_saved
 		freeze_item(node, true)
 	connect_pickable()
+	connect_editable()
 	%RunStopButton.button_pressed = false
 	
 func delete_scene():
@@ -126,3 +132,7 @@ func _on_ground_mouse_entered():
 func _on_ground_mouse_exited():
 	game_area_pointed = false
 
+func _on_editable_block_input_event(_camera, event: InputEvent, _mouse_position, _normal, _shape_idx, node):
+	if event.is_action_pressed("EDIT"):
+#		print(node)
+		block_selected.emit(node)
