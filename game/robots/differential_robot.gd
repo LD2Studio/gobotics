@@ -20,6 +20,7 @@ var left_wheel: RotationActuator3D:
 
 func initialize():
 	frame = get_child(0)
+	frame.freeze = true
 	frame.collision_mask = collision_groups
 	for child in frame.get_children():
 		if child is RigidBody3D:

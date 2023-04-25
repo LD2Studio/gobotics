@@ -13,7 +13,7 @@ var current_filename: String:
 	set(value):
 		current_filename = value
 		%FilenameLabel.text = current_filename.get_file().get_basename()
-		
+
 var connected_joystick: Array[int]
 var database: GoboticsDB = GoboticsDB.new()
 
@@ -21,18 +21,6 @@ func _enter_tree():
 	if not OS.has_feature("editor"):
 		load_pck()
 	database.create()
-	
-func load_pck():
-	var executable_path: String = OS.get_executable_path().get_base_dir()
-	var assets_dir: String = executable_path.path_join(pck_dir)
-	var files = Array(DirAccess.get_files_at(assets_dir))
-	var pck_files = files.filter(func(file): return file.get_extension() == "pck")
-#	print(pck_files)
-	
-	for pck_file in pck_files:
-		var pck_path: String = assets_dir.path_join(pck_file)
-		if not ProjectSettings.load_resource_pack(pck_path, false):
-			print("Packed resource not loading")
 
 func _ready():
 	game_scene.focused_block.connect(_on_selected_block)
@@ -89,7 +77,6 @@ func _on_x_pos_value_changed(value: float) -> void:
 #	print_debug("new pos coord3D: ", new_pos_coord_3d)
 	selected_block.position = new_pos_coord_3d
 
-	
 func _on_y_pos_value_changed(value: float) -> void:
 	if selected_block == null:
 		return
@@ -100,7 +87,7 @@ func _on_y_pos_value_changed(value: float) -> void:
 	var new_pos_coord_3d = local_pos * table_xy_tr.inverse()	# Global coordinates
 #	print_debug("new pos coord3D: ", new_pos_coord_3d)
 	selected_block.position = new_pos_coord_3d
-	
+
 func _on_z_pos_value_changed(value: float) -> void:
 	if selected_block == null:
 		return
@@ -111,12 +98,12 @@ func _on_z_pos_value_changed(value: float) -> void:
 	var new_pos_coord_3d = local_pos * table_xy_tr.inverse()	# Global coordinates
 #	print_debug("new pos coord3D: ", new_pos_coord_3d)
 	selected_block.position = new_pos_coord_3d
-	
+
 func _on_z_rot_value_changed(value: float) -> void:
 	if selected_block == null:
 		return
 	selected_block.rotation_degrees.y = value
-	
+
 func _on_joystick_enable_button_toggled(button_pressed: bool) -> void:
 	if selected_block == null:
 		return
@@ -130,6 +117,16 @@ func _on_udp_port_number_value_changed(value: float) -> void:
 func _on_save_button_pressed() -> void:
 	game_scene.save_scene(current_filename)
 
+func _on_new_scene_button_pressed() -> void:
+	%NewSceneDialog.popup_centered(Vector2i(200, 300))
+	
+func _on_new_scene_dialog_confirmed() -> void:
+	var items = %EnvironmentList.get_selected_items()
+	if items.is_empty(): return
+	var environment_name: String = %EnvironmentList.get_item_text(items[0])
+#	print(environment_name)
+	game_scene.new_scene(database.get_scene(environment_name))
+	
 func _on_load_scene_button_pressed():
 	%LoadSceneDialog.popup_centered(Vector2i(300,300))
 
@@ -148,4 +145,16 @@ func _on_save_scene_dialog_file_selected(path):
 
 func _on_view_button_toggled(button_pressed: bool) -> void:
 	top_camera_2d.current = true if button_pressed else false
+
+func load_pck():
+	var executable_path: String = OS.get_executable_path().get_base_dir()
+	var assets_dir: String = executable_path.path_join(pck_dir)
+	var files = Array(DirAccess.get_files_at(assets_dir))
+	var pck_files = files.filter(func(file): return file.get_extension() == "pck")
+#	print(pck_files)
+	
+	for pck_file in pck_files:
+		var pck_path: String = assets_dir.path_join(pck_file)
+		if not ProjectSettings.load_resource_pack(pck_path, false):
+			print("Packed resource not loading")
 

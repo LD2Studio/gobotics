@@ -77,9 +77,9 @@ actuator_type = "SERVO"
 helper_size = 0.5
 only_debug = false
 desired_angle = 0.0
-max_angle = 1.0
+max_angle = 5.0
 min_angle = -30.0
-torque_constant = 30.0
+torque_constant = 50.0
 servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
@@ -123,6 +123,6 @@ transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 
 shape = SubResource("BoxShape3D_g38j3")
 
 [node name="Preview" type="Camera3D" parent="." index="1"]
-transform = Transform3D(0.759294, -0.183929, 0.624214, 0, 0.959225, 0.282643, -0.650748, -0.214609, 0.728334, 2.06684, 1.91485, 3.80655)
+transform = Transform3D(0.682266, 0, 0.731104, 0, 1, 0, -0.731104, 0, 0.682266, 2.37524, 0.977003, 3.43369)
 script = ExtResource("2_dyqgr")
 preview = true

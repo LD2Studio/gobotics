@@ -12,12 +12,16 @@ func _ready():
 	initialize()
 	right_wheel = $Frame/RightWheel
 	left_wheel = $Frame/LeftWheel
-	right_wheel.torque_constant = 30
-	left_wheel.torque_constant = 30
+	right_wheel.torque_constant = 10
+	left_wheel.torque_constant = 10
+	$Frame.mass = 5
+	$Frame/LeftWheel.mass = 0.2
+	$Frame/RightWheel.mass = 0.2
+	$Frame/BackWheel.mass = 0.1
+	
 	
 func _process(_delta):
 	update_input()
-
 "
 
 [sub_resource type="GDScript" id="GDScript_uupj6"]

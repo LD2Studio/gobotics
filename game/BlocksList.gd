@@ -5,7 +5,8 @@ extends ItemList
 func _ready():
 	clear()
 	for asset in database.assets:
-		add_item(asset.name)
+		if asset.group == "ROBOTS" or asset.group == "PROPS":
+			add_item(asset.name)
 
 func _get_drag_data(at_position: Vector2):
 	var idx = get_item_at_position(at_position, true)
@@ -14,6 +15,7 @@ func _get_drag_data(at_position: Vector2):
 
 	var asset_name = get_item_text(idx)
 	var asset = database.get_scene(asset_name)
+#	print(asset)
 	
 	if asset:
 		var node = load(asset).instantiate()
@@ -26,6 +28,8 @@ func _get_drag_data(at_position: Vector2):
 		if ResourceLoader.exists(preview_path):
 			var preview_control = TextureRect.new()
 			preview_control.texture = load(preview_path)
+			preview_control.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			preview_control.size = Vector2(64,64)
 			set_drag_preview(preview_control)
 		return node
 	else:

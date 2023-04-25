@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://lq015k5ua87t"]
-
-[ext_resource type="PackedScene" uid="uid://bslx1gudd02xw" path="res://assets/cakes/SpongeCakeLayer.blend" id="1_pqw2t"]
-
-[node name="SpongeCake" instance=ExtResource("1_pqw2t")]
-
-[node name="Cylinder" parent="." index="0"]
-mass = 0.1

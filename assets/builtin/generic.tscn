@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://d4gvhsauefypo"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_pcu85"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4dihb"]
+albedo_color = Color(0.388235, 0.368627, 0.317647, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_njqku"]
+material = SubResource("StandardMaterial3D_4dihb")
+size = Vector2(100, 100)
+
+[node name="Generic" type="Node3D" groups=["ENVIRONMENT"]]
+
+[node name="Floor" type="StaticBody3D" parent="." groups=["PICKABLE"]]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("WorldBoundaryShape3D_pcu85")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("PlaneMesh_njqku")

@@ -1,0 +1,49 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/cfr2023/table_2023.tscn" id="1_7oj6m"]
+[ext_resource type="PackedScene" path="res://assets/robots/robot_alpha.tscn" id="2_wq2e2"]
+[ext_resource type="PackedScene" path="res://assets/cfr2023/sponge_cake.tscn" id="3_e6xub"]
+
+[sub_resource type="GDScript" id="GDScript_h3gv0"]
+resource_name = "RobotAlpha"
+script/source = "extends DifferentialRobot
+
+func _ready():
+	initialize()
+	right_wheel = $Frame/RightWheel
+	left_wheel = $Frame/LeftWheel
+	right_wheel.torque_constant = 10
+	left_wheel.torque_constant = 10
+	$Frame.mass = 5
+	$Frame/LeftWheel.mass = 0.2
+	$Frame/RightWheel.mass = 0.2
+	$Frame/BackWheel.mass = 0.1
+	
+	
+func _process(_delta):
+	update_input()
+"
+
+[node name="Scene" type="Node3D"]
+
+[node name="Table2023" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_7oj6m")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Block0" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_wq2e2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.94556, 0.0499897, -1.16391)
+script = SubResource("GDScript_h3gv0")
+speed = 6.0
+collision_groups = 1
+metadata/transform = Transform3D(-0.879398, 0.138302, -0.455556, -0.00146012, 0.956088, 0.293077, 0.476085, 0.258396, -0.84058, -4.42778, 0.495133, -4.44402)
+
+[node name="Block1" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("3_e6xub")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.07996, 0.0499907, -7.52923)
+metadata/transform = Transform3D(0.998726, 0.00576476, 0.0501237, -0.00565398, 0.999981, -0.00235164, -0.0501363, 0.00206525, 0.99874, -0.0251508, 0.0849104, 0.0346208)
+
+[node name="Block2" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("3_e6xub")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18196, 0.0499902, -5.64119)
+metadata/transform = Transform3D(0.862051, 0.00606368, -0.506785, -0.00565592, 0.999981, 0.00234394, 0.50679, 0.000845738, 0.862069, -4.15694, 0.0849079, -3.75628)
+
+[node name="Block3" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("3_e6xub")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28728, 0.0499902, -0.30765)
+metadata/transform = Transform3D(0.475743, 0.00465299, 0.879572, -0.00580342, 0.999981, -0.00215101, -0.879565, -0.0040812, 0.475761, -0.000205994, 0.0849103, 1.86785)

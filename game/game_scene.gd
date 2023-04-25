@@ -25,6 +25,28 @@ func _input(event: InputEvent) -> void:
 				return
 		emit_signal("focused_block", null)
 
+func new_scene(environment_path: String) -> void:
+#	print(environment_path)
+	delete_scene()
+	init_scene()
+	var environment = ResourceLoader.load(environment_path).instantiate()
+	scene.add_child(environment)
+#	call_deferred("connect_pickable")
+	connect_pickable()
+	%RunStopButton.button_pressed = false
+	
+func connect_pickable():
+	var nodes = get_tree().get_nodes_in_group("PICKABLE")
+#	print(nodes)
+	for node in nodes:
+		if not node.is_connected("mouse_entered", _on_ground_mouse_entered):
+			node.mouse_entered.connect(_on_ground_mouse_entered)
+		if not node.is_connected("mouse_exited", _on_ground_mouse_exited):
+			node.mouse_exited.connect(_on_ground_mouse_exited)
+		if not node.is_connected("input_event", _on_ground_input_event):
+			node.input_event.connect(_on_ground_input_event)
+	
+
 func save_scene(path: String):
 	assert(scene != null)
 	# Take all blocks added in game scene for apply owner
@@ -46,13 +68,7 @@ func save_scene(path: String):
 func load_scene(path):
 	if path == "":
 		return
-	var scene_node = get_node("Scene")
-	assert(scene_node!=null)
-	for node in scene_node.get_children():
-		scene_node.remove_child(node)
-		node.queue_free()
-	remove_child(scene_node)
-	scene_node.queue_free()
+	delete_scene()
 	
 	scene = ResourceLoader.load(path).instantiate()
 	add_child(scene)
@@ -60,9 +76,18 @@ func load_scene(path):
 		var transform_saved = node.get_meta("transform", Transform3D())
 		if  transform_saved != Transform3D():
 			node.get_child(0).transform = transform_saved
-#		freeze_item(node, true)
-		
+		freeze_item(node, true)
+	connect_pickable()
 	%RunStopButton.button_pressed = false
+	
+func delete_scene():
+	var scene_node = get_node("Scene")
+	assert(scene_node!=null)
+	for node in scene_node.get_children():
+		scene_node.remove_child(node)
+		node.queue_free()
+	remove_child(scene_node)
+	scene_node.queue_free()
 	
 func freeze_item(node, frozen):
 	freeze_children(node, frozen)
