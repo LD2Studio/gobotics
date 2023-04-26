@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_te578"]
+[ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot.tscn" id="2_4ip6k"]
+[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="3_iof2j"]
+[ext_resource type="PackedScene" path="res://assets/demo/sphere_blender.tscn" id="4_ei2fh"]
+
+[node name="Scene" type="Node3D"]
+
+[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_te578")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="AlphaRobot" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_4ip6k")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0205309, 0, 5.20164)
+script = ExtResource("3_iof2j")
+speed = 6.0
+collision_groups = 1
+metadata/transform = Transform3D(0.999997, 0.00263703, 0, -0.00263702, 0.999994, -0.0024585, -6.48314e-06, 0.00245849, 0.999997, -0.0205309, 0.5, -5.20164)
+
+[node name="SphereBlender" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("4_ei2fh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.44475, 0, -4.73438)
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.498796, 0)
+
+[node name="SphereBlender2" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("4_ei2fh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.2295, 0, 5.01703)
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.498717, 0)
+
+[node name="SphereBlender3" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("4_ei2fh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.27335, 0, -4.76873)
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.498796, 0)

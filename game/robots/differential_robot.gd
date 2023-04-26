@@ -4,7 +4,7 @@ extends Node3D
 @export var speed: float = 1.0
 @export_flags_3d_physics var collision_groups = 1
 
-var focused: bool = false
+#var focused: bool = false
 
 var right_wheel: RotationActuator3D:
 	set(object):
@@ -27,7 +27,6 @@ func initialize():
 			child.collision_mask = collision_groups
 
 func update_input():
-#	print("update_input")
 	assert(right_wheel is RigidBody3D, "Right Wheel must be referenced")
 	assert(left_wheel is RigidBody3D, "Left Wheel must be referenced")
 	if true:

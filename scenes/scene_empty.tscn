@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" uid="uid://d4gvhsauefypo" path="res://assets/builtin/light_environment.tscn" id="1_kxcwa"]
+
+[node name="Scene" type="Node3D"]
+
+[node name="Generic" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_kxcwa")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

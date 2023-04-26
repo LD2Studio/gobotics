@@ -1,15 +1,20 @@
 [gd_resource type="Resource" script_class="GoboticsDB" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://game/database/database.gd" id="1_miav6"]
+[ext_resource type="Script" path="res://game/database/database.gd" id="1_dlbl2"]
 
 [resource]
-script = ExtResource("1_miav6")
+script = ExtResource("1_dlbl2")
 assets_base_path = "res://assets"
 assets = [{
 "base_dir": "res://assets/builtin",
 "group": "ENVIRONMENT",
-"name": "Generic",
-"scene": "generic.tscn"
+"name": "DarkEnvironment",
+"scene": "dark_environment.tscn"
+}, {
+"base_dir": "res://assets/builtin",
+"group": "ENVIRONMENT",
+"name": "LightEnvironment",
+"scene": "light_environment.tscn"
 }, {
 "base_dir": "res://assets/cfr2023",
 "group": "PROPS",
@@ -46,12 +51,12 @@ assets = [{
 "name": "SphereRigid",
 "scene": "sphere_rigid.tscn"
 }, {
-"base_dir": "res://assets/robots",
+"base_dir": "res://assets/robot_alpha",
 "group": "ROBOTS",
-"name": "Robot Alpha",
-"scene": "robot_alpha.tscn"
+"name": "AlphaRobot",
+"scene": "alpha_robot.tscn"
 }, {
-"base_dir": "res://assets/robots",
+"base_dir": "res://assets/robot_gamma",
 "group": "ROBOTS",
 "name": "Robot Gamma",
 "scene": "robot_gamma.tscn"

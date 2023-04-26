@@ -7,6 +7,10 @@ var running: bool = false
 var mouse_pos_on_area: Vector3
 var game_area_pointed: bool = false
 
+@onready var object_inspector: VBoxContainer = %ObjectInspector
+@onready var save_scene_as_button: Button = %SaveSceneAsButton
+@onready var save_scene_button: Button = %SaveSceneButton
+
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
 	init_scene()
@@ -16,15 +20,6 @@ func init_scene():
 	scene.name = &"Scene"
 	add_child(scene)
 
-#func _input(event: InputEvent) -> void:
-#	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-#		var blocks = get_tree().get_nodes_in_group("BLOCKS")
-#		for block in blocks:
-#			if block.get("focused"):
-#				emit_signal("focused_block", block)
-#				return
-#		emit_signal("focused_block", null)
-
 func new_scene(environment_path: String) -> void:
 	delete_scene()
 	init_scene()
@@ -33,6 +28,8 @@ func new_scene(environment_path: String) -> void:
 #	call_deferred("connect_pickable")
 	connect_pickable()
 	%RunStopButton.button_pressed = false
+	save_scene_as_button.disabled = false
+	save_scene_button.disabled = true
 	
 func connect_pickable():
 	var nodes = get_tree().get_nodes_in_group("PICKABLE")
@@ -69,6 +66,8 @@ func save_scene(path: String):
 	var err = ResourceSaver.save(scene_packed, path)
 	if err:
 		printerr("Scene saving failed")
+	else:
+		save_scene_button.disabled = false
 
 func load_scene(path):
 	if path == "":
@@ -85,6 +84,8 @@ func load_scene(path):
 	connect_pickable()
 	connect_editable()
 	%RunStopButton.button_pressed = false
+	save_scene_as_button.disabled = false
+	save_scene_button.disabled = false
 	
 func delete_scene():
 	var scene_node = get_node("Scene")
@@ -94,17 +95,21 @@ func delete_scene():
 		node.queue_free()
 	remove_child(scene_node)
 	scene_node.queue_free()
+	save_scene_as_button.disabled = true
 	
 func freeze_item(node, frozen):
+	node.set_physics_process(not frozen)
 	freeze_children(node, frozen)
 
 func freeze_children(node, frozen):
 	if node is RigidBody3D:
 		node.freeze = frozen
+#		set_physics_process(not frozen)
 	for child in node.get_children():
 		freeze_children(child, frozen)
 	
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
+	object_inspector.visible = not button_pressed
 	if button_pressed:
 		running = true
 		%RunStopButton.text = "STOP"
@@ -115,15 +120,19 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 		running = false
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
+		block_selected.emit(null)
 		for node in scene.get_children():
 			freeze_item(node, true)
 
 func _on_reset_button_pressed():
 	load_scene(owner.current_filename)
 
-func _on_ground_input_event(_camera, _event, mouse_position, _normal, _shape_idx):
+func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
 #	print(mouse_position)
 	mouse_pos_on_area = mouse_position
+	if event.is_action_pressed("EDIT"):
+#		print("EDIT")
+		block_selected.emit(null)
 
 func _on_ground_mouse_entered():
 #	print("mouse_entered")

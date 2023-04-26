@@ -1,80 +1,35 @@
 [gd_scene load_steps=6 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/cfr2023/table_2023.tscn" id="1_7oj6m"]
-[ext_resource type="PackedScene" path="res://assets/robots/robot_alpha.tscn" id="2_wq2e2"]
-[ext_resource type="PackedScene" path="res://assets/cfr2023/sponge_cake.tscn" id="3_e6xub"]
-
-[sub_resource type="GDScript" id="GDScript_h3gv0"]
-resource_name = "RobotAlpha"
-script/source = "extends DifferentialRobot
-
-func _ready():
-	initialize()
-	right_wheel = $Frame/RightWheel
-	left_wheel = $Frame/LeftWheel
-	right_wheel.torque_constant = 10
-	left_wheel.torque_constant = 10
-	$Frame.mass = 5
-	$Frame/LeftWheel.mass = 0.2
-	$Frame/RightWheel.mass = 0.2
-	$Frame/BackWheel.mass = 0.1
-	
-	
-func _process(_delta):
-	update_input()
-"
-
-[sub_resource type="GDScript" id="GDScript_nyafw"]
-resource_name = "RobotAlpha"
-script/source = "extends DifferentialRobot
-
-func _ready():
-	initialize()
-	right_wheel = $Frame/RightWheel
-	left_wheel = $Frame/LeftWheel
-	right_wheel.torque_constant = 10
-	left_wheel.torque_constant = 10
-	$Frame.mass = 5
-	$Frame/LeftWheel.mass = 0.2
-	$Frame/RightWheel.mass = 0.2
-	$Frame/BackWheel.mass = 0.1
-	
-	
-func _process(_delta):
-	update_input()
-"
+[ext_resource type="PackedScene" path="res://assets/cfr2023/table_2023.tscn" id="1_63yr6"]
+[ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot.tscn" id="2_1n0dp"]
+[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="3_q4kn5"]
+[ext_resource type="PackedScene" path="res://assets/cfr2023/sponge_cake.tscn" id="4_mt1ud"]
+[ext_resource type="PackedScene" path="res://assets/demo/sphere_blender.tscn" id="5_sustr"]
 
 [node name="Scene" type="Node3D"]
 
-[node name="Table2023" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_7oj6m")]
+[node name="Table2023" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_63yr6")]
 metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="Block0" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_wq2e2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.94556, 0.0499897, -1.16391)
-script = SubResource("GDScript_h3gv0")
-speed = 6.0
+[node name="AlphaRobot" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_1n0dp")]
+transform = Transform3D(0.99863, 0, -0.052336, 0, 1, 0, 0.052336, 0, 0.99863, -2.90955, 0.0499897, 0.438724)
+script = ExtResource("3_q4kn5")
+speed = 5.0
 collision_groups = 1
-metadata/transform = Transform3D(0.0694283, -0.286739, 0.95549, -2.45786e-05, 0.9578, 0.287435, -0.997587, -0.0199796, 0.0664914, -6.28695, 0.489048, -1.88018)
+metadata/transform = Transform3D(0.984849, 0.000966911, -0.173411, -0.00106918, 0.999999, -0.000496339, 0.17341, 0.000674226, 0.984849, -0.624133, 0.490961, 4.75659)
 
-[node name="Block1" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("3_e6xub")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.07996, 0.0499907, -7.52923)
-metadata/transform = Transform3D(0.997669, 0.00580157, 0.0679991, -0.00565472, 0.999981, -0.00235185, -0.0680115, 0.00196185, 0.997683, -0.0377297, 0.0849096, 0.0538344)
+[node name="SpongeCake2" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("4_mt1ud")]
+transform = Transform3D(0.325568, 0, -0.945519, 0, 1, 0, 0.945519, 0, 0.325568, 1.73231, 0.0499902, 5.73895)
+metadata/transform = Transform3D(0.327773, -0.00457702, -0.944745, -0.00234766, 0.999981, -0.00565913, 0.944753, 0.00407285, 0.327756, 1.74728, 0.0849079, 0.212857)
 
-[node name="Block2" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("3_e6xub")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18196, 0.0499902, -5.64119)
-metadata/transform = Transform3D(0.861988, 0.00606335, -0.506892, -0.00565577, 0.999981, 0.00234377, 0.506896, 0.00084656, 0.862007, -4.15367, 0.0849082, -3.75647)
+[node name="SpongeCake3" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("4_mt1ud")]
+transform = Transform3D(0.374607, 0, 0.927184, 0, 1, 0, -0.927184, 0, 0.374607, -3.71106, 0.0499907, 2.26412)
+metadata/transform = Transform3D(0.374595, -4.72424e-05, 0.927188, -0.00478827, 0.999987, 0.00198547, -0.927176, -0.00518338, 0.37459, -0.929658, 0.0858785, -3.19282)
 
-[node name="Block3" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("3_e6xub")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.28728, 0.0499902, -0.30765)
-metadata/transform = Transform3D(0.471764, 0.00464738, 0.881713, -0.00578772, 0.999981, -0.00217401, -0.881706, -0.00407749, 0.471782, -0.00976992, 0.0849087, 1.8325)
+[node name="SphereBlender" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("5_sustr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.33055, 0.0499907, 6.66347)
+metadata/transform = Transform3D(0.660759, 0.667016, -0.344221, -0.59382, 0.745035, 0.303812, 0.459103, 0.00365888, 0.888375, -2.48277, 0.49882, 0.419466)
 
-[node name="Block4" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("3_e6xub")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.09316, 0.0499907, 4.0493)
-metadata/transform = Transform3D(0.999997, 0.00233439, -0.00118876, -0.00232763, 0.999981, 0.00565901, 0.00120195, -0.00565622, 0.999983, -0.0697451, 0.0849121, -0.0120149)
-
-[node name="Block5" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_wq2e2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.21913, 0.0499907, -6.47561)
-script = SubResource("GDScript_nyafw")
-speed = 6.0
-collision_groups = 1
-metadata/transform = Transform3D(-0.0460236, 0.289967, -0.955929, -0.00258564, 0.956906, 0.290387, 0.998937, 0.0158364, -0.0432905, -1.8172, 0.493432, -1.4897)
+[node name="SphereBlender3" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("5_sustr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.57468, 0.0499902, -0.536859)
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)

@@ -4,7 +4,7 @@
 class_name FreeWheel3D
 extends RigidBody3D
 
-@export var exclude_nodes_from_collision: bool = false
+@export var exclude_nodes_from_collision: bool = true
 
 var _joint := Generic6DOFJoint3D.new()
 

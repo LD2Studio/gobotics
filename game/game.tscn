@@ -78,16 +78,22 @@ text = "Load Scene"
 unique_name_in_owner = true
 title = "Open a File"
 size = Vector2i(558, 162)
-ok_button_text = "Open"
+ok_button_text = "Ouvrir"
 file_mode = 0
 access = 2
 filters = PackedStringArray("*.tscn")
 
 [node name="SaveSceneButton" type="Button" parent="SplitContainer/MarginContainer/Control"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Save Scene"
 
-[node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/MarginContainer/Control/SaveSceneButton"]
+[node name="SaveSceneAsButton" type="Button" parent="SplitContainer/MarginContainer/Control"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Save Scene As ..."
+
+[node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/MarginContainer/Control/SaveSceneAsButton"]
 unique_name_in_owner = true
 access = 2
 filters = PackedStringArray("*.tscn")
@@ -184,10 +190,6 @@ layout_mode = 2
 min_value = -180.0
 max_value = 180.0
 
-[node name="SaveInitButton" type="Button" parent="SplitContainer/MarginContainer/Control/ObjectInspector"]
-layout_mode = 2
-text = "Save parameters"
-
 [node name="JoystickContainer" type="HBoxContainer" parent="SplitContainer/MarginContainer/Control/ObjectInspector"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -282,17 +284,19 @@ layout_mode = 2
 toggle_mode = true
 text = "TopView"
 
+[node name="ConfirmDeleteDialog" type="ConfirmationDialog" parent="."]
+
 [connection signal="pressed" from="SplitContainer/MarginContainer/Control/NewSceneButton" to="." method="_on_new_scene_button_pressed"]
 [connection signal="confirmed" from="SplitContainer/MarginContainer/Control/NewSceneButton/NewSceneDialog" to="." method="_on_new_scene_dialog_confirmed"]
 [connection signal="pressed" from="SplitContainer/MarginContainer/Control/LoadSceneButton" to="." method="_on_load_scene_button_pressed"]
 [connection signal="file_selected" from="SplitContainer/MarginContainer/Control/LoadSceneButton/LoadSceneDialog" to="." method="_on_load_scene_dialog_file_selected"]
-[connection signal="pressed" from="SplitContainer/MarginContainer/Control/SaveSceneButton" to="." method="_on_save_scene_button_pressed"]
-[connection signal="file_selected" from="SplitContainer/MarginContainer/Control/SaveSceneButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
+[connection signal="pressed" from="SplitContainer/MarginContainer/Control/SaveSceneButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="SplitContainer/MarginContainer/Control/SaveSceneAsButton" to="." method="_on_save_scene_as_button_pressed"]
+[connection signal="file_selected" from="SplitContainer/MarginContainer/Control/SaveSceneAsButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
 [connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/X Container/X_pos" to="." method="_on_x_pos_value_changed"]
 [connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Y Container/Y_pos" to="." method="_on_y_pos_value_changed"]
 [connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/PosContainer/Z Container/Z_pos" to="." method="_on_z_pos_value_changed"]
 [connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/Rotation Container/Z_rot" to="." method="_on_z_rot_value_changed"]
-[connection signal="pressed" from="SplitContainer/MarginContainer/Control/ObjectInspector/SaveInitButton" to="." method="_on_save_button_pressed"]
 [connection signal="toggled" from="SplitContainer/MarginContainer/Control/ObjectInspector/JoystickContainer/JoystickEnableButton" to="." method="_on_joystick_enable_button_toggled"]
 [connection signal="value_changed" from="SplitContainer/MarginContainer/Control/ObjectInspector/UDPPortContainer/UDPPortNumber" to="." method="_on_udp_port_number_value_changed"]
 [connection signal="toggled" from="SplitContainer/LevelContainer/SceneViewport/GameScene/ToolBar/RunStopButton" to="SplitContainer/LevelContainer/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]

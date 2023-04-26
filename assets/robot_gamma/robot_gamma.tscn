@@ -1,6 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://bv2wje3qaie4j"]
+[gd_scene load_steps=10 format=3 uid="uid://l8jfjsyyrtru"]
 
-[ext_resource type="PackedScene" uid="uid://d1h186k8efec" path="res://assets/robots/robot_gamma.blend" id="1_q70j5"]
+[ext_resource type="PackedScene" uid="uid://d1h186k8efec" path="res://assets/robot_gamma/robot_gamma.blend" id="1_q70j5"]
 [ext_resource type="Script" path="res://game/robots/preview.gd" id="2_dyqgr"]
 
 [sub_resource type="GDScript" id="GDScript_fenbm"]
@@ -77,9 +77,9 @@ actuator_type = "SERVO"
 helper_size = 0.5
 only_debug = false
 desired_angle = 0.0
-max_angle = 5.0
-min_angle = -30.0
-torque_constant = 50.0
+max_angle = 90.0
+min_angle = -90.0
+torque_constant = 1.0
 servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
@@ -91,7 +91,6 @@ shape = SubResource("BoxShape3D_dfh64")
 [node name="FrontWheel" parent="Frame" index="1"]
 mass = 2.0
 script = SubResource("GDScript_j4g2q")
-exclude_nodes_from_collision = true
 
 [node name="LeftWheel" parent="Frame" index="2"]
 can_sleep = false
@@ -99,7 +98,7 @@ script = SubResource("GDScript_l38n2")
 rotation_axis = "-X"
 helper_size = 0.6
 rotation_speed = 0.0
-torque_constant = 1.0
+torque_constant = 10.0
 angle_profile = 1.0
 profile_duration = 1.0
 
@@ -112,7 +111,7 @@ script = SubResource("GDScript_41qoi")
 rotation_axis = "-X"
 helper_size = 0.6
 rotation_speed = 0.0
-torque_constant = 1.0
+torque_constant = 10.0
 angle_profile = 1.0
 profile_duration = 1.0
 

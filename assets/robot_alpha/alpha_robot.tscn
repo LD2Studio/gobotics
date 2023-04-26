@@ -1,0 +1,57 @@
+[gd_scene load_steps=7 format=3 uid="uid://bkgptl2ad3lsq"]
+
+[ext_resource type="PackedScene" uid="uid://djw6p8ej1njgu" path="res://assets/robot_alpha/robot_alpha.blend" id="1_mougl"]
+[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="2_kmuq5"]
+[ext_resource type="Script" path="res://assets/robot_alpha/LeftWheel.gd" id="3_dqe0b"]
+[ext_resource type="Script" path="res://assets/robot_alpha/RightWheel.gd" id="4_s4vnl"]
+
+[sub_resource type="GDScript" id="GDScript_dbxta"]
+resource_name = "back_wheel"
+script/source = "extends FreeWheel3D
+"
+
+[sub_resource type="GDScript" id="GDScript_k2oah"]
+resource_name = "front_wheel"
+script/source = "extends FreeWheel3D
+"
+
+[node name="AlphaRobot" groups=["ROBOTS"] instance=ExtResource("1_mougl")]
+script = ExtResource("2_kmuq5")
+speed = 6.0
+
+[node name="Frame" parent="." index="0" groups=["EDITABLE"]]
+
+[node name="BackWheel" parent="Frame" index="0"]
+script = SubResource("GDScript_dbxta")
+
+[node name="FrontWheel" parent="Frame" index="2"]
+script = SubResource("GDScript_k2oah")
+
+[node name="LeftWheel" parent="Frame" index="3"]
+can_sleep = false
+script = ExtResource("3_dqe0b")
+rotation_axis = "-X"
+helper_size = 0.6
+rotation_speed = 0.0
+torque_constant = 10.0
+angle_profile = 1.0
+profile_duration = 1.0
+
+[node name="CollisionShape3D" parent="Frame/LeftWheel" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="RightWheel" parent="Frame" index="4"]
+can_sleep = false
+script = ExtResource("4_s4vnl")
+rotation_axis = "-X"
+helper_size = 0.6
+rotation_speed = 0.0
+torque_constant = 10.0
+angle_profile = 1.0
+profile_duration = 1.0
+
+[node name="CollisionShape3D" parent="Frame/RightWheel" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Frame" parent="Frame" index="5"]
+visible = false

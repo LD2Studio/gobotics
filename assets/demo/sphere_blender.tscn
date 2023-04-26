@@ -1,7 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://n13eyvcgqyfa"]
+[gd_scene load_steps=3 format=3 uid="uid://n13eyvcgqyfa"]
 
 [ext_resource type="PackedScene" uid="uid://co1xtfjb4supv" path="res://assets/demo/sphere.blend" id="1_jkkw8"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_wkhje"]
+friction = 0.5
+bounce = 0.4
 
 [node name="SphereBlender" groups=["PROPS"] instance=ExtResource("1_jkkw8")]
 
 [node name="Sphere" parent="." index="0" groups=["EDITABLE"]]
+physics_material_override = SubResource("PhysicsMaterial_wkhje")
