@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dgs1rppsh5toq"]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://robots/robot_alpha/robot_alpha_old.gd" id="1_c6w0f"]
 [ext_resource type="Texture2D" uid="uid://ba5pdfkr8r243" path="res://icon.svg" id="2_ix2ey"]
@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://robots/parts/connect_light.gd" id="4_wysow"]
 [ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="5_gnieu"]
 [ext_resource type="Script" path="res://robots/robot_alpha/RemotePython.gd" id="6_fg4jg"]
-[ext_resource type="Script" path="res://addon/capture_camera/capture_camera_3d.gd" id="7_j1f63"]
+[ext_resource type="Script" path="res://game/capture_camera/capture_camera_3d.gd" id="7_j1f63"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_d4bg2"]
 size = Vector3(3, 3.5, 3)

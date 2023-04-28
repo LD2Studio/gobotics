@@ -1,13 +1,13 @@
-[gd_scene load_steps=24 format=3 uid="uid://dq2dw0sbyuvyp"]
+[gd_scene load_steps=24 format=3 uid="uid://0757hvwwoqsx"]
 
 [ext_resource type="Script" path="res://robots/robot_beta/robot_beta.gd" id="1_kbgwg"]
 [ext_resource type="Shader" path="res://robots/parts/connect_light.gdshader" id="2_ptl37"]
 [ext_resource type="Script" path="res://robots/parts/connect_light.gd" id="3_fophd"]
 [ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="5_6fxtk"]
-[ext_resource type="Script" path="res://addon/capture_camera/capture_camera_3d.gd" id="6_fjfxr"]
 [ext_resource type="PackedScene" uid="uid://ck187j4vaav72" path="res://robots/parts/wheels/Wheel_WH100.glb" id="6_rd24k"]
 [ext_resource type="Script" path="res://robots/robot_beta/python_control.gd" id="7_4phew"]
 [ext_resource type="Material" uid="uid://x27dfm7adpfw" path="res://game/blocks/materials/outline.tres" id="8_popmu"]
+[ext_resource type="Script" path="res://game/capture_camera/capture_camera_3d.gd" id="8_ycn4j"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_21r3g"]
 size = Vector3(3, 0.2, 3)
@@ -17,7 +17,7 @@ albedo_color = Color(0.745098, 0.529412, 0.203922, 1)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_4h6yu"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3csmm"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nct57"]
 render_priority = 0
 shader = ExtResource("2_ptl37")
 shader_parameter/speed = 1.0
@@ -81,7 +81,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_lnxj1")
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05367, 0)
 mesh = SubResource("CapsuleMesh_4h6yu")
-surface_material_override/0 = SubResource("ShaderMaterial_3csmm")
+surface_material_override/0 = SubResource("ShaderMaterial_nct57")
 script = ExtResource("3_fophd")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Frame"]
@@ -97,10 +97,8 @@ unique_name_in_owner = true
 transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 1.2, 0.499964, 0.00119853)
 can_sleep = false
 script = ExtResource("5_6fxtk")
-exclude_nodes_from_collision = true
-desired_velocity = 0.0
+rotation_speed = 0.0
 torque_constant = 20.0
-servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
 
@@ -116,10 +114,8 @@ unique_name_in_owner = true
 transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -1.2, 0.499964, 0.00119853)
 can_sleep = false
 script = ExtResource("5_6fxtk")
-exclude_nodes_from_collision = true
-desired_velocity = 0.0
+rotation_speed = 0.0
 torque_constant = 20.0
-servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
 
@@ -168,5 +164,5 @@ script = ExtResource("7_4phew")
 
 [node name="CaptureCamera3D" type="Camera3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1.32726, -6.09655)
-script = ExtResource("6_fjfxr")
+script = ExtResource("8_ycn4j")
 img_path = "res://robots/robot_beta"

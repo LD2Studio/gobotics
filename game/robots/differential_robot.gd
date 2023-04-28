@@ -1,10 +1,9 @@
 class_name DifferentialRobot
 extends Node3D
 
+@export var manual_control: bool = false
 @export var speed: float = 1.0
 @export_flags_3d_physics var collision_groups = 1
-
-#var focused: bool = false
 
 var right_wheel: RotationActuator3D:
 	set(object):
@@ -19,6 +18,7 @@ var left_wheel: RotationActuator3D:
 @onready var frame:RigidBody3D
 
 func initialize():
+	set_meta("manual_control", true)
 	frame = get_child(0)
 	frame.freeze = true
 	frame.collision_mask = collision_groups
@@ -29,7 +29,7 @@ func initialize():
 func update_input():
 	assert(right_wheel is RigidBody3D, "Right Wheel must be referenced")
 	assert(left_wheel is RigidBody3D, "Left Wheel must be referenced")
-	if true:
+	if manual_control:
 		if Input.is_action_pressed("FORWARD"):
 			if Input.is_action_pressed("RIGHT"):
 				right_wheel.rotation_speed = 0

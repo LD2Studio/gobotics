@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://rm2k6c43ebih"]
-
-[ext_resource type="Script" path="res://addon/capture_camera/capture_camera_3d.gd" id="1_85e73"]
-
-[node name="CaptureCamera3D" type="Camera3D"]
-script = ExtResource("1_85e73")

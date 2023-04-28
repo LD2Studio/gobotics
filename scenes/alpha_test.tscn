@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_c8ila"]
+[ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot.tscn" id="2_irnn6"]
+[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="3_qy27v"]
+
+[node name="Scene" type="Node3D"]
+
+[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_c8ila")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="AlphaRobot" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_irnn6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.317094, 0, 0.320482)
+script = ExtResource("3_qy27v")
+manual_control = false
+speed = 6.0
+collision_groups = 1
+metadata/manual_control = true
+metadata/transform = Transform3D(0.999997, 0.000316155, 0.00240588, -0.000316007, 1, -6.18589e-05, -0.0024059, 6.10985e-05, 0.999997, 0.317035, 0.490314, 4.6786)
+metadata/python_bridge_activate = true
+metadata/python_bridge_port = 4242

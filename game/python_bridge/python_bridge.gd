@@ -3,42 +3,44 @@ extends Node
 
 signal python_client_connected
 
-var server := UDPServer.new()
-var peers = []
-
 @export_group("UDP Server")
+## Activate listening
+@export var activate: bool = false:
+	set(value):
+		activate = value
+		if activate:
+			if server.is_listening():
+				server.stop()
+				print("Stop listening")
+			server.listen(port)
+			print("Listen on new port %d" % port)
+		else:
+			server.stop()
+			print("Stop listening")
 ## Number port listening
 @export_range(1024, 65535) var port = 4242
 
-func _ready():
-	pass
-	
-func activate(port: int):
-	if server.is_listening():
-		server.stop()
-		print("Stop listening")
-	server.listen(port)
-	print("Listen on new port %d" % port)
+var server := UDPServer.new()
+var client_peer: PacketPeerUDP
+
+func _enter_tree() -> void:
+	assert(name == &"PythonBridge", "PythonBridge node cannot be renamed!")
 
 func _process(_delta):
 	if not server.is_listening(): return
 	server.poll()
+	# A new client send a packet ?
 	if server.is_connection_available():
 		var peer: PacketPeerUDP = server.take_connection()
-		var packet = peer.get_packet()
+		client_peer = peer
 		print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_packet_port()])
-		var message = packet.get_string_from_utf8()
-#		print(packet.get_string_from_utf8())
-		if message == "connection_request":
-#			print_debug("port %s is connected to server" % peer.get_packet_port())
-			peers.append(peer)
-			python_client_connected.emit()
-		
-	for p in peers:
-		var data = p.get_packet()
+		python_client_connected.emit()
+
+	if client_peer:
+		var data = client_peer.get_packet()
 		if not data.is_empty():
 #			print(data.get_string_from_utf8())
-			parse_message(p, data.get_string_from_utf8())
+			parse_message(client_peer, data.get_string_from_utf8())
 
 
 func parse_message(peer: PacketPeerUDP, json_message: String):

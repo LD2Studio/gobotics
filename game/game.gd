@@ -30,6 +30,7 @@ func _ready():
 	connected_joystick = Input.get_connected_joypads()
 	%SaveSceneButton.disabled = true
 	%SaveSceneAsButton.disabled = true
+	object_inspector.visible = false
 #	print_debug(connected_joystick)
 	
 func _input(event: InputEvent) -> void:
@@ -41,12 +42,11 @@ func _input(event: InputEvent) -> void:
 
 func _on_confirm_delete_dialog_confirmed() -> void:
 	var scene = game_scene.get_node_or_null("Scene")
-#	print(scene)
 	if scene:
 		scene.remove_child(selected_root_block)
 		selected_root_block.queue_free()
 
-# Call when a block is selected in the scene
+# Called when a block is selected in the scene
 func _on_selected_block(block: Node):
 	selected_root_block = block.owner if block != null else null
 #	print("selected block: ", selected_block)
@@ -54,23 +54,26 @@ func _on_selected_block(block: Node):
 		%ObjectInspector.visible = false
 		return
 	%ObjectInspector.visible = true
+	# Update data in inspector
+	%BlockName.text = block.owner.name
 	%X_pos.value = block.global_position.x / 10.0
 	%Y_pos.value = block.global_position.y / 10.0
 	%Z_pos.value = block.global_position.z / 10.0
 	%Z_rot.value = block.rotation_degrees.y
-	%BlockName.text = block.owner.name
-
-#		if block.get("joystick_enable") == null or connected_joystick.size() == 0:
-#			%JoystickContainer.visible = false
-#		else:
-#			%JoystickContainer.visible = true
-#			if block.joystick_enable: %JoystickEnableButton.set_pressed_no_signal(true)
-#			else: %JoystickEnableButton.set_pressed_no_signal(false)
-#		if block.get("UDP_port") == null:
-#			%UDPPortContainer.visible = false
-#		else:
-#			%UDPPortContainer.visible = true
-#			%UDPPortNumber.value = block.UDP_port
+	
+	if selected_root_block.get_meta("manual_control", false):
+		%ManualContainer.visible = true
+		%ManualEnableButton.button_pressed = selected_root_block.manual_control
+	else:
+		%ManualContainer.visible = false
+		
+	if selected_root_block.get_node_or_null("PythonBridge"):
+		%PythonBridgeContainer.visible = true
+#		print("activate: ", selected_root_block.get_node("PythonBridge").activate)
+		%PythonBridgeCheckButton.set_pressed_no_signal(selected_root_block.get_node("PythonBridge").activate)
+		%UDPPortNumber.value = selected_root_block.get_node("PythonBridge").port
+	else:
+		%PythonBridgeContainer.visible = false
 
 func _on_x_pos_value_changed(value: float) -> void:
 	if selected_root_block == null:
@@ -99,21 +102,20 @@ func _on_z_rot_value_changed(value: float) -> void:
 	var rigid_body = selected_root_block.get_child(0)
 	if rigid_body is RigidBody3D:
 		rigid_body.rotation_degrees.y = value
+		
+func _on_manual_enable_button_toggled(button_pressed: bool) -> void:
+	selected_root_block.manual_control = button_pressed
 
-func _on_joystick_enable_button_toggled(button_pressed: bool) -> void:
-	if selected_root_block == null:
-		return
-	selected_root_block.joystick_enable = button_pressed
-	
+func _on_python_bridge_check_button_toggled(button_pressed: bool) -> void:
+	if selected_root_block == null: return
+	selected_root_block.get_node("PythonBridge").activate = button_pressed
+
 func _on_udp_port_number_value_changed(value: float) -> void:
-	if selected_root_block == null:
-		return
-	selected_root_block.UDP_port = int(value)
-	
+	selected_root_block.get_node("PythonBridge").port = int(value)
 
 func _on_new_scene_button_pressed() -> void:
 	%NewSceneDialog.popup_centered(Vector2i(200, 300))
-	
+
 func _on_new_scene_dialog_confirmed() -> void:
 	var items = %EnvironmentList.get_selected_items()
 	if items.is_empty(): return
@@ -153,4 +155,6 @@ func load_pck():
 		var pck_path: String = assets_dir.path_join(pck_file)
 		if not ProjectSettings.load_resource_pack(pck_path, false):
 			print("Packed resource not loading")
+
+
 

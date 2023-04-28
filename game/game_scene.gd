@@ -57,7 +57,11 @@ func save_scene(path: String):
 		item.owner = scene
 		if %PositionSavedCheck.button_pressed:
 			item.set_meta("transform", item.get_child(0).transform)
-			
+		for child in item.get_children():
+			if child.name == "PythonBridge":
+				item.set_meta("python_bridge_activate", child.activate)
+				item.set_meta("python_bridge_port", child.port)
+				break
 	if not path.ends_with(".tscn"):
 		path = path + ".tscn"
 	var scene_packed := PackedScene.new()
@@ -76,11 +80,16 @@ func load_scene(path):
 	
 	scene = ResourceLoader.load(path).instantiate()
 	add_child(scene)
-	for node in scene.get_children():
-		var transform_saved = node.get_meta("transform", Transform3D())
-		if  transform_saved != Transform3D():
-			node.get_child(0).transform = transform_saved
-		freeze_item(node, true)
+	for item in scene.get_children():
+		var transform_saved = item.get_meta("transform", Transform3D())
+		if transform_saved != Transform3D():
+			item.get_child(0).transform = transform_saved
+		freeze_item(item, true)
+		for child in item.get_children():
+			if child.name == "PythonBridge":
+				child.activate = item.get_meta("python_bridge_activate", false)
+				child.port = item.get_meta("python_bridge_port", 4242)
+				break
 	connect_pickable()
 	connect_editable()
 	%RunStopButton.button_pressed = false
