@@ -7,10 +7,6 @@ var x_pos_record: PackedFloat32Array
 var y_pos_record: PackedFloat32Array
 var record_time: float = 0
 
-func _ready():
-	pass
-#	python_client_connected.connect(func(): %ConnectLight.enable = true)
-
 func run():
 	%ConnectLight.enable = true
 	

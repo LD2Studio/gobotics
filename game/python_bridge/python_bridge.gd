@@ -63,6 +63,11 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 				elif p.type == "int":
 					args.append(p.value.to_int())
 			var c = Callable(self, message.namefunc)
+			if message.typefunc == "setter":
+#				print("return setter")
+				c.callv(args)
+				return
+			
 			var ret = await c.callv(args)
 #			print("ret: ", ret)
 			if ret is float:
@@ -77,6 +82,12 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 					"value": str(ret),
 					}
 				peer.put_packet(JSON.stringify(ret_message).to_utf8_buffer())
+			elif ret is bool:
+				var ret_message = {
+					"type": "bool",
+					"value": str(ret),
+				}
+				peer.put_packet(JSON.stringify(ret_message).to_utf8_buffer())
 			elif ret is Array:
 				var ret_message = {
 					"type": "array",
@@ -86,6 +97,7 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 			elif ret is PackedByteArray:
 				peer.put_packet(ret)
 			else:
+				pass
 				var ret_message = {
 					"type": "null"
 					}
