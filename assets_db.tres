@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="GoboticsDB" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://game/database/database.gd" id="1_thmxi"]
+[ext_resource type="Script" path="res://game/database/database.gd" id="1_7o4fh"]
 
 [resource]
-script = ExtResource("1_thmxi")
+script = ExtResource("1_7o4fh")
 assets_base_path = "res://assets"
 assets = [{
 "base_dir": "res://assets/builtin",
@@ -55,6 +55,11 @@ assets = [{
 "group": "ROBOTS",
 "name": "AlphaRobot",
 "scene": "alpha_robot.tscn"
+}, {
+"base_dir": "res://assets/robot_alpha",
+"group": "ROBOTS",
+"name": "AlphaRobot2",
+"scene": "alpha_robot2.tscn"
 }, {
 "base_dir": "res://assets/robot_gamma",
 "group": "ROBOTS",

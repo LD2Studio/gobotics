@@ -15,6 +15,10 @@ func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
 	init_scene()
 	
+func _input(event):
+	pass
+	
+	
 func init_scene():
 	scene = Node3D.new()
 	scene.name = &"Scene"
@@ -48,6 +52,10 @@ func connect_editable():
 	for node in nodes:
 		if not node.is_connected("input_event", _on_editable_block_input_event):
 			node.input_event.connect(_on_editable_block_input_event.bind(node))
+		if not node.is_connected("mouse_entered", _on_editable_mouse_entered):
+			node.mouse_entered.connect(_on_editable_mouse_entered)
+		if not node.is_connected("mouse_exited", _on_editable_mouse_exited):
+			node.mouse_exited.connect(_on_editable_mouse_exited)
 
 func save_scene(path: String):
 	assert(scene != null)
@@ -154,3 +162,9 @@ func _on_editable_block_input_event(_camera, event: InputEvent, _mouse_position,
 	if event.is_action_pressed("EDIT"):
 #		print(node)
 		block_selected.emit(node)
+
+func _on_editable_mouse_entered():
+	owner.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	
+func _on_editable_mouse_exited():
+	owner.mouse_default_cursor_shape = Control.CURSOR_ARROW

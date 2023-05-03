@@ -12,7 +12,7 @@ func set_vr(speed: float):
 func set_pose(x: float, z: float, a: float):
 	%Frame.global_position.x = x * 10.0
 	%Frame.global_position.z = z * 10.0
-	%Frame.rotation_degrees.y = a
+	%Frame.rotation.y = a
 
 func get_pose() -> PackedByteArray:
 	var pose = PackedFloat32Array([

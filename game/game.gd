@@ -33,6 +33,7 @@ func _ready():
 	object_inspector.visible = false
 #	print_debug(connected_joystick)
 	
+	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("DELETE"):
 #		print(selected_block)

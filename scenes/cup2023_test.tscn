@@ -1,35 +1,32 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=5 format=3 uid="uid://y53o74br3wbg"]
 
-[ext_resource type="PackedScene" path="res://assets/cfr2023/table_2023.tscn" id="1_63yr6"]
-[ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot.tscn" id="2_1n0dp"]
-[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="3_q4kn5"]
-[ext_resource type="PackedScene" path="res://assets/cfr2023/sponge_cake.tscn" id="4_mt1ud"]
-[ext_resource type="PackedScene" path="res://assets/demo/sphere_blender.tscn" id="5_sustr"]
+[ext_resource type="PackedScene" uid="uid://cu6s120cp7aks" path="res://assets/cfr2023/table_2023.tscn" id="1_63yr6"]
+[ext_resource type="PackedScene" uid="uid://bkgptl2ad3lsq" path="res://assets/robot_alpha/alpha_robot.tscn" id="2_1n0dp"]
+[ext_resource type="PackedScene" uid="uid://boqqtvnanymuy" path="res://assets/cfr2023/sponge_cake.tscn" id="4_mt1ud"]
+[ext_resource type="PackedScene" uid="uid://n13eyvcgqyfa" path="res://assets/demo/sphere_blender.tscn" id="5_sustr"]
 
 [node name="Scene" type="Node3D"]
 
-[node name="Table2023" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_63yr6")]
+[node name="Table2023" parent="." instance=ExtResource("1_63yr6")]
 metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="AlphaRobot" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_1n0dp")]
+[node name="AlphaRobot" parent="." instance=ExtResource("2_1n0dp")]
 transform = Transform3D(0.99863, 0, -0.052336, 0, 1, 0, 0.052336, 0, 0.99863, -2.90955, 0.0499897, 0.438724)
-script = ExtResource("3_q4kn5")
 speed = 5.0
-collision_groups = 1
 metadata/transform = Transform3D(0.984849, 0.000966911, -0.173411, -0.00106918, 0.999999, -0.000496339, 0.17341, 0.000674226, 0.984849, -0.624133, 0.490961, 4.75659)
 
-[node name="SpongeCake2" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("4_mt1ud")]
+[node name="SpongeCake2" parent="." instance=ExtResource("4_mt1ud")]
 transform = Transform3D(0.325568, 0, -0.945519, 0, 1, 0, 0.945519, 0, 0.325568, 1.73231, 0.0499902, 5.73895)
 metadata/transform = Transform3D(0.327773, -0.00457702, -0.944745, -0.00234766, 0.999981, -0.00565913, 0.944753, 0.00407285, 0.327756, 1.74728, 0.0849079, 0.212857)
 
-[node name="SpongeCake3" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("4_mt1ud")]
+[node name="SpongeCake3" parent="." instance=ExtResource("4_mt1ud")]
 transform = Transform3D(0.374607, 0, 0.927184, 0, 1, 0, -0.927184, 0, 0.374607, -3.71106, 0.0499907, 2.26412)
 metadata/transform = Transform3D(0.374595, -4.72424e-05, 0.927188, -0.00478827, 0.999987, 0.00198547, -0.927176, -0.00518338, 0.37459, -0.929658, 0.0858785, -3.19282)
 
-[node name="SphereBlender" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("5_sustr")]
+[node name="SphereBlender" parent="." instance=ExtResource("5_sustr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.33055, 0.0499907, 6.66347)
 metadata/transform = Transform3D(0.660759, 0.667016, -0.344221, -0.59382, 0.745035, 0.303812, 0.459103, 0.00365888, 0.888375, -2.48277, 0.49882, 0.419466)
 
-[node name="SphereBlender3" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("5_sustr")]
+[node name="SphereBlender3" parent="." instance=ExtResource("5_sustr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.57468, 0.0499902, -0.536859)
 metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)

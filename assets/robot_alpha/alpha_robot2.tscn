@@ -1,10 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://bkgptl2ad3lsq"]
+[gd_scene load_steps=10 format=3 uid="uid://tx37yoaxty6t"]
 
-[ext_resource type="PackedScene" uid="uid://djw6p8ej1njgu" path="res://assets/robot_alpha/robot_alpha.blend" id="1_mougl"]
-[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="2_kmuq5"]
-[ext_resource type="Script" path="res://assets/robot_alpha/LeftWheel.gd" id="3_dqe0b"]
-[ext_resource type="Script" path="res://assets/robot_alpha/RightWheel.gd" id="4_s4vnl"]
-[ext_resource type="Script" path="res://assets/robot_alpha/PythonBridge.gd" id="5_2tfk0"]
+[ext_resource type="PackedScene" uid="uid://djw6p8ej1njgu" path="res://assets/robot_alpha/robot_alpha.blend" id="1_2mev7"]
+[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="2_jmn3w"]
+[ext_resource type="Script" path="res://assets/robot_alpha/LeftWheel.gd" id="3_ykn40"]
+[ext_resource type="Script" path="res://assets/robot_alpha/RightWheel.gd" id="4_lahua"]
+[ext_resource type="Script" path="res://assets/robot_alpha/PythonBridge.gd" id="5_qklky"]
 
 [sub_resource type="GDScript" id="GDScript_dbxta"]
 resource_name = "back_wheel"
@@ -16,8 +16,14 @@ resource_name = "front_wheel"
 script/source = "extends FreeWheel3D
 "
 
-[node name="AlphaRobot" groups=["ROBOTS"] instance=ExtResource("1_mougl")]
-script = ExtResource("2_kmuq5")
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_00snm"]
+height = 0.2
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_6gco3"]
+height = 0.2
+
+[node name="AlphaRobot2" groups=["ROBOTS"] instance=ExtResource("1_2mev7")]
+script = ExtResource("2_jmn3w")
 speed = 6.0
 
 [node name="Frame" parent="." index="0" groups=["EDITABLE"]]
@@ -32,7 +38,7 @@ script = SubResource("GDScript_k2oah")
 [node name="LeftWheel" parent="Frame" index="3"]
 unique_name_in_owner = true
 can_sleep = false
-script = ExtResource("3_dqe0b")
+script = ExtResource("3_ykn40")
 rotation_axis = "-X"
 helper_size = 0.6
 rotation_speed = 0.0
@@ -42,11 +48,12 @@ profile_duration = 1.0
 
 [node name="CollisionShape3D" parent="Frame/LeftWheel" index="1"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("CylinderShape3D_00snm")
 
 [node name="RightWheel" parent="Frame" index="4"]
 unique_name_in_owner = true
 can_sleep = false
-script = ExtResource("4_s4vnl")
+script = ExtResource("4_lahua")
 rotation_axis = "-X"
 helper_size = 0.6
 rotation_speed = 0.0
@@ -56,6 +63,7 @@ profile_duration = 1.0
 
 [node name="CollisionShape3D" parent="Frame/RightWheel" index="1"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("CylinderShape3D_6gco3")
 
 [node name="Frame" parent="Frame" index="5"]
 visible = false
@@ -64,8 +72,8 @@ visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3532, 0)
 billboard = 1
 no_depth_test = true
-text = "AlphaRobot"
+text = "AlphaRobot 2"
 font_size = 109
 
 [node name="PythonBridge" type="Node" parent="." index="1"]
-script = ExtResource("5_2tfk0")
+script = ExtResource("5_qklky")
