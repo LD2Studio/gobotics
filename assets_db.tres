@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="GoboticsDB" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://game/database/database.gd" id="1_7o4fh"]
+[ext_resource type="Script" path="res://game/database/database.gd" id="1_5i6pk"]
 
 [resource]
-script = ExtResource("1_7o4fh")
+script = ExtResource("1_5i6pk")
 assets_base_path = "res://assets"
 assets = [{
 "base_dir": "res://assets/builtin",

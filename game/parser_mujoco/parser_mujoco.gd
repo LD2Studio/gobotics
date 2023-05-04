@@ -1,12 +1,9 @@
 extends Node3D
 
 func _ready():
-	pass # Replace with function body.
 	var parser_mujoco = XMLParser.new()
 	var err = parser_mujoco.open("res://examples/essai.xml")
 #	print(err)
-	
-#	var line: int
 	var nodes_stack = Array()
 	while true:
 #		print("-----> line: ", parser_mujoco.get_current_line())
@@ -46,7 +43,3 @@ func _ready():
 			print("Other node: ", parser_mujoco.get_node_type())
 			
 	print("ending")
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass

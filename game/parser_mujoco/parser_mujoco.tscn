@@ -1,7 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://lv5xc1l2drng"]
+[gd_scene load_steps=6 format=3 uid="uid://6vka22jekj57"]
 
-[ext_resource type="Script" path="res://examples/parser_mujoco.gd" id="1_6gdm6"]
-[ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="2_4hhk2"]
+[ext_resource type="Script" path="res://game/parser_mujoco/parser_mujoco.gd" id="1_u8a2e"]
+[ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="2_7lqoy"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3mipk"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -17,7 +17,7 @@ tonemap_mode = 2
 glow_enabled = true
 
 [node name="parser_mujoco" type="Node3D"]
-script = ExtResource("1_6gdm6")
+script = ExtResource("1_u8a2e")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_g062p")
@@ -27,4 +27,4 @@ transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -
 shadow_enabled = true
 
 [node name="ControlCamera3D" type="Camera3D" parent="."]
-script = ExtResource("2_4hhk2")
+script = ExtResource("2_7lqoy")
