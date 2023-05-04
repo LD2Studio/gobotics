@@ -10,10 +10,10 @@ config_version=5
 
 [application]
 
-config/name="Gobotics Game"
+config/name="Gobotics"
 run/main_scene="res://game/game.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
-config/icon="res://icon.png"
+config/icon="res://gobotics_logo.svg"
 
 [display]
 

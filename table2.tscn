@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="PackedScene" path="res://assets/cfr2023/table_2023.tscn" id="1_wgvhf"]
-
-[node name="Scene" type="Node3D"]
-
-[node name="Table2023" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_wgvhf")]
-metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

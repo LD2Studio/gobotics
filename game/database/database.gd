@@ -7,7 +7,7 @@ extends Resource
 func create():
 	add_assets(assets_base_path)
 	# Save database
-	ResourceSaver.save(self, "assets_db.tres")
+#	ResourceSaver.save(self, "res://assets/assets_db.tres")
 	
 func add_assets(search_path: String):
 #	print("search path: ", search_path)
@@ -18,8 +18,11 @@ func add_assets(search_path: String):
 #	print("files tscn: ", files_tscn)
 	# Browse each scene
 	for file in files_tscn:
+#		print(file)
 		var scene: PackedScene = load(search_path.path_join(file))
 #		print_debug(scene)
+		if scene == null:
+			continue
 		var name: String = scene.get_state().get_node_name(0)
 		var group: String
 		if scene.get_state().get_node_groups(0).is_empty():

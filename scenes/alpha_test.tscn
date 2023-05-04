@@ -12,10 +12,10 @@ metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 [node name="AlphaRobot" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_irnn6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.317094, 0, 0.320482)
 script = ExtResource("3_qy27v")
-manual_control = true
+manual_control = false
 speed = 6.0
 collision_groups = 1
 metadata/manual_control = true
-metadata/transform = Transform3D(0.997433, -0.00393615, -0.0714921, 0.00385946, 0.999992, -0.0012108, 0.0714962, 0.000931772, 0.99744, 3.32088, 0.49444, 1.11854)
+metadata/transform = Transform3D(0.997557, -0.00365363, -0.0697565, 0.00363442, 0.999993, -0.000402255, 0.0697575, 0.000147748, 0.997564, 3.31709, 0.5, 1.07952)
 metadata/python_bridge_activate = true
 metadata/python_bridge_port = 4242
