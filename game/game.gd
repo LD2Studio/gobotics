@@ -9,12 +9,14 @@ extends Control
 @onready var object_inspector = %ObjectInspector
 @onready var confirm_delete_dialog: ConfirmationDialog = $ConfirmDeleteDialog
 
-
 var selected_root_block: Node
 var current_filename: String:
 	set(value):
 		current_filename = value
-		%FilenameLabel.text = current_filename.get_file().get_basename()
+		if current_filename == "":
+			%SceneFileName.text = "No Scene"
+		else:
+			%SceneFileName.text = "%s" % [current_filename.get_file().get_basename()]
 
 var connected_joystick: Array[int]
 var database: GoboticsDB = GoboticsDB.new()
@@ -31,6 +33,7 @@ func _ready():
 	%SaveSceneButton.disabled = true
 	%SaveSceneAsButton.disabled = true
 	object_inspector.visible = false
+	current_filename = ""
 #	print_debug(connected_joystick)
 	
 	
@@ -121,6 +124,7 @@ func _on_new_scene_dialog_confirmed() -> void:
 	var items = %EnvironmentList.get_selected_items()
 	if items.is_empty(): return
 	var environment_name: String = %EnvironmentList.get_item_text(items[0])
+	current_filename = "noname.tscn"
 	game_scene.new_scene(database.get_scene(environment_name))
 	
 func _on_load_scene_button_pressed():

@@ -7,18 +7,13 @@ var running: bool = false
 var mouse_pos_on_area: Vector3
 var game_area_pointed: bool = false
 
-@onready var object_inspector: VBoxContainer = %ObjectInspector
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
 @onready var save_scene_button: Button = %SaveSceneButton
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
 	init_scene()
-	
-func _input(event):
-	pass
-	
-	
+
 func init_scene():
 	scene = Node3D.new()
 	scene.name = &"Scene"
@@ -29,7 +24,6 @@ func new_scene(environment_path: String) -> void:
 	init_scene()
 	var environment = ResourceLoader.load(environment_path).instantiate()
 	scene.add_child(environment)
-#	call_deferred("connect_pickable")
 	connect_pickable()
 	%RunStopButton.button_pressed = false
 	save_scene_as_button.disabled = false
@@ -126,7 +120,7 @@ func freeze_children(node, frozen):
 		freeze_children(child, frozen)
 	
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
-	object_inspector.visible = not button_pressed
+	%ObjectInspector.visible = not button_pressed
 	if button_pressed:
 		running = true
 		%RunStopButton.text = "STOP"
