@@ -172,20 +172,20 @@ offset_right = 143.0
 offset_bottom = 26.0
 text = "Position saved"
 
-[node name="BricksPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
+[node name="PartsPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_7ehh2")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/BricksPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/PartsPanel"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/BricksPanel/VBoxContainer"]
+[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/PartsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Bricks"
+text = "Parts"
 horizontal_alignment = 1
 
-[node name="BlocksList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/BricksPanel/VBoxContainer"]
+[node name="BlocksList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/PartsPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -249,52 +249,6 @@ step = 0.01
 [node name="Z_pos" type="SpinBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = -10.0
-max_value = 10.0
-step = 0.01
-
-[node name="PosContainer" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer"]
-visible = false
-layout_mode = 2
-
-[node name="X Container" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PosContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PosContainer/X Container"]
-layout_mode = 2
-text = "X : "
-
-[node name="X_pos" type="SpinBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PosContainer/X Container"]
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = -10.0
-max_value = 10.0
-step = 0.01
-
-[node name="Y Container" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PosContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PosContainer/Y Container"]
-layout_mode = 2
-text = "Y : "
-
-[node name="Y_pos" type="SpinBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PosContainer/Y Container"]
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = -10.0
-max_value = 10.0
-step = 0.01
-
-[node name="Z Container" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PosContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PosContainer/Z Container"]
-layout_mode = 2
-text = "Z : "
-
-[node name="Z_pos" type="SpinBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PosContainer/Z Container"]
-layout_mode = 2
-size_flags_horizontal = 3
 min_value = -10.0
 max_value = 10.0
 step = 0.01

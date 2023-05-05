@@ -12,7 +12,6 @@ var game_area_pointed: bool = false
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
-	init_scene()
 
 func init_scene():
 	scene = Node3D.new()
@@ -79,8 +78,11 @@ func load_scene(path):
 	if path == "":
 		return
 	delete_scene()
-	
-	scene = ResourceLoader.load(path).instantiate()
+	var res = ResourceLoader.load(path)
+#	print(res)
+	if res == null:
+		return
+	scene = res.instantiate()
 	add_child(scene)
 	for item in scene.get_children():
 		var transform_saved = item.get_meta("transform", Transform3D())
@@ -99,7 +101,9 @@ func load_scene(path):
 	save_scene_button.disabled = false
 	
 func delete_scene():
-	var scene_node = get_node("Scene")
+	var scene_node = get_node_or_null("Scene")
+	if scene_node == null:
+		return
 	assert(scene_node!=null)
 	for node in scene_node.get_children():
 		scene_node.remove_child(node)
@@ -120,6 +124,8 @@ func freeze_children(node, frozen):
 		freeze_children(child, frozen)
 	
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
+	if scene == null:
+		return
 	%ObjectInspector.visible = not button_pressed
 	if button_pressed:
 		running = true

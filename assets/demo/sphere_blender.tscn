@@ -6,7 +6,7 @@
 friction = 0.5
 bounce = 0.4
 
-[node name="SphereBlender" groups=["PROPS"] instance=ExtResource("1_jkkw8")]
+[node name="Ball" groups=["PROPS"] instance=ExtResource("1_jkkw8")]
 
 [node name="Sphere" parent="." index="0" groups=["EDITABLE"]]
 physics_material_override = SubResource("PhysicsMaterial_wkhje")

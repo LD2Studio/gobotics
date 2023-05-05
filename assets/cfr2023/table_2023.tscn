@@ -2,6 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://6cppcle2osp2" path="res://assets/cfr2023/table2023.blend" id="1_7yp4m"]
 
-[node name="Table2023" groups=["ENVIRONMENT"] instance=ExtResource("1_7yp4m")]
+[node name="CFR2023" groups=["ENVIRONMENT"] instance=ExtResource("1_7yp4m")]
 
 [node name="StaticBody3D" parent="Plan" index="0" groups=["PICKABLE"]]
