@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/cfr2023/table_2023.tscn" id="1_b6y1p"]
+[ext_resource type="PackedScene" path="res://assets/demo/sphere_blender.tscn" id="2_us1gx"]
+
+[node name="Scene" type="Node3D"]
+
+[node name="CFR2023" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_b6y1p")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Ball" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("2_us1gx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.61342, 0.0499907, 2.26412)
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0134246, 0.450009, 0.0358818)
+metadata/python_bridge_activate = true
+metadata/python_bridge_port = 4243

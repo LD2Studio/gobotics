@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://n13eyvcgqyfa"]
+[gd_scene load_steps=4 format=3 uid="uid://n13eyvcgqyfa"]
 
 [ext_resource type="PackedScene" uid="uid://co1xtfjb4supv" path="res://assets/demo/sphere.blend" id="1_jkkw8"]
+[ext_resource type="Script" path="res://assets/demo/ball_bridge.gd" id="2_rgacw"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_wkhje"]
 friction = 0.5
@@ -9,4 +10,8 @@ bounce = 0.4
 [node name="Ball" groups=["PROPS"] instance=ExtResource("1_jkkw8")]
 
 [node name="Sphere" parent="." index="0" groups=["EDITABLE"]]
+unique_name_in_owner = true
 physics_material_override = SubResource("PhysicsMaterial_wkhje")
+
+[node name="PythonBridge" type="Node" parent="." index="1"]
+script = ExtResource("2_rgacw")

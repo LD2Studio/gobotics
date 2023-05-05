@@ -86,7 +86,10 @@ func _input(event: InputEvent) -> void:
 					_state = State.IDLE
 			"LEFT_BUTTON":
 				if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-					_state = State.ROTATED
+					if event.shift_pressed:
+						_state = State.TRANSLATED
+					else:
+						_state = State.ROTATED
 				elif event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 					_state = State.IDLE
 		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
