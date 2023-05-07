@@ -336,6 +336,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.924759, 0.380553, 0, -0.380553, 0.924759, 0, 4.95161, 12.0326)
 current = true
 script = ExtResource("5_i338u")
+action_mouse_button = "LEFT_BUTTON"
 translation_speed = 4.0
 zoom_speed = 2.0
 zoom_out = 40.0
