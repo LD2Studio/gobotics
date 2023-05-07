@@ -2,6 +2,7 @@ from gobotics import engine
 from gobotics.robots import Alpha
 import time
 
+engine.reload()
 engine.run()
 
 alpha = Alpha(4243)

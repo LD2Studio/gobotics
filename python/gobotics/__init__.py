@@ -7,5 +7,7 @@ class Gobotics(GodotBridge):
         self.set("stop")
     def is_running(self) -> bool:
         return self.get("is_running")
+    def reload(self):
+        self.set("reload")
 
 engine = Gobotics(4242)

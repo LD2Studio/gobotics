@@ -69,3 +69,4 @@ font_size = 109
 
 [node name="PythonBridge" type="Node" parent="." index="1"]
 script = ExtResource("5_2tfk0")
+port = 4243

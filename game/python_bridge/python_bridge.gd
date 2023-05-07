@@ -13,12 +13,12 @@ signal python_client_connected
 				server.stop()
 #				print("Stop listening")
 			server.listen(port)
-#			print("Listen on new port %d" % port)
+			print("Listen on new port %d" % port)
 		else:
 			server.stop()
 #			print("Stop listening")
 ## Number port listening
-@export_range(1024, 65535) var port = 4242
+@export_range(1024, 65535) var port : int
 
 var server := UDPServer.new()
 var client_peer: PacketPeerUDP

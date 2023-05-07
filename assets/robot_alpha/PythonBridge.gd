@@ -1,10 +1,5 @@
 extends PythonBridge
 
-#func _ready() -> void:
-#	print("owner: ", owner.get_node("../.."))
-
-
-
 func set_vl(speed: float):
 	%LeftWheel.rotation_speed = speed
 
@@ -24,6 +19,3 @@ func get_pose() -> PackedByteArray:
 	var data_bytes = PackedByteArray([0])
 	data_bytes.append_array(pose.to_byte_array())
 	return data_bytes
-
-#func is_running() -> bool:
-#	return owner.get_node("../..").running
