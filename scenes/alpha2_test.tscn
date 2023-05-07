@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_v7g7w"]
+[ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot.tscn" id="2_66igq"]
 [ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot2.tscn" id="2_vqq0c"]
 [ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="3_odkqu"]
 
@@ -9,13 +10,24 @@
 [node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_v7g7w")]
 metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="AlphaRobot2" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_vqq0c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.388909, 0, -0.545043)
+[node name="AlphaRobot" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_66igq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.317094, 0, 0.320482)
 script = ExtResource("3_odkqu")
 manual_control = false
 speed = 6.0
 collision_groups = 1
 metadata/manual_control = true
-metadata/transform = Transform3D(0.998649, 0.000244991, -0.0519702, -0.000284349, 1, -0.000749925, 0.05197, 0.000763689, 0.998648, 0.288885, 0.493547, 2.34489)
+metadata/transform = Transform3D(-0.0697557, 0.000422343, 0.997564, 0.0023425, 0.999997, -0.000259572, -0.997561, 0.00231869, -0.0697565, 2.11709, 0.495346, -2.42048)
 metadata/python_bridge_activate = true
-metadata/python_bridge_port = 4242
+metadata/python_bridge_port = 4243
+
+[node name="AlphaRobot2" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_vqq0c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.55275, 0, 3.01318)
+script = ExtResource("3_odkqu")
+manual_control = false
+speed = 6.0
+collision_groups = 1
+metadata/manual_control = true
+metadata/transform = Transform3D(1, 9.66009e-05, 0, -9.66009e-05, 1, 5.60883e-05, 5.41818e-09, -5.60883e-05, 1, -0.0472517, 0.499488, -0.0131779)
+metadata/python_bridge_activate = true
+metadata/python_bridge_port = 4244

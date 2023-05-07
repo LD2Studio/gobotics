@@ -12,6 +12,7 @@ var game_area_pointed: bool = false
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
+	$PythonBridge.activate = true
 
 func init_scene():
 	scene = Node3D.new()
@@ -91,8 +92,8 @@ func load_scene(path):
 		freeze_item(item, true)
 		for child in item.get_children():
 			if child.name == "PythonBridge":
-				child.activate = item.get_meta("python_bridge_activate", false)
 				child.port = item.get_meta("python_bridge_port", 4242)
+				child.activate = item.get_meta("python_bridge_activate", false)
 				break
 	connect_pickable()
 	connect_editable()

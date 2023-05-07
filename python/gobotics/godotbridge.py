@@ -4,10 +4,13 @@ import struct
 import numpy as np
 
 class GodotBridge:
-    
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+    ports_used = []
     def __init__(self, PORT=4242):
+        if PORT in self.ports_used:
+            print(f"[Warning] Port {PORT} already used")
+            return
+        self.ports_used.append(PORT)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.connect(("127.0.0.1", PORT))
         # Flush recv data
 
@@ -47,7 +50,7 @@ class GodotBridge:
         try:
             self.sock.send(json_message.encode("utf-8"))
         except:
-            print("[Error] Sending message failed")
+            print("[Error] No communication !")
             return
 
     def get(self, namefunc, *args):
@@ -86,7 +89,7 @@ class GodotBridge:
         try:
             self.sock.send(json_message.encode("utf-8"))
         except:
-            print("[Error] Sending message failed")
+            print("[Error] No communication !")
             return
         try:
             recv_data = self.sock.recv(100000)

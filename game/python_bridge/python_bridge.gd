@@ -11,12 +11,12 @@ signal python_client_connected
 		if activate:
 			if server.is_listening():
 				server.stop()
-				print("Stop listening")
+#				print("Stop listening")
 			server.listen(port)
-			print("Listen on new port %d" % port)
+#			print("Listen on new port %d" % port)
 		else:
 			server.stop()
-			print("Stop listening")
+#			print("Stop listening")
 ## Number port listening
 @export_range(1024, 65535) var port = 4242
 
@@ -33,7 +33,7 @@ func _process(_delta):
 	if server.is_connection_available():
 		var peer: PacketPeerUDP = server.take_connection()
 		client_peer = peer
-		print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_packet_port()])
+#		print("Accepted peer: %s:%s on PORT %d" % [peer.get_packet_ip(), peer.get_packet_port(), port])
 		python_client_connected.emit()
 
 	if client_peer:
@@ -56,7 +56,7 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 #		print_debug("<%s> method exist" % message)
 			var params: Array = message.params
 #			print(params)
-			var args: Array
+			var args = Array()
 			for p in params:
 				if p.type == "float":
 					args.append(p.value.to_float())
