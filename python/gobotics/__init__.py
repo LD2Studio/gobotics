@@ -1,4 +1,5 @@
 from gobotics.godotbridge import GodotBridge
+import time
 
 class Gobotics(GodotBridge):
     def run(self):
@@ -9,5 +10,6 @@ class Gobotics(GodotBridge):
         return self.get("is_running")
     def reload(self):
         self.set("reload")
+        time.sleep(0.1)
 
 engine = Gobotics(4242)

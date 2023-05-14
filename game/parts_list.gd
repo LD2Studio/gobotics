@@ -2,12 +2,6 @@ extends ItemList
 
 @onready var database: GoboticsDB = owner.database
 
-func _ready():
-	clear()
-	for asset in database.assets:
-		if asset.group == "ROBOTS" or asset.group == "PROPS":
-			add_item(asset.name)
-
 func _get_drag_data(at_position: Vector2):
 	var idx = get_item_at_position(at_position, true)
 	if idx == -1 or %GameScene.running:

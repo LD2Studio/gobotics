@@ -4,6 +4,7 @@ extends Control
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
+@onready var parts_list = %PartsList
 @onready var control_camera_3d: Camera3D = %ControlCamera3D
 @onready var top_camera_2d: Camera3D = %TopCamera2D
 @onready var object_inspector = %ObjectInspector
@@ -27,6 +28,7 @@ func _enter_tree():
 	database.create()
 
 func _ready():
+	init_part_list()
 	game_scene.block_selected.connect(_on_selected_block)
 	confirm_delete_dialog.confirmed.connect(_on_confirm_delete_dialog_confirmed)
 	connected_joystick = Input.get_connected_joypads()
@@ -115,6 +117,7 @@ func _on_python_bridge_check_button_toggled(button_pressed: bool) -> void:
 	selected_root_block.get_node("PythonBridge").activate = button_pressed
 
 func _on_udp_port_number_value_changed(value: float) -> void:
+	if selected_root_block == null: return
 	selected_root_block.get_node("PythonBridge").port = int(value)
 
 func _on_new_scene_button_pressed() -> void:
@@ -161,5 +164,9 @@ func load_pck():
 		if not ProjectSettings.load_resource_pack(pck_path, false):
 			print("Packed resource not loading")
 
-
+func init_part_list():
+	parts_list.clear()
+	for asset in database.assets:
+		if asset.group == "ROBOTS" or asset.group == "PROPS":
+			parts_list.add_item(asset.name)
 

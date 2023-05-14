@@ -13,6 +13,9 @@ func _drop_data(_at_position: Vector2, data) -> void:
 	game_scene.freeze_item(data, true)
 	game_scene.get_node("Scene").add_child(data)
 	game_scene.connect_editable()
+	var part_name = data.get_node_or_null("%PartName")
+	if part_name:
+		part_name.text = data.name
 
 func get_new_name(current_name: StringName) -> StringName:
 #	print(current_name)
@@ -24,6 +27,6 @@ func get_new_name(current_name: StringName) -> StringName:
 		return current_name
 	else:
 		var idx=2
-		while (&"%s%d" % [current_name, idx]) in block_names_used:
+		while (&"%s_%d" % [current_name, idx]) in block_names_used:
 			idx += 1
-		return &"%s%d" % [current_name, idx]
+		return &"%s_%d" % [current_name, idx]

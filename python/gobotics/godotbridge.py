@@ -8,7 +8,7 @@ class GodotBridge:
     def __init__(self, PORT=4242):
         if PORT in self.ports_used:
             print(f"[Warning] Port {PORT} already used")
-            return
+            
         self.ports_used.append(PORT)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.connect(("127.0.0.1", PORT))

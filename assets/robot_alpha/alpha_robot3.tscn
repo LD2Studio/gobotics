@@ -69,7 +69,8 @@ transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 
 [node name="Frame" parent="Frame" index="5"]
 visible = false
 
-[node name="RobotName" type="Label3D" parent="Frame" index="7"]
+[node name="PartName" type="Label3D" parent="Frame" index="7"]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3532, 0)
 billboard = 1
 no_depth_test = true
@@ -78,3 +79,4 @@ font_size = 109
 
 [node name="PythonBridge" type="Node" parent="." index="1"]
 script = ExtResource("5_t430g")
+port = 4243
