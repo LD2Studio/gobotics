@@ -9,15 +9,23 @@ var right_wheel: RotationActuator3D:
 	set(object):
 		right_wheel = object
 		right_wheel.actuator_type = "MOTOR"
+		python.right_wheel = right_wheel
 		
 var left_wheel: RotationActuator3D:
 	set(object):
 		left_wheel = object
 		left_wheel.actuator_type = "MOTOR"
+		python.left_wheel = left_wheel
 
 @onready var frame:RigidBody3D
+@onready var python = DifferentialRobotPythonBridge.new()
 
-func initialize():
+func _enter_tree():
+	add_to_group("PYTHON")
+
+func init():
+	add_child(python)
+	python.root_rigid_body = get_child(0)
 	set_meta("manual_control", true)
 	frame = get_child(0)
 	frame.freeze = true

@@ -1,10 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://bkgptl2ad3lsq"]
+[gd_scene load_steps=7 format=3 uid="uid://bkgptl2ad3lsq"]
 
 [ext_resource type="PackedScene" uid="uid://djw6p8ej1njgu" path="res://assets/robot_alpha/robot_alpha.blend" id="1_mougl"]
 [ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="2_kmuq5"]
 [ext_resource type="Script" path="res://assets/robot_alpha/LeftWheel.gd" id="3_dqe0b"]
 [ext_resource type="Script" path="res://assets/robot_alpha/RightWheel.gd" id="4_s4vnl"]
-[ext_resource type="Script" path="res://assets/robot_alpha/PythonBridge.gd" id="5_2tfk0"]
 
 [sub_resource type="GDScript" id="GDScript_dbxta"]
 resource_name = "back_wheel"
@@ -16,7 +15,7 @@ resource_name = "front_wheel"
 script/source = "extends FreeWheel3D
 "
 
-[node name="AlphaRobot" groups=["ROBOTS"] instance=ExtResource("1_mougl")]
+[node name="AlphaRobot" groups=["PARTS"] instance=ExtResource("1_mougl")]
 script = ExtResource("2_kmuq5")
 speed = 6.0
 
@@ -67,7 +66,3 @@ billboard = 1
 no_depth_test = true
 text = "AlphaRobot"
 font_size = 109
-
-[node name="PythonBridge" type="Node" parent="." index="1"]
-script = ExtResource("5_2tfk0")
-port = 4243

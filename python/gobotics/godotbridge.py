@@ -123,6 +123,10 @@ class GodotBridge:
                 return float(ret_message['value'])
             elif ret_message['type'] == 'int':
                 return int(ret_message['value'])
+            elif ret_message['type'] == 'vec3':
+                return ret_message['value']
+            elif ret_message['type'] == 'float_array':
+                return ret_message['value']
             elif ret_message['type'] == 'array':
                 return ret_message['value']
             else:

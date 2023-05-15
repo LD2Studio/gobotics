@@ -18,13 +18,14 @@ signal python_client_connected
 			server.stop()
 #			print("Stop listening")
 ## Number port listening
-@export_range(1024, 65535) var port : int
+@export_range(4243, 4300) var port : int = 4243
 
 var server := UDPServer.new()
 var client_peer: PacketPeerUDP
 
 func _enter_tree() -> void:
-	assert(name == &"PythonBridge", "PythonBridge node cannot be renamed!")
+	add_to_group("PYTHON")
+#	assert(name == &"PythonBridge", "PythonBridge node cannot be renamed!")
 
 func _process(_delta):
 	if not server.is_listening(): return
@@ -88,6 +89,19 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 					"value": str(ret),
 				}
 				peer.put_packet(JSON.stringify(ret_message).to_utf8_buffer())
+			elif ret is Vector3:
+				var vec3_value = PackedFloat32Array([ret.x, ret.y, ret.z])
+				var ret_message = {
+					"type": "vec3",
+					"value": vec3_value,
+					}
+				peer.put_packet(JSON.stringify(ret_message).to_ascii_buffer())
+			elif ret is PackedFloat32Array:
+				var ret_message = {
+					"type": "float_array",
+					"value": ret,
+					}
+				peer.put_packet(JSON.stringify(ret_message).to_ascii_buffer())
 			elif ret is Array:
 				var ret_message = {
 					"type": "array",
@@ -105,6 +119,6 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 			
 		else:
 			var ret_message = {
-					"error": "function doesn't exist!"
+					"error": "None function available!"
 					}
 			peer.put_packet(JSON.stringify(ret_message).to_utf8_buffer())

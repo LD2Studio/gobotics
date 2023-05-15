@@ -1,28 +1,21 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_md0t4"]
-[ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot3.tscn" id="3_8fw3c"]
-[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="3_62shd"]
-[ext_resource type="PackedScene" path="res://assets/demo/sphere_blender.tscn" id="4_fnb5h"]
+[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_prwm6"]
+[ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot.tscn" id="2_adl82"]
+[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="3_nqp57"]
 
 [node name="Scene" type="Node3D"]
 
-[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_md0t4")]
+[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_prwm6")]
 metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="Ball" type="Node3D" parent="." groups=["PROPS"] instance=ExtResource("4_fnb5h")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.131248, 0, -2.625)
-metadata/transform = Transform3D(0.64499, -0.752811, -0.131395, -0.124098, -0.272839, 0.954022, -0.754048, -0.599029, -0.2694, -0.131248, 0.498796, 0.625)
-metadata/python_bridge_activate = false
-metadata/python_bridge_port = 0
-
-[node name="AlphaRobot3" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("3_8fw3c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.228598, 0, 0.505855)
-script = ExtResource("3_62shd")
+[node name="AlphaRobot" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_adl82")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.725149, 0, 0.444622)
+script = ExtResource("3_nqp57")
 manual_control = false
 speed = 6.0
 collision_groups = 1
 metadata/manual_control = true
-metadata/transform = Transform3D(0.0174523, 0.00299573, -0.999843, -2.67258e-05, 0.999996, 0.00299572, 0.999848, -2.55606e-05, 0.0174523, 3.5286, 0.5, -2.80586)
+metadata/transform = Transform3D(-0.000987101, 0.003295, 0.999994, -0.00409501, 0.999986, -0.00329902, -0.999991, -0.00409825, -0.000973594, 2.56249, 0.494552, -0.401838)
 metadata/python_bridge_activate = true
 metadata/python_bridge_port = 4243

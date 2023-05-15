@@ -5,7 +5,7 @@
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_437jw"]
 friction = 0.5
 
-[node name="SpongeCake" groups=["PROPS"] instance=ExtResource("1_53rdu")]
+[node name="SpongeCake" groups=["PARTS"] instance=ExtResource("1_53rdu")]
 
 [node name="SpongeCakeLayer" parent="." index="0" groups=["EDITABLE"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)

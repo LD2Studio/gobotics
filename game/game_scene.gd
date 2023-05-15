@@ -60,7 +60,7 @@ func save_scene(path: String):
 		if %PositionSavedCheck.button_pressed:
 			item.set_meta("transform", item.get_child(0).transform)
 		for child in item.get_children():
-			if child.name == "PythonBridge":
+			if child.is_in_group("PYTHON"):
 				item.set_meta("python_bridge_activate", child.activate)
 				item.set_meta("python_bridge_port", child.port)
 				break
@@ -91,7 +91,7 @@ func load_scene(path):
 			item.get_child(0).transform = transform_saved
 		freeze_item(item, true)
 		for child in item.get_children():
-			if child.name == "PythonBridge":
+			if child.is_in_group("PYTHON"):
 				child.port = item.get_meta("python_bridge_port", 4242)
 				child.activate = item.get_meta("python_bridge_activate", false)
 				break

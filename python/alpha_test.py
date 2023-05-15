@@ -2,10 +2,11 @@ from gobotics import engine
 from gobotics.robots import Alpha
 import time
 
-engine.reload()
-
+# engine.reload()
 alpha = Alpha(4243)
-alpha.set_pose(0,0,0)
+alpha.set_pose(0,0.2,0)
+print(alpha.get_pose())
+
 engine.run()
 
 alpha.move(4,4)

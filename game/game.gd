@@ -73,11 +73,10 @@ func _on_selected_block(block: Node):
 	else:
 		%ManualContainer.visible = false
 		
-	if selected_root_block.get_node_or_null("PythonBridge"):
+	if selected_root_block.is_in_group("PYTHON"):
 		%PythonBridgeContainer.visible = true
-#		print("activate: ", selected_root_block.get_node("PythonBridge").activate)
-		%PythonBridgeCheckButton.set_pressed_no_signal(selected_root_block.get_node("PythonBridge").activate)
-		%UDPPortNumber.value = selected_root_block.get_node("PythonBridge").port
+		%PythonBridgeCheckButton.set_pressed_no_signal(selected_root_block.python.activate)
+		%UDPPortNumber.value = selected_root_block.python.port
 	else:
 		%PythonBridgeContainer.visible = false
 
@@ -114,11 +113,13 @@ func _on_manual_enable_button_toggled(button_pressed: bool) -> void:
 
 func _on_python_bridge_check_button_toggled(button_pressed: bool) -> void:
 	if selected_root_block == null: return
-	selected_root_block.get_node("PythonBridge").activate = button_pressed
+	if selected_root_block.is_in_group("PYTHON"):
+		selected_root_block.python.activate = button_pressed
 
 func _on_udp_port_number_value_changed(value: float) -> void:
 	if selected_root_block == null: return
-	selected_root_block.get_node("PythonBridge").port = int(value)
+	if selected_root_block.is_in_group("PYTHON"):
+		selected_root_block.port = int(value)
 
 func _on_new_scene_button_pressed() -> void:
 	%NewSceneDialog.popup_centered(Vector2i(200, 300))
@@ -166,7 +167,8 @@ func load_pck():
 
 func init_part_list():
 	parts_list.clear()
+#	print(database.assets)
 	for asset in database.assets:
-		if asset.group == "ROBOTS" or asset.group == "PROPS":
+		if asset.group == "PARTS":
 			parts_list.add_item(asset.name)
 
