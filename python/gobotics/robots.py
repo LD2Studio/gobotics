@@ -14,3 +14,5 @@ class Alpha(GodotBridge):
     def move_to(self, target_pos: tuple, speed: float):
         self.set("move_to", target_pos, speed)
     
+    def task_finished(self) -> bool:
+        return self.get("task_finished")

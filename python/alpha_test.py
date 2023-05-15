@@ -8,7 +8,14 @@ alpha.set_pose(0,0,0)
 engine.run()
 
 alpha.move_to((1,0.05,1), 5)
+while not alpha.task_finished():
+    time.sleep(1)
 
+alpha.move_to((0,0.05,1), 5)
+while not alpha.task_finished():
+    time.sleep(1)
+
+engine.stop()
 
 # print(alpha.get_pose())
 

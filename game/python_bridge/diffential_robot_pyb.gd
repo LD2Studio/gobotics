@@ -14,6 +14,7 @@ var _dir_to_target: Vector3
 var _move_forward: bool = false
 var _start_pos: Vector3
 var _distance_to_cover: float
+var _task_finished: bool = false
 
 func _physics_process(delta):
 #	print("loop")
@@ -38,6 +39,7 @@ func move(right_vel: float, left_vel: float):
 	left_wheel.rotation_speed = left_vel
 
 func move_to(target_pos: Vector3, speed: float):
+	_task_finished = false
 	var current_pos = root_rigid_body.global_position/10.0
 #	print("current pos: ", current_pos)
 	var dir_to_target: Vector3 = current_pos.direction_to(target_pos)
@@ -50,6 +52,10 @@ func move_to(target_pos: Vector3, speed: float):
 	
 #	await get_tree().create_timer(4).timeout
 	move(0,0)
+	_task_finished = true
+	
+func task_finished() -> bool:
+	return _task_finished
 	
 func align_to(dir, speed):
 #	print("align_to")
