@@ -39,7 +39,14 @@ class GodotBridge:
                     "type": "bool",
                     "value": arg_str,
                 }
-        
+                params.append(param)
+            elif type(arg) is tuple:
+                if len(arg) == 3:
+                    param = {
+                        "type": "vec3",
+                        "value": arg,
+                    }
+                params.append(param)
         message = {
             "namefunc": namefunc,
             "typefunc": "setter",

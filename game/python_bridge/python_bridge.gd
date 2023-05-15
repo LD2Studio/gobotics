@@ -63,6 +63,9 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 					args.append(p.value.to_float())
 				elif p.type == "int":
 					args.append(p.value.to_int())
+				elif p.type == "vec3":
+					var vec3 = Vector3(p.value[0], p.value[1], p.value[2])
+					args.append(vec3)
 			var c = Callable(self, message.namefunc)
 			if message.typefunc == "setter":
 #				print("return setter")

@@ -1,10 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://cbddsmtk0xu3j"]
+[gd_scene load_steps=7 format=3 uid="uid://cbddsmtk0xu3j"]
 
 [ext_resource type="PackedScene" uid="uid://djw6p8ej1njgu" path="res://assets/robot_alpha/robot_alpha.blend" id="1_rrslu"]
 [ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="2_mc2bb"]
 [ext_resource type="Script" path="res://assets/robot_alpha/LeftWheel.gd" id="3_k615b"]
 [ext_resource type="Script" path="res://assets/robot_alpha/RightWheel.gd" id="4_jrlwc"]
-[ext_resource type="Script" path="res://assets/robot_alpha/PythonBridge.gd" id="5_t430g"]
 
 [sub_resource type="GDScript" id="GDScript_dbxta"]
 resource_name = "back_wheel"
@@ -76,7 +75,3 @@ billboard = 1
 no_depth_test = true
 text = "AlphaRobot"
 font_size = 109
-
-[node name="PythonBridge" type="Node" parent="." index="1"]
-script = ExtResource("5_t430g")
-port = 4243

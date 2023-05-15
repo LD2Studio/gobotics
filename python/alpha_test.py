@@ -4,17 +4,21 @@ import time
 
 # engine.reload()
 alpha = Alpha(4243)
-alpha.set_pose(0,0.2,0)
-print(alpha.get_pose())
-
+alpha.set_pose(0,0,0)
 engine.run()
 
-alpha.move(4,4)
-time.sleep(1)
-alpha.move(4,-4)
-time.sleep(1)
-alpha.move(-4,-4)
-time.sleep(1)
-alpha.move(0,0)
+alpha.move_to((1,0.05,1), 5)
 
-engine.stop()
+
+# print(alpha.get_pose())
+
+
+# alpha.move(4,4)
+# time.sleep(1)
+# alpha.move(4,-4)
+# time.sleep(1)
+# alpha.move(-4,-4)
+# time.sleep(5)
+# alpha.move(0,0)
+
+# engine.stop()

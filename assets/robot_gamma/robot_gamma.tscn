@@ -9,12 +9,7 @@ script/source = "extends DifferentialRobot
 @onready var arm = $Frame/Arm
 
 func _ready():
-	init()
-	right_wheel = $Frame/RightWheel
-	left_wheel = $Frame/LeftWheel
-	right_wheel.torque_constant = 10
-	left_wheel.torque_constant = 10
-	arm.torque_constant = 20
+	init($Frame/RightWheel, $Frame/LeftWheel)
 	
 func _process(_delta):
 	update_input()
