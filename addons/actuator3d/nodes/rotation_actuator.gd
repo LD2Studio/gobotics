@@ -4,9 +4,16 @@
 class_name RotationActuator3D
 extends RigidBody3D
 
-@export_enum("MOTOR", "SERVO") var actuator_type = "MOTOR":
+@export_enum("MOTOR", "SERVO", "FREE") var actuator_type = "MOTOR":
 	set(value):
 		actuator_type = value
+		set_limit()
+		if not only_debug or Engine.is_editor_hint():
+			draw_help()
+		if actuator_type == "SERVO":
+			create_servo_pid()
+		else:
+			delete_servo_pid()
 		notify_property_list_changed()
 
 @export var exclude_nodes_from_collision: bool = true
@@ -34,31 +41,35 @@ var torque_constant: float = 1.0:
 			printerr("Higher constant torque motor can make the motor unstable!")
 
 ## Desired angle value in °
-var desired_angle: float = 0:
+var target_angle: float = 0:
 	set(value):
-		if desired_angle != value:
-			desired_angle = clamp(value, -180, 180)
+		if target_angle != value:
+			target_angle = clamp(value, -180, 180)
 			_in_angle = rad_to_deg(current_angle)
-			_out_angle = desired_angle
+			_out_angle = target_angle
 			_step_count = int(profile_duration * Engine.physics_ticks_per_second)
 			_step = 0
 #			print("in_angle: %f , out_angle: %f , step_count: %d" %[_in_angle, _out_angle, _step_count])
 
-var max_angle: float = 90:
+var max_angle: float = 179:
 	set(value):
 		max_angle = value
 		if Engine.is_editor_hint() or not only_debug:
 			draw_help()
 		update_limit()
 		
-var min_angle: float = -90:
+var min_angle: float = -179:
 	set(value):
 		min_angle = value
 		if Engine.is_editor_hint() or not only_debug:
 			draw_help()
 		update_limit()
 
-var servo_damping: float = 5.0
+var velocity_damping: float = 5.0
+var velocity_constant: float = 5.0:
+	set(value):
+		if value >= 5.0:
+			velocity_constant = value
 var angle_profile: float = 1.0
 var profile_duration: float = 1.0
 
@@ -84,6 +95,12 @@ func _get_property_list():
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 			})
+			# Stokage only
+			props.append({
+				"name": "target_angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
 			props.append({
 				"name": "angle_profile",
 				"type": TYPE_FLOAT,
@@ -94,6 +111,26 @@ func _get_property_list():
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE,
 			})
+			props.append({
+				"name": "max_angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "min_angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "velocity_damping",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "velocity_constant",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
 		"SERVO":
 			props.append({
 				"name": "Servo parameters",
@@ -101,25 +138,25 @@ func _get_property_list():
 				"usage": PROPERTY_USAGE_GROUP,
 			})
 			props.append({
-				"name": "desired_angle",
+				"name": "target_angle",
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 				"hint": PROPERTY_HINT_RANGE,
-				"hint_string": "-170,170",
+				"hint_string": "-179,179",
 			})
 			props.append({
 				"name": "max_angle",
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 				"hint": PROPERTY_HINT_RANGE,
-				"hint_string": "0,170",
+				"hint_string": "0,179",
 			})
 			props.append({
 				"name": "min_angle",
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 				"hint": PROPERTY_HINT_RANGE,
-				"hint_string": "-170,0",
+				"hint_string": "-179,0",
 			})
 			props.append({
 				"name": "torque_constant",
@@ -127,7 +164,12 @@ func _get_property_list():
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 			})
 			props.append({
-				"name": "servo_damping",
+				"name": "velocity_damping",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+			})
+			props.append({
+				"name": "velocity_constant",
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 			})
@@ -149,6 +191,59 @@ func _get_property_list():
 				"hint": PROPERTY_HINT_RANGE,
 				"hint_string": "0.2,2"
 			})
+			# stockage only
+			props.append({
+				"name": "rotation_speed",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+		"FREE":
+			props.append({
+				"name": "Hinge parameters",
+				"type": TYPE_STRING,
+				"usage": PROPERTY_USAGE_GROUP,
+			})
+			# Stockage only
+			props.append({
+				"name": "rotation_speed",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "target_angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "angle_profile",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "profile_duration",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "max_angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "min_angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "velocity_damping",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "velocity_constant",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
 	return props
 
 @export_group("Debug")
@@ -158,7 +253,7 @@ func _get_property_list():
 		if is_instance_valid(_help_meshinstance):
 			_help_meshinstance.scale = Vector3.ONE * helper_size
 @export var only_debug: bool = true
-			
+
 ## Current angular velocity in MOTOR mode
 var current_velocity: float
 ## Current angle in SERVO mode
@@ -174,15 +269,11 @@ var _out_angle: float
 var _step_count: int
 var _step: float
 var _inertia_shaft: float
+var _servo_pid: PIDController
 
 func _enter_tree() -> void:
 	_joint.name = "HingeJoint"
-	match actuator_type:
-		"MOTOR":
-			_joint.set("angular_limit_z/enabled", false)
-		"SERVO":
-			_joint.set("angular_limit_z/enabled", true)
-			update_limit()
+	set_limit()
 	_joint.node_a = ^"../.."
 	_joint.node_b = ^"../"
 	_joint.exclude_nodes_from_collision = exclude_nodes_from_collision
@@ -217,7 +308,6 @@ func _exit_tree() -> void:
 	remove_child(_joint)
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
-#	print("actuator...")
 	_inertia_shaft = PhysicsServer3D.body_get_direct_state(get_node(".").get_rid()).inverse_inertia.inverse().z
 	match actuator_type:
 		"MOTOR":
@@ -286,15 +376,9 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			else:
 				ease_angle = _out_angle
 			var err = deg_to_rad(ease_angle) - current_angle
-			var x: float
-			if controllers.is_empty():
-				x = err
-			else:
-				x = err
-				for controller in controllers:
-					x = controller.process(x)
-#			print("x: ", x)
-			var torque_cmd = torque_constant * x - servo_damping * current_velocity
+			var x: float = _servo_pid.process(err)
+			x -= velocity_constant * current_velocity # internal loop feedback for velocity control
+			var torque_cmd = torque_constant * x - velocity_damping * current_velocity
 #			print("angle: %f , vel: %f , err: %f , cmd: %f" %[rad_to_deg(current_angle), current_velocity, err, torque_cmd])
 			match rotation_axis:
 				"X":
@@ -312,14 +396,21 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			if not Engine.is_editor_hint() and not only_debug:
 				update_help()
 			
+		"FREE":
+			pass
 func draw_help():
 	match actuator_type:
 		"MOTOR":
 			draw_rotation_circle()
 		"SERVO":
 			draw_angle_sector()
+		"FREE":
+			draw_free_rotation()
 		
 	_help_meshinstance.scale = Vector3.ONE * helper_size
+	
+func draw_free_rotation():
+	_help_mesh.clear_surfaces()
 			
 func draw_rotation_circle():
 	var edges = 24
@@ -420,6 +511,16 @@ func update_help():
 		"-Z":
 			_help_meshinstance.rotation_degrees = Vector3(180, 0, rad_to_deg(-current_angle))
 
+func set_limit():
+	match actuator_type:
+		"MOTOR":
+			_joint.set("angular_limit_z/enabled", false)
+		"SERVO":
+			_joint.set("angular_limit_z/enabled", true)
+			update_limit()
+		"FREE":
+			_joint.set("angular_limit_z/enabled", false)
+
 func update_limit():
 #	print("update limit: ", rotation_axis)
 	match rotation_axis:
@@ -441,3 +542,16 @@ func update_limit():
 		"-Z":
 			_joint.set("angular_limit_z/upper_angle", deg_to_rad(max_angle))
 			_joint.set("angular_limit_z/lower_angle", deg_to_rad(min_angle))
+
+func create_servo_pid():
+	if _servo_pid != null: return
+	_servo_pid = PIDController.new()
+	_servo_pid.Kp = 50
+	_servo_pid.Ki = 5
+
+func delete_servo_pid():
+	if _servo_pid == null: return
+#	print("ref pid: ", _servo_pid.get_reference_count())
+	_servo_pid.unreference()
+#	print("ref pid: ", _servo_pid.get_reference_count())
+	_servo_pid = null

@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_qj0dk"]
+[ext_resource type="PackedScene" path="res://assets/cfr2023/cream_layer.tscn" id="2_m1q5e"]
+[ext_resource type="PackedScene" path="res://assets/cfr2023/sponge_cake.tscn" id="3_0qxx1"]
+
+[node name="Scene" type="Node3D"]
+
+[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_qj0dk")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="CreamLayer" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_m1q5e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.230005, 0, -0.335773)
+metadata/transform = Transform3D(0.999996, -0.00266019, -0.00101043, 0.0026642, 0.999989, 0.00398067, 0.000999829, -0.00398334, 0.999992, 0.0306424, 0.0975602, 0.0358143)
+
+[node name="SpongeCake" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("3_0qxx1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.357266, -1.19209e-07, 1.81127)
+metadata/transform = Transform3D(1, -0.000478689, 1.34223e-06, 0.000478691, 0.999997, -0.0024842, -1.53065e-07, 0.0024842, 0.999997, -0.0125366, 0.0984935, -0.0167398)
+
+[node name="CreamLayer_2" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_m1q5e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.635594, -1.19209e-07, -1.18412)
+metadata/transform = Transform3D(0.999997, -0.00265847, 9.04243e-05, 0.00265809, 0.999989, 0.00398345, -0.000101013, -0.00398319, 0.999992, -0.836209, 0.287557, 0.883287)
+
+[node name="CreamLayer_3" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_m1q5e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.38614, 0, -1.19429)
+metadata/transform = Transform3D(0.999986, -0.0028065, 0.00450865, 0.00278911, 0.999989, 0.00385829, -0.00451943, -0.00384566, 0.999982, -1.57627, 0.477676, 0.893305)
+
+[node name="SpongeCake_2" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("3_0qxx1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.31334, 0, 3.29547)
+metadata/transform = Transform3D(0.999824, 0.0016671, -0.0186903, -0.00178862, 0.999977, -0.00648716, 0.018679, 0.00651945, 0.999804, 0.924334, 0.494805, -1.49035)
+
+[node name="SpongeCake_3" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("3_0qxx1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.14979, 0, 2.85124)
+metadata/transform = Transform3D(0.999847, -0.00114373, -0.0174571, 0.00109188, 0.999995, -0.00297955, 0.0174604, 0.00296003, 0.999843, -1.54314, 0.29647, -1.05481)

@@ -26,9 +26,9 @@ var is_up: bool = false:
 	set(value):
 		is_up = value
 		if is_up:
-			desired_angle = -30
+			target_angle = -30
 		else:
-			desired_angle = 0
+			target_angle = 0
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dfh64"]
@@ -71,13 +71,6 @@ script = SubResource("GDScript_c5e1w")
 actuator_type = "SERVO"
 helper_size = 0.5
 only_debug = false
-desired_angle = 0.0
-max_angle = 90.0
-min_angle = -90.0
-torque_constant = 1.0
-servo_damping = 5.0
-angle_profile = 1.0
-profile_duration = 1.0
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="Frame/Arm" index="2"]
 transform = Transform3D(1, 1.11759e-08, 0, 5.58794e-09, 1, 0, 3.05533e-13, 1.33227e-15, 1, -1.54083, -0.82038, -0.00160365)
@@ -94,8 +87,13 @@ rotation_axis = "-X"
 helper_size = 0.6
 rotation_speed = 0.0
 torque_constant = 10.0
+target_angle = 0.0
 angle_profile = 1.0
 profile_duration = 1.0
+max_angle = 179.0
+min_angle = -179.0
+velocity_damping = 5.0
+velocity_constant = 5.0
 
 [node name="CollisionShape3D" parent="Frame/LeftWheel" index="1"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
@@ -107,8 +105,13 @@ rotation_axis = "-X"
 helper_size = 0.6
 rotation_speed = 0.0
 torque_constant = 10.0
+target_angle = 0.0
 angle_profile = 1.0
 profile_duration = 1.0
+max_angle = 179.0
+min_angle = -179.0
+velocity_damping = 5.0
+velocity_constant = 5.0
 
 [node name="CollisionShape3D" parent="Frame/RightWheel" index="1"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)

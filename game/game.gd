@@ -119,7 +119,7 @@ func _on_python_bridge_check_button_toggled(button_pressed: bool) -> void:
 func _on_udp_port_number_value_changed(value: float) -> void:
 	if selected_root_block == null: return
 	if selected_root_block.is_in_group("PYTHON"):
-		selected_root_block.port = int(value)
+		selected_root_block.python.port = int(value)
 
 func _on_new_scene_button_pressed() -> void:
 	%NewSceneDialog.popup_centered(Vector2i(200, 300))

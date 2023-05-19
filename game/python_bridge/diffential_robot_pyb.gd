@@ -49,9 +49,9 @@ func move_to(target_pos: Vector3, speed: float):
 	await aligned_to_direction
 	move_forward_to(target_pos, speed)
 	await distance_covered
-	
-#	await get_tree().create_timer(4).timeout
 	move(0,0)
+#	await get_tree().create_timer(4).timeout
+	
 	_task_finished = true
 	
 func task_finished() -> bool:

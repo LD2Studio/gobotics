@@ -1,28 +1,43 @@
-[gd_scene load_steps=9 format=3 uid="uid://tx37yoaxty6t"]
+[gd_scene load_steps=10 format=3 uid="uid://dlt413qhfroi8"]
 
-[ext_resource type="PackedScene" uid="uid://djw6p8ej1njgu" path="res://assets/robot_alpha/robot_alpha.blend" id="1_2mev7"]
-[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="2_jmn3w"]
-[ext_resource type="Script" path="res://assets/robot_alpha/LeftWheel.gd" id="3_ykn40"]
-[ext_resource type="Script" path="res://assets/robot_alpha/RightWheel.gd" id="4_lahua"]
+[ext_resource type="PackedScene" uid="uid://djw6p8ej1njgu" path="res://assets/robot_alpha/robot_alpha.blend" id="1_e1ea0"]
+[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="2_3fyyj"]
 
 [sub_resource type="GDScript" id="GDScript_dbxta"]
 resource_name = "back_wheel"
 script/source = "extends FreeWheel3D
 "
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nx5ed"]
+albedo_color = Color(0.768627, 0.470588, 0.0901961, 1)
+
 [sub_resource type="GDScript" id="GDScript_k2oah"]
 resource_name = "front_wheel"
 script/source = "extends FreeWheel3D
 "
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_00snm"]
+[sub_resource type="GDScript" id="GDScript_0he4m"]
+resource_name = "left_wheel"
+script/source = "@tool
+extends RotationActuator3D
+
+"
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_0g57n"]
 height = 0.2
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_6gco3"]
+[sub_resource type="GDScript" id="GDScript_m7ker"]
+resource_name = "right_wheel"
+script/source = "@tool
+extends RotationActuator3D
+
+"
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_uthn7"]
 height = 0.2
 
-[node name="AlphaRobot2" groups=["ROBOTS"] instance=ExtResource("1_2mev7")]
-script = ExtResource("2_jmn3w")
+[node name="AlphaRobotLarge" groups=["PARTS"] instance=ExtResource("1_e1ea0")]
+script = ExtResource("2_3fyyj")
 speed = 6.0
 
 [node name="Frame" parent="." index="0" groups=["EDITABLE"]]
@@ -31,38 +46,49 @@ unique_name_in_owner = true
 [node name="BackWheel" parent="Frame" index="0"]
 script = SubResource("GDScript_dbxta")
 
+[node name="FrameMesh" parent="Frame" index="1"]
+surface_material_override/0 = SubResource("StandardMaterial3D_nx5ed")
+
 [node name="FrontWheel" parent="Frame" index="2"]
 script = SubResource("GDScript_k2oah")
 
 [node name="LeftWheel" parent="Frame" index="3"]
 unique_name_in_owner = true
 can_sleep = false
-script = ExtResource("3_ykn40")
+script = SubResource("GDScript_0he4m")
 rotation_axis = "-X"
-helper_size = 0.6
 rotation_speed = 0.0
 torque_constant = 10.0
+target_angle = 0.0
 angle_profile = 1.0
 profile_duration = 1.0
+max_angle = 179.0
+min_angle = -179.0
+velocity_damping = 5.0
+velocity_constant = 5.0
 
 [node name="CollisionShape3D" parent="Frame/LeftWheel" index="1"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("CylinderShape3D_00snm")
+shape = SubResource("CylinderShape3D_0g57n")
 
 [node name="RightWheel" parent="Frame" index="4"]
 unique_name_in_owner = true
 can_sleep = false
-script = ExtResource("4_lahua")
+script = SubResource("GDScript_m7ker")
 rotation_axis = "-X"
-helper_size = 0.6
 rotation_speed = 0.0
 torque_constant = 10.0
+target_angle = 0.0
 angle_profile = 1.0
 profile_duration = 1.0
+max_angle = 179.0
+min_angle = -179.0
+velocity_damping = 5.0
+velocity_constant = 5.0
 
 [node name="CollisionShape3D" parent="Frame/RightWheel" index="1"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("CylinderShape3D_6gco3")
+shape = SubResource("CylinderShape3D_uthn7")
 
 [node name="Frame" parent="Frame" index="5"]
 visible = false
@@ -72,5 +98,4 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3532, 0)
 billboard = 1
 no_depth_test = true
-text = "AlphaRobot 2"
 font_size = 109

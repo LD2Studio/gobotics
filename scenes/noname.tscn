@@ -1,32 +1,43 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_4pux1"]
-[ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot.tscn" id="2_l7adj"]
-[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="3_bu2gd"]
+[ext_resource type="PackedScene" path="res://assets/cfr2023/table_2023.tscn" id="1_l8cg0"]
+[ext_resource type="PackedScene" path="res://assets/cfr2023/cream_layer.tscn" id="2_pw4n3"]
+[ext_resource type="PackedScene" path="res://assets/cfr2023/sponge_cake.tscn" id="3_b6e3j"]
+[ext_resource type="PackedScene" path="res://assets/robot_alpha/alpha_robot.tscn" id="4_q1mnm"]
+[ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="5_sphit"]
 
 [node name="Scene" type="Node3D"]
 
-[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_4pux1")]
+[node name="CFR2023" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_l8cg0")]
 metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="AlphaRobot" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_l7adj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00723219, 2.38419e-07, 2.09779)
-script = ExtResource("3_bu2gd")
+[node name="CreamLayer" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_pw4n3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.72885, 0.0499902, 2.53104)
+metadata/transform = Transform3D(-0.989187, 0.0012968, 0.146654, 0.00238936, 0.999971, 0.007274, -0.146641, 0.00754575, -0.989161, 0.116918, 0.0931443, -1.6974)
+
+[node name="SpongeCake" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("3_b6e3j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.955544, 0.0499902, 2.53789)
+metadata/transform = Transform3D(-0.0284479, -8.75478e-05, 0.999595, 0.000833883, 1, 0.000111315, -0.999595, 0.000836712, -0.0284479, 0.629574, 0.0962671, -1.91946)
+
+[node name="AlphaRobot" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("4_q1mnm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.34652, 0.0499902, 4.54097)
+script = ExtResource("5_sphit")
 manual_control = true
 speed = 6.0
 collision_groups = 1
 metadata/manual_control = true
-metadata/transform = Transform3D(-0.0348972, -0.0076813, 0.999361, -0.00029606, 0.99997, 0.00767564, -0.999391, -2.80128e-05, -0.0348984, 6.49277, 0.497993, -2.29779)
+metadata/transform = Transform3D(-0.985942, -0.0043634, 0.167029, -0.00409918, 0.99999, 0.00192659, -0.167035, 0.00121483, -0.98595, -1.34911, 0.491972, -0.320693)
 metadata/python_bridge_activate = false
 metadata/python_bridge_port = 4243
 
-[node name="AlphaRobot_2" type="Node3D" parent="." groups=["ROBOTS"] instance=ExtResource("2_l7adj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3854, 0, 10.4164)
-script = ExtResource("3_bu2gd")
-manual_control = false
-speed = 6.0
-collision_groups = 1
-metadata/manual_control = true
-metadata/transform = Transform3D(-0.998627, -0.00230972, -0.052336, -0.00229182, 0.999997, -0.000402099, 0.0523368, -0.000281602, -0.998629, -0.3146, 0.496632, -3.8164)
-metadata/python_bridge_activate = true
-metadata/python_bridge_port = 4243
+[node name="SpongeCake_2" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("3_b6e3j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1653, 0.0499902, -0.982424)
+metadata/transform = Transform3D(0.979109, -0.202979, 0.0120145, 0.202096, 0.964935, -0.167506, 0.0224069, 0.166434, 0.985798, 1.22443, 0.241111, 2.07457)
+
+[node name="CreamLayer_2" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_pw4n3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.48219, 0.0499901, 0.588689)
+metadata/transform = Transform3D(0.997752, -0.001131, -0.0670023, 0.00160602, 0.999974, 0.00703622, 0.0669926, -0.00712801, 0.997728, -0.359409, 0.0926225, 1.44401)
+
+[node name="CreamLayer_3" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_pw4n3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.81889, 0.0499907, 0.917312)
+metadata/transform = Transform3D(0.999847, -0.000992393, 0.0174706, 0.000992804, 1, -1.48873e-05, -0.0174706, 3.223e-05, 0.999847, -0.0188916, 0.0958314, 0.0826952)

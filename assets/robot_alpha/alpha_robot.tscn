@@ -2,8 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://djw6p8ej1njgu" path="res://assets/robot_alpha/robot_alpha.blend" id="1_mougl"]
 [ext_resource type="Script" path="res://assets/robot_alpha/alpha_robot.gd" id="2_kmuq5"]
-[ext_resource type="Script" path="res://assets/robot_alpha/LeftWheel.gd" id="3_dqe0b"]
-[ext_resource type="Script" path="res://assets/robot_alpha/RightWheel.gd" id="4_s4vnl"]
 
 [sub_resource type="GDScript" id="GDScript_dbxta"]
 resource_name = "back_wheel"
@@ -13,6 +11,20 @@ script/source = "extends FreeWheel3D
 [sub_resource type="GDScript" id="GDScript_k2oah"]
 resource_name = "front_wheel"
 script/source = "extends FreeWheel3D
+"
+
+[sub_resource type="GDScript" id="GDScript_0he4m"]
+resource_name = "left_wheel"
+script/source = "@tool
+extends RotationActuator3D
+
+"
+
+[sub_resource type="GDScript" id="GDScript_m7ker"]
+resource_name = "right_wheel"
+script/source = "@tool
+extends RotationActuator3D
+
 "
 
 [node name="AlphaRobot" groups=["PARTS"] instance=ExtResource("1_mougl")]
@@ -31,13 +43,17 @@ script = SubResource("GDScript_k2oah")
 [node name="LeftWheel" parent="Frame" index="3"]
 unique_name_in_owner = true
 can_sleep = false
-script = ExtResource("3_dqe0b")
+script = SubResource("GDScript_0he4m")
 rotation_axis = "-X"
-helper_size = 0.6
 rotation_speed = 0.0
 torque_constant = 10.0
+target_angle = 0.0
 angle_profile = 1.0
 profile_duration = 1.0
+max_angle = 179.0
+min_angle = -179.0
+velocity_damping = 5.0
+velocity_constant = 5.0
 
 [node name="CollisionShape3D" parent="Frame/LeftWheel" index="1"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
@@ -45,13 +61,17 @@ transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 
 [node name="RightWheel" parent="Frame" index="4"]
 unique_name_in_owner = true
 can_sleep = false
-script = ExtResource("4_s4vnl")
+script = SubResource("GDScript_m7ker")
 rotation_axis = "-X"
-helper_size = 0.6
 rotation_speed = 0.0
 torque_constant = 10.0
+target_angle = 0.0
 angle_profile = 1.0
 profile_duration = 1.0
+max_angle = 179.0
+min_angle = -179.0
+velocity_damping = 5.0
+velocity_constant = 5.0
 
 [node name="CollisionShape3D" parent="Frame/RightWheel" index="1"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
@@ -64,5 +84,4 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3532, 0)
 billboard = 1
 no_depth_test = true
-text = "AlphaRobot"
 font_size = 109

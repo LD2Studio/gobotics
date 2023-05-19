@@ -3,18 +3,18 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://6cppcle2osp2"
-path="res://.godot/imported/table2023.blend-15b0e77b33a6201aa53edad73007de1a.scn"
+uid="uid://b686prnq6wmrd"
+path="res://.godot/imported/CreamLayer.blend-383b2a8360703f1adb826a2fe12132c3.scn"
 
 [deps]
 
-source_file="res://assets/cfr2023/table2023.blend"
-dest_files=["res://.godot/imported/table2023.blend-15b0e77b33a6201aa53edad73007de1a.scn"]
+source_file="res://assets/cfr2023/CreamLayer.blend"
+dest_files=["res://.godot/imported/CreamLayer.blend-383b2a8360703f1adb826a2fe12132c3.scn"]
 
 [params]
 
 nodes/root_type="Node3D"
-nodes/root_name="Table2023"
+nodes/root_name="CreamLayer"
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
 meshes/ensure_tangents=true
@@ -30,14 +30,16 @@ animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={
 "nodes": {
-"PATH:Edges": {
-"generate/physics": true,
-"physics/shape_type": 2
-},
-"PATH:Plan": {
+"PATH:CreamLayer": {
 "decomposition/advanced": true,
+"decomposition/mode": 1,
+"decomposition/precision": 9,
 "generate/physics": true,
-"physics/shape_type": 1
+"physics/body_type": 1,
+"physics/shape_type": 5,
+"primitive/height": 0.2,
+"primitive/radius": 0.6,
+"primitive/size": Vector3(1.2, 0.2, 1.2)
 }
 }
 }
