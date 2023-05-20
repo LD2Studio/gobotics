@@ -52,7 +52,7 @@ class GodotBridge:
             "typefunc": "setter",
             "params": params,
         }
-        # print("Message sending : ", message)
+        print("Message sending : ", message)
         json_message = json.dumps(message)
         try:
             self.sock.send(json_message.encode("utf-8"))

@@ -11,8 +11,8 @@ class Alpha(GodotBridge):
     def move(self, right_vel, left_vel):
         self.set("move", right_vel, left_vel)
 
-    def move_to(self, target_pos: tuple, speed: float):
-        self.set("move_to", target_pos, speed)
+    def move_to(self, target_pos: tuple, speed: float, feedback: bool = False):
+        self.set("move_to", target_pos, speed, feedback)
     
     def task_finished(self) -> bool:
         return self.get("task_finished")
