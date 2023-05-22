@@ -5,7 +5,7 @@ import time
 # engine.reload()
 engine.stop()
 alpha = Alpha(4243)
-
+alpha.toto()
 
 alpha.set_pose(0,0,0)
 time.sleep(1)

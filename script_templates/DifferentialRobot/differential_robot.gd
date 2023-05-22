@@ -5,7 +5,10 @@
 extends _BASE_
 
 func _ready():
-	initialize()
+	init()
 	
 func _process(delta: float):
 	update_input()
+
+func _physics_process(delta):
+	update_process(delta)

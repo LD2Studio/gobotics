@@ -29,7 +29,7 @@ class Target:
 func _enter_tree():
 	add_to_group("PYTHON")
 
-func init(right_wheel: RotationActuator3D, left_wheel: RotationActuator3D):
+func init(right_wheel: RotationActuator3D = null, left_wheel: RotationActuator3D = null):
 	add_child(python)
 	var frame = get_child(0)
 	assert(frame is RigidBody3D, "Frame robot must be RigidBody3D type")

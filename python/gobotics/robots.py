@@ -19,3 +19,6 @@ class Alpha(GodotBridge):
     
     def task_finished(self) -> bool:
         return self.get("task_finished")
+
+    def toto(self):
+        self.set("toto")

@@ -20,7 +20,7 @@ func add_assets(search_path: String):
 	for file in files_tscn:
 #		print(file)
 		var scene: PackedScene = load(search_path.path_join(file))
-#		print_debug(scene)
+#		print("Loading ", scene)
 		if scene == null:
 			continue
 		var name: String = scene.get_state().get_node_name(0)

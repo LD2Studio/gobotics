@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_ett76"]
+[ext_resource type="PackedScene" path="res://assets/robot_beta/robot_beta.tscn" id="2_8mvld"]
+
+[sub_resource type="GDScript" id="GDScript_cfycw"]
+resource_name = "robot"
+script/source = "extends DifferentialRobot
+
+func _ready():
+	init($Frame/RightJoint, $Frame/LeftJoint)
+	
+func _process(delta):
+	update_input()
+
+func _physics_process(delta):
+	update_process(delta)
+"
+
+[node name="Scene" type="Node3D"]
+
+[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_ett76")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="RobotBeta" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_8mvld")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25283, 0, -1.60787)
+script = SubResource("GDScript_cfycw")
+manual_control = true
+speed = 3.0
+collision_groups = 1
+metadata/manual_control = true
+metadata/transform = Transform3D(-0.350781, -0.00381424, -0.93645, -4.30168e-05, 0.999992, -0.00405694, 0.936458, -0.00138281, -0.350778, 1.56696, 0.302725, 1.51682)
+metadata/python_bridge_activate = false
+metadata/python_bridge_port = 4243
