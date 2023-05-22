@@ -9,10 +9,12 @@ var game_area_pointed: bool = false
 
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
 @onready var save_scene_button: Button = %SaveSceneButton
+@onready var python = PythonBridge.new(4242)
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
-	$PythonBridge.activate = true
+	python.activate = true
+	add_child(python)
 
 func init_scene():
 	scene = Node3D.new()
@@ -123,6 +125,18 @@ func freeze_children(node, frozen):
 #		set_physics_process(not frozen)
 	for child in node.get_children():
 		freeze_children(child, frozen)
+
+## Python functions
+func run():
+	_on_run_stop_button_toggled(true)
+
+func stop():
+	_on_run_stop_button_toggled(false)
+
+func reload():
+	_on_reset_button_pressed()
+	
+## Slot functions
 	
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	if scene == null:

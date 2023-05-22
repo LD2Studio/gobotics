@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=18 format=3 uid="uid://b4s6pohitqafc"]
 
 [ext_resource type="Script" path="res://game/game.gd" id="1_85jys"]
 [ext_resource type="Script" path="res://game/EnvironmentList.gd" id="2_s428s"]
@@ -6,7 +6,6 @@
 [ext_resource type="Script" path="res://game/LevelContainer.gd" id="3_n66nd"]
 [ext_resource type="Script" path="res://game/game_scene.gd" id="4_htgp6"]
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="5_i338u"]
-[ext_resource type="Script" path="res://game/PythonBridge.gd" id="7_b5wmb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxght"]
 bg_color = Color(0.25098, 0.411765, 0.768627, 1)
@@ -380,10 +379,6 @@ text = "Reload"
 layout_mode = 2
 toggle_mode = true
 text = "TopView"
-
-[node name="PythonBridge" type="Node" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
-script = ExtResource("7_b5wmb")
-port = 4242
 
 [node name="ConfirmDeleteDialog" type="ConfirmationDialog" parent="."]
 

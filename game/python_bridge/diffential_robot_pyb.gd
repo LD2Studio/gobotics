@@ -1,8 +1,9 @@
-extends RobotsPythonBridge
+extends PythonBridge
 class_name DifferentialRobotPythonBridge
 
 var left_wheel: RigidBody3D
 var right_wheel: RigidBody3D
+var root_rigid_body: RigidBody3D
 
 signal aligned_to_direction
 signal distance_covered
@@ -16,7 +17,7 @@ var _dir_to_target: Vector3
 var _move_forward: bool = false
 var _start_pos: Vector3
 var _distance_to_cover: float
-var _task_finished: bool = false
+var _task_finished: bool = true
 
 func _physics_process(delta):
 #	print("loop")
@@ -69,10 +70,7 @@ func move_to(target_pos: Vector3, speed: float, feedback = false):
 	print("distance cover!")
 	move(0,0)
 	_task_finished = true
-	
-func task_finished() -> bool:
-	return _task_finished
-	
+
 func align_to(dir, speed):
 #	print("align_to")
 	var side: float = root_rigid_body.global_transform.basis.x.dot(dir)

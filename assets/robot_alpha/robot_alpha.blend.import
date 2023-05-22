@@ -30,35 +30,35 @@ animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={
 "nodes": {
-"PATH:Frame": {
+"PATH:FrameCol": {
 "generate/physics": true,
 "physics/body_type": 1,
 "physics/shape_type": 1
 },
-"PATH:Frame/BackWheel": {
+"PATH:FrameCol/BackWheel": {
 "generate/physics": true,
 "physics/body_type": 1,
 "physics/shape_type": 4,
 "primitive/radius": 0.25
 },
-"PATH:Frame/FrontWheel": {
+"PATH:FrameCol/FrontWheel": {
 "generate/physics": true,
 "physics/body_type": 1,
 "physics/shape_type": 4,
 "primitive/radius": 0.25
 },
-"PATH:Frame/LeftWheel": {
+"PATH:FrameCol/LeftWheel": {
 "generate/physics": true,
 "physics/body_type": 1,
 "physics/shape_type": 5,
-"primitive/height": 0.05,
+"primitive/height": 0.2,
 "primitive/radius": 0.5
 },
-"PATH:Frame/RightWheel": {
+"PATH:FrameCol/RightWheel": {
 "generate/physics": true,
 "physics/body_type": 1,
 "physics/shape_type": 5,
-"primitive/height": 0.05,
+"primitive/height": 0.2,
 "primitive/radius": 0.5
 }
 }
