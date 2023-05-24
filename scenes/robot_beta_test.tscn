@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_ett76"]
-[ext_resource type="PackedScene" path="res://assets/robot_beta/robot_beta.tscn" id="2_8mvld"]
+[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_n8cqc"]
+[ext_resource type="PackedScene" path="res://assets/robot_beta/robot_beta.tscn" id="2_hih00"]
+[ext_resource type="PackedScene" path="res://assets/cfr2023/cream_layer.tscn" id="3_5cjsn"]
 
 [sub_resource type="GDScript" id="GDScript_cfycw"]
 resource_name = "robot"
@@ -19,16 +20,20 @@ func _physics_process(delta):
 
 [node name="Scene" type="Node3D"]
 
-[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_ett76")]
+[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_n8cqc")]
 metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="RobotBeta" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_8mvld")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25283, 0, -1.60787)
+[node name="RobotBeta" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_hih00")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.904337, 0, 2.48439)
 script = SubResource("GDScript_cfycw")
 manual_control = true
-speed = 3.0
+speed = 7.0
 collision_groups = 1
 metadata/manual_control = true
-metadata/transform = Transform3D(-0.350781, -0.00381424, -0.93645, -4.30168e-05, 0.999992, -0.00405694, 0.936458, -0.00138281, -0.350778, 1.56696, 0.302725, 1.51682)
+metadata/transform = Transform3D(1, -0.000264303, 0.000720733, 0.000248822, 0.999771, 0.0213954, -0.000726223, -0.0213952, 0.999771, -0.00261819, 0.312272, 0.386296)
 metadata/python_bridge_activate = false
 metadata/python_bridge_port = 4243
+
+[node name="CreamLayer" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("3_5cjsn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.31087, 0, 0.194058)
+metadata/transform = Transform3D(0.999799, 0.00274152, -0.0198393, -0.00234013, 0.999793, 0.0202269, 0.0198906, -0.0201764, 0.999599, 4.18335, 0.44778, 2.51544)

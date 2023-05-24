@@ -31,7 +31,13 @@ func iterate(node: Node):
 			node.replace_by(new_node)
 			node = new_node
 			
-#		if node.name.ends_with("-rigidconv"):
+		if node.name.ends_with("-rigidbody-hinge"):
+			var new_node = RotationActuator3D.new()
+			new_node.name = node.name.trim_suffix("-rigidbody-hinge")
+			new_node.transform = node.transform
+			new_node.actuator_type = "FREE"
+			node.replace_by(new_node)
+			node = new_node
 ##			print("Convert RigidConv: ", node)
 ##			print("Children: ", node.get_children())
 #			var mesh_instance = node.duplicate()

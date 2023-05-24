@@ -1,0 +1,66 @@
+[gd_scene load_steps=6 format=3 uid="uid://dk6aksc2rutmx"]
+
+[ext_resource type="PackedScene" uid="uid://bri2q61e52fvc" path="res://assets/robot_delta/robot_delta.blend" id="1_ao004"]
+[ext_resource type="Shape3D" uid="uid://d2ebu2f80fkge" path="res://assets/resources/wheels/wheel_WH100_col_shape.tres" id="2_lkr1l"]
+
+[sub_resource type="GDScript" id="GDScript_gc285"]
+resource_name = "diff_robot"
+script/source = "extends DifferentialRobot
+
+func _ready():
+	init($Frame/RightJoint, $Frame/LeftJoint)
+	
+func _process(delta: float):
+	update_input()
+
+func _physics_process(delta):
+	update_process(delta)
+"
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_fbf8a"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_hmyb3"]
+height = 0.1
+radius = 0.4
+
+[node name="RobotDelta" groups=["PARTS"] instance=ExtResource("1_ao004")]
+script = SubResource("GDScript_gc285")
+speed = 5.0
+
+[node name="Frame" parent="." index="0" groups=["EDITABLE"]]
+mass = 5.0
+physics_material_override = SubResource("PhysicsMaterial_fbf8a")
+
+[node name="Bar" parent="Frame" index="0"]
+mass = 0.2
+can_sleep = false
+rotation_axis = "Y"
+
+[node name="FreeWheel" parent="Frame/Bar" index="1"]
+mass = 0.5
+can_sleep = false
+rotation_axis = "X"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Frame/Bar/FreeWheel" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("CylinderShape3D_hmyb3")
+
+[node name="LeftJoint" parent="Frame" index="5"]
+can_sleep = false
+rotation_axis = "-X"
+helper_size = 0.6
+torque_constant = 20.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Frame/LeftJoint" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+shape = ExtResource("2_lkr1l")
+
+[node name="RightJoint" parent="Frame" index="7"]
+can_sleep = false
+rotation_axis = "-X"
+helper_size = 0.6
+torque_constant = 20.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Frame/RightJoint" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+shape = ExtResource("2_lkr1l")
