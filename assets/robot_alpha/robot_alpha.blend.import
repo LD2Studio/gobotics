@@ -14,7 +14,7 @@ dest_files=["res://.godot/imported/robot_alpha.blend-9ff83729112f7936e76709edac9
 [params]
 
 nodes/root_type="Node3D"
-nodes/root_name="AlphaRobot"
+nodes/root_name="RobotAlpha"
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
 meshes/ensure_tangents=true
@@ -27,7 +27,7 @@ animation/import=true
 animation/fps=30
 animation/trimming=false
 animation/remove_immutable_tracks=true
-import_script/path=""
+import_script/path="res://game/blender_import/import_scene.gd"
 _subresources={
 "nodes": {
 "PATH:FrameCol": {

@@ -1,7 +1,7 @@
 @tool
 #@icon("res://addons/actuator3d/nodes/rotation_actuator_3d.svg")
 ## Free Wheel 3dof
-class_name FreeWheel3D
+class_name Rotation3DOF
 extends RigidBody3D
 
 @export var exclude_nodes_from_collision: bool = true
@@ -17,7 +17,6 @@ func _enter_tree() -> void:
 	_joint.node_b = ^"../"
 	_joint.exclude_nodes_from_collision = exclude_nodes_from_collision
 	add_child(_joint)
-
 
 func _exit_tree() -> void:
 	remove_child(_joint)

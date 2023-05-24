@@ -1,0 +1,56 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_4bico"]
+[ext_resource type="PackedScene" path="res://assets/robot_alpha/robot_alpha.tscn" id="2_wf80g"]
+
+[sub_resource type="GDScript" id="GDScript_4tdur"]
+resource_name = "Main"
+script/source = "extends DifferentialRobot
+
+func _ready():
+	init($Frame/RightWheel, $Frame/LeftWheel)
+	
+func _process(delta):
+	update_input()
+
+func _physics_process(delta):
+	update_process(delta)
+"
+
+[node name="Scene" type="Node3D"]
+
+[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_4bico")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="RobotAlpha" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_wf80g")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.92477, 0, 0.444622)
+script = SubResource("GDScript_4tdur")
+manual_control = false
+speed = 6.0
+collision_groups = 1
+metadata/manual_control = true
+metadata/transform = Transform3D(0.978149, -0.00254337, 0.20789, 0.00170056, 0.99999, 0.00423276, -0.207898, -0.00378674, 0.978143, -0.274821, 0.546413, -3.2452)
+metadata/python_bridge_activate = false
+metadata/python_bridge_port = 4243
+
+[node name="RobotAlpha_2" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_wf80g")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.80256, 0, 1.47933)
+script = SubResource("GDScript_4tdur")
+manual_control = true
+speed = 6.0
+collision_groups = 1
+metadata/manual_control = true
+metadata/transform = Transform3D(0.993129, 0.00261394, -0.116999, -0.00312765, 0.999986, -0.00420728, 0.116986, 0.0045443, 0.993123, -7.22509, 0.544809, 1.92921)
+metadata/python_bridge_activate = false
+metadata/python_bridge_port = 4243
+
+[node name="RobotAlpha_3" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_wf80g")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.443612, 0, 3.58104)
+script = SubResource("GDScript_4tdur")
+manual_control = false
+speed = 6.0
+collision_groups = 1
+metadata/manual_control = true
+metadata/transform = Transform3D(0.731297, 0.000234, 0.68206, 0.0012458, 0.999998, -0.00167882, -0.682058, 0.00207742, 0.731295, 0.52814, 0.542944, 1.73344)
+metadata/python_bridge_activate = false
+metadata/python_bridge_port = 4243

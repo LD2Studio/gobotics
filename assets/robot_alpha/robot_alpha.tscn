@@ -1,0 +1,71 @@
+[gd_scene load_steps=6 format=3 uid="uid://bwxqqswh33b24"]
+
+[ext_resource type="PackedScene" uid="uid://djw6p8ej1njgu" path="res://assets/robot_alpha/robot_alpha.blend" id="1_0ohec"]
+[ext_resource type="Shape3D" uid="uid://d2ebu2f80fkge" path="res://assets/resources/wheels/wheel_WH100_col_shape.tres" id="2_6ur5c"]
+
+[sub_resource type="GDScript" id="GDScript_4tdur"]
+resource_name = "Main"
+script/source = "extends DifferentialRobot
+
+func _ready():
+	init($Frame/RightWheel, $Frame/LeftWheel)
+	
+func _process(delta):
+	update_input()
+
+func _physics_process(delta):
+	update_process(delta)
+"
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ylq4p"]
+radius = 0.25
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_wvavg"]
+radius = 0.25
+
+[node name="RobotAlpha" groups=["PARTS"] instance=ExtResource("1_0ohec")]
+script = SubResource("GDScript_4tdur")
+speed = 6.0
+
+[node name="Frame" parent="." index="0" groups=["EDITABLE"]]
+mass = 2.0
+
+[node name="BackFreeJoint" parent="Frame" index="0"]
+mass = 0.2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Frame/BackFreeJoint" index="1"]
+shape = SubResource("SphereShape3D_ylq4p")
+
+[node name="FrontFreeJoint" parent="Frame" index="3"]
+mass = 0.2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Frame/FrontFreeJoint" index="1"]
+shape = SubResource("SphereShape3D_wvavg")
+
+[node name="LeftWheel" parent="Frame" index="4"]
+can_sleep = false
+rotation_axis = "-X"
+helper_size = 0.6
+torque_constant = 20.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Frame/LeftWheel" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+shape = ExtResource("2_6ur5c")
+
+[node name="RightWheel" parent="Frame" index="5"]
+can_sleep = false
+rotation_axis = "-X"
+helper_size = 0.6
+torque_constant = 20.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Frame/RightWheel" index="1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+shape = ExtResource("2_6ur5c")
+
+[node name="PartName" type="Label3D" parent="Frame" index="6"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+pixel_size = 0.0125
+billboard = 1
+text = "Robot"
+font_size = 35

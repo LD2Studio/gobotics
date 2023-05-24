@@ -124,7 +124,7 @@ func move(right_vel: float, left_vel: float):
 	robot.right_wheel.rotation_speed = right_vel
 	robot.left_wheel.rotation_speed = left_vel
 
-func move_to_pose(new_pose: Vector3, speed: float):
+func move_to(new_pose: Vector3, speed: float):
 #	print("Move to (%f, %f)" % [new_pose.x, new_pose.y])
 	target.pos = Vector2(new_pose.x, new_pose.y)
 	target.orientation = new_pose.z

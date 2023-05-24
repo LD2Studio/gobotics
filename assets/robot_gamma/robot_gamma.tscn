@@ -36,7 +36,7 @@ size = Vector3(0.172013, 1.73844, 0.20803)
 
 [sub_resource type="GDScript" id="GDScript_j4g2q"]
 resource_name = "FreeWheel"
-script/source = "extends FreeWheel3D
+script/source = "extends Rotation3DOF
 
 "
 
@@ -71,6 +71,15 @@ script = SubResource("GDScript_c5e1w")
 actuator_type = "SERVO"
 helper_size = 0.5
 only_debug = false
+target_angle = 0.0
+max_angle = 179.0
+min_angle = -179.0
+torque_constant = 1.0
+velocity_damping = 5.0
+velocity_constant = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
+rotation_speed = 0.0
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="Frame/Arm" index="2"]
 transform = Transform3D(1, 1.11759e-08, 0, 5.58794e-09, 1, 0, 3.05533e-13, 1.33227e-15, 1, -1.54083, -0.82038, -0.00160365)

@@ -65,7 +65,7 @@ func save_scene(path: String):
 			if child.is_in_group("PYTHON"):
 				item.set_meta("python_bridge_activate", child.activate)
 				item.set_meta("python_bridge_port", child.port)
-				break
+				
 	if not path.ends_with(".tscn"):
 		path = path + ".tscn"
 	var scene_packed := PackedScene.new()
@@ -87,16 +87,22 @@ func load_scene(path):
 		return
 	scene = res.instantiate()
 	add_child(scene)
+#	print(scene.get_children())
+	
 	for item in scene.get_children():
 		var transform_saved = item.get_meta("transform", Transform3D())
 		if transform_saved != Transform3D():
 			item.get_child(0).transform = transform_saved
 		freeze_item(item, true)
+		var part_name = item.get_node_or_null("%PartName")
+		if part_name:
+			part_name.text = item.name
 		for child in item.get_children():
 			if child.is_in_group("PYTHON"):
 				child.port = item.get_meta("python_bridge_port", 4242)
 				child.activate = item.get_meta("python_bridge_activate", false)
 				break
+			
 	connect_pickable()
 	connect_editable()
 	%RunStopButton.button_pressed = false
