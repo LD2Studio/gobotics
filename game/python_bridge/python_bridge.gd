@@ -74,6 +74,8 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 				elif p.type == "bool":
 					var value = true if p.value == "True" else false
 					args.append(p.value)
+				elif p.type == "string":
+					args.append(p.value)
 				elif p.type == "vec3":
 					var vec3 = Vector3(p.value[0], p.value[1], p.value[2])
 					args.append(vec3)

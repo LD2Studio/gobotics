@@ -109,6 +109,7 @@ func _on_z_rot_value_changed(value: float) -> void:
 		rigid_body.rotation_degrees.y = value
 		
 func _on_manual_enable_button_toggled(button_pressed: bool) -> void:
+	if selected_root_block == null: return
 	selected_root_block.manual_control = button_pressed
 
 func _on_python_bridge_check_button_toggled(button_pressed: bool) -> void:

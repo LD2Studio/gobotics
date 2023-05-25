@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_r018e"]
+[ext_resource type="PackedScene" path="res://assets/demo/ball.tscn" id="2_1gpkb"]
+
+[sub_resource type="GDScript" id="GDScript_fa3ov"]
+resource_name = "props"
+script/source = "extends Props
+
+func _ready():
+	init()
+"
+
+[node name="Scene" type="Node3D"]
+
+[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_r018e")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Ball" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_1gpkb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.955263, 0, -0.467961)
+script = SubResource("GDScript_fa3ov")
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.955263, 0.499537, 0.467961)
+metadata/python_bridge_activate = true
+metadata/python_bridge_port = 4243

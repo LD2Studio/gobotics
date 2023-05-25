@@ -5,13 +5,20 @@ import numpy as np
 
 class GodotBridge:
     ports_used = []
-    def __init__(self, PORT=4242):
-        if PORT in self.ports_used:
-            print(f"[Warning] Port {PORT} already used")
-            
-        self.ports_used.append(PORT)
+    """
+    Create a bridge from Python to Part in Gobotics
+    PORT : Number beetween 4243 and 65535
+    """
+    def __init__(self, port):
+        if port in self.ports_used:
+            if port == 4242:
+                raise ValueError("Port 4242 cannot be used and is reserved for the gobotics engine")
+            else:
+                raise ValueError(f"Port {port} already used")
+        self.port = port
+        self.ports_used.append(port)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.connect(("127.0.0.1", PORT))
+        self.sock.connect(("127.0.0.1", port))
         # Flush recv data
 
     def set(self, namefunc, *args):
@@ -37,6 +44,13 @@ class GodotBridge:
                 arg_str = str(arg)
                 param = {
                     "type": "bool",
+                    "value": arg_str,
+                }
+                params.append(param)
+            elif type(arg) is str:
+                arg_str = arg
+                param = {
+                    "type": "string",
                     "value": arg_str,
                 }
                 params.append(param)
@@ -101,7 +115,7 @@ class GodotBridge:
         try:
             recv_data = self.sock.recv(100000)
         except ConnectionRefusedError:
-            print("[Error] Connection failed")
+            print("[Error] Connection failed on port %d" % self.port)
             return
         # print("json ret message: ", json_ret_message)
         # if binary data ?

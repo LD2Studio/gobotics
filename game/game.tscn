@@ -22,9 +22,11 @@ corner_radius_top_left = 5
 corner_radius_top_right = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kn244"]
-bg_color = Color(0.193816, 0.437441, 0.322973, 1)
+bg_color = Color(0.192157, 0.439216, 0.321569, 0.454902)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v1fvi"]
 bg_color = Color(0.8, 0, 0, 1)
@@ -194,123 +196,29 @@ item_0/text = "Cube"
 item_1/text = "Cylinder"
 script = ExtResource("3_d5cb8")
 
-[node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_kn244")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector"]
-custom_minimum_size = Vector2(0, 200)
+[node name="TerminalPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
 layout_mode = 2
 
-[node name="BlockName" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer"]
-unique_name_in_owner = true
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel"]
 layout_mode = 2
-text = "Inspector"
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 7
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Terminal"
 horizontal_alignment = 1
 
-[node name="TransformContainer" type="GridContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 4
-columns = 3
-
-[node name="LabelX" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_v1fvi")
-text = "X"
-horizontal_alignment = 1
-
-[node name="LabelY" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_5bqnm")
-text = "Y"
-horizontal_alignment = 1
-
-[node name="LabelZ" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer"]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_1cnx1")
-text = "Z"
-horizontal_alignment = 1
-
-[node name="X_pos" type="SpinBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer"]
+[node name="TerminalOutput" type="TextEdit" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
-min_value = -10.0
-max_value = 10.0
-step = 0.01
-
-[node name="Y_pos" type="SpinBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = -10.0
-max_value = 10.0
-step = 0.01
-
-[node name="Z_pos" type="SpinBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = -10.0
-max_value = 10.0
-step = 0.01
-
-[node name="Rotation Container" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/Rotation Container"]
-layout_mode = 2
-text = "Rot [°] : "
-
-[node name="Z_rot" type="SpinBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/Rotation Container"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = -180.0
-max_value = 180.0
-
-[node name="ManualContainer" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="ManualEnableButton" type="CheckBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/ManualContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/ManualContainer"]
-layout_mode = 2
-text = "Manual Control"
-
-[node name="PythonBridgeContainer" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_sjw4w")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PythonBridgeContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="PythonBridgeCheckButton" type="CheckBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "Python Bridge"
-
-[node name="UDPPortContainer" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/UDPPortContainer"]
-layout_mode = 2
-text = "UDP Port :"
-
-[node name="UDPPortNumber" type="SpinBox" parent="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/UDPPortContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = 4243.0
-max_value = 65535.0
-value = 4243.0
+editable = false
 
 [node name="SceneView3D" type="SubViewportContainer" parent="SplitContainer"]
 layout_mode = 2
@@ -324,8 +232,160 @@ handle_input_locally = false
 msaa_3d = 2
 screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(1321, 800)
+size = Vector2i(1378, 800)
 render_target_update_mode = 4
+
+[node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView3D/SceneViewport"]
+unique_name_in_owner = true
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 10.0
+offset_right = -10.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_kn244")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="BlockName" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Inspector"
+horizontal_alignment = 1
+
+[node name="TransformContainer" type="GridContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 3
+
+[node name="LabelX" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/TransformContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_v1fvi")
+text = "X"
+horizontal_alignment = 1
+
+[node name="LabelY" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/TransformContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_5bqnm")
+text = "Y"
+horizontal_alignment = 1
+
+[node name="LabelZ" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/TransformContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_1cnx1")
+text = "Z"
+horizontal_alignment = 1
+
+[node name="X_pos" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/TransformContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_force_pass_scroll_events = false
+min_value = -10.0
+max_value = 10.0
+step = 0.001
+
+[node name="Y_pos" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/TransformContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_force_pass_scroll_events = false
+min_value = -10.0
+max_value = 10.0
+step = 0.001
+
+[node name="Z_pos" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/TransformContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_force_pass_scroll_events = false
+min_value = -10.0
+max_value = 10.0
+step = 0.001
+
+[node name="Rotation Container" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/Rotation Container"]
+layout_mode = 2
+text = "Rot [°] : "
+
+[node name="Z_rot" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/Rotation Container"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_force_pass_scroll_events = false
+min_value = -180.0
+max_value = 180.0
+
+[node name="ManualContainer" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ManualEnableButton" type="CheckBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/ManualContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/ManualContainer"]
+layout_mode = 2
+text = "Manual Control"
+
+[node name="PythonBridgeContainer" type="PanelContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_sjw4w")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/PythonBridgeContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PythonBridgeCheckButton" type="CheckBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Python Bridge"
+
+[node name="UDPPortContainer" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/UDPPortContainer"]
+layout_mode = 2
+text = "UDP Port :"
+
+[node name="UDPPortNumber" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/UDPPortContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 4243.0
+max_value = 65535.0
+value = 4243.0
+
+[node name="ToolBar" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -93.0
+offset_top = 30.0
+offset_right = 93.0
+offset_bottom = 61.0
+grow_horizontal = 2
+
+[node name="RunStopButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/ToolBar"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "RUN"
+
+[node name="ResetButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/ToolBar"]
+layout_mode = 2
+text = "Reload"
+
+[node name="ViewButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/ToolBar"]
+layout_mode = 2
+toggle_mode = true
+text = "TopView"
 
 [node name="GameScene" type="Node3D" parent="SplitContainer/SceneView3D/SceneViewport"]
 unique_name_in_owner = true
@@ -355,31 +415,6 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
 environment = SubResource("Environment_h33mq")
 
-[node name="ToolBar" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -47.0
-offset_top = 20.0
-offset_right = 47.0
-offset_bottom = 60.0
-grow_horizontal = 2
-
-[node name="RunStopButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/GameScene/ToolBar"]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-text = "RUN"
-
-[node name="ResetButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/GameScene/ToolBar"]
-layout_mode = 2
-text = "Reload"
-
-[node name="ViewButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/GameScene/ToolBar"]
-layout_mode = 2
-toggle_mode = true
-text = "TopView"
-
 [node name="ConfirmDeleteDialog" type="ConfirmationDialog" parent="."]
 
 [connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton" to="." method="_on_new_scene_button_pressed"]
@@ -389,13 +424,13 @@ text = "TopView"
 [connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton" to="." method="_on_save_scene_as_button_pressed"]
 [connection signal="file_selected" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
-[connection signal="value_changed" from="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer/X_pos" to="." method="_on_x_pos_value_changed"]
-[connection signal="value_changed" from="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer/Y_pos" to="." method="_on_y_pos_value_changed"]
-[connection signal="value_changed" from="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/TransformContainer/Z_pos" to="." method="_on_z_pos_value_changed"]
-[connection signal="value_changed" from="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/Rotation Container/Z_rot" to="." method="_on_z_rot_value_changed"]
-[connection signal="toggled" from="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/ManualContainer/ManualEnableButton" to="." method="_on_manual_enable_button_toggled"]
-[connection signal="toggled" from="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/HBoxContainer/PythonBridgeCheckButton" to="." method="_on_python_bridge_check_button_toggled"]
-[connection signal="value_changed" from="SplitContainer/ControlPanel/VBoxContainer/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/UDPPortContainer/UDPPortNumber" to="." method="_on_udp_port_number_value_changed"]
-[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/GameScene/ToolBar/RunStopButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
-[connection signal="pressed" from="SplitContainer/SceneView3D/SceneViewport/GameScene/ToolBar/ResetButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_reset_button_pressed"]
-[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/GameScene/ToolBar/ViewButton" to="." method="_on_view_button_toggled"]
+[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/TransformContainer/X_pos" to="." method="_on_x_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/TransformContainer/Y_pos" to="." method="_on_y_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/TransformContainer/Z_pos" to="." method="_on_z_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/Rotation Container/Z_rot" to="." method="_on_z_rot_value_changed"]
+[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/ManualContainer/ManualEnableButton" to="." method="_on_manual_enable_button_toggled"]
+[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/HBoxContainer/PythonBridgeCheckButton" to="." method="_on_python_bridge_check_button_toggled"]
+[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/VBoxContainer/PythonBridgeContainer/VBoxContainer/UDPPortContainer/UDPPortNumber" to="." method="_on_udp_port_number_value_changed"]
+[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ToolBar/RunStopButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
+[connection signal="pressed" from="SplitContainer/SceneView3D/SceneViewport/ToolBar/ResetButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_reset_button_pressed"]
+[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ToolBar/ViewButton" to="." method="_on_view_button_toggled"]

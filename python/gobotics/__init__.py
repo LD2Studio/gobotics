@@ -11,5 +11,8 @@ class Gobotics(GodotBridge):
     def reload(self):
         self.set("reload")
         time.sleep(0.1)
+    
+    def print(self, msg: str):
+        self.set("print_on_terminal", msg)
 
-engine = Gobotics(4242)
+app = Gobotics(4242)

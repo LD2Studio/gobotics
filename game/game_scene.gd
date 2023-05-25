@@ -10,6 +10,7 @@ var game_area_pointed: bool = false
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
 @onready var save_scene_button: Button = %SaveSceneButton
 @onready var python = PythonBridge.new(4242)
+@onready var terminal_output = %TerminalOutput
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
@@ -133,6 +134,7 @@ func freeze_children(node, frozen):
 		freeze_children(child, frozen)
 
 ## Python functions
+
 func run():
 	_on_run_stop_button_toggled(true)
 
@@ -142,8 +144,11 @@ func stop():
 func reload():
 	_on_reset_button_pressed()
 	
-## Slot functions
+func print_on_terminal(text: String):
+	terminal_output.text += "%s\n" % text
 	
+## Slot functions
+
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	if scene == null:
 		return
