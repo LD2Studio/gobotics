@@ -78,11 +78,17 @@ func update_process(delta) -> void:
 #			print(d_square)
 			const d_square_threshold = 0.01**2
 			if d_square > d_square_threshold:
-				var theta: float = robot.frame.global_rotation.y
+				var forward_dir : Vector3 = -robot.frame.global_transform.basis.z
+				var dir := Vector2(forward_dir.x, forward_dir.z)
+#				var vec_to_target: Vector2 = target.pos - pos
+				var err_theta: float = -dir.angle_to(target.pos - pos)
+#				print("dir: ", dir)
+#				print("err_theta: ", rad_to_deg(err_theta))
+#				var theta: float = robot.frame.global_rotation.y
 #				print("theta: ", rad_to_deg(theta))
-				var theta_m: float = atan2(-target.pos.x + pos.x, -target.pos.y + pos.y)
-#				print("theta m: ", rad_to_deg(theta_m))
-				var err_theta: float = theta_m - theta
+#				var theta_m: float = atan2(-target.pos.x + pos.x, -target.pos.y + pos.y)
+#				print("theta_m: ", rad_to_deg(theta_m))
+#				var err_theta: float = theta_m - theta
 				const Kp = 20.0
 				const MAX_SPEED = 7
 				var omega_c: float = Kp * err_theta
@@ -91,11 +97,18 @@ func update_process(delta) -> void:
 			else:
 				move(0,0)
 				robot.state = orientation_control
+				
 		orientation_control:
 #			print("orientation control")
-			var theta: float = robot.frame.global_rotation.y
+			var forward_dir : Vector3 = -robot.frame.global_transform.basis.z
+			var dir := Vector2(forward_dir.x, forward_dir.z)
+			var target_dir := Vector2.from_angle(-target.orientation - PI/2)
+#			print("target_dir: ", target_dir)
+			var err_theta: float = -dir.angle_to(target_dir)
+#			print("err_theta", err_theta)
+#			var theta: float = robot.frame.global_rotation.y
 			const theta_th = deg_to_rad(1)
-			var err_theta: float = target.orientation - theta
+#			var err_theta: float = target.orientation - theta
 			if abs(err_theta) > theta_th:
 				const Kp = 7.0
 				const MAX_SPEED = 7

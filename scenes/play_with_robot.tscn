@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://bfq6xrtwnhudr"]
 
-[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_4yd34"]
-[ext_resource type="PackedScene" path="res://assets/robot_alpha/robot_alpha.tscn" id="2_364wc"]
+[ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://assets/builtin/dark_environment.tscn" id="1_4yd34"]
+[ext_resource type="PackedScene" uid="uid://bwxqqswh33b24" path="res://assets/robot_alpha/robot_alpha.tscn" id="2_364wc"]
 
 [sub_resource type="GDScript" id="GDScript_4tdur"]
 resource_name = "Main"
@@ -19,14 +19,12 @@ func _physics_process(delta):
 
 [node name="Scene" type="Node3D"]
 
-[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_4yd34")]
+[node name="DarkEnvironment" parent="." instance=ExtResource("1_4yd34")]
 metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="RobotAlpha" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_364wc")]
+[node name="RobotAlpha" parent="." instance=ExtResource("2_364wc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0755856, 0, -0.132413)
 script = SubResource("GDScript_4tdur")
-speed = 6.0
-collision_groups = 1
 metadata/manual_control = true
 metadata/transform = Transform3D(0.999765, 0.0027698, -0.0214849, -0.00282851, 0.999992, -0.00270276, 0.0214772, 0.0027629, 0.999766, -0.0749446, 0.545979, 0.0941958)
 metadata/python_bridge_activate = true
