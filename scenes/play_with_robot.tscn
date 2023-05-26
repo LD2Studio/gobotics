@@ -25,10 +25,9 @@ metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 [node name="RobotAlpha" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_364wc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0755856, 0, -0.132413)
 script = SubResource("GDScript_4tdur")
-manual_control = false
 speed = 6.0
 collision_groups = 1
 metadata/manual_control = true
-metadata/transform = Transform3D(0.999868, 0.00225011, -0.0161121, -0.00222002, 0.999996, 0.00188546, 0.0161163, -0.00184944, 0.999868, -0.0751582, 0.545487, 0.0971)
+metadata/transform = Transform3D(0.999765, 0.0027698, -0.0214849, -0.00282851, 0.999992, -0.00270276, 0.0214772, 0.0027629, 0.999766, -0.0749446, 0.545979, 0.0941958)
 metadata/python_bridge_activate = true
 metadata/python_bridge_port = 4243

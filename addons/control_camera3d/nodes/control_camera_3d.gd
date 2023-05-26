@@ -91,10 +91,10 @@ func _unhandled_input(event: InputEvent) -> void:
 						_state = State.ROTATED
 				elif event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 					_state = State.IDLE
-		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			_state = State.LOOKAT
-		elif event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:
-			_state = State.IDLE
+#		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+#			_state = State.LOOKAT
+#		elif event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:
+#			_state = State.IDLE
 			
 	match(_state):
 		State.IDLE:

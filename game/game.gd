@@ -8,7 +8,7 @@ extends Control
 @onready var control_camera_3d: Camera3D = %ControlCamera3D
 @onready var top_camera_2d: Camera3D = %TopCamera2D
 @onready var object_inspector = %ObjectInspector
-@onready var confirm_delete_dialog: ConfirmationDialog = $ConfirmDeleteDialog
+@onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 
 var selected_root_block: Node
 var current_filename: String:
@@ -29,7 +29,6 @@ func _enter_tree():
 
 func _ready():
 	init_part_list()
-	game_scene.block_selected.connect(_on_selected_block)
 	confirm_delete_dialog.confirmed.connect(_on_confirm_delete_dialog_confirmed)
 	connected_joystick = Input.get_connected_joypads()
 	%SaveSceneButton.disabled = true
@@ -51,76 +50,6 @@ func _on_confirm_delete_dialog_confirmed() -> void:
 	if scene:
 		scene.remove_child(selected_root_block)
 		selected_root_block.queue_free()
-
-# Called when a block is selected in the scene
-func _on_selected_block(block: Node):
-	selected_root_block = block.owner if block != null else null
-#	print("selected block: ", selected_block)
-	if block == null or game_scene.running:
-		%ObjectInspector.visible = false
-		return
-	%ObjectInspector.visible = true
-	# Update data in inspector
-	%BlockName.text = block.owner.name
-	%X_pos.value = block.global_position.x / 10.0
-	%Y_pos.value = block.global_position.y / 10.0
-	%Z_pos.value = block.global_position.z / 10.0
-	%Z_rot.value = block.rotation_degrees.y
-	
-	if selected_root_block.get_meta("manual_control", false):
-		%ManualContainer.visible = true
-		%ManualEnableButton.button_pressed = selected_root_block.manual_control
-	else:
-		%ManualContainer.visible = false
-		
-	if selected_root_block.is_in_group("PYTHON"):
-		%PythonBridgeContainer.visible = true
-		%PythonBridgeCheckButton.set_pressed_no_signal(selected_root_block.python.activate)
-		%UDPPortNumber.value = selected_root_block.python.port
-	else:
-		%PythonBridgeContainer.visible = false
-
-func _on_x_pos_value_changed(value: float) -> void:
-	if selected_root_block == null:
-		return
-	var rigid_body = selected_root_block.get_child(0)
-	if rigid_body is RigidBody3D:
-		rigid_body.global_position.x = value*10.0
-
-func _on_y_pos_value_changed(value: float) -> void:
-	if selected_root_block == null:
-		return
-	var rigid_body = selected_root_block.get_child(0)
-	if rigid_body is RigidBody3D:
-		rigid_body.global_position.y = value*10.0
-
-func _on_z_pos_value_changed(value: float) -> void:
-	if selected_root_block == null:
-		return
-	var rigid_body = selected_root_block.get_child(0)
-	if rigid_body is RigidBody3D:
-		rigid_body.global_position.z = value*10.0
-
-func _on_z_rot_value_changed(value: float) -> void:
-	if selected_root_block == null:
-		return
-	var rigid_body = selected_root_block.get_child(0)
-	if rigid_body is RigidBody3D:
-		rigid_body.rotation_degrees.y = value
-		
-func _on_manual_enable_button_toggled(button_pressed: bool) -> void:
-	if selected_root_block == null: return
-	selected_root_block.manual_control = button_pressed
-
-func _on_python_bridge_check_button_toggled(button_pressed: bool) -> void:
-	if selected_root_block == null: return
-	if selected_root_block.is_in_group("PYTHON"):
-		selected_root_block.python.activate = button_pressed
-
-func _on_udp_port_number_value_changed(value: float) -> void:
-	if selected_root_block == null: return
-	if selected_root_block.is_in_group("PYTHON"):
-		selected_root_block.python.port = int(value)
 
 func _on_new_scene_button_pressed() -> void:
 	%NewSceneDialog.popup_centered(Vector2i(200, 300))

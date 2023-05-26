@@ -19,6 +19,6 @@ metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 [node name="Ball" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_1gpkb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.955263, 0, -0.467961)
 script = SubResource("GDScript_fa3ov")
-metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.955263, 0.499537, 0.467961)
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.955263, 0.5, 0.467961)
 metadata/python_bridge_activate = true
-metadata/python_bridge_port = 4243
+metadata/python_bridge_port = 4244

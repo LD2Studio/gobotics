@@ -115,8 +115,8 @@ class GodotBridge:
         try:
             recv_data = self.sock.recv(100000)
         except ConnectionRefusedError:
-            print("[Error] Connection failed on port %d" % self.port)
-            return
+            # print("[Error] Connection failed on port %d" % self.port)
+            raise ConnectionRefusedError("Connection failed on port %d" % self.port)
         # print("json ret message: ", json_ret_message)
         # if binary data ?
         if recv_data[0] == 0:

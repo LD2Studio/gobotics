@@ -1,0 +1,58 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_b4osu"]
+[ext_resource type="PackedScene" path="res://assets/robot_alpha/robot_alpha.tscn" id="2_uabdn"]
+[ext_resource type="PackedScene" path="res://assets/robot_beta/robot_beta.tscn" id="3_vdaps"]
+
+[sub_resource type="GDScript" id="GDScript_4tdur"]
+resource_name = "Main"
+script/source = "extends DifferentialRobot
+
+func _ready():
+	init($Frame/RightWheel, $Frame/LeftWheel)
+	
+func _process(delta):
+	update_input()
+
+func _physics_process(delta):
+	update_process(delta)
+"
+
+[sub_resource type="GDScript" id="GDScript_cfycw"]
+resource_name = "robot"
+script/source = "extends DifferentialRobot
+
+func _ready():
+	init($Frame/RightJoint, $Frame/LeftJoint)
+	
+func _process(delta):
+	update_input()
+
+func _physics_process(delta):
+	update_process(delta)
+"
+
+[node name="Scene" type="Node3D"]
+
+[node name="DarkEnvironment" type="Node3D" parent="." groups=["ENVIRONMENT"] instance=ExtResource("1_b4osu")]
+metadata/transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="RobotAlpha" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("2_uabdn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.03477, 0, -0.267344)
+script = SubResource("GDScript_4tdur")
+speed = 6.0
+collision_groups = 1
+metadata/manual_control = true
+metadata/transform = Transform3D(-0.601813, 0.0015076, 0.798635, 0.00187781, 0.999998, -0.000472687, -0.798635, 0.00121522, -0.601815, 1.17477, 0.55, -2.21266)
+metadata/python_bridge_activate = false
+metadata/python_bridge_port = 4243
+
+[node name="RobotBeta" type="Node3D" parent="." groups=["PARTS"] instance=ExtResource("3_vdaps")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.24273, -4.76837e-07, -1.94053)
+script = SubResource("GDScript_cfycw")
+speed = 7.0
+collision_groups = 1
+metadata/manual_control = false
+metadata/transform = Transform3D(0.999391, -0.00058642, -0.0348995, 0.000590485, 1, 0.00010617, 0.0348994, -0.000126713, 0.999391, 1.76273, 0.3, 2.40053)
+metadata/python_bridge_activate = false
+metadata/python_bridge_port = 4243

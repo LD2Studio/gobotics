@@ -1,8 +1,7 @@
 class_name DifferentialRobot
 extends Node3D
 
-@export var manual_control: bool = false
-@export var speed: float = 1.0
+@export var speed: float = 5.0
 @export_flags_3d_physics var collision_groups = 1
 @onready var python = PythonBridge.new(4243)
 @onready var robot := Robot.new()
@@ -21,6 +20,7 @@ class Robot:
 	var speed: float
 	var state: int
 	var task_finished: bool = true
+	var manual_control: bool = true
 	
 class Target:
 	var pos: Vector2 # Position de la cîble dans le plan XZ
@@ -28,6 +28,7 @@ class Target:
 
 func _enter_tree():
 	add_to_group("PYTHON")
+	add_to_group("ROBOT")
 
 func init(right_wheel: RotationActuator3D = null, left_wheel: RotationActuator3D = null):
 	add_child(python)
@@ -46,7 +47,7 @@ func init(right_wheel: RotationActuator3D = null, left_wheel: RotationActuator3D
 			child.collision_mask = collision_groups
 
 func update_input():
-	if manual_control:
+	if not python.activate and robot.manual_control:
 		if Input.is_action_pressed("FORWARD"):
 			if Input.is_action_pressed("RIGHT"):
 				robot.right_wheel.rotation_speed = 0
