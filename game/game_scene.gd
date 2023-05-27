@@ -16,7 +16,14 @@ func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
 	python.activate = true
 	add_child(python)
-
+	
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("DELETE"):
+#		print(selected_block)
+		if selected_part == null: return
+		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [selected_part.name]
+		%ConfirmDeleteDialog.popup_centered()
+		
 func init_scene():
 	scene = Node3D.new()
 	scene.name = &"Scene"
@@ -271,3 +278,9 @@ func _on_keys_control_check_toggled(button_pressed: bool) -> void:
 	if selected_part == null: return
 	if selected_part.is_in_group("ROBOT"):
 		selected_part.robot.manual_control = button_pressed
+
+func _on_confirm_delete_dialog_confirmed() -> void:
+#	var scene = get_node_or_null("Scene")
+	if scene:
+		scene.remove_child(selected_part)
+		selected_part.queue_free()

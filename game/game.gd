@@ -10,7 +10,7 @@ extends Control
 @onready var object_inspector = %ObjectInspector
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 
-var selected_root_block: Node
+#var selected_root_block: Node
 var current_filename: String:
 	set(value):
 		current_filename = value
@@ -29,27 +29,12 @@ func _enter_tree():
 
 func _ready():
 	init_part_list()
-	confirm_delete_dialog.confirmed.connect(_on_confirm_delete_dialog_confirmed)
 	connected_joystick = Input.get_connected_joypads()
 	%SaveSceneButton.disabled = true
 	%SaveSceneAsButton.disabled = true
 	object_inspector.visible = false
 	current_filename = ""
 #	print_debug(connected_joystick)
-	
-	
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("DELETE"):
-#		print(selected_block)
-		if selected_root_block == null: return
-		confirm_delete_dialog.dialog_text = "Delete %s object ?" % [selected_root_block.name]
-		confirm_delete_dialog.popup_centered()
-
-func _on_confirm_delete_dialog_confirmed() -> void:
-	var scene = game_scene.get_node_or_null("Scene")
-	if scene:
-		scene.remove_child(selected_root_block)
-		selected_root_block.queue_free()
 
 func _on_new_scene_button_pressed() -> void:
 	%NewSceneDialog.popup_centered(Vector2i(200, 300))

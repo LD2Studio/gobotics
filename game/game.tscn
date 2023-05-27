@@ -443,3 +443,4 @@ gui_embed_subwindows = true
 [connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ToolBar/RunStopButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
 [connection signal="pressed" from="SplitContainer/SceneView3D/SceneViewport/ToolBar/ResetButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_reset_button_pressed"]
 [connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ToolBar/ViewButton" to="." method="_on_view_button_toggled"]
+[connection signal="confirmed" from="SplitContainer/SceneView3D/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_confirm_delete_dialog_confirmed"]
