@@ -73,6 +73,8 @@ func _process(_delta: float) -> void:
 		_pole_mesh.surface_end()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not current: return
+	
 	if event is InputEventMouseButton:
 		match action_mouse_button:
 			"MIDDLE_BUTTON":
@@ -99,6 +101,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	match(_state):
 		State.IDLE:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			pivot_pos = _pivot_transform.origin
 		State.ROTATED, State.TRANSLATED, State.LOOKAT:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 			
@@ -119,18 +122,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			Vector3(event.relative.x * _MOUSE_SENSITIVITY * translation_speed,
 					event.relative.y * _MOUSE_SENSITIVITY * translation_speed,
 					0))
-		pivot_pos = _pivot_transform.origin
 		global_transform = global_transform.translated_local(
 			Vector3(-event.relative.x * _MOUSE_SENSITIVITY * translation_speed,
 					event.relative.y * _MOUSE_SENSITIVITY * translation_speed,
 					0))
 			
-	if event is InputEventMouseMotion and _state == State.LOOKAT:
-		_pivot_transform = _pivot_transform.translated_local(
-			Vector3(-event.relative.x * _MOUSE_SENSITIVITY,
-					-event.relative.y * _MOUSE_SENSITIVITY,
-					0))
-		pivot_pos = _pivot_transform.origin
+#	if event is InputEventMouseMotion and _state == State.LOOKAT:
+#		_pivot_transform = _pivot_transform.translated_local(
+#			Vector3(-event.relative.x * _MOUSE_SENSITIVITY,
+#					-event.relative.y * _MOUSE_SENSITIVITY,
+#					0))
+#		pivot_pos = _pivot_transform.origin
 		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_WHEEL_UP:
 		if global_position.distance_to(pivot_pos) > zoom_in:

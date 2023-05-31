@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=19 format=3 uid="uid://b4s6pohitqafc"]
 
 [ext_resource type="Script" path="res://game/game.gd" id="1_85jys"]
 [ext_resource type="Script" path="res://game/EnvironmentList.gd" id="2_s428s"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://game/LevelContainer.gd" id="3_n66nd"]
 [ext_resource type="Script" path="res://game/game_scene.gd" id="4_htgp6"]
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="5_i338u"]
+[ext_resource type="Script" path="res://game/TopCamera2D.gd" id="7_eidv5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxght"]
 bg_color = Color(0.25098, 0.411765, 0.768627, 1)
@@ -232,7 +233,7 @@ handle_input_locally = false
 msaa_3d = 2
 screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(2, 2)
+size = Vector2i(1378, 800)
 render_target_update_mode = 4
 
 [node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView3D/SceneViewport"]
@@ -413,7 +414,10 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10, 0)
 environment = SubResource("Environment_5axc7")
 projection = 1
-size = 24.0
+size = 30.0
+script = ExtResource("7_eidv5")
+action_mouse_button = "LEFT_BUTTON"
+zoom_speed = 1.5
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
 transform = Transform3D(-0.866024, -0.433015, 0.25, 0.108816, 0.32479, 0.939505, -0.488018, 0.840838, -0.234157, 0, 0, 0)
