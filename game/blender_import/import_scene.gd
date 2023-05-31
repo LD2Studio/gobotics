@@ -92,11 +92,13 @@ func iterate(node: Node):
 				var col_shape = CollisionShape3D.new()
 				col_shape.name = new_node.name + "Col"
 				col_shape.transform = Transform3D()
+				
 				var boundary_box: AABB = node.get_aabb()
 				var shape = CylinderShape3D.new()
 				shape.radius = boundary_box.size.x / 2.0
 				shape.height = boundary_box.size.y
 				col_shape.shape = shape
+				
 				node.add_child(col_shape, true, Node.INTERNAL_MODE_FRONT)
 				col_shape.owner = node.owner
 				
@@ -126,6 +128,22 @@ func iterate(node: Node):
 			node.replace_by(new_node)
 			node = new_node
 			
+		if node.name.ends_with("-rigidjoint_motorxrot"):
+			var new_node = RotationActuator3D.new()
+			new_node.name = node.name.trim_suffix("-rigidjoint_motorxrot")
+			new_node.rotation_axis = "X"
+			new_node.transform = node.transform
+			node.replace_by(new_node)
+			node = new_node
+			
+		if node.name.ends_with("-rigidjoint_motor-xrot"):
+			var new_node = RotationActuator3D.new()
+			new_node.name = node.name.trim_suffix("-rigidjoint_motor-xrot")
+			new_node.rotation_axis = "-X"
+			new_node.transform = node.transform
+			node.replace_by(new_node)
+			node = new_node
+			
 		if node.name.ends_with("-rigidjoint_freeyrot"):
 			var new_node = RotationActuator3D.new()
 			new_node.name = node.name.trim_suffix("-rigidjoint_freeyrot")
@@ -134,9 +152,9 @@ func iterate(node: Node):
 			node.replace_by(new_node)
 			node = new_node
 			
-		if node.name.ends_with("-rigidbody-rot3dof"):
+		if node.name.ends_with("-rigidjoint_freexyzrot"):
 			var new_node = Rotation3DOF.new()
-			new_node.name = node.name.trim_suffix("-rigidbody-rot3dof")
+			new_node.name = node.name.trim_suffix("-rigidjoint_freexyzrot")
 			new_node.transform = node.transform
 			node.replace_by(new_node)
 			node = new_node
@@ -152,6 +170,43 @@ func iterate(node: Node):
 			
 			var mesh_instance = node.duplicate()
 			mesh_instance.name = node.name.trim_suffix("-meshcol") + "Mesh"
+			mesh_instance.transform = Transform3D()
+			node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
+			
+			mesh_instance.owner = node.owner
+			node.replace_by(col_shape)
+			
+		if node.name.ends_with("-meshcolsphere"):
+			var col_shape = CollisionShape3D.new()
+			col_shape.name = node.name.trim_suffix("-meshcolsphere") + "Col"
+			col_shape.transform = node.transform
+			
+			var boundary_box: AABB = node.get_aabb()
+			var shape = SphereShape3D.new()
+			shape.radius = boundary_box.size.x / 2.0
+			col_shape.shape = shape
+			
+			var mesh_instance = node.duplicate()
+			mesh_instance.name = node.name.trim_suffix("-meshcolsphere") + "Mesh"
+			mesh_instance.transform = Transform3D()
+			node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
+			
+			mesh_instance.owner = node.owner
+			node.replace_by(col_shape)
+			
+		if node.name.ends_with("-meshcolcylinder"):
+			var col_shape = CollisionShape3D.new()
+			col_shape.name = node.name.trim_suffix("-meshcolcylinder") + "Col"
+			col_shape.transform = node.transform
+			
+			var boundary_box: AABB = node.get_aabb()
+			var shape = CylinderShape3D.new()
+			shape.radius = boundary_box.size.x / 2.0
+			shape.height = boundary_box.size.y
+			col_shape.shape = shape
+			
+			var mesh_instance = node.duplicate()
+			mesh_instance.name = node.name.trim_suffix("-meshcolcylinder") + "Mesh"
 			mesh_instance.transform = Transform3D()
 			node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
 			
@@ -207,6 +262,6 @@ func iterate(node: Node):
 			mesh_instance.owner = node.owner
 			node.replace_by(col_shape)
 			
-			
+
 		for child in node.get_children():
 			iterate(child)
