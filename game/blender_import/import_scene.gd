@@ -50,10 +50,52 @@ func iterate(node: Node):
 		if node.name.ends_with("-onlycol"):
 			var col_shape = CollisionShape3D.new()
 			col_shape.name = node.name.trim_suffix("-onlycol")
+			col_shape.name += "Col"
 			col_shape.transform = node.transform
 			var shape = ConvexPolygonShape3D.new()
 			var cp: ConvexPolygonShape3D = node.mesh.create_convex_shape()
 			col_shape.shape = cp
+			node.replace_by(col_shape)
+			
+		if node.name.ends_with("-spherecol"):
+			var col_shape = CollisionShape3D.new()
+			col_shape.name = node.name.trim_suffix("-spherecol")
+			col_shape.name += "Col"
+			col_shape.transform = node.transform
+			
+			var boundary_box: AABB = node.get_aabb()
+			var shape = SphereShape3D.new()
+			shape.radius = boundary_box.size.x / 2.0
+			col_shape.shape = shape
+			
+			var mesh_instance = node.duplicate()
+			mesh_instance.name = node.name.trim_suffix("-spherecol")
+			mesh_instance.name += "Mesh"
+			mesh_instance.transform = Transform3D()
+			node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
+			
+			mesh_instance.owner = node.owner
+			node.replace_by(col_shape)
+			
+		if node.name.ends_with("-cylindercol"):
+			var col_shape = CollisionShape3D.new()
+			col_shape.name = node.name.trim_suffix("-cylindercol")
+			col_shape.name += "Col"
+			col_shape.transform = node.transform
+			
+			var boundary_box: AABB = node.get_aabb()
+			print("Cylinder AABB: ", boundary_box)
+			var shape = CylinderShape3D.new()
+			shape.radius
+			col_shape.shape = shape
+			
+			var mesh_instance = node.duplicate()
+			mesh_instance.name = node.name.trim_suffix("-cylindercol")
+			mesh_instance.name += "Mesh"
+			mesh_instance.transform = Transform3D()
+			node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
+			
+			mesh_instance.owner = node.owner
 			node.replace_by(col_shape)
 			
 		if node.name.ends_with("-meshcol"):
@@ -63,10 +105,12 @@ func iterate(node: Node):
 			var shape = ConvexPolygonShape3D.new()
 			var cp: ConvexPolygonShape3D = node.mesh.create_convex_shape()
 			col_shape.shape = cp
+			
 			var mesh_instance = node.duplicate()
 			mesh_instance.name = &"MeshInstance3D"
 			mesh_instance.transform = Transform3D()
 			node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
+			
 			mesh_instance.owner = node.owner
 			node.replace_by(col_shape)
 			
