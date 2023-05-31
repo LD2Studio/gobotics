@@ -51,7 +51,7 @@ func connect_pickable():
 			node.input_event.connect(_on_ground_input_event)
 
 func connect_editable():
-	var nodes = get_tree().get_nodes_in_group("EDITABLE")
+	var nodes = get_tree().get_nodes_in_group("SELECT")
 #	print(nodes)
 	for node in nodes:
 		if not node.is_connected("input_event", _on_editable_block_input_event):

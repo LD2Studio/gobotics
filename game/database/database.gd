@@ -1,11 +1,11 @@
 class_name GoboticsDB
 extends Resource
 
-@export var assets_base_path: String = "res://assets"
+#@export var assets_base_path: String = "res://assets"
 @export var assets: Array
 
-func create():
-	add_assets(assets_base_path)
+func add_res(assets_abs_path):
+	add_assets(assets_abs_path)
 	# Save database
 #	ResourceSaver.save(self, "res://assets/assets_db.tres")
 	

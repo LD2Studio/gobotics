@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bfq6xrtwnhudr"]
 
-[ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://assets/builtin/dark_environment.tscn" id="1_4yd34"]
+[ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="1_4yd34"]
 [ext_resource type="PackedScene" uid="uid://bwxqqswh33b24" path="res://assets/robot_alpha/robot_alpha.tscn" id="2_364wc"]
 
 [sub_resource type="GDScript" id="GDScript_4tdur"]

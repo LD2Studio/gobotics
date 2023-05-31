@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_qj0dk"]
-[ext_resource type="PackedScene" path="res://assets/cfr2023/cream_layer.tscn" id="2_m1q5e"]
-[ext_resource type="PackedScene" path="res://assets/cfr2023/sponge_cake.tscn" id="3_0qxx1"]
+[ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="1_qj0dk"]
+[ext_resource type="PackedScene" uid="uid://ba5cxvhtglkbr" path="res://assets/cfr2023/cream_layer.tscn" id="2_m1q5e"]
+[ext_resource type="PackedScene" uid="uid://boqqtvnanymuy" path="res://assets/cfr2023/sponge_cake.tscn" id="3_0qxx1"]
 
 [node name="Scene" type="Node3D"]
 

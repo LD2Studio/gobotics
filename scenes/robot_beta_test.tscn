@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_n8cqc"]
-[ext_resource type="PackedScene" path="res://assets/robot_beta/robot_beta.tscn" id="2_hih00"]
-[ext_resource type="PackedScene" path="res://assets/cfr2023/cream_layer.tscn" id="3_5cjsn"]
+[ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="1_n8cqc"]
+[ext_resource type="PackedScene" uid="uid://c70k6bhe1m085" path="res://assets/robot_beta/robot_beta.tscn" id="2_hih00"]
+[ext_resource type="PackedScene" uid="uid://ba5cxvhtglkbr" path="res://assets/cfr2023/cream_layer.tscn" id="3_5cjsn"]
 
 [sub_resource type="GDScript" id="GDScript_cfycw"]
 resource_name = "robot"

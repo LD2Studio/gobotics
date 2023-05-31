@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/builtin/dark_environment.tscn" id="1_f8vpp"]
-[ext_resource type="PackedScene" path="res://assets/robot_delta/robot_delta.tscn" id="2_dsljw"]
+[ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="1_f8vpp"]
+[ext_resource type="PackedScene" uid="uid://dk6aksc2rutmx" path="res://assets/robot_delta/robot_delta.tscn" id="2_dsljw"]
 
 [sub_resource type="GDScript" id="GDScript_gc285"]
 resource_name = "diff_robot"
