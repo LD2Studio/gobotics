@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cudvdqpqrm2k3"]
+
+[ext_resource type="PackedScene" uid="uid://dxobkueq0kvp6" path="res://game/assets/items/ball.blend" id="1_s0u01"]
+
+[node name="Ball" groups=["ITEMS"] instance=ExtResource("1_s0u01")]
+
+[node name="Sphere" parent="." index="0" groups=["SELECT"]]

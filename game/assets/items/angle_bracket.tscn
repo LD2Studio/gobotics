@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cnnnnl0yd4m0m"]
+
+[ext_resource type="PackedScene" uid="uid://bmmrqslgy2hwi" path="res://game/assets/items/concave.blend" id="1_t2y1u"]
+
+[node name="AngleBracket" groups=["ITEMS"] instance=ExtResource("1_t2y1u")]
+
+[node name="AngleBracket" parent="." index="0" groups=["SELECT"]]

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bp3yemw1hxbno"]
+
+[ext_resource type="PackedScene" uid="uid://clofkqnlsxlwh" path="res://game/assets/items/box.blend" id="1_ailcu"]
+
+[node name="Box" groups=["ITEMS"] instance=ExtResource("1_ailcu")]
+
+[node name="Cube" parent="." index="0" groups=["SELECT"]]

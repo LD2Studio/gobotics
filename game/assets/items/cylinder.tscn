@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bs1y7fk12nhn1"]
+
+[ext_resource type="PackedScene" uid="uid://dnptfk7471w4u" path="res://game/assets/items/cylinder.blend" id="1_byvc6"]
+
+[node name="Cylinder" groups=["ITEMS"] instance=ExtResource("1_byvc6")]
+
+[node name="Cylinder" parent="." index="0" groups=["SELECT"]]
