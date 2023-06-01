@@ -24,6 +24,10 @@ func _input(event: InputEvent) -> void:
 		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [selected_part.name]
 		%ConfirmDeleteDialog.popup_centered()
 		
+func _process(delta: float) -> void:
+	
+	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
+		
 func init_scene():
 	scene = Node3D.new()
 	scene.name = &"Scene"
@@ -100,7 +104,7 @@ func save_scene(path: String):
 		if %PositionSavedCheck.button_pressed:
 			item.set_meta("transform", item.get_child(0).transform)
 		if item.is_in_group("ROBOT"):
-			print("%s is in ROBOT group" % [item])
+			# print("%s is in ROBOT group" % [item])
 			item.set_meta("manual_control", item.robot.manual_control)
 		for child in item.get_children():
 			if child.is_in_group("PYTHON"):
@@ -124,7 +128,6 @@ func load_scene(path):
 		return
 	delete_scene()
 	var res = ResourceLoader.load(path)
-#	print(res)
 	if res == null:
 		return
 	scene = res.instantiate()

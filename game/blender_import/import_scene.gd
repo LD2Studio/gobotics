@@ -213,14 +213,14 @@ func iterate(node: Node):
 			mesh_instance.owner = node.owner
 			node.replace_by(col_shape)
 			
-		if node.name.ends_with("-onlymesh"):
-			node.name = node.name.trim_suffix("-onlymesh")
+		if node.name.ends_with("-mesh"):
+			node.name = node.name.trim_suffix("-mesh") + "Mesh"
+			
 		
 		if node.name.ends_with("-shapecol"):
 			if node is MeshInstance3D:
 				var col_shape = CollisionShape3D.new()
-				col_shape.name = node.name.trim_suffix("-onlycol")
-				col_shape.name += "Col"
+				col_shape.name = node.name.trim_suffix("-shapecol") + "Col"
 				col_shape.transform = node.transform
 				var shape = ConvexPolygonShape3D.new()
 				var cp: ConvexPolygonShape3D = node.mesh.create_convex_shape()

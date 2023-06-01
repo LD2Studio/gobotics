@@ -3,22 +3,22 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dr7rlk288b50h"
-path="res://.godot/imported/oval.blend-0bdd3d5ef99d7069abfb9347ef4980c2.scn"
+uid="uid://4xf6ntgh500g"
+path="res://.godot/imported/item_with_motor_joint.blend-15c4dee5a8b7906dfbd7fca0af73b476.scn"
 
 [deps]
 
-source_file="res://game/assets/items/oval.blend"
-dest_files=["res://.godot/imported/oval.blend-0bdd3d5ef99d7069abfb9347ef4980c2.scn"]
+source_file="res://game/assets/items/item_with_motor_joint.blend"
+dest_files=["res://.godot/imported/item_with_motor_joint.blend-15c4dee5a8b7906dfbd7fca0af73b476.scn"]
 
 [params]
 
 nodes/root_type="Node3D"
 nodes/root_name="Scene"
-nodes/apply_root_scale=false
+nodes/apply_root_scale=true
 nodes/root_scale=1.0
 meshes/ensure_tangents=true
-meshes/generate_lods=true
+meshes/generate_lods=false
 meshes/create_shadow_meshes=true
 meshes/light_baking=1
 meshes/lightmap_texel_size=0.2
@@ -30,14 +30,41 @@ animation/remove_immutable_tracks=true
 import_script/path="res://game/blender_import/import_scene.gd"
 _subresources={
 "nodes": {
-"PATH:Sphere": {
+"PATH:FrameCol": {
 "generate/physics": true,
-"physics/body_type": 1
+"physics/body_type": 1,
+"physics/shape_type": 1
+},
+"PATH:FrameCol/BackWheel": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 4,
+"primitive/radius": 0.25
+},
+"PATH:FrameCol/FrontWheel": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 4,
+"primitive/radius": 0.25
+},
+"PATH:FrameCol/LeftWheel": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 5,
+"primitive/height": 0.2,
+"primitive/radius": 0.5
+},
+"PATH:FrameCol/RightWheel": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 5,
+"primitive/height": 0.2,
+"primitive/radius": 0.5
 }
 }
 }
 gltf/embedded_image_handling=1
-blender/nodes/visible=1
+blender/nodes/visible=0
 blender/nodes/punctual_lights=false
 blender/nodes/cameras=false
 blender/nodes/custom_properties=true
