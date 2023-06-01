@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://4xf6ntgh500g" path="res://game/assets/items/item_with_motor_joint.blend" id="1_uaefe"]
 
-[node name="ItemWithMotorJoint" groups=["ITEMS"] instance=ExtResource("1_uaefe")]
+[node name="ItemWithMotorJoint" instance=ExtResource("1_uaefe")]
 
 [node name="Base" parent="." index="0" groups=["SELECT"]]
 mass = 5.0

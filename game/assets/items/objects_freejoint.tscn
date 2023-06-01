@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bvd6pt7mkqnat" path="res://game/assets/items/objects_freejoint.blend" id="1_djrbm"]
 
-[node name="ObjectsFreejoint" groups=["ITEMS"] instance=ExtResource("1_djrbm")]
+[node name="ObjectsFreejoint" instance=ExtResource("1_djrbm")]
 
 [node name="Base" parent="." index="0" groups=["SELECT"]]
 mass = 5.0

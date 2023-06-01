@@ -2,6 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://bmmrqslgy2hwi" path="res://game/assets/items/concave.blend" id="1_t2y1u"]
 
-[node name="AngleBracket" groups=["ITEMS"] instance=ExtResource("1_t2y1u")]
+[node name="AngleBracket" instance=ExtResource("1_t2y1u")]
 
 [node name="AngleBracket" parent="." index="0" groups=["SELECT"]]

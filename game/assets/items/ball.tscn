@@ -31,7 +31,6 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_cfqqa")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_lms8f"]
-radius = 0.5
 
 [node name="Ball" type="Node3D" groups=["ITEMS"]]
 
