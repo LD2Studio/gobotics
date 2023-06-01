@@ -1,7 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://drp0faitjcl0l"]
+[gd_scene load_steps=3 format=3 uid="uid://drp0faitjcl0l"]
 
 [ext_resource type="PackedScene" uid="uid://dr7rlk288b50h" path="res://game/assets/items/oval.blend" id="1_c0ifh"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_0oqp3"]
+radius = 0.393293
 
 [node name="BallOval" groups=["ITEMS"] instance=ExtResource("1_c0ifh")]
 
 [node name="Ovoid" parent="." index="0" groups=["SELECT"]]
+mass = 0.1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ovoid" index="1"]
+shape = SubResource("SphereShape3D_0oqp3")
