@@ -188,10 +188,10 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/PartsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Parts"
+text = "Items"
 horizontal_alignment = 1
 
-[node name="PartsList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/PartsPanel/VBoxContainer"]
+[node name="ItemsList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/PartsPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -236,7 +236,7 @@ handle_input_locally = false
 msaa_3d = 2
 screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(2, 2)
+size = Vector2i(1378, 800)
 render_target_update_mode = 4
 
 [node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView3D/SceneViewport"]

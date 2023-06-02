@@ -4,7 +4,7 @@ extends Control
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
-@onready var parts_list = %PartsList
+@onready var parts_list = %ItemsList
 @onready var control_camera_3d: Camera3D = %ControlCamera3D
 @onready var top_camera_2d: Camera3D = %TopCamera2D
 @onready var object_inspector = %ObjectInspector
