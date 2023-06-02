@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://cv3rby2xy6dex"]
-
-[ext_resource type="PackedScene" uid="uid://cbksujkktupxl" path="res://assets/robot_omni/robot_ommniwheel_MD36/wheel.blend" id="1_ggi43"]
-
-[node name="WheelOmni" instance=ExtResource("1_ggi43")]
-
-[node name="Joint" parent="Jante" index="1"]
-can_sleep = false
