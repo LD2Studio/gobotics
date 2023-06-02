@@ -152,6 +152,24 @@ func iterate(node: Node):
 			node.replace_by(new_node)
 			node = new_node
 			
+		if node.name.ends_with("-rigidjoint_freexrot"):
+			var new_node = RotationActuator3D.new()
+			new_node.name = node.name.trim_suffix("-rigidjoint_freexrot")
+			new_node.transform = node.transform
+			new_node.rotation_axis = "X"
+			new_node.actuator_type = "FREE"
+			node.replace_by(new_node)
+			node = new_node
+			
+		if node.name.ends_with("-rigidjoint_freezrot"):
+			var new_node = RotationActuator3D.new()
+			new_node.name = node.name.trim_suffix("-rigidjoint_freezrot")
+			new_node.transform = node.transform
+			new_node.rotation_axis = "Y"
+			new_node.actuator_type = "FREE"
+			node.replace_by(new_node)
+			node = new_node
+			
 		if node.name.ends_with("-rigidjoint_freexyzrot"):
 			var new_node = Rotation3DOF.new()
 			new_node.name = node.name.trim_suffix("-rigidjoint_freexyzrot")
