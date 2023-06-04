@@ -11,6 +11,7 @@ var game_area_pointed: bool = false
 @onready var python = PythonBridge.new(4242)
 @onready var terminal_output = %TerminalOutput
 @onready var object_inspector: PanelContainer = %ObjectInspector
+@onready var udp_port_number: SpinBox = %UDPPortNumber
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
@@ -271,6 +272,7 @@ func _on_python_remote_button_toggled(button_pressed: bool) -> void:
 	if selected_part == null: return
 	if selected_part.is_in_group("PYTHON"):
 		selected_part.python.activate = button_pressed
+		selected_part.python.port = int(udp_port_number.value)
 
 func _on_udp_port_number_value_changed(value: float) -> void:
 	if selected_part == null: return

@@ -1,6 +1,6 @@
-from gobotics.props import Props
+from gobotics import Item
 
-ball = Props(4243)
+ball = Item(4243)
 
 print("Position de la balle: ", ball.get_position())
 
