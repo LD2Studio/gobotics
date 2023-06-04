@@ -1,6 +1,6 @@
-from gobotics.godotbridge import GodotBridge
+from gobotics import Item
 
-class DifferentialRobot(GodotBridge):
+class DifferentialRobot(Item):
     
     def set_pose(self, x, z, a):
         self.set("set_pose", x, z, a)

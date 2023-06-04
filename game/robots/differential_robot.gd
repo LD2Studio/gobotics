@@ -1,9 +1,9 @@
+extends Item
 class_name DifferentialRobot
-extends Node3D
 
 @export var speed: float = 5.0
 @export_flags_3d_physics var collision_groups = 1
-@onready var python = PythonBridge.new(4243)
+#@onready var python = PythonBridge.new(4243)
 @onready var robot := Robot.new()
 @onready var target := Target.new()
 
@@ -31,7 +31,8 @@ func _enter_tree():
 	add_to_group("ROBOT")
 
 func init(right_wheel: RotationActuator3D = null, left_wheel: RotationActuator3D = null):
-	add_child(python)
+	super()
+#	add_child(python)
 	var frame = get_child(0)
 	assert(frame is RigidBody3D, "Frame robot must be RigidBody3D type")
 	assert(right_wheel != null, "Right Wheel is not defined!")
