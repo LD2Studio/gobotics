@@ -25,6 +25,21 @@ func iterate(node: Node):
 			node.replace_by(new_node)
 			node = new_node
 			
+		if node.name.ends_with("-rigidmesh"):
+			# Replace root node
+			var new_node = RigidBody3D.new()
+			new_node.name = node.name.trim_suffix("-rigidmesh")
+			new_node.transform = node.transform
+			
+			var mesh_instance = node.duplicate()
+			mesh_instance.name = new_node.name + "Mesh"
+			mesh_instance.transform = Transform3D()
+			node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
+			mesh_instance.owner = node.owner
+			
+			node.replace_by(new_node)
+			node = new_node
+			
 		if node.name.ends_with("-rigidmeshcol"):
 			if node is MeshInstance3D:
 				# Replace root node
@@ -105,20 +120,6 @@ func iterate(node: Node):
 				node.replace_by(new_node)
 				node = new_node
 		
-		if node.name.ends_with("-rigidmesh"):
-			# Replace root node
-			var new_node = RigidBody3D.new()
-			new_node.name = node.name.trim_suffix("-rigidmesh")
-			new_node.transform = node.transform
-			
-			var mesh_instance = node.duplicate()
-			mesh_instance.name = new_node.name + "Mesh"
-			mesh_instance.transform = Transform3D()
-			node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
-			mesh_instance.owner = node.owner
-			
-			node.replace_by(new_node)
-			node = new_node
 			
 		## RigidBody with joints
 		if node.name.ends_with("-rigidjoint_motoryrot"):

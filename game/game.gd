@@ -74,9 +74,15 @@ func load_pck():
 	var assets_dir: String = executable_path.path_join(pck_dir)
 	var files = Array(DirAccess.get_files_at(assets_dir))
 	var pck_files = files.filter(func(file): return file.get_extension() == "pck")
+	var zip_files = files.filter(func(file): return file.get_extension() == "zip")
 #	print(pck_files)
 	
 	for pck_file in pck_files:
+		var pck_abs_path: String = assets_dir.path_join(pck_file)
+		if not ProjectSettings.load_resource_pack(pck_abs_path, false):
+			print("Packed resource not loading")
+	
+	for pck_file in zip_files:
 		var pck_abs_path: String = assets_dir.path_join(pck_file)
 		if not ProjectSettings.load_resource_pack(pck_abs_path, false):
 			print("Packed resource not loading")
