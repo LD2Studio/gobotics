@@ -11,7 +11,7 @@ func _get_drag_data(at_position: Vector2):
 	var asset = database.get_scene(asset_name)
 #	print(asset)
 	if asset:
-		var asset_res = load(asset)
+		var _asset_res = load(asset)
 #		print(asset_res)
 		var node = load(asset).instantiate()
 #		print("node: ", node)

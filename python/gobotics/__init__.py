@@ -15,4 +15,10 @@ class Gobotics(GodotBridge):
     def print(self, msg: str):
         self.set("print_on_terminal", msg)
 
+class Item(GodotBridge):
+    def get_position(self):
+        return self.get("get_pos")
+    def set_position(self, x: float, y: float, z: float):
+        self.set("set_pos", (x,y,z))
+
 app = Gobotics(4242)

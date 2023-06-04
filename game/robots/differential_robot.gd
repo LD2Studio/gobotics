@@ -70,7 +70,7 @@ func update_input():
 			robot.right_wheel.rotation_speed = 0
 			robot.left_wheel.rotation_speed = 0
 			
-func update_process(delta) -> void:
+func update_process(_delta) -> void:
 	match robot.state:
 		line_control:
 			var pos: Vector2 = Vector2(robot.frame.global_position.x/10.0, robot.frame.global_position.z/10.0)
@@ -138,11 +138,11 @@ func move(right_vel: float, left_vel: float):
 	robot.right_wheel.rotation_speed = right_vel
 	robot.left_wheel.rotation_speed = left_vel
 
-func move_to(new_pose: Vector3, speed: float):
+func move_to(new_pose: Vector3, new_speed: float):
 #	print("Move to (%f, %f)" % [new_pose.x, new_pose.y])
 	target.pos = Vector2(new_pose.x, new_pose.y)
 	target.orientation = new_pose.z
-	robot.speed = speed
+	robot.speed = new_speed
 	robot.state = line_control
 	robot.task_finished = false
 	

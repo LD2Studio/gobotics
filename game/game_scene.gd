@@ -24,7 +24,7 @@ func _input(event: InputEvent) -> void:
 		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [selected_part.name]
 		%ConfirmDeleteDialog.popup_centered()
 		
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
 		
@@ -102,7 +102,7 @@ func save_scene(path: String):
 #		print("item: ", item)
 		item.owner = scene
 		if %PositionSavedCheck.button_pressed:
-			item.set_meta("transform", item.get_child(0).transform)
+			item.set_meta("transform", item.get_child(0).global_transform)
 		if item.is_in_group("ROBOT"):
 			# print("%s is in ROBOT group" % [item])
 			item.set_meta("manual_control", item.robot.manual_control)
@@ -137,7 +137,7 @@ func load_scene(path):
 	for item in scene.get_children():
 		var transform_saved = item.get_meta("transform", Transform3D())
 		if transform_saved != Transform3D():
-			item.get_child(0).transform = transform_saved
+			item.get_child(0).global_transform = transform_saved
 		freeze_item(item, true)
 		var part_name = item.get_node_or_null("%PartName")
 		if part_name:
