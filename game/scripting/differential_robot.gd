@@ -3,7 +3,6 @@ class_name DifferentialRobot
 
 @export var speed: float = 5.0
 @export_flags_3d_physics var collision_groups = 1
-#@onready var python = PythonBridge.new(4243)
 @onready var robot := Robot.new()
 @onready var target := Target.new()
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://cudvdqpqrm2k3"]
+[gd_scene load_steps=9 format=3 uid="uid://cudvdqpqrm2k3"]
 
 [sub_resource type="GDScript" id="GDScript_nxg0c"]
 resource_name = "item"
@@ -38,6 +38,18 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_cfqqa")
 
+[sub_resource type="Gradient" id="Gradient_l3klt"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.248101, 0.503797, 0.759494)
+colors = PackedColorArray(0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_hy2qc"]
+gradient = SubResource("Gradient_l3klt")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rn2bf"]
+albedo_color = Color(0, 0.745098, 0.988235, 1)
+albedo_texture = SubResource("GradientTexture2D_hy2qc")
+
 [sub_resource type="SphereShape3D" id="SphereShape3D_lms8f"]
 
 [node name="Ball" type="Node3D" groups=["ITEMS"]]
@@ -49,6 +61,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 [node name="SphereMesh" type="MeshInstance3D" parent="Sphere"]
 mesh = SubResource("ArrayMesh_t0che")
 skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_rn2bf")
 
 [node name="SphereCol" type="CollisionShape3D" parent="Sphere"]
 shape = SubResource("SphereShape3D_lms8f")
