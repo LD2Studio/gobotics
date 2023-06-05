@@ -26,9 +26,12 @@ func _enter_tree():
 	if not OS.has_feature("editor"):
 		load_pck()
 	database.add_assets("res://" + pck_dir)
-	
 
 func _ready():
+	var app_name: String = ProjectSettings.get_setting("application/config/name")
+	var version: String = ProjectSettings.get_setting("application/config/version")
+	%TitleApp.text = "%s v%s" % [app_name, version]
+	
 	init_items_list()
 	connected_joystick = Input.get_connected_joypads()
 	%SaveSceneButton.disabled = true

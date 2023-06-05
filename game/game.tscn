@@ -103,6 +103,18 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 theme_override_constants/separation = 8
 
+[node name="TitlePanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlPanel/VBoxContainer/TitlePanel"]
+layout_mode = 2
+
+[node name="TitleApp" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/TitlePanel/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Gobotics"
+horizontal_alignment = 1
+
 [node name="ScenePanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fxght")
@@ -146,7 +158,7 @@ text = "Load Scene"
 unique_name_in_owner = true
 title = "Open a File"
 size = Vector2i(558, 162)
-ok_button_text = "Open"
+ok_button_text = "Ouvrir"
 file_mode = 0
 access = 2
 filters = PackedStringArray("*.tscn")
@@ -178,20 +190,20 @@ offset_right = 143.0
 offset_bottom = 26.0
 text = "Position saved"
 
-[node name="PartsPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
+[node name="ItemsPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_7ehh2")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/PartsPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ItemsPanel"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/PartsPanel/VBoxContainer"]
+[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ItemsPanel/VBoxContainer"]
 layout_mode = 2
 text = "Items"
 horizontal_alignment = 1
 
-[node name="ItemsList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/PartsPanel/VBoxContainer"]
+[node name="ItemsList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/ItemsPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
