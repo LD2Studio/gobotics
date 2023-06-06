@@ -15,8 +15,41 @@ func _post_import(scene: Node) -> Object:
 func iterate(node: Node):
 	if node != null:
 #		print_rich("Post-import: [b]%s[/b] -> [b]%s[/b]" % [node.name, "modified_" + node.name])
-
-		## RigidBody
+		## Staticbody
+		if node.name.ends_with("-static"):
+			if node is MeshInstance3D:
+				# Replace root node
+				var new_node = StaticBody3D.new()
+				new_node.name = node.name.trim_suffix("-static")
+				new_node.transform = node.transform
+				
+				var mesh_instance = node.duplicate()
+				mesh_instance.name = new_node.name + "Mesh"
+				mesh_instance.transform = Transform3D()
+				node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
+				mesh_instance.owner = node.owner
+				
+				var col_shape = CollisionShape3D.new()
+				col_shape.name = new_node.name + "Col"
+				col_shape.transform = Transform3D()
+				var shape = ConcavePolygonShape3D.new()
+				var cp: ConcavePolygonShape3D = node.mesh.create_trimesh_shape()
+				col_shape.shape = cp
+				node.add_child(col_shape, true, Node.INTERNAL_MODE_FRONT)
+				col_shape.owner = node.owner
+				
+				node.replace_by(new_node)
+				node = new_node
+				
+		## RigidBody alone
+		if node.name.ends_with("-rigidonly"):
+			# Replace root node
+			var new_node = RigidBody3D.new()
+			new_node.name = node.name.trim_suffix("-rigidonly")
+			new_node.transform = node.transform
+			node.replace_by(new_node)
+			node = new_node
+			
 		if node.name.ends_with("-rigid"):
 			# Replace root node
 			var new_node = RigidBody3D.new()
@@ -36,6 +69,24 @@ func iterate(node: Node):
 			mesh_instance.transform = Transform3D()
 			node.add_child(mesh_instance, true, Node.INTERNAL_MODE_FRONT)
 			mesh_instance.owner = node.owner
+			
+			node.replace_by(new_node)
+			node = new_node
+			
+		if node.name.ends_with("-rigidcol"):
+			# Replace root node
+			var new_node = RigidBody3D.new()
+			new_node.name = node.name.trim_suffix("-rigidcol")
+			new_node.transform = node.transform
+			
+			var col_shape = CollisionShape3D.new()
+			col_shape.name = new_node.name + "Col"
+			col_shape.transform = Transform3D()
+			var shape = ConvexPolygonShape3D.new()
+			var cp: ConvexPolygonShape3D = node.mesh.create_convex_shape()
+			col_shape.shape = cp
+			node.add_child(col_shape, true, Node.INTERNAL_MODE_FRONT)
+			col_shape.owner = node.owner
 			
 			node.replace_by(new_node)
 			node = new_node
@@ -120,7 +171,6 @@ func iterate(node: Node):
 				node.replace_by(new_node)
 				node = new_node
 		
-			
 		## RigidBody with joints
 		if node.name.ends_with("-rigidjoint_motoryrot"):
 			var new_node = RotationActuator3D.new()
@@ -240,6 +290,16 @@ func iterate(node: Node):
 			if node is MeshInstance3D:
 				var col_shape = CollisionShape3D.new()
 				col_shape.name = node.name.trim_suffix("-shapecol") + "Col"
+				col_shape.transform = node.transform
+				var shape = ConvexPolygonShape3D.new()
+				var cp: ConvexPolygonShape3D = node.mesh.create_convex_shape()
+				col_shape.shape = cp
+				node.replace_by(col_shape)
+				
+		if node.name.ends_with("-convexcol"):
+			if node is MeshInstance3D:
+				var col_shape = CollisionShape3D.new()
+				col_shape.name = node.name.trim_suffix("-convexcol") + "Col"
 				col_shape.transform = node.transform
 				var shape = ConvexPolygonShape3D.new()
 				var cp: ConvexPolygonShape3D = node.mesh.create_convex_shape()

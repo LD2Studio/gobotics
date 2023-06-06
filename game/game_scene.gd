@@ -244,28 +244,32 @@ func _on_x_pos_value_changed(value: float) -> void:
 	if selected_part == null:
 		return
 	var rigid_body = selected_part.get_child(0)
-	if rigid_body is RigidBody3D:
+	if true:
+#	if rigid_body is RigidBody3D:
 		rigid_body.global_position.x = value*10.0
 
 func _on_y_pos_value_changed(value: float) -> void:
 	if selected_part == null:
 		return
 	var rigid_body = selected_part.get_child(0)
-	if rigid_body is RigidBody3D:
+	if true:
+#	if rigid_body is RigidBody3D:
 		rigid_body.global_position.y = value*10.0
 
 func _on_z_pos_value_changed(value: float) -> void:
 	if selected_part == null:
 		return
 	var rigid_body = selected_part.get_child(0)
-	if rigid_body is RigidBody3D:
+	if true:
+#	if rigid_body is RigidBody3D:
 		rigid_body.global_position.z = value*10.0
 
 func _on_z_rot_value_changed(value: float) -> void:
 	if selected_part == null:
 		return
 	var rigid_body = selected_part.get_child(0)
-	if rigid_body is RigidBody3D:
+	if true:
+#	if rigid_body is RigidBody3D:
 		rigid_body.rotation_degrees.y = value
 
 func _on_python_remote_button_toggled(button_pressed: bool) -> void:
