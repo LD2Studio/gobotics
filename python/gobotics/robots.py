@@ -1,6 +1,8 @@
 from gobotics import Item
 
 class DifferentialRobot(Item):
+    def is_running(self) -> bool:
+        return self.get("is_running")
     
     def set_pose(self, x, z, a):
         self.set("set_pose", x, z, a)

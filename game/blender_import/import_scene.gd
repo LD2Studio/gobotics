@@ -50,13 +50,13 @@ func iterate(node: Node):
 			node.replace_by(new_node)
 			node = new_node
 			
-		if node.name.ends_with("-rigid"):
-			# Replace root node
-			var new_node = RigidBody3D.new()
-			new_node.name = node.name.trim_suffix("-rigid")
-			new_node.transform = node.transform
-			node.replace_by(new_node)
-			node = new_node
+#		if node.name.ends_with("-rigid"):
+#			# Replace root node
+#			var new_node = RigidBody3D.new()
+#			new_node.name = node.name.trim_suffix("-rigid")
+#			new_node.transform = node.transform
+#			node.replace_by(new_node)
+#			node = new_node
 			
 		if node.name.ends_with("-rigidmesh"):
 			# Replace root node

@@ -6,6 +6,8 @@ var selected_part: Node3D
 var mouse_pos_on_area: Vector3
 var game_area_pointed: bool = false
 
+#var python_threads: Array
+
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
 @onready var save_scene_button: Button = %SaveSceneButton
 @onready var python = PythonBridge.new(4242)
@@ -26,7 +28,6 @@ func _input(event: InputEvent) -> void:
 		%ConfirmDeleteDialog.popup_centered()
 		
 func _process(_delta: float) -> void:
-	
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
 		
 func init_scene():
@@ -89,6 +90,7 @@ func show_part_parameters(node: Node):
 		%PythonBridgeContainer.visible = true
 		%PythonRemoteButton.set_pressed_no_signal(selected_part.python.activate)
 		%UDPPortNumber.value = selected_part.python.port
+		%BuiltinScriptCheckBox.button_pressed = selected_part.builtin
 	else:
 		%PythonBridgeContainer.visible = false
 
@@ -111,7 +113,6 @@ func save_scene(path: String):
 			if child.is_in_group("PYTHON"):
 				item.set_meta("python_bridge_activate", child.activate)
 				item.set_meta("python_bridge_port", child.port)
-			
 				
 	if not path.ends_with(".tscn"):
 		path = path + ".tscn"
@@ -135,20 +136,21 @@ func load_scene(path):
 	add_child(scene)
 #	print(scene.get_children())
 	
-	for item in scene.get_children():
-		var transform_saved = item.get_meta("transform", Transform3D())
+	for node in scene.get_children():
+		var transform_saved = node.get_meta("transform", Transform3D())
 		if transform_saved != Transform3D():
-			item.get_child(0).global_transform = transform_saved
-		freeze_item(item, true)
-		var part_name = item.get_node_or_null("%PartName")
+			node.get_child(0).global_transform = transform_saved
+		freeze_item(node, true)
+		var part_name = node.get_node_or_null("%PartName")
 		if part_name:
-			part_name.text = item.name
-		for child in item.get_children():
+			part_name.text = node.name
+		for child in node.get_children():
 			if child.is_in_group("PYTHON"):
-				child.port = item.get_meta("python_bridge_port", 4242)
-				child.activate = item.get_meta("python_bridge_activate", false)
+				child.port = node.get_meta("python_bridge_port", 4242)
+				child.activate = node.get_meta("python_bridge_activate", false)
 				break
-			
+		if node.is_in_group("ITEMS"):
+			node.python_script_finished.connect(_on_python_script_finished)
 	connect_pickable()
 	connect_editable()
 	%RunStopButton.button_pressed = false
@@ -167,9 +169,9 @@ func delete_scene():
 	scene_node.queue_free()
 	save_scene_as_button.disabled = true
 	
-func freeze_item(node, frozen):
-	node.set_physics_process(not frozen)
-	freeze_children(node, frozen)
+func freeze_item(item, frozen):
+	item.set_physics_process(not frozen)
+	freeze_children(item, frozen)
 
 func freeze_children(node, frozen):
 	if node is RigidBody3D:
@@ -189,12 +191,16 @@ func stop():
 func reload():
 	_on_reset_button_pressed()
 	
+func is_running() -> bool:
+	return running
+	
 func print_on_terminal(text: String):
 	terminal_output.text += "%s\n" % text
 	
 ## Slot functions
 
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
+#	print_debug(button_pressed)
 	if scene == null:
 		return
 	%ObjectInspector.visible = not button_pressed
@@ -202,15 +208,19 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 		running = true
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
-		for node in scene.get_children():
-			freeze_item(node, false)
+		for item in scene.get_children():
+			freeze_item(item, false)
+			if item.is_in_group("PYTHON"):
+				item.run()
 	else:
 		running = false
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
 		hide_part_parameters()
-		for node in scene.get_children():
-			freeze_item(node, true)
+		for item in scene.get_children():
+			freeze_item(item, true)
+			if item.is_in_group("PYTHON"):
+				item.stop()
 
 func _on_reset_button_pressed():
 	load_scene(owner.current_filename)
@@ -282,6 +292,12 @@ func _on_udp_port_number_value_changed(value: float) -> void:
 	if selected_part == null: return
 	if selected_part.is_in_group("PYTHON"):
 		selected_part.python.port = int(value)
+		
+func _on_open_script_button_pressed() -> void:
+	if selected_part == null: return
+	if selected_part.is_in_group("PYTHON"):
+		%SourceCodeEdit.text = selected_part.source_code
+		%ScriptDialog.popup_centered()
 
 func _on_keys_control_check_toggled(button_pressed: bool) -> void:
 	if selected_part == null: return
@@ -289,7 +305,18 @@ func _on_keys_control_check_toggled(button_pressed: bool) -> void:
 		selected_part.robot.manual_control = button_pressed
 
 func _on_confirm_delete_dialog_confirmed() -> void:
-#	var scene = get_node_or_null("Scene")
 	if scene:
 		scene.remove_child(selected_part)
 		selected_part.queue_free()
+
+func _on_script_dialog_confirmed() -> void:
+	if selected_part == null: return
+	selected_part.source_code = %SourceCodeEdit.text
+	
+func _on_python_script_finished(new_text: String):
+#	print(new_text)
+	%TerminalOutput.text += new_text
+
+func _on_builtin_script_check_box_toggled(button_pressed: bool) -> void:
+	if selected_part == null: return
+	selected_part.builtin = button_pressed

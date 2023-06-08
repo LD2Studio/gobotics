@@ -72,6 +72,9 @@ func _on_save_scene_dialog_file_selected(path):
 func _on_view_button_toggled(button_pressed: bool) -> void:
 	top_camera_2d.current = true if button_pressed else false
 
+func _on_clear_button_pressed() -> void:
+	%TerminalOutput.text = ""
+	
 func load_pck():
 	var executable_path: String = OS.get_executable_path().get_base_dir()
 	var assets_dir: String = executable_path.path_join(pck_dir)

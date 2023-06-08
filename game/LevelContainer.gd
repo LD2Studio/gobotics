@@ -10,9 +10,12 @@ func _can_drop_data(_at_position: Vector2, _data) -> bool:
 func _drop_data(_at_position: Vector2, data) -> void:
 	data.name = get_new_name(data.name)
 	data.position = game_scene.mouse_pos_on_area
+	if data.is_in_group("PYTHON"):
+		data.python_script_finished.connect(game_scene._on_python_script_finished)
 	game_scene.freeze_item(data, true)
 	game_scene.get_node("Scene").add_child(data)
 	game_scene.connect_editable()
+	
 	var part_name = data.get_node_or_null("%PartName")
 	if part_name:
 		part_name.text = data.name

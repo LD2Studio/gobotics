@@ -71,6 +71,9 @@ func update_input():
 			robot.left_wheel.rotation_speed = 0
 			
 func update_process(_delta) -> void:
+#	if not running:
+#		robot.state = idle
+#		robot.task_finished = true
 	match robot.state:
 		line_control:
 			var pos: Vector2 = Vector2(robot.frame.global_position.x/10.0, robot.frame.global_position.z/10.0)
