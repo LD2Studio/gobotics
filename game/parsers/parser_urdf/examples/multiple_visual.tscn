@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3]
+
+[sub_resource type="GDScript" id="GDScript_tkqfd"]
+script/source = "extends Node3D
+"
+
+[sub_resource type="BoxMesh" id="BoxMesh_xgglb"]
+size = Vector3(5, 1, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_orcd0"]
+albedo_color = Color(0, 0, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jb447"]
+size = Vector3(5, 1, 5)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_svrs8"]
+height = 5.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_qf1m5"]
+height = 5.0
+
+[node name="multiple_visual" type="Node3D"]
+script = SubResource("GDScript_tkqfd")
+
+[node name="base_link" type="RigidBody3D" parent="." groups=["SELECT"]]
+
+[node name="box_mesh" type="MeshInstance3D" parent="base_link"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_xgglb")
+surface_material_override/0 = SubResource("StandardMaterial3D_orcd0")
+
+[node name="box_col" type="CollisionShape3D" parent="base_link"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_jb447")
+
+[node name="cylinder_mesh" type="MeshInstance3D" parent="base_link"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("CylinderMesh_svrs8")
+
+[node name="cylinder_col" type="CollisionShape3D" parent="base_link"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+shape = SubResource("CylinderShape3D_qf1m5")

@@ -1,0 +1,16 @@
+[remap]
+
+importer="urdf.importer"
+type="PackedScene"
+uid="uid://bryah1xnm3pu5"
+path="res://.godot/imported/material_tags.urdf-e1ad7be78cef9cb3fac72099dc4846c0.tscn"
+
+[deps]
+
+source_file="res://game/parsers/parser_urdf/examples/material_tags.urdf"
+dest_files=["res://.godot/imported/material_tags.urdf-e1ad7be78cef9cb3fac72099dc4846c0.tscn"]
+
+[params]
+
+switch_yz=false
+scale=1.0

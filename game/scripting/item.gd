@@ -16,9 +16,10 @@ func _enter_tree():
 	add_to_group("PYTHON")
 	
 func _process(_delta: float) -> void:
-	if python_thread:
-		if not python_thread.is_alive():
-			print("thread not alive...")
+	pass
+#	if python_thread:
+#		if not python_thread.is_alive():
+#			print("thread not alive...")
 	
 func init():
 	add_child(python)

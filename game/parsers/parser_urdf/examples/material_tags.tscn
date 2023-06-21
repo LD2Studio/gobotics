@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="BoxMesh" id="BoxMesh_nqssn"]
+size = Vector3(1, 0.5, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2vnsf"]
+albedo_color = Color(1, 0, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_wfm1r"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_651bt"]
+albedo_color = Color(0, 0, 1, 1)
+
+[node name="material_tags" type="Node3D"]
+
+[node name="link_name" type="RigidBody3D" parent="."]
+
+[node name="link_name_mesh" type="MeshInstance3D" parent="link_name"]
+mesh = SubResource("BoxMesh_nqssn")
+surface_material_override/0 = SubResource("StandardMaterial3D_2vnsf")
+
+[node name="link2_mesh" type="MeshInstance3D" parent="link_name"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("SphereMesh_wfm1r")
+surface_material_override/0 = SubResource("StandardMaterial3D_651bt")

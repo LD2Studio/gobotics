@@ -14,7 +14,7 @@ func add_assets(search_path: String):
 	var files = Array(DirAccess.get_files_at(search_path))
 #	print("files: ", files)
 	# Filter tscn files
-	var files_tscn: Array = files.filter(func(file): return file.get_extension() == "tscn")
+	var files_tscn: Array = files.filter(func(file): return file.get_extension() == "tscn" or file.get_extension() == "urdf")
 #	print("files tscn: ", files_tscn)
 	# Browse each scene
 	for file in files_tscn:
@@ -24,6 +24,10 @@ func add_assets(search_path: String):
 		if scene == null:
 			continue
 		var name: String = scene.get_state().get_node_name(0)
+#		print("Scene name: ", name)
+		var category: String
+		if scene.get_script():
+			print("script: ", scene.get_script())
 		var group: String
 		if scene.get_state().get_node_groups(0).is_empty():
 			group = "NOGROUP"
