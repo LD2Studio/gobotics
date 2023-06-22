@@ -8,9 +8,8 @@ var parser = XMLParser.new()
 var _materials: Array
 var _links: Array
 var _joints: Array
+var _gobotics: Dictionary
 var _script := GDScript.new()
-
-var _info: Dictionary
 
 enum Tag {
 		NONE,
@@ -24,18 +23,17 @@ func parse(filename: String):
 	return convert_to_scene(filename)
 
 func convert_to_scene(filename: String) -> Node3D:
-	get_info(filename)
-	create_materials(filename)
-	create_links(filename)
-	create_joints(filename)
+	load_gobotics_params(filename)
+	load_materials(filename)
+	load_links(filename)
+	load_joints(filename)
 	var root_node = get_root_node(filename)
 	root_node.add_child(get_kinematics_scene())
 	kinematics_scene_owner_of(root_node)
 	add_script_to(root_node)
 	return root_node
-
 	
-func get_info(filename: String):
+func load_gobotics_params(filename: String):
 	var err = parser.open(filename)
 	if err:
 		printerr("Error opening URDF file: ", err)
@@ -53,7 +51,7 @@ func get_info(filename: String):
 			if node_name == "gobotics":
 				current_tag = Tag.GOBOTICS
 				
-			if node_name == "category":
+			if node_name == "category" and current_tag == Tag.GOBOTICS:
 				var attrib: Dictionary
 				var attribut_count = parser.get_attribute_count()
 				for idx in attribut_count:
@@ -61,9 +59,9 @@ func get_info(filename: String):
 					var value = parser.get_attribute_value(idx)
 					attrib[name] = value
 				if "name" in attrib:
-					_info.category = attrib.name
+					_gobotics.category = attrib.name
 					
-			if node_name == "control":
+			if node_name == "control" and current_tag == Tag.GOBOTICS:
 				var attrib: Dictionary
 				var attribut_count = parser.get_attribute_count()
 				for idx in attribut_count:
@@ -71,11 +69,31 @@ func get_info(filename: String):
 					var value = parser.get_attribute_value(idx)
 					attrib[name] = value
 				var control = {}
-				_info.control = control
+				_gobotics.control = control
 				if "name" in attrib:
-					_info.control.name = attrib.name
+					_gobotics.control.name = attrib.name
 				if "type" in attrib:
-					_info.control.type = attrib.type
+					_gobotics.control.type = attrib.type
+					
+			if node_name == "right_wheel" and current_tag == Tag.GOBOTICS:
+				var attrib: Dictionary
+				var attribut_count = parser.get_attribute_count()
+				for idx in attribut_count:
+					var name = parser.get_attribute_name(idx)
+					var value = parser.get_attribute_value(idx)
+					attrib[name] = value
+				if "joint" in attrib:
+					_gobotics.control.right_wheel_joint = attrib.joint
+					
+			if node_name == "left_wheel" and current_tag == Tag.GOBOTICS:
+				var attrib: Dictionary
+				var attribut_count = parser.get_attribute_count()
+				for idx in attribut_count:
+					var name = parser.get_attribute_name(idx)
+					var value = parser.get_attribute_value(idx)
+					attrib[name] = value
+				if "joint" in attrib:
+					_gobotics.control.left_wheel_joint = attrib.joint
 					
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
@@ -83,9 +101,9 @@ func get_info(filename: String):
 			if node_name == "gobotics":
 				current_tag = Tag.NONE
 				
-#	print("info: ", JSON.stringify(_info, "\t", false))
+	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 				
-func create_materials(filename: String):
+func load_materials(filename: String):
 	var err = parser.open(filename)
 	if err:
 		printerr("Error opening URDF file: ", err)
@@ -137,7 +155,7 @@ func create_materials(filename: String):
 
 #	print("materials: ", _materials)
 
-func create_links(filename: String):
+func load_links(filename: String):
 	var err = parser.open(filename)
 	if err:
 		printerr("Error opening URDF file: ", err)
@@ -358,7 +376,7 @@ func create_links(filename: String):
 				
 #	print("links: ", JSON.stringify(_links, "\t", false))
 
-func create_joints(filename: String):
+func load_joints(filename: String):
 	var err = parser.open(filename)
 	if err:
 		printerr("Error opening URDF file: ", err)
@@ -476,30 +494,26 @@ func get_kinematics_scene():
 		match joint.type:
 			"fixed":
 				joint_node = Generic6DOFJoint3D.new()
-				joint_node.name = joint.name
-				joint_node.node_a = ^"../.."
-				joint_node.node_b = ^"../"
+				
 			"free-wheel":
 				joint_node = PinJoint3D.new()
-				joint_node.name = joint.name
-				joint_node.node_a = ^"../.."
-				joint_node.node_b = ^"../"
+
 			"continuous":
 				joint_node = HingeJoint3D.new()
-				joint_node.name = joint.name
-				joint_node.node_a = ^"../.."
-				joint_node.node_b = ^"../"
 				if joint.axis != Vector3.UP:
 					var new_basis = Basis.looking_at(joint.axis)
 					joint_node.transform.basis = new_basis
-#					print("new_basis: " , new_basis)
 #				joint_node.rotate_x(-PI/2) # Y axis -> Z axis
 				var joint_script := GDScript.new()
 				joint_script.source_code = get_continuous_joint_script()
 				joint_node.set_script(joint_script)
 			"revolute":
-				pass
-			
+				joint_node = Generic6DOFJoint3D.new()
+				
+		joint_node.name = joint.name
+		joint_node.node_a = ^"../.."
+		joint_node.node_b = ^"../"
+		joint_node.unique_name_in_owner = true
 		child_node.add_child(joint_node)
 		
 	var root_node: Node3D
@@ -548,18 +562,31 @@ func get_root_node(filename) -> Node3D:
 	return root_node
 
 func add_script_to(root_node: Node3D):
-	if "control" in _info and "type" in _info.control:
-		var control_lib := ControlRobot.new()
-		match _info.control.type:
-			"diff_drive":
-				_script.source_code = control_lib.get_diff_drive_script()
-	else:
-		_script.source_code = """extends Node3D
+	var ready_script = """
+func _ready():
+	pass"""
+
+	var process_script = """
+func _process(delta: float):
+	pass"""
+	
+	_script.source_code = """extends Node3D
 """
+	if "control" in _gobotics and "type" in _gobotics.control:
+		print_debug("type: ", _gobotics.control.type)
 		
-		
-	if "category" in _info:
-		root_node.add_to_group(_info.category.to_upper(), true)
+		match _gobotics.control.type:
+			"diff_drive":
+				_script.source_code += """
+var control : DiffDriveExt
+"""
+				ready_script += """
+	control = DiffDriveExt.new(%%%s, %%%s)""" % [_gobotics.control.right_wheel_joint, _gobotics.control.left_wheel_joint]
+
+				process_script += """
+	control.update_input()"""
+	if "category" in _gobotics:
+		root_node.add_to_group(_gobotics.category.to_upper(), true)
 		
 	var continuous_joints_props = get_continuous_joints_properties(root_node)
 #	print_debug(continuous_joints_props)
@@ -575,6 +602,8 @@ func add_script_to(root_node: Node3D):
 """ % [prop.name, prop.name, prop.path]
 		_script.source_code += export_target_vel
 	
+	_script.source_code += ready_script
+	_script.source_code += process_script
 	root_node.set_script(_script)
 	
 func get_continuous_joints_properties(root_node: Node3D) -> Array:
