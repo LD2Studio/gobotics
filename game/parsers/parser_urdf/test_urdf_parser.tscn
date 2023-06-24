@@ -4,7 +4,7 @@
 
 [node name="test_urdf_parser" type="Node3D"]
 script = ExtResource("1_fjy7e")
-urdf_file = "res://game/parsers/parser_urdf/examples/multiple_visual.urdf"
+urdf_file = "res://game/parsers/parser_urdf/examples/import_gltf.urdf"
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.90056)

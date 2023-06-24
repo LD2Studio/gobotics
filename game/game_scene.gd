@@ -98,10 +98,12 @@ func show_part_parameters(node: Node):
 	PROPERTY_USAGE_EDITOR = 4
 	The property is shown in the EditorInspector (default).
 	"""
-
-	for prop in script.get_script_property_list():
-		if prop.usage == 4102:
-			print(prop.name)
+	
+	if script:
+		for prop in script.get_script_property_list():
+			if prop.usage == 4102:
+				pass
+#				print(prop.name)
 	
 	if item_selected.is_in_group("ROBOT"):
 		%KeysControlContainer.visible = true

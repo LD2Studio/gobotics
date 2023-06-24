@@ -10,7 +10,7 @@ func _ready() -> void:
 		print("No URDF file")
 		return
 	urdf_parser.scale = 10.0
-	var root_node: Node3D = urdf_parser.convert_to_scene(urdf_file)
+	var root_node: Node3D = urdf_parser.parse(urdf_file)
 #	root_node.print_tree_pretty()
 	
 	var scene := PackedScene.new()

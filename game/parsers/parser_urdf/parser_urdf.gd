@@ -10,9 +10,11 @@ var _links: Array
 var _joints: Array
 var _gobotics: Dictionary
 var _script := GDScript.new()
+var _filename : String
 
 enum Tag {
 		NONE,
+		JOINT,
 		VISUAL,
 		COLLISION,
 		INERTIAL,
@@ -20,9 +22,7 @@ enum Tag {
 	}
 	
 func parse(filename: String):
-	return convert_to_scene(filename)
-
-func convert_to_scene(filename: String) -> Node3D:
+	_filename = filename
 	load_gobotics_params(filename)
 	load_materials(filename)
 	load_links(filename)
@@ -101,7 +101,7 @@ func load_gobotics_params(filename: String):
 			if node_name == "gobotics":
 				current_tag = Tag.NONE
 				
-	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
+#	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 				
 func load_materials(filename: String):
 	var err = parser.open(filename)
@@ -287,6 +287,70 @@ func load_links(filename: String):
 					sphere_shape.radius = float(sphere_dict.radius) * scale
 					link_dict.collision.node.shape = sphere_shape
 				
+			if node_name == "mesh" and not link_dict.is_empty():
+				var attrib: Dictionary
+				var attribut_count = parser.get_attribute_count()
+				for idx in attribut_count:
+					var name = parser.get_attribute_name(idx)
+					var value = parser.get_attribute_value(idx)
+					attrib[name] = value
+#				if current_tag == Tag.VISUAL:
+				if "filename" in attrib:
+					match attrib.filename.get_extension():
+						"obj":
+							var mesh_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
+	#						print_debug(mesh_filename)
+							var mesh: ArrayMesh = load(mesh_filename)
+							if mesh:
+								link_dict.visual.node.mesh = mesh
+								link_dict.visual.node.scale = Vector3.ONE * scale
+						
+						"glb":
+							if not "object" in attrib:
+								printerr("Object attribut missing!")
+								continue
+							var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
+#							print_debug(scene_filename)
+							if Engine.is_editor_hint():
+#								print("Editor")
+								var scene: PackedScene = load(scene_filename)
+#								print_debug(scene)
+								var scene_state = scene.get_state()
+#								print("node count: ", scene_state.get_node_count())
+								for idx in scene_state.get_node_count():
+#										print("node name: ", scene_state.get_node_name(idx))
+									if scene_state.get_node_name(idx) == attrib.object:
+										for prop_idx in scene_state.get_node_property_count(idx):
+											var prop_name = scene_state.get_node_property_name(idx, prop_idx)
+#											print("props: ", prop_name)
+											
+											## Mesh attached to node
+											if prop_name == "mesh":
+												var mesh: ArrayMesh = scene_state.get_node_property_value(idx, prop_idx)
+												print("mesh: ", mesh)
+												if current_tag == Tag.VISUAL:
+													link_dict.visual.node.mesh = mesh
+													link_dict.visual.node.scale = Vector3.ONE * scale
+												elif current_tag == Tag.COLLISION:													
+													var shape: ConvexPolygonShape3D = mesh.create_convex_shape()
+													link_dict.collision.node.shape = shape
+													link_dict.collision.node.scale = Vector3.ONE * scale
+											if prop_name == "transform":
+												var tr: Transform3D = scene_state.get_node_property_value(idx, prop_idx)
+												print("tranform: ", tr)
+												var xyz: Vector3 = tr.origin
+												var rpy: Vector3 = tr.basis.get_euler()
+												if current_tag == Tag.VISUAL:
+													link_dict.visual.node.position = xyz * scale
+													link_dict.visual.node.rotation = rpy
+												elif current_tag == Tag.COLLISION:
+													link_dict.collision.node.position = xyz * scale
+													link_dict.collision.node.rotation = rpy
+						"dae":
+							pass
+						_:
+							printerr("3D format not supported !")
+				
 			if node_name == "origin" and not link_dict.is_empty():
 				var attribut_count = parser.get_attribute_count()
 				var origin_dict: Dictionary
@@ -346,10 +410,6 @@ func load_links(filename: String):
 						color.a = rgba_arr[3]
 					link_dict.visual.mat.res.albedo_color = color
 					
-			## Gobotics tag
-			if node_name == "gobotics":
-				pass
-					
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
 			var node_name = parser.get_node_name()
@@ -381,7 +441,7 @@ func load_joints(filename: String):
 	if err:
 		printerr("Error opening URDF file: ", err)
 		return
-#	var joint_end = false
+	var current_tag: int = Tag.NONE
 	var joint_dict: Dictionary
 	while true:
 		if parser.read() != OK: # Ending parse XML file
@@ -393,6 +453,7 @@ func load_joints(filename: String):
 			# Get node name
 			var node_name = parser.get_node_name()
 			if node_name == "joint":
+				current_tag = Tag.JOINT
 				var attribut_count = parser.get_attribute_count()
 				
 				for idx in attribut_count:
@@ -460,12 +521,23 @@ func load_joints(filename: String):
 					axis.z = -xyz_arr[1]
 				joint_dict.axis = axis
 				
+			if node_name == "gobotics" and current_tag == Tag.JOINT:
+				var attribut_count = parser.get_attribute_count()
+				var attrib: Dictionary
+				for idx in attribut_count:
+					var name = parser.get_attribute_name(idx)
+					var value = parser.get_attribute_value(idx)
+					attrib[name] = value
+				if "type" in attrib and "type" in joint_dict:
+					joint_dict.type = attrib.type
+				
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
 			var node_name = parser.get_node_name()
 			if node_name == "joint":
 				_joints.append(joint_dict.duplicate(true))
 				joint_dict.clear()
+				current_tag = Tag.NONE
 
 #	print("joints: ", JSON.stringify(_joints, "\t", false))
 
@@ -495,7 +567,7 @@ func get_kinematics_scene():
 			"fixed":
 				joint_node = Generic6DOFJoint3D.new()
 				
-			"free-wheel":
+			"free_wheel":
 				joint_node = PinJoint3D.new()
 
 			"continuous":
@@ -573,7 +645,7 @@ func _process(delta: float):
 	_script.source_code = """extends Node3D
 """
 	if "control" in _gobotics and "type" in _gobotics.control:
-		print_debug("type: ", _gobotics.control.type)
+#		print_debug("type: ", _gobotics.control.type)
 		
 		match _gobotics.control.type:
 			"diff_drive":
