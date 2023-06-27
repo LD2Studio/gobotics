@@ -1,6 +1,9 @@
 extends SubViewportContainer
 @onready var game_scene = %GameScene as Node3D
 
+#func _input(event):
+#	print("[scene viewport]: ", event.as_text())
+	
 func _can_drop_data(_at_position: Vector2, _data) -> bool:
 	if game_scene.game_area_pointed:
 		return true

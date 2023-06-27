@@ -21,6 +21,7 @@ func _ready() -> void:
 	add_child(python)
 	
 func _input(event: InputEvent) -> void:
+#	print("[game scene]: ", event.as_text())
 	if event.is_action_pressed("DELETE"):
 #		print(selected_block)
 		if item_selected == null: return

@@ -33,6 +33,8 @@ layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+mouse_filter = 0
+mouse_force_pass_scroll_events = false
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -67,6 +69,8 @@ size_flags_vertical = 3
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 0
+mouse_force_pass_scroll_events = false
 
 [node name="URDFCodeEdit" type="CodeEdit" parent="VBoxContainer/HSplitContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -95,6 +99,7 @@ unique_name_in_owner = true
 [node name="ControlCamera3D" type="Camera3D" parent="VBoxContainer/HSplitContainer/SubViewportContainer/SubViewport/PreviewScene"]
 transform = Transform3D(1, 0, 0, 0, 0.960241, 0.279173, 0, -0.279173, 0.960241, 0, 1.45366, 5)
 script = ExtResource("1_d4jh8")
+action_mouse_button = "LEFT_BUTTON"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="VBoxContainer/HSplitContainer/SubViewportContainer/SubViewport/PreviewScene"]
 environment = SubResource("Environment_nftkf")

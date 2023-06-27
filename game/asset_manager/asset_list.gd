@@ -74,6 +74,18 @@ func _on_item_menu_select(id: int):
 			asset_editor.name = &"AssetEditor"
 			%AssetEditorDialog.add_child(asset_editor)
 			%AssetEditorDialog.popup_centered(Vector2i(600, 500))
+			
+func _on_item_activated(index):
+	var asset_name = get_item_text(index)
+#	print("item text: ", get_item_text(index))
+	var asset_path = database.get_scene(asset_name)
+#	print("asset path: ", asset_path)
+	if asset_path.get_extension() != "tscn": return
+	var asset_editor = asset_editor_packed_scene.instantiate()
+	asset_editor.name = &"AssetEditor"
+	asset_editor.asset_path = asset_path
+	%AssetEditorDialog.add_child(asset_editor)
+	%AssetEditorDialog.popup_centered(Vector2i(600, 500))
 
 func _on_new_asset_button_pressed() -> void:
 	var asset_editor = asset_editor_packed_scene.instantiate()
@@ -100,3 +112,5 @@ func _on_asset_editor_dialog_canceled():
 func update_assets_database():
 	game.load_assets_in_database()
 	game.fill_assets_list()
+
+

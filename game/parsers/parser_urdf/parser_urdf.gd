@@ -24,6 +24,7 @@ enum Tag {
 	}
 	
 func parse(filename: String):
+	clear_buffer()
 	_filename = filename
 	load_gobotics_params(filename)
 	load_materials(filename)
@@ -36,10 +37,12 @@ func parse(filename: String):
 	return root_node
 	
 func parse_buffer(buffer: String):
+	clear_buffer()
 	var urdf_pack : PackedByteArray = buffer.to_ascii_buffer()
 #	print("urdf pack: ", urdf_pack)
 	var root_node = get_root_node(urdf_pack)
 	load_gobotics_params(urdf_pack)
+	load_materials(urdf_pack)
 	load_links(urdf_pack)
 	load_joints(urdf_pack)
 	var base_link = get_kinematics_scene()
@@ -127,10 +130,15 @@ func load_gobotics_params(urdf_data):
 			if node_name == "gobotics":
 				current_tag = Tag.NONE
 				
-#	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
+	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 				
-func load_materials(filename: String):
-	var err = parser.open(filename)
+func load_materials(urdf_data):
+	var err
+	if urdf_data is String:
+		err = parser.open(urdf_data)
+	elif urdf_data is PackedByteArray:
+		err = parser.open_buffer(urdf_data)
+	else: return null
 	if err:
 		printerr("Error opening URDF file: ", err)
 		return
@@ -781,3 +789,9 @@ func _ready():
 
 """
 	return source_code
+
+func clear_buffer():
+	_materials.clear()
+	_links.clear()
+	_joints.clear()
+	_gobotics.clear()

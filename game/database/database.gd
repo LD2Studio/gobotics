@@ -9,7 +9,7 @@ func add_assets(search_path: String):
 	var files = Array(DirAccess.get_files_at(search_path))
 #	print("files: ", files)
 	# Filter tscn files
-	var files_tscn: Array = files.filter(func(file): return file.get_extension() == "tscn" or file.get_extension() == "urdf")
+	var files_tscn: Array = files.filter(func(file): return file.get_extension() == "tscn")
 #	print("files tscn: ", files_tscn)
 	# Browse each scene
 	for file in files_tscn:

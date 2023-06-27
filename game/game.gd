@@ -37,6 +37,9 @@ func _ready():
 	current_filename = ""
 #	print_debug(connected_joystick)
 
+#func _input(event):
+#	print("[Game]: ", event.as_text())
+
 func _on_new_scene_button_pressed() -> void:
 	%NewSceneDialog.popup_centered(Vector2i(200, 300))
 

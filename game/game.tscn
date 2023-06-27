@@ -83,6 +83,7 @@ grow_horizontal = 2
 grow_vertical = 2
 auto_translate = false
 mouse_filter = 1
+mouse_force_pass_scroll_events = false
 script = ExtResource("1_85jys")
 
 [node name="SplitContainer" type="HSplitContainer" parent="."]
@@ -95,6 +96,8 @@ grow_vertical = 2
 
 [node name="ControlPanel" type="MarginContainer" parent="SplitContainer"]
 layout_mode = 2
+mouse_filter = 0
+mouse_force_pass_scroll_events = false
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 0
@@ -219,8 +222,8 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 item_count = 2
-item_0/text = "Cube"
-item_1/text = "Cylinder"
+item_0/text = "Robot"
+item_1/text = "Ball"
 script = ExtResource("3_webwb")
 
 [node name="AssetPopupMenu" type="PopupMenu" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList"]
@@ -275,7 +278,7 @@ handle_input_locally = false
 msaa_3d = 2
 screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(2, 2)
+size = Vector2i(1378, 800)
 render_target_update_mode = 4
 
 [node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView3D/SceneViewport"]
@@ -287,6 +290,7 @@ offset_top = 10.0
 offset_right = -10.0
 grow_horizontal = 0
 size_flags_horizontal = 3
+mouse_force_pass_scroll_events = false
 theme_override_styles/panel = SubResource("StyleBoxFlat_kn244")
 
 [node name="MarginContainer" type="MarginContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector"]
@@ -528,6 +532,7 @@ offset_bottom = 8.0
 [connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton" to="." method="_on_save_scene_as_button_pressed"]
 [connection signal="file_selected" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
 [connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_new_asset_button_pressed"]
+[connection signal="item_activated" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_activated"]
 [connection signal="item_clicked" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_clicked"]
 [connection signal="canceled" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/AssetEditorDialog" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_asset_editor_dialog_canceled"]
 [connection signal="confirmed" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/AssetEditorDialog" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_asset_editor_dialog_confirmed"]
