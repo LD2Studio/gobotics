@@ -14,7 +14,9 @@ var _filename : String
 
 enum Tag {
 		NONE,
+		LINK,
 		JOINT,
+		MATERIAL,
 		VISUAL,
 		COLLISION,
 		INERTIAL,
@@ -33,8 +35,32 @@ func parse(filename: String):
 	add_script_to(root_node)
 	return root_node
 	
-func load_gobotics_params(filename: String):
-	var err = parser.open(filename)
+func parse_buffer(buffer: String):
+	var urdf_pack : PackedByteArray = buffer.to_ascii_buffer()
+#	print("urdf pack: ", urdf_pack)
+	var root_node = get_root_node(urdf_pack)
+	load_gobotics_params(urdf_pack)
+	load_links(urdf_pack)
+	load_joints(urdf_pack)
+	var base_link = get_kinematics_scene()
+	if base_link:
+		root_node.add_child(base_link)
+	else:
+		printerr("No base link!")
+	kinematics_scene_owner_of(root_node)
+	add_script_to(root_node)
+#	var urdf_code = urdf_pack.get_string_from_ascii()
+#	print("urdf code: ", urdf_code)
+	return root_node
+	
+	
+func load_gobotics_params(urdf_data):
+	var err
+	if urdf_data is String:
+		err = parser.open(urdf_data)
+	elif urdf_data is PackedByteArray:
+		err = parser.open_buffer(urdf_data)
+		
 	if err:
 		printerr("Error opening URDF file: ", err)
 		return
@@ -110,6 +136,7 @@ func load_materials(filename: String):
 		return
 		
 	var mat_dict: Dictionary
+	var current_tag: int = Tag.NONE
 	while true:
 		if parser.read() != OK: # Ending parse XML file
 #			print("Ending link parser")
@@ -118,7 +145,18 @@ func load_materials(filename: String):
 		if type == XMLParser.NODE_ELEMENT:
 			# Get node name
 			var node_name = parser.get_node_name()
-			if node_name == "material":
+			
+			if node_name == "link":
+				current_tag = Tag.LINK
+			
+			if node_name == "joint":
+				current_tag = Tag.JOINT
+				
+			if node_name == "gobotics":
+				current_tag = Tag.GOBOTICS
+			
+			if node_name == "material" and current_tag == Tag.NONE:
+				current_tag = Tag.MATERIAL
 				var attribut_count = parser.get_attribute_count()
 				for idx in attribut_count:
 					var name = parser.get_attribute_name(idx)
@@ -149,295 +187,319 @@ func load_materials(filename: String):
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
 			var node_name = parser.get_node_name()
-			if node_name == "material":
-				_materials.append(mat_dict.duplicate(true))
-				mat_dict.clear()
+			match node_name:
+				"material":
+					if current_tag == Tag.MATERIAL:
+						current_tag = Tag.NONE
+						_materials.append(mat_dict.duplicate(true))
+						mat_dict.clear()
+				"link":
+					current_tag = Tag.NONE
+				"joint":
+					current_tag = Tag.NONE
+				"gobotics":
+					current_tag = Tag.NONE
 
 #	print("materials: ", _materials)
 
-func load_links(filename: String):
-	var err = parser.open(filename)
+func load_links(urdf_data):
+	var err
+	if urdf_data is String:
+		err = parser.open(urdf_data)
+	elif urdf_data is PackedByteArray:
+		err = parser.open_buffer(urdf_data)
+	else: return null
 	if err:
 		printerr("Error opening URDF file: ", err)
 		return
 		
 	var link_dict: Dictionary
+	var current_visual: MeshInstance3D
+	var current_collision: CollisionShape3D
 	var current_tag: int = Tag.NONE
+	var root_tag: int = Tag.NONE
+	
 	while true:
 		if parser.read() != OK: # Ending parse XML file
-#			print("Ending link parser")
 			break
 		var type = parser.get_node_type()
 		if type == XMLParser.NODE_ELEMENT:
-			# Get node name
-			var node_name = parser.get_node_name()
-			## Link tag
-			if node_name == "link":
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					link_dict[name] = value
-					
-				var node := RigidBody3D.new()
-				node.name = link_dict.name
-				node.add_to_group("SELECT", true)
-				link_dict["node"] = node
-			## Visual tag
-			if node_name == "visual" and not link_dict.is_empty():
-				current_tag = Tag.VISUAL
-				var attrib: Dictionary
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-					
-				var mesh_node := MeshInstance3D.new()
-				if "name" in attrib and attrib.name != "":
-					mesh_node.name = attrib.name + "_mesh"
-				else:
-					mesh_node.name = link_dict.name + "_mesh"
-				link_dict["node"].add_child(mesh_node)
-				var mesh_dict: Dictionary
-				mesh_dict.node = mesh_node
-				link_dict.visual = mesh_dict
-			## Collision tag
-			if node_name == "collision" and not link_dict.is_empty():
-				current_tag = Tag.COLLISION
-				var attrib: Dictionary
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-					
-				var collision_node := CollisionShape3D.new()
-				if "name" in attrib:
-					collision_node.name = attrib.name + "_col"
-				else:
-					collision_node.name = link_dict.name + "_col"
-				link_dict.node.add_child(collision_node)
-				var col_dict: Dictionary
-				col_dict.node = collision_node
-				link_dict.collision = col_dict
-				
-			if node_name == "geometry" and not link_dict.is_empty():
-				if current_tag == Tag.VISUAL:
-					pass
-				elif current_tag == Tag.COLLISION:
-					pass
-				
-			if node_name == "cylinder" and not link_dict.is_empty():
-				var cyl_dict: Dictionary
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					cyl_dict[name] = value
-				if current_tag == Tag.VISUAL:
-					var cylinder_mesh := CylinderMesh.new()
-					cylinder_mesh.bottom_radius = float(cyl_dict.radius) * scale
-					cylinder_mesh.top_radius = float(cyl_dict.radius) * scale
-					cylinder_mesh.height = float(cyl_dict.length) * scale
-					link_dict.visual.node.set_mesh(cylinder_mesh)
-				elif current_tag == Tag.COLLISION:
-					var cylinder_shape := CylinderShape3D.new()
-					cylinder_shape.radius = float(cyl_dict.radius) * scale
-					cylinder_shape.height = float(cyl_dict.length) * scale
-					link_dict.collision.node.set_shape(cylinder_shape)
-				
-			if node_name == "box" and not link_dict.is_empty():
-				var box_dict: Dictionary
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					box_dict[name] = value
-				var size := Vector3.ONE
-				if "size" in box_dict:
-#					print("size: ", box_dict.size)
-					var size_arr = box_dict.size.split_floats(" ")
-					size.x = size_arr[0]
-					size.y = size_arr[2]
-					size.z = size_arr[1]
-				if current_tag == Tag.VISUAL:
-					var box_mesh := BoxMesh.new()
-					box_mesh.size = size * scale
-					link_dict.visual.node.mesh = box_mesh
-				elif current_tag == Tag.COLLISION:
-					var box_shape := BoxShape3D.new()
-					box_shape.size = size * scale
-					link_dict.collision.node.shape = box_shape
-					
-			if node_name == "sphere" and not link_dict.is_empty():
-				var sphere_dict: Dictionary
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					sphere_dict[name] = value
-				if current_tag == Tag.VISUAL:
-					var sphere_mesh := SphereMesh.new()
-					sphere_mesh.radius = float(sphere_dict.radius) * scale
-					sphere_mesh.height = float(sphere_dict.radius) * scale * 2
-					link_dict.visual.node.mesh = sphere_mesh
-				elif current_tag == Tag.COLLISION:
-					var sphere_shape := SphereShape3D.new()
-					sphere_shape.radius = float(sphere_dict.radius) * scale
-					link_dict.collision.node.shape = sphere_shape
-				
-			if node_name == "mesh" and not link_dict.is_empty():
-				var attrib: Dictionary
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-#				if current_tag == Tag.VISUAL:
-				if "filename" in attrib:
-					match attrib.filename.get_extension():
-						"obj":
-							var mesh_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
-	#						print_debug(mesh_filename)
-							var mesh: ArrayMesh = load(mesh_filename)
-							if mesh:
-								link_dict.visual.node.mesh = mesh
-								link_dict.visual.node.scale = Vector3.ONE * scale
+			# Get tag name
+			var tag_name = parser.get_node_name()
+			match tag_name:
+				"link":
+					root_tag = Tag.LINK
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						link_dict[name] = value
 						
-						"glb":
-							if not "object" in attrib:
-								printerr("Object attribut missing!")
-								continue
-							var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
-#							print_debug(scene_filename)
-							if Engine.is_editor_hint():
-#								print("Editor")
-								var scene: PackedScene = load(scene_filename)
-#								print_debug(scene)
-								var scene_state = scene.get_state()
-#								print("node count: ", scene_state.get_node_count())
-								for idx in scene_state.get_node_count():
-#										print("node name: ", scene_state.get_node_name(idx))
-									if scene_state.get_node_name(idx) == attrib.object:
-										for prop_idx in scene_state.get_node_property_count(idx):
-											var prop_name = scene_state.get_node_property_name(idx, prop_idx)
-#											print("props: ", prop_name)
-											
-											## Mesh attached to node
-											if prop_name == "mesh":
-												var mesh: ArrayMesh = scene_state.get_node_property_value(idx, prop_idx)
-												print("mesh: ", mesh)
-												if current_tag == Tag.VISUAL:
-													link_dict.visual.node.mesh = mesh
-													link_dict.visual.node.scale = Vector3.ONE * scale
-												elif current_tag == Tag.COLLISION:													
-													var shape: ConvexPolygonShape3D = mesh.create_convex_shape()
-													link_dict.collision.node.shape = shape
-													link_dict.collision.node.scale = Vector3.ONE * scale
-											if prop_name == "transform":
-												var tr: Transform3D = scene_state.get_node_property_value(idx, prop_idx)
-												print("tranform: ", tr)
-												var xyz: Vector3 = tr.origin
-												var rpy: Vector3 = tr.basis.get_euler()
-												if current_tag == Tag.VISUAL:
-													link_dict.visual.node.position = xyz * scale
-													link_dict.visual.node.rotation = rpy
-												elif current_tag == Tag.COLLISION:
-													link_dict.collision.node.position = xyz * scale
-													link_dict.collision.node.rotation = rpy
-						"dae":
-							pass
-						_:
-							printerr("3D format not supported !")
+					var node := RigidBody3D.new()
+					node.name = link_dict.name
+					node.add_to_group("SELECT", true)
+					link_dict["node"] = node
 				
-			if node_name == "origin" and not link_dict.is_empty():
-				var attribut_count = parser.get_attribute_count()
-				var origin_dict: Dictionary
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					origin_dict[name] = value
-				var xyz := Vector3.ZERO
-				if "xyz" in origin_dict:
-					var xyz_arr = origin_dict.xyz.split_floats(" ")
-					xyz.x = xyz_arr[0]
-					xyz.y = xyz_arr[2]
-					xyz.z = -xyz_arr[1]
-				var rpy := Vector3.ZERO
-				if "rpy" in origin_dict:
-					var rpy_arr = origin_dict.rpy.split_floats(" ")
-					rpy.x = rpy_arr[0]
-					rpy.y = rpy_arr[2]
-					rpy.z = -rpy_arr[1]
-				if current_tag == Tag.VISUAL:
-					link_dict.visual.node.position = xyz * scale
-					link_dict.visual.node.rotation = rpy
-				elif current_tag == Tag.COLLISION:
-					link_dict.collision.node.position = xyz * scale
-					link_dict.collision.node.rotation = rpy
+				"inertial":
+					if root_tag != Tag.LINK: continue
+					current_tag = Tag.INERTIAL
 				
-			if node_name == "material" and not link_dict.is_empty():
-				var attribut_count = parser.get_attribute_count()
-				var attrib: Dictionary
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-				if current_tag == Tag.VISUAL:
-					if "name" in attrib and attrib.name != "":
-						link_dict.visual.mat = attrib
-					else:
-						link_dict.visual.mat = {}
-						var res := StandardMaterial3D.new()
-						link_dict.visual.mat.res = res
-				
-			if node_name == "color" and not link_dict.is_empty() and current_tag == Tag.VISUAL:
-				var attrib: Dictionary
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
+				"visual":
+					if root_tag != Tag.LINK: continue
+					current_tag = Tag.VISUAL
+					var attrib: Dictionary
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
 					
-				if "res" in link_dict.visual.mat:
-					var color := Color.WHITE
-					if "rgba" in attrib:
-						var rgba_arr = attrib.rgba.split_floats(" ")
-						color.r = rgba_arr[0]
-						color.g = rgba_arr[1]
-						color.b = rgba_arr[2]
-						color.a = rgba_arr[3]
-					link_dict.visual.mat.res.albedo_color = color
+					current_visual = MeshInstance3D.new()
+					if "name" in attrib and attrib.name != "":
+						current_visual.name = attrib.name + "_mesh"
+					else:
+						current_visual.name = link_dict.name + "_mesh"
+	#				print("current visual: ", current_visual)
+					link_dict["node"].add_child(current_visual)
+
+				"collision":
+					if root_tag != Tag.LINK: continue
+					current_tag = Tag.COLLISION
+					var attrib: Dictionary
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+						
+					current_collision = CollisionShape3D.new()
+					if "name" in attrib:
+						current_collision.name = attrib.name + "_col"
+					else:
+						current_collision.name = link_dict.name + "_col"
+	#				print("current collision: ", current_collision)
+					link_dict.node.add_child(current_collision)
+	
+				"geometry":
+					if root_tag != Tag.LINK: continue
+				
+				"cylinder":
+					if root_tag != Tag.LINK: continue
+					var cyl_dict: Dictionary
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						cyl_dict[name] = value
+					if current_tag == Tag.VISUAL:
+						var cylinder_mesh := CylinderMesh.new()
+						cylinder_mesh.bottom_radius = float(cyl_dict.radius) * scale
+						cylinder_mesh.top_radius = float(cyl_dict.radius) * scale
+						cylinder_mesh.height = float(cyl_dict.length) * scale
+						current_visual.mesh = cylinder_mesh
+
+					elif current_tag == Tag.COLLISION:
+						var cylinder_shape := CylinderShape3D.new()
+						cylinder_shape.radius = float(cyl_dict.radius) * scale
+						cylinder_shape.height = float(cyl_dict.length) * scale
+						current_collision.shape = cylinder_shape
+				
+				"box":
+					if root_tag != Tag.LINK: continue
+					var attrib: Dictionary
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					var size := Vector3.ONE
+					if "size" in attrib:
+						var size_arr = attrib.size.split_floats(" ")
+						size.x = size_arr[0]
+						size.y = size_arr[2]
+						size.z = size_arr[1]
+					if current_tag == Tag.VISUAL:
+						var box_mesh := BoxMesh.new()
+						box_mesh.size = size * scale
+						current_visual.mesh = box_mesh
+
+					elif current_tag == Tag.COLLISION:
+						var box_shape := BoxShape3D.new()
+						box_shape.size = size * scale
+						current_collision.shape = box_shape
+					
+				"sphere":
+					if root_tag != Tag.LINK: continue
+					var attrib: Dictionary
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if current_tag == Tag.VISUAL:
+						var sphere_mesh := SphereMesh.new()
+						sphere_mesh.radius = float(attrib.radius) * scale
+						sphere_mesh.height = float(attrib.radius) * scale * 2
+						current_visual.mesh = sphere_mesh
+					elif current_tag == Tag.COLLISION:
+						var sphere_shape := SphereShape3D.new()
+						sphere_shape.radius = float(attrib.radius) * scale
+						current_collision.shape = sphere_shape
+					
+				"mesh":
+					if root_tag != Tag.LINK: continue
+					var attrib: Dictionary
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "filename" in attrib:
+						match attrib.filename.get_extension():
+							"obj":
+								var mesh_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
+		#						print_debug(mesh_filename)
+								var mesh: ArrayMesh = load(mesh_filename)
+								if mesh:
+									current_visual.mesh = mesh
+									current_visual.scale = Vector3.ONE * scale
+							
+							"glb":
+								if not "object" in attrib:
+									printerr("Object attribut missing!")
+									continue
+								load_gltf(current_visual, attrib, current_tag)
+
+							"dae":
+								pass
+							_:
+								printerr("3D format not supported !")
+						
+				"origin":
+					if root_tag != Tag.LINK: continue
+					var attribut_count = parser.get_attribute_count()
+					var origin_dict: Dictionary
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						origin_dict[name] = value
+					var xyz := Vector3.ZERO
+					if "xyz" in origin_dict:
+						var xyz_arr = origin_dict.xyz.split_floats(" ")
+						xyz.x = xyz_arr[0]
+						xyz.y = xyz_arr[2]
+						xyz.z = -xyz_arr[1]
+					var rpy := Vector3.ZERO
+					if "rpy" in origin_dict:
+						var rpy_arr = origin_dict.rpy.split_floats(" ")
+						rpy.x = rpy_arr[0]
+						rpy.y = rpy_arr[2]
+						rpy.z = -rpy_arr[1]
+					if current_tag == Tag.VISUAL:
+						current_visual.position = xyz * scale
+						current_visual.rotation = rpy
+					elif current_tag == Tag.COLLISION:
+						current_collision.position = xyz * scale
+						current_collision.rotation = rpy
+				
+				"material":
+					if root_tag != Tag.LINK: continue
+					var attribut_count = parser.get_attribute_count()
+					var attrib: Dictionary
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if current_tag == Tag.VISUAL:
+						## Global material
+						if "name" in attrib and attrib.name != "":
+							for mat in _materials:
+								if mat.name == attrib.name:
+	#								print("[global material tag] current visual: ", current_visual)
+									current_visual.set_surface_override_material(0, mat.res)
+						## Local material
+						else:
+	#						print("[local material tag] current visual: ", current_visual)
+							var res := StandardMaterial3D.new()
+							current_visual.set_surface_override_material(0, res)
+				
+				"color":
+					if root_tag != Tag.LINK: continue
+					var attrib: Dictionary
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+						
+					if current_visual.get_surface_override_material_count() >= 1:
+						var color := Color.WHITE
+						if "rgba" in attrib:
+							var rgba_arr = attrib.rgba.split_floats(" ")
+							color.r = rgba_arr[0]
+							color.g = rgba_arr[1]
+							color.b = rgba_arr[2]
+							color.a = rgba_arr[3]
+						var res = current_visual.get_surface_override_material(0)
+						res.albedo_color = color
+						current_visual.set_surface_override_material(0, res)
 					
 		if type == XMLParser.NODE_ELEMENT_END:
-			# Get node name
 			var node_name = parser.get_node_name()
-			if node_name == "link":
-				_links.append(link_dict.duplicate(true))
-				link_dict.clear()
-			
-			if node_name == "visual":
-				current_tag = Tag.NONE
-				if not "mat" in link_dict.visual: continue
-				## Global colors
-				if "name" in link_dict.visual.mat:
-					for mat in _materials:
-						if mat.name == link_dict.visual.mat.name:
-							link_dict.visual.node.set_surface_override_material(0, mat.res)
-					continue
-				## Local colors
-				if "res" in link_dict.visual.mat:
-					link_dict.visual.node.set_surface_override_material(0, link_dict.visual.mat.res)
-						
-			if node_name == "collision":
-				current_tag = Tag.NONE
+			match node_name:
+				"link":
+					_links.append(link_dict.duplicate(true))
+					link_dict.clear()
+					root_tag = Tag.NONE
+				"intertial":
+					current_tag = Tag.NONE
+				"visual":
+					current_tag = Tag.NONE
+				"collision":
+					current_tag = Tag.NONE
 				
-				
-#	print("links: ", JSON.stringify(_links, "\t", false))
+	print("links: ", JSON.stringify(_links, "\t", false))
 
-func load_joints(filename: String):
-	var err = parser.open(filename)
+func load_gltf(current_visual: MeshInstance3D, attrib: Dictionary, current_tag):
+	var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
+#	print_debug(scene_filename)
+	if Engine.is_editor_hint():
+#		print("Editor")
+		var scene: PackedScene = load(scene_filename)
+#		print_debug(scene)
+		var scene_state = scene.get_state()
+#		print("node count: ", scene_state.get_node_count())
+		for idx in scene_state.get_node_count():
+#										print("node name: ", scene_state.get_node_name(idx))
+			if scene_state.get_node_name(idx) == attrib.object:
+				for prop_idx in scene_state.get_node_property_count(idx):
+					var prop_name = scene_state.get_node_property_name(idx, prop_idx)
+#					print("props: ", prop_name)
+					
+					## Mesh attached to node
+					if prop_name == "mesh":
+						var mesh: ArrayMesh = scene_state.get_node_property_value(idx, prop_idx)
+#						print("mesh: ", mesh)
+						if current_tag == Tag.VISUAL:
+							current_visual.mesh = mesh
+							current_visual.scale = Vector3.ONE * scale
+						
+					if prop_name == "transform":
+						var tr: Transform3D = scene_state.get_node_property_value(idx, prop_idx)
+#						print("tranform: ", tr)
+						var xyz: Vector3 = tr.origin
+						var rpy: Vector3 = tr.basis.get_euler()
+						if current_tag == Tag.VISUAL:
+							current_visual.position = xyz * scale
+							current_visual.rotation = rpy
+
+func load_joints(urdf_data):
+	var err
+	if urdf_data is String:
+		err = parser.open(urdf_data)
+	elif urdf_data is PackedByteArray:
+		err = parser.open_buffer(urdf_data)
+	else: return null
 	if err:
 		printerr("Error opening URDF file: ", err)
 		return
@@ -539,7 +601,7 @@ func load_joints(filename: String):
 				joint_dict.clear()
 				current_tag = Tag.NONE
 
-#	print("joints: ", JSON.stringify(_joints, "\t", false))
+	print("joints: ", JSON.stringify(_joints, "\t", false))
 
 func get_kinematics_scene():
 	for joint in _joints:
@@ -591,10 +653,9 @@ func get_kinematics_scene():
 	var root_node: Node3D
 	for link in _links:
 #		print("parent of %s is %s" % [link.node, link.node.get_parent()])
-		if link.node.get_parent() == null:
+		if link and link.node.get_parent() == null:
 			root_node = link.node
 			break
-			
 	return root_node
 	
 func kinematics_scene_owner_of(root_node: Node3D):
@@ -607,8 +668,15 @@ func add_owner(owner_node, nodes: Array):
 		if node.get_child_count():
 			add_owner(owner_node, node.get_children())
 
-func get_root_node(filename) -> Node3D:
-	var err = parser.open(filename)
+func get_root_node(urdf_data) -> Node3D:
+	var err
+	if urdf_data is PackedByteArray:
+		err = parser.open_buffer(urdf_data)
+	elif urdf_data is String:
+		err = parser.open(urdf_data)
+	else:
+		printerr("URDF format error")
+		return null
 	if err:
 		printerr("Error opening URDF file: ", err)
 		return
@@ -616,19 +684,19 @@ func get_root_node(filename) -> Node3D:
 	var root_node := Node3D.new()
 	while true:
 		if parser.read() != OK: # Ending parse XML file
-#			print("Ending link parser")
 			break
 		var type = parser.get_node_type()
 		if type == XMLParser.NODE_ELEMENT:
 			var node_name = parser.get_node_name()
 			if node_name == "robot":
 				var attribut_count = parser.get_attribute_count()
-				var robot_dict: Dictionary
+				var attrib: Dictionary
 				for idx in attribut_count:
 					var name = parser.get_attribute_name(idx)
 					var value = parser.get_attribute_value(idx)
-					robot_dict[name] = value
-				root_node.name = robot_dict.name
+					attrib[name] = value
+				root_node.name = attrib.name
+				root_node.add_to_group("ITEMS", true)
 				break
 				
 	return root_node

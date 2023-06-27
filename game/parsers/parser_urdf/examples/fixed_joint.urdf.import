@@ -1,0 +1,16 @@
+[remap]
+
+importer="urdf.importer"
+type="PackedScene"
+uid="uid://ktlqigvb6eh4"
+path="res://.godot/imported/fixed_joint.urdf-300ce09c99a36b9ebd1aa4d07b29d2aa.tscn"
+
+[deps]
+
+source_file="res://game/parsers/parser_urdf/examples/fixed_joint.urdf"
+dest_files=["res://.godot/imported/fixed_joint.urdf-300ce09c99a36b9ebd1aa4d07b29d2aa.tscn"]
+
+[params]
+
+switch_yz=false
+scale=1.0

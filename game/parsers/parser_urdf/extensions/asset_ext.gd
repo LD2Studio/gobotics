@@ -1,3 +1,3 @@
 extends RefCounted
-class_name ItemsExt
+class_name AssetExt
 

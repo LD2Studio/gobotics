@@ -4,11 +4,6 @@ extends Resource
 #@export var assets_base_path: String = "res://assets"
 @export var assets: Array
 
-func add_res(assets_abs_path):
-	add_assets(assets_abs_path)
-	# Save database
-#	ResourceSaver.save(self, "res://assets/assets_db.tres")
-	
 func add_assets(search_path: String):
 #	print("search path: ", search_path)
 	var files = Array(DirAccess.get_files_at(search_path))
@@ -25,12 +20,11 @@ func add_assets(search_path: String):
 			continue
 		var name: String = scene.get_state().get_node_name(0)
 #		print("Scene name: ", name)
-		var category: String
 		if scene.get_script():
 			print("script: ", scene.get_script())
 		var group: String
 		if scene.get_state().get_node_groups(0).is_empty():
-			group = "NOGROUP"
+			continue
 		else:
 			group = scene.get_state().get_node_groups(0)[0]
 		var base_dir: String = search_path
@@ -52,6 +46,9 @@ func add_assets(search_path: String):
 	for search_dir in search_dirs:
 		add_assets(search_dir)
 		
+	var err = ResourceSaver.save(self, "res://assets/assets_db.tres")
+	if err:
+		printerr("Database not saving!")
 		
 func get_scene(name: String):
 	for asset in assets:

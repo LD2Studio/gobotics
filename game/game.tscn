@@ -1,11 +1,13 @@
-[gd_scene load_steps=20 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=22 format=3 uid="uid://b4s6pohitqafc"]
 
 [ext_resource type="Script" path="res://game/game.gd" id="1_85jys"]
 [ext_resource type="Script" path="res://game/EnvironmentList.gd" id="2_s428s"]
-[ext_resource type="Script" path="res://game/parts_list.gd" id="3_d5cb8"]
+[ext_resource type="Texture2D" uid="uid://kr5y1p8nf73q" path="res://game/icons/Add.svg" id="3_bkwo3"]
 [ext_resource type="Script" path="res://game/LevelContainer.gd" id="3_n66nd"]
+[ext_resource type="Script" path="res://game/asset_manager/asset_list.gd" id="3_webwb"]
 [ext_resource type="Script" path="res://game/game_scene.gd" id="4_htgp6"]
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="5_i338u"]
+[ext_resource type="Texture2D" uid="uid://dcedg06r2n4f1" path="res://game/icons/ViewportSpeed.svg" id="6_6ryau"]
 [ext_resource type="Script" path="res://game/TopCamera2D.gd" id="7_eidv5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxght"]
@@ -175,6 +177,7 @@ text = "Save Scene As ..."
 
 [node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton"]
 unique_name_in_owner = true
+size = Vector2i(647, 162)
 access = 2
 filters = PackedStringArray("*.tscn")
 
@@ -190,27 +193,43 @@ offset_right = 143.0
 offset_bottom = 26.0
 text = "Position saved"
 
-[node name="ItemsPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
+[node name="AssetsPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_7ehh2")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ItemsPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ItemsPanel/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer"]
 layout_mode = 2
-text = "Items"
+
+[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Assets"
 horizontal_alignment = 1
 
-[node name="ItemsList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/ItemsPanel/VBoxContainer"]
+[node name="NewAssetButton" type="Button" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+icon = ExtResource("3_bkwo3")
+
+[node name="AssetList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 item_count = 2
 item_0/text = "Cube"
 item_1/text = "Cylinder"
-script = ExtResource("3_d5cb8")
+script = ExtResource("3_webwb")
+
+[node name="AssetPopupMenu" type="PopupMenu" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList"]
+unique_name_in_owner = true
+
+[node name="AssetEditorDialog" type="AcceptDialog" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList"]
+unique_name_in_owner = true
+title = "Assets Editor"
+ok_button_text = "Quit"
 
 [node name="TerminalPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
 layout_mode = 2
@@ -256,7 +275,7 @@ handle_input_locally = false
 msaa_3d = 2
 screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(1378, 800)
+size = Vector2i(2, 2)
 render_target_update_mode = 4
 
 [node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView3D/SceneViewport"]
@@ -428,6 +447,7 @@ unique_name_in_owner = true
 layout_mode = 2
 toggle_mode = true
 text = "RUN"
+icon = ExtResource("6_6ryau")
 
 [node name="ResetButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/ToolBar"]
 layout_mode = 2
@@ -507,6 +527,10 @@ offset_bottom = 8.0
 [connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton" to="." method="_on_save_scene_as_button_pressed"]
 [connection signal="file_selected" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
+[connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_new_asset_button_pressed"]
+[connection signal="item_clicked" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_clicked"]
+[connection signal="canceled" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/AssetEditorDialog" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_asset_editor_dialog_canceled"]
+[connection signal="confirmed" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/AssetEditorDialog" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_asset_editor_dialog_confirmed"]
 [connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_clear_button_pressed"]
 [connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/X_pos" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_x_pos_value_changed"]
 [connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/Y_pos" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_y_pos_value_changed"]

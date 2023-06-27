@@ -4,7 +4,7 @@ extends Control
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
-@onready var parts_list = %ItemsList
+@onready var assets_list = %AssetList
 @onready var control_camera_3d: Camera3D = %ControlCamera3D
 @onready var top_camera_2d: Camera3D = %TopCamera2D
 @onready var object_inspector = %ObjectInspector
@@ -22,17 +22,14 @@ var connected_joystick: Array[int]
 var database: GoboticsDB = GoboticsDB.new()
 
 func _enter_tree():
-	database.add_assets("res://game/assets")
-	if not OS.has_feature("editor"):
-		load_pck()
-	database.add_assets("res://" + pck_dir)
+	load_assets_in_database()
 
 func _ready():
 	var app_name: String = ProjectSettings.get_setting("application/config/name")
 	var version: String = ProjectSettings.get_setting("application/config/version")
 	%TitleApp.text = "%s v%s" % [app_name, version]
 	
-	init_items_list()
+	fill_assets_list()
 	connected_joystick = Input.get_connected_joypads()
 	%SaveSceneButton.disabled = true
 	%SaveSceneAsButton.disabled = true
@@ -92,11 +89,17 @@ func load_pck():
 		var pck_abs_path: String = assets_dir.path_join(pck_file)
 		if not ProjectSettings.load_resource_pack(pck_abs_path, false):
 			print("Packed resource not loading")
+			
+func load_assets_in_database():
+	database.assets.clear()
+	database.add_assets("res://game/assets")
+	if not OS.has_feature("editor"):
+		load_pck()
+	database.add_assets("res://" + pck_dir)
 
-func init_items_list():
-	parts_list.clear()
+func fill_assets_list():
+	assets_list.clear()
 #	print(database.assets)
 	for asset in database.assets:
 		if asset.group == "ITEMS":
-			parts_list.add_item(asset.name)
-
+			assets_list.add_item(asset.name)

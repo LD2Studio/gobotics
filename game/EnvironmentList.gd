@@ -7,3 +7,4 @@ func _ready() -> void:
 	for asset in database.assets:
 		if asset.group == "ENVIRONMENT":
 			add_item(asset.name)
+

@@ -1,4 +1,4 @@
-extends ItemsExt
+extends AssetExt
 class_name DiffDriveExt
 
 var robot = Robot.new()
