@@ -67,6 +67,7 @@ func load_gobotics_params(urdf_data):
 		printerr("Error opening URDF file: ", err)
 		return
 
+	var root_tag = Tag.NONE
 	var current_tag: int = Tag.NONE
 	while true:
 		if parser.read() != OK: # Ending parse XML file
@@ -76,58 +77,69 @@ func load_gobotics_params(urdf_data):
 		if type == XMLParser.NODE_ELEMENT:
 			# Get node name
 			var node_name = parser.get_node_name()
-			if node_name == "gobotics":
-				current_tag = Tag.GOBOTICS
+			match node_name:
+				"gobotics":
+					root_tag = Tag.GOBOTICS
 				
-			if node_name == "category" and current_tag == Tag.GOBOTICS:
-				var attrib: Dictionary = {}
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-				if "name" in attrib:
-					_gobotics.category = attrib.name
+				"category":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "name" in attrib:
+						_gobotics.category = attrib.name
+				
+				"control":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					_gobotics.control = {}
+					if "name" in attrib:
+						_gobotics.control.name = attrib.name
+					if "type" in attrib:
+						_gobotics.control.type = attrib.type
+					_gobotics.control.max_speed = "1.0"
 					
-			if node_name == "control" and current_tag == Tag.GOBOTICS:
-				var attrib: Dictionary = {}
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-				var control = {}
-				_gobotics.control = control
-				if "name" in attrib:
-					_gobotics.control.name = attrib.name
-				if "type" in attrib:
-					_gobotics.control.type = attrib.type
+				"right_wheel":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						_gobotics.control.right_wheel_joint = attrib.joint
 					
-			if node_name == "right_wheel" and current_tag == Tag.GOBOTICS:
-				var attrib: Dictionary = {}
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-				if "joint" in attrib:
-					_gobotics.control.right_wheel_joint = attrib.joint
-					
-			if node_name == "left_wheel" and current_tag == Tag.GOBOTICS:
-				var attrib: Dictionary = {}
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-				if "joint" in attrib:
-					_gobotics.control.left_wheel_joint = attrib.joint
+				"left_wheel":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						_gobotics.control.left_wheel_joint = attrib.joint
+						
+				"max_speed":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "value" in attrib:
+						_gobotics.control.max_speed = attrib.value
 					
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
 			var node_name = parser.get_node_name()
 			if node_name == "gobotics":
-				current_tag = Tag.NONE
+				root_tag = Tag.NONE
 				
 #	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 
@@ -220,7 +232,7 @@ func load_links(urdf_data):
 		printerr("Error opening URDF file: ", err)
 		return
 		
-	var link_attrib: Dictionary
+	var link_attrib: Dictionary # {"name" , "node"}
 	var current_visual: MeshInstance3D
 	var current_collision: CollisionShape3D
 	var current_col_debug: MeshInstance3D
@@ -414,20 +426,20 @@ func load_links(urdf_data):
 				"origin":
 					if root_tag != Tag.LINK: continue
 					var attribut_count = parser.get_attribute_count()
-					var origin_dict: Dictionary
+					var origin_tag: Dictionary
 					for idx in attribut_count:
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
-						origin_dict[name] = value
+						origin_tag[name] = value
 					var xyz := Vector3.ZERO
-					if "xyz" in origin_dict:
-						var xyz_arr = origin_dict.xyz.split_floats(" ")
+					if "xyz" in origin_tag:
+						var xyz_arr = origin_tag.xyz.split_floats(" ")
 						xyz.x = xyz_arr[0]
 						xyz.y = xyz_arr[2]
 						xyz.z = -xyz_arr[1]
 					var rpy := Vector3.ZERO
-					if "rpy" in origin_dict:
-						var rpy_arr = origin_dict.rpy.split_floats(" ")
+					if "rpy" in origin_tag:
+						var rpy_arr = origin_tag.rpy.split_floats(" ")
 						rpy.x = rpy_arr[0]
 						rpy.y = rpy_arr[2]
 						rpy.z = -rpy_arr[1]
@@ -439,6 +451,9 @@ func load_links(urdf_data):
 						current_collision.rotation = rpy
 						current_col_debug.position = xyz * scale
 						current_col_debug.rotation = rpy
+					elif current_tag == Tag.INERTIAL:
+						link_attrib.node.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+						link_attrib.node.center_of_mass = xyz * scale
 				
 				"material":
 					if root_tag != Tag.LINK: continue
@@ -463,14 +478,15 @@ func load_links(urdf_data):
 				
 				"color":
 					if root_tag != Tag.LINK: continue
+					if current_tag == Tag.INERTIAL: continue
 					var attrib: Dictionary
 					var attribut_count = parser.get_attribute_count()
 					for idx in attribut_count:
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
-						
-					if current_visual.get_surface_override_material_count() >= 1:
+					
+					if current_visual and current_visual.get_surface_override_material_count() >= 1:
 						var color := Color.WHITE
 						if "rgba" in attrib:
 							var rgba_arr = attrib.rgba.split_floats(" ")
@@ -565,7 +581,8 @@ func load_joints(urdf_data):
 		printerr("Error opening URDF file: ", err)
 		return
 	var current_tag: int = Tag.NONE
-	var joint_dict: Dictionary
+	var root_tag: int = Tag.NONE
+	var joint_tag: Dictionary
 	while true:
 		if parser.read() != OK: # Ending parse XML file
 #			print("Ending joints parser")
@@ -575,92 +592,95 @@ func load_joints(urdf_data):
 		if type == XMLParser.NODE_ELEMENT:
 			# Get node name
 			var node_name = parser.get_node_name()
-			if node_name == "joint":
-				current_tag = Tag.JOINT
-				var attribut_count = parser.get_attribute_count()
-				
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					joint_dict[name] = value
+			match node_name:
+				"joint":
+					root_tag = Tag.JOINT
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						joint_tag[name] = value
+						
+				"parent":
+					if not root_tag == Tag.JOINT: continue
+					var attribut_count = parser.get_attribute_count()
+					var attrib: Dictionary
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					joint_tag.parent = attrib
 					
-			if node_name == "parent":
-				var attribut_count = parser.get_attribute_count()
-				var parent_dict: Dictionary
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					parent_dict[name] = value
-				
-				joint_dict["parent"] = parent_dict
-				
-			if node_name == "child":
-				var attribut_count = parser.get_attribute_count()
-				var child_dict: Dictionary
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					child_dict[name] = value
-				
-				joint_dict["child"] = child_dict
-				
-			if node_name == "origin":
-				var attribut_count = parser.get_attribute_count()
-				var origin_dict: Dictionary
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					origin_dict[name] = value
-				var xyz := Vector3.ZERO
-				if "xyz" in origin_dict:
-					var xyz_arr = origin_dict.xyz.split_floats(" ")
-					xyz.x = xyz_arr[0]
-					xyz.y = xyz_arr[2]
-					xyz.z = -xyz_arr[1]
-				var rpy := Vector3.ZERO
-				if "rpy" in origin_dict:
-					var rpy_arr = origin_dict.rpy.split_floats(" ")
-					rpy.x = rpy_arr[0]
-					rpy.y = rpy_arr[2]
-					rpy.z = -rpy_arr[1]
-				var new_origin_dict = {
-					"xyz": xyz,
-					"rpy": rpy,
-				}
-				joint_dict["origin"] = new_origin_dict
-				
-			if node_name == "axis":
-				var attribut_count = parser.get_attribute_count()
-				var attrib: Dictionary
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-				var axis := Vector3(1,0,0)
-				if "xyz" in attrib:
-					var xyz_arr = attrib.xyz.split_floats(" ")
-					axis.x = xyz_arr[0]
-					axis.y = xyz_arr[2]
-					axis.z = -xyz_arr[1]
-				joint_dict.axis = axis
-				
-			if node_name == "gobotics" and current_tag == Tag.JOINT:
-				var attribut_count = parser.get_attribute_count()
-				var attrib: Dictionary
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-				if "type" in attrib and "type" in joint_dict:
-					joint_dict.type = attrib.type
+				"child":
+					if not root_tag == Tag.JOINT: continue
+					var attribut_count = parser.get_attribute_count()
+					var attrib: Dictionary
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					joint_tag.child = attrib
+					
+				"origin":
+					if not root_tag == Tag.JOINT: continue
+					var attribut_count = parser.get_attribute_count()
+					var attrib: Dictionary
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					var xyz := Vector3.ZERO
+					if "xyz" in attrib:
+						var xyz_arr = attrib.xyz.split_floats(" ")
+						xyz.x = xyz_arr[0]
+						xyz.y = xyz_arr[2]
+						xyz.z = -xyz_arr[1]
+					var rpy := Vector3.ZERO
+					if "rpy" in attrib:
+						var rpy_arr = attrib.rpy.split_floats(" ")
+						rpy.x = rpy_arr[0]
+						rpy.y = rpy_arr[2]
+						rpy.z = -rpy_arr[1]
+					var new_origin_dict = {
+						"xyz": xyz,
+						"rpy": rpy,
+					}
+					joint_tag.origin = new_origin_dict
+					
+				"axis":
+					if not root_tag == Tag.JOINT: continue
+					var attribut_count = parser.get_attribute_count()
+					var attrib: Dictionary
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					var axis := Vector3(1,0,0)
+					if "xyz" in attrib:
+						var xyz_arr = attrib.xyz.split_floats(" ")
+						axis.x = xyz_arr[0]
+						axis.y = xyz_arr[2]
+						axis.z = -xyz_arr[1]
+					joint_tag.axis = axis
+						
+				"limit":
+					if not root_tag == Tag.JOINT: continue
+					var attrib: Dictionary
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					joint_tag.limit = {}
+					if "effort" in attrib:
+						joint_tag.limit.effort = attrib.effort
 				
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
 			var node_name = parser.get_node_name()
 			if node_name == "joint":
-				_joints.append(joint_dict.duplicate(true))
-				joint_dict.clear()
-				current_tag = Tag.NONE
+				_joints.append(joint_tag.duplicate(true))
+				joint_tag.clear()
+				root_tag = Tag.NONE
 
 #	print("joints: ", JSON.stringify(_joints, "\t", false))
 
@@ -688,13 +708,19 @@ func get_kinematics_scene():
 		
 		match joint.type:
 			"fixed":
-				joint_node = Generic6DOFJoint3D.new()
-				
-			"free_wheel":
-				joint_node = PinJoint3D.new()
+				if "extra" in joint:
+					if joint.extra == "free_wheel":
+						joint_node = PinJoint3D.new()
+					else:
+						joint_node = Generic6DOFJoint3D.new()
+				else:
+					joint_node = Generic6DOFJoint3D.new()
 
 			"continuous":
 				joint_node = HingeJoint3D.new()
+				if "limit" in joint:
+					if "effort" in joint.limit:
+						joint_node.set_param(HingeJoint3D.PARAM_MOTOR_MAX_IMPULSE, float(joint.limit.effort))
 				if joint.axis != Vector3.UP:
 					var new_basis = Basis.looking_at(joint.axis)
 					joint_node.transform.basis = new_basis
@@ -782,7 +808,9 @@ func _process(delta: float):
 var control : DiffDriveExt
 """
 				ready_script += """
-	control = DiffDriveExt.new(%%%s, %%%s)""" % [_gobotics.control.right_wheel_joint, _gobotics.control.left_wheel_joint]
+	control = DiffDriveExt.new(%%%s, %%%s, %f)""" % [_gobotics.control.right_wheel_joint,
+													 _gobotics.control.left_wheel_joint,
+													float(_gobotics.control.max_speed)]
 
 				process_script += """
 	control.update_input()"""

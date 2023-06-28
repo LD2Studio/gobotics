@@ -1,5 +1,7 @@
 extends PanelContainer
 
+signal asset_updated(name: StringName)
+
 var urdf_parser = URDFParser.new()
 var asset_scene : PackedScene = null
 var asset_node : Node3D = null
@@ -11,7 +13,6 @@ var asset_path : String = "":
 		freeze_asset(asset_node, true)
 		%PreviewScene.add_child(asset_node)
 		%AssetNameEdit.text = asset_path.trim_prefix(assets_path+"/").trim_suffix(".tscn")
-		
 
 const assets_path = "res://assets"
 const urdf_robot_template = """<robot name="noname">
@@ -34,8 +35,9 @@ func _ready():
 		urdf_code_edit.text = asset_node.get_meta("urdf_code", urdf_robot_template)
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)
+	
+#	asset_updated.connect(func(name): print(name))
 
-		
 func _on_save_button_pressed():
 	var path = assets_path.path_join(asset_name_edit.text.get_base_dir())
 	if not DirAccess.dir_exists_absolute(path):
@@ -45,6 +47,10 @@ func _on_save_button_pressed():
 	var error = ResourceSaver.save(asset_scene, tscn_file)
 	if error != OK:
 		push_error("An error occurred while saving the scene to disk.")
+	else:
+		print("[Asset Editor] asset name: ", asset_scene.get_state().get_node_name(0))
+#		print("owner of asset editor: ", owner)
+		asset_updated.emit(asset_scene.get_state().get_node_name(0))
 
 func _on_generate_button_pressed() -> void:
 	var urdf_code = urdf_code_edit.text
