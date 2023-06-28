@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bcv1hfrfva2qb"]
+[gd_scene load_steps=11 format=3 uid="uid://bcv1hfrfva2qb"]
 
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_d4jh8"]
 [ext_resource type="Script" path="res://game/asset_editor/asset_editor.gd" id="1_j1den"]
@@ -6,6 +6,11 @@
 [ext_resource type="Texture2D" uid="uid://ht3bl7ryb38x" path="res://game/icons/VehicleBody3D.svg" id="2_cuuba"]
 [ext_resource type="FontFile" uid="uid://dwnwhuwmtxwoa" path="res://game/fonts/UbuntuMono-Regular.ttf" id="4_md26q"]
 [ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="6_dx6hk"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hdc4v"]
+bg_color = Color(0.466667, 0.580392, 0.341176, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_77vla"]
 
@@ -16,63 +21,67 @@ sky_material = SubResource("ProceduralSkyMaterial_77vla")
 background_mode = 2
 sky = SubResource("Sky_xa5ux")
 
-[node name="AssetEditor" type="MarginContainer"]
+[node name="AssetEditor" type="PanelContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hdc4v")
+script = ExtResource("1_j1den")
+
+[node name="AssetMargin" type="MarginContainer" parent="."]
+layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
-script = ExtResource("1_j1den")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="AssetMargin"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AssetMargin/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "  Asset Name : "
 
-[node name="AssetNameEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer"]
+[node name="AssetNameEdit" type="LineEdit" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="SaveAssetButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="SaveAssetButton" type="Button" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Save Asset"
 icon = ExtResource("2_ave4i")
 
-[node name="ImportURDFButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="ImportURDFButton" type="Button" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Import URDF
 "
 
-[node name="GenerateButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="GenerateButton" type="Button" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 10
 text = "Generate"
 icon = ExtResource("2_cuuba")
 
-[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
+[node name="HSplitContainer" type="HSplitContainer" parent="AssetMargin/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HSplitContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="AssetMargin/VBoxContainer/HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
 
-[node name="URDFCodeEdit" type="CodeEdit" parent="VBoxContainer/HSplitContainer/VBoxContainer"]
+[node name="URDFCodeEdit" type="CodeEdit" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -80,12 +89,13 @@ size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("4_md26q")
 theme_override_font_sizes/font_size = 14
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/HSplitContainer"]
+[node name="PreviewContainer" type="SubViewportContainer" parent="AssetMargin/VBoxContainer/HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 stretch = true
 
-[node name="SubViewport" type="SubViewport" parent="VBoxContainer/HSplitContainer/SubViewportContainer"]
+[node name="PreviewViewport" type="SubViewport" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer"]
+unique_name_in_owner = true
 own_world_3d = true
 transparent_bg = true
 handle_input_locally = false
@@ -93,22 +103,43 @@ msaa_3d = 2
 size = Vector2i(789, 755)
 render_target_update_mode = 4
 
-[node name="PreviewScene" type="Node3D" parent="VBoxContainer/HSplitContainer/SubViewportContainer/SubViewport"]
+[node name="PreviewScene" type="Node3D" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
 unique_name_in_owner = true
 
-[node name="ControlCamera3D" type="Camera3D" parent="VBoxContainer/HSplitContainer/SubViewportContainer/SubViewport/PreviewScene"]
+[node name="ControlCamera3D" type="Camera3D" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene"]
 transform = Transform3D(1, 0, 0, 0, 0.960241, 0.279173, 0, -0.279173, 0.960241, 0, 1.45366, 5)
 script = ExtResource("1_d4jh8")
 action_mouse_button = "LEFT_BUTTON"
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="VBoxContainer/HSplitContainer/SubViewportContainer/SubViewport/PreviewScene"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene"]
 environment = SubResource("Environment_nftkf")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="VBoxContainer/HSplitContainer/SubViewportContainer/SubViewport/PreviewScene"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene"]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -10, 0, 0)
 
-[node name="DarkEnvironment" parent="VBoxContainer/HSplitContainer/SubViewportContainer/SubViewport/PreviewScene" instance=ExtResource("6_dx6hk")]
+[node name="DarkEnvironment" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene" instance=ExtResource("6_dx6hk")]
 
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/SaveAssetButton" to="." method="_on_save_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/GenerateButton" to="." method="_on_generate_button_pressed"]
-[connection signal="text_changed" from="VBoxContainer/HSplitContainer/VBoxContainer/URDFCodeEdit" to="." method="_on_urdf_code_edit_text_changed"]
+[node name="OptionsContainer" type="PanelContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer"]
+layout_mode = 2
+
+[node name="VisualCheckBox" type="CheckBox" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Visual"
+
+[node name="CollisionCheckBox" type="CheckBox" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Collision"
+
+[connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/GenerateButton" to="." method="_on_generate_button_pressed"]
+[connection signal="text_changed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/URDFCodeEdit" to="." method="_on_urdf_code_edit_text_changed"]
+[connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/VisualCheckBox" to="." method="_on_visual_check_box_toggled"]
+[connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/CollisionCheckBox" to="." method="_on_collision_check_box_toggled"]

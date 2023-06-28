@@ -94,7 +94,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ControlPanel" type="MarginContainer" parent="SplitContainer"]
+[node name="ControlContainer" type="MarginContainer" parent="SplitContainer"]
 layout_mode = 2
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
@@ -103,51 +103,51 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TitlePanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
+[node name="TitlePanel" type="PanelContainer" parent="SplitContainer/ControlContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlPanel/VBoxContainer/TitlePanel"]
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlContainer/VBoxContainer/TitlePanel"]
 layout_mode = 2
 
-[node name="TitleApp" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/TitlePanel/MarginContainer"]
+[node name="TitleApp" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/TitlePanel/MarginContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Gobotics"
 horizontal_alignment = 1
 
-[node name="ScenePanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
+[node name="ScenePanel" type="PanelContainer" parent="SplitContainer/ControlContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fxght")
 
-[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel"]
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 7
 theme_override_constants/margin_top = 7
 theme_override_constants/margin_right = 7
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="SceneFileName" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
+[node name="SceneFileName" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="NewSceneButton" type="Button" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
+[node name="NewSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "New Scene"
 
-[node name="NewSceneDialog" type="ConfirmationDialog" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton"]
+[node name="NewSceneDialog" type="ConfirmationDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton"]
 unique_name_in_owner = true
 unresizable = true
 
-[node name="EnvironmentList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton/NewSceneDialog"]
+[node name="EnvironmentList" type="ItemList" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton/NewSceneDialog"]
 unique_name_in_owner = true
 offset_left = 8.0
 offset_top = 8.0
@@ -155,11 +155,11 @@ offset_right = 192.0
 offset_bottom = 51.0
 script = ExtResource("2_s428s")
 
-[node name="LoadSceneButton" type="Button" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
+[node name="LoadSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Load Scene"
 
-[node name="LoadSceneDialog" type="FileDialog" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton"]
+[node name="LoadSceneDialog" type="FileDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton"]
 unique_name_in_owner = true
 title = "Open a File"
 size = Vector2i(558, 162)
@@ -168,56 +168,56 @@ file_mode = 0
 access = 2
 filters = PackedStringArray("*.tscn")
 
-[node name="SaveSceneButton" type="Button" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
+[node name="SaveSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Save Scene"
 
-[node name="SaveSceneAsButton" type="Button" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
+[node name="SaveSceneAsButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Save Scene As ..."
 
-[node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton"]
+[node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton"]
 unique_name_in_owner = true
 size = Vector2i(647, 162)
 access = 2
 filters = PackedStringArray("*.tscn")
 
-[node name="PositionSavedCheck" type="CheckBox" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
+[node name="PositionSavedCheck" type="CheckBox" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 button_pressed = true
 
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/PositionSavedCheck"]
+[node name="Label" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/PositionSavedCheck"]
 layout_mode = 0
 offset_left = 31.0
 offset_right = 143.0
 offset_bottom = 26.0
 text = "Position saved"
 
-[node name="AssetsPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
+[node name="AssetsPanel" type="PanelContainer" parent="SplitContainer/ControlContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_7ehh2")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Assets"
 horizontal_alignment = 1
 
-[node name="NewAssetButton" type="Button" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer"]
+[node name="NewAssetButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 10
 icon = ExtResource("3_bkwo3")
 
-[node name="AssetList" type="ItemList" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer"]
+[node name="AssetList" type="ItemList" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -226,53 +226,53 @@ item_0/text = "Robot"
 item_1/text = "Ball"
 script = ExtResource("3_webwb")
 
-[node name="AssetPopupMenu" type="PopupMenu" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList"]
+[node name="AssetPopupMenu" type="PopupMenu" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList"]
 unique_name_in_owner = true
 
-[node name="AssetEditorDialog" type="AcceptDialog" parent="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList"]
+[node name="AssetEditorDialog" type="AcceptDialog" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList"]
 unique_name_in_owner = true
 title = "Assets Editor"
 ok_button_text = "Quit"
 
-[node name="TerminalPanel" type="PanelContainer" parent="SplitContainer/ControlPanel/VBoxContainer"]
+[node name="TerminalPanel" type="PanelContainer" parent="SplitContainer/ControlContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlContainer/VBoxContainer/TerminalPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 7
 theme_override_constants/margin_top = 7
 theme_override_constants/margin_right = 7
 theme_override_constants/margin_bottom = 7
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/TerminalPanel/MarginContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="Label" type="Label" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Terminal"
 horizontal_alignment = 1
 
-[node name="ClearButton" type="Button" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="ClearButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Clear"
 
-[node name="TerminalOutput" type="TextEdit" parent="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer"]
+[node name="TerminalOutput" type="TextEdit" parent="SplitContainer/ControlContainer/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 editable = false
 
-[node name="SceneView3D" type="SubViewportContainer" parent="SplitContainer"]
+[node name="3DViewContainer" type="SubViewportContainer" parent="SplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 stretch = true
 script = ExtResource("3_n66nd")
 
-[node name="SceneViewport" type="SubViewport" parent="SplitContainer/SceneView3D"]
+[node name="SceneViewport" type="SubViewport" parent="SplitContainer/3DViewContainer"]
 unique_name_in_owner = true
 handle_input_locally = false
 msaa_3d = 2
@@ -281,7 +281,7 @@ physics_object_picking = true
 size = Vector2i(1378, 800)
 render_target_update_mode = 4
 
-[node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView3D/SceneViewport"]
+[node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
 unique_name_in_owner = true
 anchors_preset = 1
 anchor_left = 1.0
@@ -293,46 +293,46 @@ size_flags_horizontal = 3
 mouse_force_pass_scroll_events = false
 theme_override_styles/panel = SubResource("StyleBoxFlat_kn244")
 
-[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector"]
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer"]
 layout_mode = 2
 
-[node name="InspectorPartName" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
+[node name="InspectorPartName" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Inspector"
 horizontal_alignment = 1
 
-[node name="TransformContainer" type="GridContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
+[node name="TransformContainer" type="GridContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 columns = 3
 
-[node name="LabelX" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
+[node name="LabelX" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_v1fvi")
 text = "X"
 horizontal_alignment = 1
 
-[node name="LabelY" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
+[node name="LabelY" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_5bqnm")
 text = "Y"
 horizontal_alignment = 1
 
-[node name="LabelZ" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
+[node name="LabelZ" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_1cnx1")
 text = "Z"
 horizontal_alignment = 1
 
-[node name="X_pos" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
+[node name="X_pos" type="SpinBox" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_force_pass_scroll_events = false
@@ -340,7 +340,7 @@ min_value = -10.0
 max_value = 10.0
 step = 0.001
 
-[node name="Y_pos" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
+[node name="Y_pos" type="SpinBox" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_force_pass_scroll_events = false
@@ -348,7 +348,7 @@ min_value = -10.0
 max_value = 10.0
 step = 0.001
 
-[node name="Z_pos" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
+[node name="Z_pos" type="SpinBox" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_force_pass_scroll_events = false
@@ -356,87 +356,87 @@ min_value = -10.0
 max_value = 10.0
 step = 0.001
 
-[node name="Rotation Container" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
+[node name="Rotation Container" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/Rotation Container"]
+[node name="Label" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/Rotation Container"]
 layout_mode = 2
 text = "Rot [°] : "
 
-[node name="Z_rot" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/Rotation Container"]
+[node name="Z_rot" type="SpinBox" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/Rotation Container"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_force_pass_scroll_events = false
 min_value = -180.0
 max_value = 180.0
 
-[node name="KeysControlContainer" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
+[node name="KeysControlContainer" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="KeysControlCheck" type="CheckBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/KeysControlContainer"]
+[node name="KeysControlCheck" type="CheckBox" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/KeysControlContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/KeysControlContainer"]
+[node name="Label" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/KeysControlContainer"]
 layout_mode = 2
 text = "Keyboard & Joystick Control"
 
-[node name="PythonBridgeContainer" type="PanelContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
+[node name="PythonBridgeContainer" type="PanelContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_sjw4w")
 
-[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="PythonRemoteButton" type="CheckBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="PythonRemoteButton" type="CheckBox" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Python Remote"
 
-[node name="UDPPortContainer" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
+[node name="UDPPortContainer" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer"]
+[node name="Label" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer"]
 layout_mode = 2
 text = "UDP Port :"
 
-[node name="UDPPortNumber" type="SpinBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer"]
+[node name="UDPPortNumber" type="SpinBox" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 min_value = 4243.0
 max_value = 65535.0
 value = 4243.0
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="BuiltinScriptCheckBox" type="CheckBox" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="BuiltinScriptCheckBox" type="CheckBox" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Builtin"
 
-[node name="OpenScriptButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="OpenScriptButton" type="Button" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Edit Script"
 
-[node name="ToolBar" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport"]
+[node name="ToolBar" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -446,45 +446,45 @@ offset_right = 93.0
 offset_bottom = 61.0
 grow_horizontal = 2
 
-[node name="RunStopButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/ToolBar"]
+[node name="RunStopButton" type="Button" parent="SplitContainer/3DViewContainer/SceneViewport/ToolBar"]
 unique_name_in_owner = true
 layout_mode = 2
 toggle_mode = true
 text = "RUN"
 icon = ExtResource("6_6ryau")
 
-[node name="ResetButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/ToolBar"]
+[node name="ResetButton" type="Button" parent="SplitContainer/3DViewContainer/SceneViewport/ToolBar"]
 layout_mode = 2
 text = "Reload"
 
-[node name="ViewButton" type="Button" parent="SplitContainer/SceneView3D/SceneViewport/ToolBar"]
+[node name="ViewButton" type="Button" parent="SplitContainer/3DViewContainer/SceneViewport/ToolBar"]
 layout_mode = 2
 toggle_mode = true
 text = "TopView"
 
-[node name="StatisticsPanel" type="PanelContainer" parent="SplitContainer/SceneView3D/SceneViewport"]
+[node name="StatisticsPanel" type="PanelContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
 offset_right = 40.0
 offset_bottom = 40.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_nll5m")
 
-[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/SceneView3D/SceneViewport/StatisticsPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/3DViewContainer/SceneViewport/StatisticsPanel"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/StatisticsPanel/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/StatisticsPanel/MarginContainer"]
 layout_mode = 2
 
-[node name="FPSContainer" type="HBoxContainer" parent="SplitContainer/SceneView3D/SceneViewport/StatisticsPanel/MarginContainer/VBoxContainer"]
+[node name="FPSContainer" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/StatisticsPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="FPSLabel" type="Label" parent="SplitContainer/SceneView3D/SceneViewport/StatisticsPanel/MarginContainer/VBoxContainer/FPSContainer"]
+[node name="FPSLabel" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/StatisticsPanel/MarginContainer/VBoxContainer/FPSContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="GameScene" type="Node3D" parent="SplitContainer/SceneView3D/SceneViewport"]
+[node name="GameScene" type="Node3D" parent="SplitContainer/3DViewContainer/SceneViewport"]
 unique_name_in_owner = true
 script = ExtResource("4_htgp6")
 
-[node name="ControlCamera3D" type="Camera3D" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
+[node name="ControlCamera3D" type="Camera3D" parent="SplitContainer/3DViewContainer/SceneViewport/GameScene"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.924759, 0.380553, 0, -0.380553, 0.924759, 0, 4.95161, 12.0326)
 current = true
@@ -494,7 +494,7 @@ translation_speed = 4.0
 zoom_speed = 2.0
 zoom_out = 40.0
 
-[node name="TopCamera2D" type="Camera3D" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
+[node name="TopCamera2D" type="Camera3D" parent="SplitContainer/3DViewContainer/SceneViewport/GameScene"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10, 0)
 environment = SubResource("Environment_5axc7")
@@ -504,50 +504,50 @@ script = ExtResource("7_eidv5")
 action_mouse_button = "LEFT_BUTTON"
 zoom_speed = 1.5
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SplitContainer/3DViewContainer/SceneViewport/GameScene"]
 transform = Transform3D(-0.866024, -0.433015, 0.25, 0.108816, 0.32479, 0.939505, -0.488018, 0.840838, -0.234157, 0, 0, 0)
 shadow_enabled = true
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="SplitContainer/3DViewContainer/SceneViewport/GameScene"]
 environment = SubResource("Environment_h33mq")
 
-[node name="ConfirmDeleteDialog" type="ConfirmationDialog" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
+[node name="ConfirmDeleteDialog" type="ConfirmationDialog" parent="SplitContainer/3DViewContainer/SceneViewport/GameScene"]
 unique_name_in_owner = true
 gui_embed_subwindows = true
 
-[node name="ScriptDialog" type="ConfirmationDialog" parent="SplitContainer/SceneView3D/SceneViewport/GameScene"]
+[node name="ScriptDialog" type="ConfirmationDialog" parent="SplitContainer/3DViewContainer/SceneViewport/GameScene"]
 unique_name_in_owner = true
 size = Vector2i(400, 400)
 
-[node name="SourceCodeEdit" type="CodeEdit" parent="SplitContainer/SceneView3D/SceneViewport/GameScene/ScriptDialog"]
+[node name="SourceCodeEdit" type="CodeEdit" parent="SplitContainer/3DViewContainer/SceneViewport/GameScene/ScriptDialog"]
 unique_name_in_owner = true
 offset_right = 8.0
 offset_bottom = 8.0
 
-[connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton" to="." method="_on_new_scene_button_pressed"]
-[connection signal="confirmed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton/NewSceneDialog" to="." method="_on_new_scene_dialog_confirmed"]
-[connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton" to="." method="_on_load_scene_button_pressed"]
-[connection signal="file_selected" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton/LoadSceneDialog" to="." method="_on_load_scene_dialog_file_selected"]
-[connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneButton" to="." method="_on_save_button_pressed"]
-[connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton" to="." method="_on_save_scene_as_button_pressed"]
-[connection signal="file_selected" from="SplitContainer/ControlPanel/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
-[connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_new_asset_button_pressed"]
-[connection signal="item_activated" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_activated"]
-[connection signal="item_clicked" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_clicked"]
-[connection signal="canceled" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/AssetEditorDialog" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_asset_editor_dialog_canceled"]
-[connection signal="confirmed" from="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/AssetEditorDialog" to="SplitContainer/ControlPanel/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_asset_editor_dialog_confirmed"]
-[connection signal="pressed" from="SplitContainer/ControlPanel/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_clear_button_pressed"]
-[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/X_pos" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_x_pos_value_changed"]
-[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/Y_pos" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_y_pos_value_changed"]
-[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/Z_pos" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_z_pos_value_changed"]
-[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/Rotation Container/Z_rot" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_z_rot_value_changed"]
-[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/KeysControlContainer/KeysControlCheck" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_keys_control_check_toggled"]
-[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer/PythonRemoteButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_python_remote_button_toggled"]
-[connection signal="value_changed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer/UDPPortNumber" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_udp_port_number_value_changed"]
-[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2/BuiltinScriptCheckBox" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_builtin_script_check_box_toggled"]
-[connection signal="pressed" from="SplitContainer/SceneView3D/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2/OpenScriptButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_open_script_button_pressed"]
-[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ToolBar/RunStopButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
-[connection signal="pressed" from="SplitContainer/SceneView3D/SceneViewport/ToolBar/ResetButton" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_reset_button_pressed"]
-[connection signal="toggled" from="SplitContainer/SceneView3D/SceneViewport/ToolBar/ViewButton" to="." method="_on_view_button_toggled"]
-[connection signal="confirmed" from="SplitContainer/SceneView3D/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_confirm_delete_dialog_confirmed"]
-[connection signal="confirmed" from="SplitContainer/SceneView3D/SceneViewport/GameScene/ScriptDialog" to="SplitContainer/SceneView3D/SceneViewport/GameScene" method="_on_script_dialog_confirmed"]
+[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton" to="." method="_on_new_scene_button_pressed"]
+[connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton/NewSceneDialog" to="." method="_on_new_scene_dialog_confirmed"]
+[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton" to="." method="_on_load_scene_button_pressed"]
+[connection signal="file_selected" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton/LoadSceneDialog" to="." method="_on_load_scene_dialog_file_selected"]
+[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton" to="." method="_on_save_scene_as_button_pressed"]
+[connection signal="file_selected" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
+[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_new_asset_button_pressed"]
+[connection signal="item_activated" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_activated"]
+[connection signal="item_clicked" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_clicked"]
+[connection signal="canceled" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/AssetEditorDialog" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_asset_editor_dialog_canceled"]
+[connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/AssetEditorDialog" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_asset_editor_dialog_confirmed"]
+[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_clear_button_pressed"]
+[connection signal="value_changed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/X_pos" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_x_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/Y_pos" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_y_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/Z_pos" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_z_pos_value_changed"]
+[connection signal="value_changed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/Rotation Container/Z_rot" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_z_rot_value_changed"]
+[connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/KeysControlContainer/KeysControlCheck" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_keys_control_check_toggled"]
+[connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer/PythonRemoteButton" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_python_remote_button_toggled"]
+[connection signal="value_changed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer/UDPPortNumber" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_udp_port_number_value_changed"]
+[connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2/BuiltinScriptCheckBox" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_builtin_script_check_box_toggled"]
+[connection signal="pressed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2/OpenScriptButton" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_open_script_button_pressed"]
+[connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ToolBar/RunStopButton" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
+[connection signal="pressed" from="SplitContainer/3DViewContainer/SceneViewport/ToolBar/ResetButton" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_reset_button_pressed"]
+[connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ToolBar/ViewButton" to="." method="_on_view_button_toggled"]
+[connection signal="confirmed" from="SplitContainer/3DViewContainer/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_confirm_delete_dialog_confirmed"]
+[connection signal="confirmed" from="SplitContainer/3DViewContainer/SceneViewport/GameScene/ScriptDialog" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_script_dialog_confirmed"]

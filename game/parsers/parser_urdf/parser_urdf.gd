@@ -2,7 +2,7 @@ extends RefCounted
 class_name URDFParser
 
 var scale: float = 1.0
-
+var packages_path: String
 var parser = XMLParser.new()
 
 var _materials: Array
@@ -56,7 +56,6 @@ func parse_buffer(buffer: String):
 #	print("urdf code: ", urdf_code)
 	return root_node
 	
-	
 func load_gobotics_params(urdf_data):
 	var err
 	if urdf_data is String:
@@ -81,7 +80,7 @@ func load_gobotics_params(urdf_data):
 				current_tag = Tag.GOBOTICS
 				
 			if node_name == "category" and current_tag == Tag.GOBOTICS:
-				var attrib: Dictionary
+				var attrib: Dictionary = {}
 				var attribut_count = parser.get_attribute_count()
 				for idx in attribut_count:
 					var name = parser.get_attribute_name(idx)
@@ -91,7 +90,7 @@ func load_gobotics_params(urdf_data):
 					_gobotics.category = attrib.name
 					
 			if node_name == "control" and current_tag == Tag.GOBOTICS:
-				var attrib: Dictionary
+				var attrib: Dictionary = {}
 				var attribut_count = parser.get_attribute_count()
 				for idx in attribut_count:
 					var name = parser.get_attribute_name(idx)
@@ -105,7 +104,7 @@ func load_gobotics_params(urdf_data):
 					_gobotics.control.type = attrib.type
 					
 			if node_name == "right_wheel" and current_tag == Tag.GOBOTICS:
-				var attrib: Dictionary
+				var attrib: Dictionary = {}
 				var attribut_count = parser.get_attribute_count()
 				for idx in attribut_count:
 					var name = parser.get_attribute_name(idx)
@@ -115,7 +114,7 @@ func load_gobotics_params(urdf_data):
 					_gobotics.control.right_wheel_joint = attrib.joint
 					
 			if node_name == "left_wheel" and current_tag == Tag.GOBOTICS:
-				var attrib: Dictionary
+				var attrib: Dictionary = {}
 				var attribut_count = parser.get_attribute_count()
 				for idx in attribut_count:
 					var name = parser.get_attribute_name(idx)
@@ -130,8 +129,8 @@ func load_gobotics_params(urdf_data):
 			if node_name == "gobotics":
 				current_tag = Tag.NONE
 				
-	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
-				
+#	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
+
 func load_materials(urdf_data):
 	var err
 	if urdf_data is String:
@@ -143,7 +142,7 @@ func load_materials(urdf_data):
 		printerr("Error opening URDF file: ", err)
 		return
 		
-	var mat_dict: Dictionary
+	var mat_dict: Dictionary = {}
 	var current_tag: int = Tag.NONE
 	while true:
 		if parser.read() != OK: # Ending parse XML file
@@ -221,9 +220,10 @@ func load_links(urdf_data):
 		printerr("Error opening URDF file: ", err)
 		return
 		
-	var link_dict: Dictionary
+	var link_attrib: Dictionary
 	var current_visual: MeshInstance3D
 	var current_collision: CollisionShape3D
+	var current_col_debug: MeshInstance3D
 	var current_tag: int = Tag.NONE
 	var root_tag: int = Tag.NONE
 	
@@ -241,16 +241,28 @@ func load_links(urdf_data):
 					for idx in attribut_count:
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
-						link_dict[name] = value
+						link_attrib[name] = value
 						
 					var node := RigidBody3D.new()
-					node.name = link_dict.name
+					node.name = link_attrib.name
 					node.add_to_group("SELECT", true)
-					link_dict["node"] = node
+					link_attrib.node = node
 				
 				"inertial":
 					if root_tag != Tag.LINK: continue
 					current_tag = Tag.INERTIAL
+					
+				"mass":
+					if root_tag != Tag.LINK: continue
+					var mass_tag: Dictionary
+					var attribut_count = parser.get_attribute_count()
+					for idx in attribut_count:
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						mass_tag[name] = value
+					if current_tag == Tag.INERTIAL:
+						if mass_tag.value:
+							link_attrib.node.mass = float(mass_tag.value)
 				
 				"visual":
 					if root_tag != Tag.LINK: continue
@@ -263,12 +275,13 @@ func load_links(urdf_data):
 						attrib[name] = value
 					
 					current_visual = MeshInstance3D.new()
+					current_visual.add_to_group("VISUAL", true)
 					if "name" in attrib and attrib.name != "":
 						current_visual.name = attrib.name + "_mesh"
 					else:
-						current_visual.name = link_dict.name + "_mesh"
+						current_visual.name = link_attrib.name + "_mesh"
 	#				print("current visual: ", current_visual)
-					link_dict["node"].add_child(current_visual)
+					link_attrib.node.add_child(current_visual)
 
 				"collision":
 					if root_tag != Tag.LINK: continue
@@ -284,33 +297,44 @@ func load_links(urdf_data):
 					if "name" in attrib:
 						current_collision.name = attrib.name + "_col"
 					else:
-						current_collision.name = link_dict.name + "_col"
+						current_collision.name = link_attrib.name + "_col"
 	#				print("current collision: ", current_collision)
-					link_dict.node.add_child(current_collision)
+					link_attrib.node.add_child(current_collision)
+					
+					current_col_debug = MeshInstance3D.new()
+					current_col_debug.add_to_group("COLLISION", true)
+					current_col_debug.visible = false
+					if "name" in attrib:
+						current_col_debug.name = attrib.name + "_debug"
+					else:
+						current_col_debug.name = link_attrib.name + "_debug"
+					link_attrib.node.add_child(current_col_debug)
 	
 				"geometry":
 					if root_tag != Tag.LINK: continue
 				
 				"cylinder":
 					if root_tag != Tag.LINK: continue
-					var cyl_dict: Dictionary
+					var attrib: Dictionary
 					var attribut_count = parser.get_attribute_count()
 					for idx in attribut_count:
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
-						cyl_dict[name] = value
+						attrib[name] = value
 					if current_tag == Tag.VISUAL:
 						var cylinder_mesh := CylinderMesh.new()
-						cylinder_mesh.bottom_radius = float(cyl_dict.radius) * scale
-						cylinder_mesh.top_radius = float(cyl_dict.radius) * scale
-						cylinder_mesh.height = float(cyl_dict.length) * scale
+						cylinder_mesh.bottom_radius = float(attrib.radius) * scale
+						cylinder_mesh.top_radius = float(attrib.radius) * scale
+						cylinder_mesh.height = float(attrib.length) * scale
 						current_visual.mesh = cylinder_mesh
 
 					elif current_tag == Tag.COLLISION:
 						var cylinder_shape := CylinderShape3D.new()
-						cylinder_shape.radius = float(cyl_dict.radius) * scale
-						cylinder_shape.height = float(cyl_dict.length) * scale
+						cylinder_shape.radius = float(attrib.radius) * scale
+						cylinder_shape.height = float(attrib.length) * scale
 						current_collision.shape = cylinder_shape
+						var debug_mesh: ArrayMesh = cylinder_shape.get_debug_mesh()
+						current_col_debug.mesh = debug_mesh
 				
 				"box":
 					if root_tag != Tag.LINK: continue
@@ -335,6 +359,8 @@ func load_links(urdf_data):
 						var box_shape := BoxShape3D.new()
 						box_shape.size = size * scale
 						current_collision.shape = box_shape
+						var debug_mesh: ArrayMesh = box_shape.get_debug_mesh()
+						current_col_debug.mesh = debug_mesh
 					
 				"sphere":
 					if root_tag != Tag.LINK: continue
@@ -353,6 +379,8 @@ func load_links(urdf_data):
 						var sphere_shape := SphereShape3D.new()
 						sphere_shape.radius = float(attrib.radius) * scale
 						current_collision.shape = sphere_shape
+						var debug_mesh: ArrayMesh = sphere_shape.get_debug_mesh()
+						current_col_debug.mesh = debug_mesh
 					
 				"mesh":
 					if root_tag != Tag.LINK: continue
@@ -409,6 +437,8 @@ func load_links(urdf_data):
 					elif current_tag == Tag.COLLISION:
 						current_collision.position = xyz * scale
 						current_collision.rotation = rpy
+						current_col_debug.position = xyz * scale
+						current_col_debug.rotation = rpy
 				
 				"material":
 					if root_tag != Tag.LINK: continue
@@ -456,8 +486,8 @@ func load_links(urdf_data):
 			var node_name = parser.get_node_name()
 			match node_name:
 				"link":
-					_links.append(link_dict.duplicate(true))
-					link_dict.clear()
+					_links.append(link_attrib.duplicate(true))
+					link_attrib.clear()
 					root_tag = Tag.NONE
 				"intertial":
 					current_tag = Tag.NONE
@@ -466,24 +496,24 @@ func load_links(urdf_data):
 				"collision":
 					current_tag = Tag.NONE
 				
-	print("links: ", JSON.stringify(_links, "\t", false))
+#	print("links: ", JSON.stringify(_links, "\t", false))
 
 func load_gltf(current_visual: MeshInstance3D, attrib: Dictionary, current_tag):
-	var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
-#	print_debug(scene_filename)
+	
 	if Engine.is_editor_hint():
+		var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
+		print_debug(scene_filename)
 #		print("Editor")
 		var scene: PackedScene = load(scene_filename)
 #		print_debug(scene)
 		var scene_state = scene.get_state()
 #		print("node count: ", scene_state.get_node_count())
 		for idx in scene_state.get_node_count():
-#										print("node name: ", scene_state.get_node_name(idx))
+#			print("node name: ", scene_state.get_node_name(idx))
 			if scene_state.get_node_name(idx) == attrib.object:
 				for prop_idx in scene_state.get_node_property_count(idx):
 					var prop_name = scene_state.get_node_property_name(idx, prop_idx)
 #					print("props: ", prop_name)
-					
 					## Mesh attached to node
 					if prop_name == "mesh":
 						var mesh: ArrayMesh = scene_state.get_node_property_value(idx, prop_idx)
@@ -500,7 +530,30 @@ func load_gltf(current_visual: MeshInstance3D, attrib: Dictionary, current_tag):
 						if current_tag == Tag.VISUAL:
 							current_visual.position = xyz * scale
 							current_visual.rotation = rpy
-
+	else:
+		var gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
+#		print("gltf filename: ", gltf_filename)
+		var gltf_res := GLTFDocument.new()
+		var gltf_state = GLTFState.new()
+		var err = gltf_res.append_from_file(gltf_filename, gltf_state)
+		if err:
+			printerr("Import glTF file failed!")
+			return
+		var nodes : Array[GLTFNode] = gltf_state.get_nodes()
+		var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
+		var idx = 0
+		for node in gltf_state.json.nodes:
+			if node.name == attrib.object:
+#				print("node.name:%s, id=%d " % [node.name, node.mesh])
+				var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
+				var mesh: ArrayMesh = imported_mesh.get_mesh()
+				if current_tag == Tag.VISUAL:
+					current_visual.mesh = mesh
+					current_visual.position = nodes[idx].position * scale
+					current_visual.scale = Vector3.ONE * scale
+					break
+			idx += 1
+		
 func load_joints(urdf_data):
 	var err
 	if urdf_data is String:
@@ -609,7 +662,7 @@ func load_joints(urdf_data):
 				joint_dict.clear()
 				current_tag = Tag.NONE
 
-	print("joints: ", JSON.stringify(_joints, "\t", false))
+#	print("joints: ", JSON.stringify(_joints, "\t", false))
 
 func get_kinematics_scene():
 	for joint in _joints:
@@ -772,7 +825,6 @@ func get_continuous_joints_properties(root_node: Node3D) -> Array:
 				joints_properties.append_array(props)
 		
 	return joints_properties
-
 
 func get_continuous_joint_script() -> String:
 	var source_code = """extends HingeJoint3D

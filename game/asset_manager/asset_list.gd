@@ -112,5 +112,13 @@ func _on_asset_editor_dialog_canceled():
 func update_assets_database():
 	game.load_assets_in_database()
 	game.fill_assets_list()
+	show_visual_mesh(true)
+	show_collision_shape(false)
 
-
+func show_visual_mesh(enable: bool):
+	for node in get_tree().get_nodes_in_group("VISUAL"):
+		node.visible = enable
+		
+func show_collision_shape(enable: bool):
+	for node in get_tree().get_nodes_in_group("COLLISION"):
+		node.visible = enable
