@@ -7,6 +7,7 @@ var asset_scene : PackedScene = null
 var asset_node : Node3D = null
 var asset_path : String = "":
 	set(value):
+#		print_debug(value)
 		asset_path = value
 		asset_scene = load(asset_path)
 		asset_node = asset_scene.instantiate()
@@ -35,8 +36,8 @@ func _ready():
 		urdf_code_edit.text = asset_node.get_meta("urdf_code", urdf_robot_template)
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)
-	
-#	asset_updated.connect(func(name): print(name))
+	show_link_frame(%LinkCheckBox.button_pressed)
+	show_joint_frame(%JointCheckBox.button_pressed)
 
 func _on_save_button_pressed():
 	var path = assets_path.path_join(asset_name_edit.text.get_base_dir())
@@ -48,8 +49,7 @@ func _on_save_button_pressed():
 	if error != OK:
 		push_error("An error occurred while saving the scene to disk.")
 	else:
-		print("[Asset Editor] asset name: ", asset_scene.get_state().get_node_name(0))
-#		print("owner of asset editor: ", owner)
+#		print("[Asset Editor] asset name: ", asset_scene.get_state().get_node_name(0))
 		asset_updated.emit(asset_scene.get_state().get_node_name(0))
 
 func _on_generate_button_pressed() -> void:
@@ -78,6 +78,8 @@ func _on_generate_button_pressed() -> void:
 	
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)
+	show_link_frame(%LinkCheckBox.button_pressed)
+	show_joint_frame(%JointCheckBox.button_pressed)
 	
 func _on_urdf_code_edit_text_changed() -> void:
 	%SaveAssetButton.disabled = true
@@ -103,10 +105,26 @@ func show_collision_shape(enable: bool):
 	var scene_tree : SceneTree = preview_viewport.get_tree()
 	for node in scene_tree.get_nodes_in_group("COLLISION"):
 		node.visible = enable
+		
+func show_link_frame(enable: bool):
+	var scene_tree : SceneTree = preview_viewport.get_tree()
+	for node in scene_tree.get_nodes_in_group("LINKS"):
+		node.visible = enable
+		
+func show_joint_frame(enable: bool):
+	for node in preview_viewport.get_tree().get_nodes_in_group("JOINTS"):
+		node.visible = enable
 	
 func _on_visual_check_box_toggled(button_pressed):
 	show_visual_mesh(button_pressed)
 
-
 func _on_collision_check_box_toggled(button_pressed):
 	show_collision_shape(button_pressed)
+
+
+func _on_link_check_box_toggled(button_pressed):
+	show_link_frame(button_pressed)
+
+
+func _on_joint_check_box_toggled(button_pressed):
+	show_joint_frame(button_pressed)

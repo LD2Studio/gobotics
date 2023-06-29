@@ -87,13 +87,13 @@ func edit_asset(asset_name: String):
 	asset_editor.asset_path = asset_path
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
 	%AssetEditorDialog.add_child(asset_editor)
-	%AssetEditorDialog.popup_centered(Vector2i(600, 500))
+	%AssetEditorDialog.popup_centered(Vector2i(700, 500))
 
 func _on_new_asset_button_pressed() -> void:
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
 	%AssetEditorDialog.add_child(asset_editor)
-	%AssetEditorDialog.popup_centered(Vector2i(600, 500))
+	%AssetEditorDialog.popup_centered(Vector2i(700, 500))
 
 func _on_asset_editor_dialog_confirmed():
 	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")
@@ -118,6 +118,8 @@ func update_assets_database():
 	game.fill_assets_list()
 	show_visual_mesh(true)
 	show_collision_shape(false)
+	show_link_frame(false)
+	show_joint_frame(false)
 	
 func update_assets_in_scene():
 	var assets = game_scene.scene.get_children()
@@ -126,8 +128,9 @@ func update_assets_in_scene():
 	if _asset_updated == "": return
 	for asset in assets:
 		if asset.name.begins_with(_asset_updated):
-			print("update asset: ", asset.name)
+#			print("update asset: ", asset.name)
 			var asset_position = asset.get_child(0).global_position
+			var asset_rotation = asset.get_child(0).global_rotation
 #			print("asset position: ", asset.get_child(0).global_position)
 			var asset_name = asset.name
 			
@@ -141,7 +144,10 @@ func update_assets_in_scene():
 			
 			game_scene.scene.add_child(new_asset)
 			new_asset.get_child(0).global_position = asset_position
+			new_asset.get_child(0).global_rotation = asset_rotation
 			game_scene.connect_editable()
+			game_scene.connect_pickable()
+			game_scene.freeze_item(new_asset, true)
 			
 	_asset_updated = ""
 
@@ -151,4 +157,12 @@ func show_visual_mesh(enable: bool):
 		
 func show_collision_shape(enable: bool):
 	for node in get_tree().get_nodes_in_group("COLLISION"):
+		node.visible = enable
+
+func show_link_frame(enable: bool):
+	for node in get_tree().get_nodes_in_group("LINKS"):
+		node.visible = enable
+
+func show_joint_frame(enable: bool):
+	for node in get_tree().get_nodes_in_group("JOINTS"):
 		node.visible = enable

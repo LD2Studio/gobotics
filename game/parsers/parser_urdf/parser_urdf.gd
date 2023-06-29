@@ -11,6 +11,7 @@ var _joints: Array
 var _gobotics: Dictionary
 var _script := GDScript.new()
 var _filename : String
+var _frame_mesh : ArrayMesh = load("res://game/gizmos/frame_arrows.res")
 
 enum Tag {
 		NONE,
@@ -259,6 +260,14 @@ func load_links(urdf_data):
 					node.name = link_attrib.name
 					node.add_to_group("SELECT", true)
 					link_attrib.node = node
+					## Add frame gizmo
+					var frame_visual := MeshInstance3D.new()
+					frame_visual.name = link_attrib.name + "_frame"
+					frame_visual.add_to_group("LINKS", true)
+					frame_visual.mesh = _frame_mesh
+					frame_visual.scale = Vector3.ONE * scale
+					frame_visual.visible = false
+					node.add_child(frame_visual)
 				
 				"inertial":
 					if root_tag != Tag.LINK: continue
@@ -715,6 +724,17 @@ func get_kinematics_scene():
 						joint_node = Generic6DOFJoint3D.new()
 				else:
 					joint_node = Generic6DOFJoint3D.new()
+					joint_node.set_param_x(Generic6DOFJoint3D.PARAM_LINEAR_RESTITUTION, 0.1)
+					joint_node.set_param_y(Generic6DOFJoint3D.PARAM_LINEAR_RESTITUTION, 0.1)
+					joint_node.set_param_z(Generic6DOFJoint3D.PARAM_LINEAR_RESTITUTION, 0.1)
+					## Add frame gizmo
+#					var frame_visual := MeshInstance3D.new()
+#					frame_visual.name = joint.name + "_frame"
+#					frame_visual.add_to_group("JOINTS", true)
+#					frame_visual.mesh = _frame_mesh
+#					frame_visual.scale = Vector3.ONE * scale
+#					frame_visual.visible = false
+#					joint_node.add_child(frame_visual)
 
 			"continuous":
 				joint_node = HingeJoint3D.new()
@@ -739,7 +759,6 @@ func get_kinematics_scene():
 		
 	var root_node: Node3D
 	for link in _links:
-#		print("parent of %s is %s" % [link.node, link.node.get_parent()])
 		if link and link.node.get_parent() == null:
 			root_node = link.node
 			break

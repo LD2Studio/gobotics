@@ -60,11 +60,6 @@ layout_mode = 2
 text = "Save Asset"
 icon = ExtResource("2_ave4i")
 
-[node name="ImportURDFButton" type="Button" parent="AssetMargin/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "Import URDF
-"
-
 [node name="GenerateButton" type="Button" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 10
@@ -129,17 +124,33 @@ layout_mode = 2
 [node name="VisualCheckBox" type="CheckBox" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_font_sizes/font_size = 12
 button_pressed = true
 text = "Visual"
 
 [node name="CollisionCheckBox" type="CheckBox" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_font_sizes/font_size = 12
 button_pressed = true
 text = "Collision"
+
+[node name="LinkCheckBox" type="CheckBox" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Link"
+
+[node name="JointCheckBox" type="CheckBox" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Joint"
 
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/GenerateButton" to="." method="_on_generate_button_pressed"]
 [connection signal="text_changed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/URDFCodeEdit" to="." method="_on_urdf_code_edit_text_changed"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/VisualCheckBox" to="." method="_on_visual_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/CollisionCheckBox" to="." method="_on_collision_check_box_toggled"]
+[connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/LinkCheckBox" to="." method="_on_link_check_box_toggled"]
+[connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/JointCheckBox" to="." method="_on_joint_check_box_toggled"]
