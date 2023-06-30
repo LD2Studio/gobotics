@@ -68,15 +68,19 @@ func connect_editable():
 		if not node.is_connected("mouse_exited", _on_editable_mouse_exited):
 			node.mouse_exited.connect(_on_editable_mouse_exited)
 			
-func show_part_parameters(node: Node):
-	item_selected = node.owner if node != null else null
+func show_part_parameters(asset_selected: Node3D):
+	print_debug(asset_selected)
+	item_selected = asset_selected
+	if not asset_selected.get_child(0) is RigidBody3D: return
+	var base_rigid = asset_selected.get_child(0)
+	
 	object_inspector.visible = true
 #	# Update data in inspector
 	%InspectorPartName.text = item_selected.name
-	%X_pos.value = node.global_position.x / 10.0
-	%Y_pos.value = node.global_position.z * -1 / 10.0
-	%Z_pos.value = node.global_position.y / 10.0
-	%Z_rot.value = node.rotation_degrees.y
+	%X_pos.value = base_rigid.global_position.x / 10.0
+	%Y_pos.value = base_rigid.global_position.z * -1 / 10.0
+	%Z_pos.value = base_rigid.global_position.y / 10.0
+	%Z_rot.value = base_rigid.rotation_degrees.y
 	
 	if running:
 		%X_pos.editable = false
@@ -106,9 +110,9 @@ func show_part_parameters(node: Node):
 				pass
 #				print(prop.name)
 	
-	if item_selected.is_in_group("ROBOT"):
+	if item_selected.is_in_group("ROBOTS"):
 		%KeysControlContainer.visible = true
-		%KeysControlCheck.set_pressed_no_signal(item_selected.robot.manual_control)
+		%KeysControlCheck.set_pressed_no_signal(item_selected.control.manual)
 	else:
 		%KeysControlContainer.visible = false
 
@@ -132,9 +136,9 @@ func save_scene(path: String):
 		item.owner = scene
 		if %PositionSavedCheck.button_pressed:
 			item.set_meta("transform", item.get_child(0).global_transform)
-		if item.is_in_group("ROBOT"):
+		if item.is_in_group("ROBOTS"):
 			# print("%s is in ROBOT group" % [item])
-			item.set_meta("manual_control", item.robot.manual_control)
+			item.set_meta("manual_control", item.control.manual)
 		for child in item.get_children():
 			if child.is_in_group("PYTHON"):
 				item.set_meta("python_bridge_activate", child.activate)
@@ -169,6 +173,8 @@ func load_scene(path):
 		var part_name = item.get_node_or_null("%PartName")
 		if part_name:
 			part_name.text = item.name
+		if item.is_in_group("ROBOTS"):
+			item.control.manual = item.get_meta("manual_control", true)
 		for child in item.get_children():
 			if child.is_in_group("PYTHON"):
 				child.port = item.get_meta("python_bridge_port", 4242)
@@ -263,12 +269,9 @@ func _on_ground_mouse_exited():
 
 func _on_editable_block_input_event(_camera, event: InputEvent, _mouse_position, _normal, _shape_idx, node):
 	if event.is_action_pressed("EDIT"):
-		var base_link: RigidBody3D
-		if node.owner.get_child(0) is RigidBody3D:
-			base_link = node.owner.get_child(0)
-		else:
-			return
-		show_part_parameters(base_link)
+		var asset_selected: Node3D = node.owner
+		if asset_selected.is_in_group("ASSETS"):
+			show_part_parameters(asset_selected)
 
 func _on_editable_mouse_entered():
 	owner.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -319,8 +322,8 @@ func _on_open_script_button_pressed() -> void:
 
 func _on_keys_control_check_toggled(button_pressed: bool) -> void:
 	if item_selected == null: return
-	if item_selected.is_in_group("ROBOT"):
-		item_selected.robot.manual_control = button_pressed
+	if item_selected.is_in_group("ROBOTS"):
+		item_selected.control.manual = button_pressed
 
 func _on_confirm_delete_dialog_confirmed() -> void:
 	if scene:

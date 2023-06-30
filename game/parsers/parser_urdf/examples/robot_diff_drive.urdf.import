@@ -1,0 +1,16 @@
+[remap]
+
+importer="urdf.importer"
+type="PackedScene"
+uid="uid://cw45rcvujlvlf"
+path="res://.godot/imported/robot_diff_drive.urdf-7d7a76ebe2dd90bcc254d6ce15be4fe9.tscn"
+
+[deps]
+
+source_file="res://game/parsers/parser_urdf/examples/robot_diff_drive.urdf"
+dest_files=["res://.godot/imported/robot_diff_drive.urdf-7d7a76ebe2dd90bcc254d6ce15be4fe9.tscn"]
+
+[params]
+
+switch_yz=false
+scale=10.0

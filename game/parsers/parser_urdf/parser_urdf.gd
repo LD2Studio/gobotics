@@ -802,7 +802,8 @@ func get_root_node(urdf_data) -> Node3D:
 					var value = parser.get_attribute_value(idx)
 					attrib[name] = value
 				root_node.name = attrib.name
-				root_node.add_to_group("ITEMS", true)
+				root_node.add_to_group("ASSETS", true)
+				root_node.add_to_group("ROBOTS", true)
 				break
 				
 	return root_node
@@ -824,10 +825,10 @@ func _process(delta: float):
 		match _gobotics.control.type:
 			"diff_drive":
 				_script.source_code += """
-var control : DiffDriveExt
+var control : RobotDiffDriveExt
 """
 				ready_script += """
-	control = DiffDriveExt.new(%%%s, %%%s, %f)""" % [_gobotics.control.right_wheel_joint,
+	control = RobotDiffDriveExt.new(%%%s, %%%s, %f)""" % [_gobotics.control.right_wheel_joint,
 													 _gobotics.control.left_wheel_joint,
 													float(_gobotics.control.max_speed)]
 

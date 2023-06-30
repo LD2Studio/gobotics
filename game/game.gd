@@ -101,5 +101,5 @@ func fill_assets_list():
 	assets_list.clear()
 #	print(database.assets)
 	for asset in database.assets:
-		if asset.group == "ITEMS":
+		if asset.group == "ITEMS" or asset.group == "ASSETS":
 			assets_list.add_item(asset.name)

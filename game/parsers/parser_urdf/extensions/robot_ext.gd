@@ -1,3 +1,3 @@
 extends RefCounted
-class_name AssetExt
+class_name RobotExt
 

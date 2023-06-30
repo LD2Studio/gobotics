@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://ccy058h2et4uf"]
+
+[ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_1ul6h"]
+[ext_resource type="PackedScene" uid="uid://cw45rcvujlvlf" path="res://game/parsers/parser_urdf/examples/robot_diff_drive.urdf" id="2_u2114"]
+[ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="3_53itu"]
+
+[node name="SandBox" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.935475, 0.146056, -0.321799, 0.131205, 0.701969, 0.700018, 0.328134, -0.697071, 0.637511, 0, 2.0046, 9.21941)
+
+[node name="ControlCamera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.927435, 0.373985, 0, -0.373985, 0.927435, 0, 3.70431, 9.18621)
+script = ExtResource("1_1ul6h")
+action_mouse_button = "LEFT_BUTTON"
+zoom_speed = 1.5
+zoom_out = 30.0
+
+[node name="DiffDriveRobot" parent="." instance=ExtResource("2_u2114")]
+
+[node name="DarkEnvironment" parent="." instance=ExtResource("3_53itu")]
