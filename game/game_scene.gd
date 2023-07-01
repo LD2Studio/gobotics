@@ -69,7 +69,7 @@ func connect_editable():
 			node.mouse_exited.connect(_on_editable_mouse_exited)
 			
 func show_part_parameters(asset_selected: Node3D):
-	print_debug(asset_selected)
+#	print_debug(asset_selected)
 	item_selected = asset_selected
 	if not asset_selected.get_child(0) is RigidBody3D: return
 	var base_rigid = asset_selected.get_child(0)
@@ -341,3 +341,7 @@ func _on_python_script_finished(new_text: String):
 func _on_builtin_script_check_box_toggled(button_pressed: bool) -> void:
 	if item_selected == null: return
 	item_selected.builtin = button_pressed
+
+func _on_frame_check_box_toggled(button_pressed):
+	for node in get_tree().get_nodes_in_group("FRAME"):
+		node.visible = button_pressed

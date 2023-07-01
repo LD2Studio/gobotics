@@ -17,8 +17,7 @@ var current_filename: String:
 			%SceneFileName.text = "No Scene"
 		else:
 			%SceneFileName.text = "%s" % [current_filename.get_file().get_basename()]
-
-var connected_joystick: Array[int]
+			
 var database: GoboticsDB = GoboticsDB.new()
 
 func _enter_tree():
@@ -30,12 +29,10 @@ func _ready():
 	%TitleApp.text = "%s v%s" % [app_name, version]
 	
 	fill_assets_list()
-	connected_joystick = Input.get_connected_joypads()
 	%SaveSceneButton.disabled = true
 	%SaveSceneAsButton.disabled = true
 	object_inspector.visible = false
 	current_filename = ""
-#	print_debug(connected_joystick)
 
 func _on_new_scene_button_pressed() -> void:
 	%NewSceneDialog.popup_centered(Vector2i(200, 300))

@@ -27,11 +27,11 @@ enum Tag {
 func parse(filename: String):
 	clear_buffer()
 	_filename = filename
+	var root_node = get_root_node(filename)
 	load_gobotics_params(filename)
 	load_materials(filename)
 	load_links(filename)
 	load_joints(filename)
-	var root_node = get_root_node(filename)
 	root_node.add_child(get_kinematics_scene())
 	kinematics_scene_owner_of(root_node)
 	add_script_to(root_node)
@@ -41,10 +41,13 @@ func parse_buffer(buffer: String):
 	clear_buffer()
 	var urdf_pack : PackedByteArray = buffer.to_ascii_buffer()
 #	print("urdf pack: ", urdf_pack)
+	var err: int
 	var root_node = get_root_node(urdf_pack)
 	load_gobotics_params(urdf_pack)
 	load_materials(urdf_pack)
-	load_links(urdf_pack)
+	err = load_links(urdf_pack)
+	if err:
+		pass
 	load_joints(urdf_pack)
 	var base_link = get_kinematics_scene()
 	if base_link:
@@ -55,6 +58,51 @@ func parse_buffer(buffer: String):
 	add_script_to(root_node)
 #	var urdf_code = urdf_pack.get_string_from_ascii()
 #	print("urdf code: ", urdf_code)
+	return root_node
+	
+func get_root_node(urdf_data) -> Node3D:
+	var err
+	if urdf_data is PackedByteArray:
+		err = parser.open_buffer(urdf_data)
+	elif urdf_data is String:
+		err = parser.open(urdf_data)
+	else:
+		printerr("URDF format error")
+		return null
+	if err:
+		printerr("Error opening URDF file: ", err)
+		return
+		
+	var root_node := Node3D.new()
+	while true:
+		if parser.read() != OK: # Ending parse XML file
+			break
+		var type = parser.get_node_type()
+		if type == XMLParser.NODE_ELEMENT:
+			var node_name = parser.get_node_name()
+			if node_name == "robot":
+				var attribut_count = parser.get_attribute_count()
+				var attrib: Dictionary
+				for idx in attribut_count:
+					var name = parser.get_attribute_name(idx)
+					var value = parser.get_attribute_value(idx)
+					attrib[name] = value
+				root_node.name = attrib.name
+				root_node.add_to_group("ASSETS", true)
+				root_node.add_to_group("ROBOTS", true)
+				break
+				
+			if node_name == "asset":
+				var attribut_count = parser.get_attribute_count()
+				var attrib: Dictionary
+				for idx in attribut_count:
+					var name = parser.get_attribute_name(idx)
+					var value = parser.get_attribute_value(idx)
+					attrib[name] = value
+				root_node.name = attrib.name
+				root_node.add_to_group("ASSETS", true)
+				break
+				
 	return root_node
 	
 func load_gobotics_params(urdf_data):
@@ -222,16 +270,16 @@ func load_materials(urdf_data):
 
 #	print("materials: ", _materials)
 
-func load_links(urdf_data):
+func load_links(urdf_data) -> int:
 	var err
 	if urdf_data is String:
 		err = parser.open(urdf_data)
 	elif urdf_data is PackedByteArray:
 		err = parser.open_buffer(urdf_data)
-	else: return null
+	else: return ERR_DOES_NOT_EXIST
 	if err:
 		printerr("Error opening URDF file: ", err)
-		return
+		return ERR_FILE_CANT_OPEN
 		
 	var link_attrib: Dictionary # {"name" , "node"}
 	var current_visual: MeshInstance3D
@@ -257,13 +305,25 @@ func load_links(urdf_data):
 						link_attrib[name] = value
 						
 					var node := RigidBody3D.new()
-					node.name = link_attrib.name
+					if "name" in link_attrib:
+						node.name = link_attrib.name
+					else:
+						printerr("No name for link!")
+						return ERR_PARSE_ERROR
+						
 					node.add_to_group("SELECT", true)
+					if "xyz" in link_attrib:
+						var xyz := Vector3.ZERO
+						var xyz_arr = link_attrib.xyz.split_floats(" ")
+						xyz.x = xyz_arr[0]
+						xyz.y = xyz_arr[2]
+						xyz.z = -xyz_arr[1]
+						node.position = xyz * scale
 					link_attrib.node = node
 					## Add frame gizmo
 					var frame_visual := MeshInstance3D.new()
 					frame_visual.name = link_attrib.name + "_frame"
-					frame_visual.add_to_group("LINKS", true)
+					frame_visual.add_to_group("FRAME", true)
 					frame_visual.mesh = _frame_mesh
 					frame_visual.scale = Vector3.ONE * scale
 					frame_visual.visible = false
@@ -522,12 +582,13 @@ func load_links(urdf_data):
 					current_tag = Tag.NONE
 				
 #	print("links: ", JSON.stringify(_links, "\t", false))
+	return OK
 
 func load_gltf(current_visual: MeshInstance3D, attrib: Dictionary, current_tag):
 	
 	if Engine.is_editor_hint():
 		var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
-		print_debug(scene_filename)
+#		print_debug(scene_filename)
 #		print("Editor")
 		var scene: PackedScene = load(scene_filename)
 #		print_debug(scene)
@@ -547,14 +608,14 @@ func load_gltf(current_visual: MeshInstance3D, attrib: Dictionary, current_tag):
 							current_visual.mesh = mesh
 							current_visual.scale = Vector3.ONE * scale
 						
-					if prop_name == "transform":
-						var tr: Transform3D = scene_state.get_node_property_value(idx, prop_idx)
-#						print("tranform: ", tr)
-						var xyz: Vector3 = tr.origin
-						var rpy: Vector3 = tr.basis.get_euler()
-						if current_tag == Tag.VISUAL:
-							current_visual.position = xyz * scale
-							current_visual.rotation = rpy
+#					if prop_name == "transform":
+#						var tr: Transform3D = scene_state.get_node_property_value(idx, prop_idx)
+##						print("tranform: ", tr)
+#						var xyz: Vector3 = tr.origin
+#						var rpy: Vector3 = tr.basis.get_euler()
+#						if current_tag == Tag.VISUAL:
+#							current_visual.position = xyz * scale
+#							current_visual.rotation = rpy
 	else:
 		var gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
 #		print("gltf filename: ", gltf_filename)
@@ -574,10 +635,16 @@ func load_gltf(current_visual: MeshInstance3D, attrib: Dictionary, current_tag):
 				var mesh: ArrayMesh = imported_mesh.get_mesh()
 				if current_tag == Tag.VISUAL:
 					current_visual.mesh = mesh
-					current_visual.position = nodes[idx].position * scale
-					current_visual.scale = Vector3.ONE * scale
+#					current_visual.position = nodes[idx].position * scale
+					if "scale" in attrib:
+						current_visual.scale = Vector3.ONE * scale * float(attrib.scale)
+					else:
+						current_visual.scale = Vector3.ONE * scale
 					break
 			idx += 1
+			
+func add_selection_area():
+	pass
 		
 func load_joints(urdf_data):
 	var err
@@ -774,39 +841,7 @@ func add_owner(owner_node, nodes: Array):
 		if node.get_child_count():
 			add_owner(owner_node, node.get_children())
 
-func get_root_node(urdf_data) -> Node3D:
-	var err
-	if urdf_data is PackedByteArray:
-		err = parser.open_buffer(urdf_data)
-	elif urdf_data is String:
-		err = parser.open(urdf_data)
-	else:
-		printerr("URDF format error")
-		return null
-	if err:
-		printerr("Error opening URDF file: ", err)
-		return
-		
-	var root_node := Node3D.new()
-	while true:
-		if parser.read() != OK: # Ending parse XML file
-			break
-		var type = parser.get_node_type()
-		if type == XMLParser.NODE_ELEMENT:
-			var node_name = parser.get_node_name()
-			if node_name == "robot":
-				var attribut_count = parser.get_attribute_count()
-				var attrib: Dictionary
-				for idx in attribut_count:
-					var name = parser.get_attribute_name(idx)
-					var value = parser.get_attribute_value(idx)
-					attrib[name] = value
-				root_node.name = attrib.name
-				root_node.add_to_group("ASSETS", true)
-				root_node.add_to_group("ROBOTS", true)
-				break
-				
-	return root_node
+
 
 func add_script_to(root_node: Node3D):
 	var ready_script = """

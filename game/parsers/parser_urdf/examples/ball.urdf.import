@@ -1,0 +1,16 @@
+[remap]
+
+importer="urdf.importer"
+type="PackedScene"
+uid="uid://jykkwaubqq0p"
+path="res://.godot/imported/ball.urdf-7ea0c98617f95f516a040d66bff3f541.tscn"
+
+[deps]
+
+source_file="res://game/parsers/parser_urdf/examples/ball.urdf"
+dest_files=["res://.godot/imported/ball.urdf-7ea0c98617f95f516a040d66bff3f541.tscn"]
+
+[params]
+
+switch_yz=false
+scale=10.0

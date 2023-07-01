@@ -135,11 +135,11 @@ theme_override_font_sizes/font_size = 12
 button_pressed = true
 text = "Collision"
 
-[node name="LinkCheckBox" type="CheckBox" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
+[node name="FrameCheckBox" type="CheckBox" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Link"
+text = "Frame"
 
 [node name="JointCheckBox" type="CheckBox" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
 unique_name_in_owner = true
@@ -152,5 +152,5 @@ text = "Joint"
 [connection signal="text_changed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/URDFCodeEdit" to="." method="_on_urdf_code_edit_text_changed"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/VisualCheckBox" to="." method="_on_visual_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/CollisionCheckBox" to="." method="_on_collision_check_box_toggled"]
-[connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/LinkCheckBox" to="." method="_on_link_check_box_toggled"]
+[connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/FrameCheckBox" to="." method="_on_link_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/JointCheckBox" to="." method="_on_joint_check_box_toggled"]

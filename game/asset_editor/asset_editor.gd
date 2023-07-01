@@ -36,7 +36,7 @@ func _ready():
 		urdf_code_edit.text = asset_node.get_meta("urdf_code", urdf_robot_template)
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)
-	show_link_frame(%LinkCheckBox.button_pressed)
+	show_link_frame(%FrameCheckBox.button_pressed)
 	show_joint_frame(%JointCheckBox.button_pressed)
 
 func _on_save_button_pressed():
@@ -57,7 +57,8 @@ func _on_generate_button_pressed() -> void:
 #	print("urdf code: ", urdf_code)
 	var root_node : Node3D = urdf_parser.parse_buffer(urdf_code)
 #	print("root node: ", root_node)
-	root_node.set_meta("urdf_code", urdf_code)
+	if root_node:
+		root_node.set_meta("urdf_code", urdf_code)
 	
 	asset_scene = PackedScene.new()
 	var result = asset_scene.pack(root_node)
@@ -69,7 +70,7 @@ func _on_generate_button_pressed() -> void:
 		%SaveAssetButton.disabled = true
 		
 	for child in %PreviewScene.get_children():
-		if child.is_in_group("ITEMS"):
+		if child.is_in_group("ASSETS"):
 			%PreviewScene.remove_child(child)
 			child.queue_free()
 	asset_node = asset_scene.instantiate()
@@ -78,7 +79,7 @@ func _on_generate_button_pressed() -> void:
 	
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)
-	show_link_frame(%LinkCheckBox.button_pressed)
+	show_link_frame(%FrameCheckBox.button_pressed)
 	show_joint_frame(%JointCheckBox.button_pressed)
 	
 func _on_urdf_code_edit_text_changed() -> void:
@@ -108,7 +109,7 @@ func show_collision_shape(enable: bool):
 		
 func show_link_frame(enable: bool):
 	var scene_tree : SceneTree = preview_viewport.get_tree()
-	for node in scene_tree.get_nodes_in_group("LINKS"):
+	for node in scene_tree.get_nodes_in_group("FRAME"):
 		node.visible = enable
 		
 func show_joint_frame(enable: bool):

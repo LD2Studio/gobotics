@@ -278,7 +278,7 @@ handle_input_locally = false
 msaa_3d = 2
 screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(1378, 800)
+size = Vector2i(2, 2)
 render_target_update_mode = 4
 
 [node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
@@ -480,6 +480,26 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 
+[node name="OptionsContainer" type="MarginContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -41.0
+offset_right = 88.0
+grow_vertical = 0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="OptionsPanel" type="PanelContainer" parent="SplitContainer/3DViewContainer/SceneViewport/OptionsContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/OptionsContainer/OptionsPanel"]
+layout_mode = 2
+
+[node name="FrameCheckBox" type="CheckBox" parent="SplitContainer/3DViewContainer/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer"]
+layout_mode = 2
+text = "Frame"
+
 [node name="GameScene" type="Node3D" parent="SplitContainer/3DViewContainer/SceneViewport"]
 unique_name_in_owner = true
 script = ExtResource("4_htgp6")
@@ -549,5 +569,6 @@ offset_bottom = 8.0
 [connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ToolBar/RunStopButton" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
 [connection signal="pressed" from="SplitContainer/3DViewContainer/SceneViewport/ToolBar/ResetButton" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_reset_button_pressed"]
 [connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ToolBar/ViewButton" to="." method="_on_view_button_toggled"]
+[connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/FrameCheckBox" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_frame_check_box_toggled"]
 [connection signal="confirmed" from="SplitContainer/3DViewContainer/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_confirm_delete_dialog_confirmed"]
 [connection signal="confirmed" from="SplitContainer/3DViewContainer/SceneViewport/GameScene/ScriptDialog" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_script_dialog_confirmed"]
