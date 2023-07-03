@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://bfor6pdlm34in"]
+
+[resource]
+resource_name = "Blue"
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(0, 0.0781299, 0.906332, 1)

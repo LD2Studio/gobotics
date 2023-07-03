@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://bluqb6b845c18"]
+
+[resource]
+resource_name = "White"
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(0.906332, 0.906332, 0.906332, 1)

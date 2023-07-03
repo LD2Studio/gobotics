@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://brjoeoxt3rbr6"]
+
+[resource]
+resource_name = "Red"
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(0.906332, 0.0582089, 0, 1)

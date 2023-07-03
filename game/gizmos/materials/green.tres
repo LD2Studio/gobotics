@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://b04wb0j0bsgfa"]
+
+[resource]
+resource_name = "Green"
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(0.0379035, 0.906332, 0, 1)

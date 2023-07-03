@@ -104,15 +104,12 @@ func show_part_parameters(asset_selected: Node3D):
 	The property is shown in the EditorInspector (default).
 	"""
 	
-	if script:
-		for prop in script.get_script_property_list():
-			if prop.usage == 4102:
-				pass
-#				print(prop.name)
-	
 	if item_selected.is_in_group("ROBOTS"):
-		%KeysControlContainer.visible = true
-		%KeysControlCheck.set_pressed_no_signal(item_selected.control.manual)
+		if item_selected.get("control"):
+			%KeysControlContainer.visible = true
+			%KeysControlCheck.set_pressed_no_signal(item_selected.control.manual)
+		else:
+			%KeysControlContainer.visible = false
 	else:
 		%KeysControlContainer.visible = false
 

@@ -485,7 +485,7 @@ func load_links(urdf_data) -> int:
 								if not "object" in attrib:
 									printerr("Object attribut missing!")
 									continue
-								load_gltf(current_visual, attrib, current_tag)
+								load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag)
 
 							"dae":
 								pass
@@ -584,7 +584,7 @@ func load_links(urdf_data) -> int:
 #	print("links: ", JSON.stringify(_links, "\t", false))
 	return OK
 
-func load_gltf(current_visual: MeshInstance3D, attrib: Dictionary, current_tag):
+func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag):
 	
 	if Engine.is_editor_hint():
 		var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
@@ -635,11 +635,30 @@ func load_gltf(current_visual: MeshInstance3D, attrib: Dictionary, current_tag):
 				var mesh: ArrayMesh = imported_mesh.get_mesh()
 				if current_tag == Tag.VISUAL:
 					current_visual.mesh = mesh
-#					current_visual.position = nodes[idx].position * scale
+					if "transform" in attrib and attrib.transform == "true":
+						current_visual.position = nodes[idx].position * scale
 					if "scale" in attrib:
 						current_visual.scale = Vector3.ONE * scale * float(attrib.scale)
 					else:
 						current_visual.scale = Vector3.ONE * scale
+					break
+				elif current_tag == Tag.COLLISION:
+					pass
+					var mdt = MeshDataTool.new()
+					mdt.create_from_surface(mesh, 0)
+					for i in range(mdt.get_vertex_count()):
+						var vertex = mdt.get_vertex(i)
+						vertex *= scale
+						# Save your change.
+						mdt.set_vertex(i, vertex)
+					mesh.clear_surfaces()
+					mdt.commit_to_surface(mesh)
+					var shape = mesh.create_convex_shape()
+					current_collision.shape = shape
+					if "transform" in attrib and attrib.transform == "true":
+						current_collision.position = nodes[idx].position * scale
+					var debug_mesh: ArrayMesh = shape.get_debug_mesh()
+					current_col_debug.mesh = debug_mesh
 					break
 			idx += 1
 			
@@ -781,34 +800,27 @@ func get_kinematics_scene():
 #		print("add child %s to parent %s" % [child_node, parent_node])
 		parent_node.add_child(child_node)
 		var joint_node : Joint3D
-		
+		if not "type" in joint:
+			printerr("joint %s has no type" % joint.name)
+			return null
+			
 		match joint.type:
 			"fixed":
-				if "extra" in joint:
-					if joint.extra == "free_wheel":
-						joint_node = PinJoint3D.new()
-					else:
-						joint_node = Generic6DOFJoint3D.new()
-				else:
-					joint_node = Generic6DOFJoint3D.new()
-					joint_node.set_param_x(Generic6DOFJoint3D.PARAM_LINEAR_RESTITUTION, 0.1)
-					joint_node.set_param_y(Generic6DOFJoint3D.PARAM_LINEAR_RESTITUTION, 0.1)
-					joint_node.set_param_z(Generic6DOFJoint3D.PARAM_LINEAR_RESTITUTION, 0.1)
-					## Add frame gizmo
-#					var frame_visual := MeshInstance3D.new()
-#					frame_visual.name = joint.name + "_frame"
-#					frame_visual.add_to_group("JOINTS", true)
-#					frame_visual.mesh = _frame_mesh
-#					frame_visual.scale = Vector3.ONE * scale
-#					frame_visual.visible = false
-#					joint_node.add_child(frame_visual)
+				joint_node = Generic6DOFJoint3D.new()
 
+			"pin":
+				joint_node = PinJoint3D.new()
+				
 			"continuous":
 				joint_node = HingeJoint3D.new()
 				if "limit" in joint:
 					if "effort" in joint.limit:
 						joint_node.set_param(HingeJoint3D.PARAM_MOTOR_MAX_IMPULSE, float(joint.limit.effort))
-				if joint.axis != Vector3.UP:
+				if not "axis" in joint:
+#					printerr("No axis for %s" % joint.name)
+					var new_basis = Basis.looking_at(Vector3(1,0,0))
+					joint_node.transform.basis = new_basis
+				elif joint.axis != Vector3.UP:
 					var new_basis = Basis.looking_at(joint.axis)
 					joint_node.transform.basis = new_basis
 #				joint_node.rotate_x(-PI/2) # Y axis -> Z axis
@@ -853,6 +865,7 @@ func _process(delta: float):
 	pass"""
 	
 	_script.source_code = """extends Node3D
+var dummy = 1
 """
 	if "control" in _gobotics and "type" in _gobotics.control:
 #		print_debug("type: ", _gobotics.control.type)
