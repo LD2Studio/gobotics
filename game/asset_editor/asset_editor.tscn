@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://bcv1hfrfva2qb"]
+[gd_scene load_steps=12 format=3 uid="uid://bcv1hfrfva2qb"]
 
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_d4jh8"]
 [ext_resource type="Script" path="res://game/asset_editor/asset_editor.gd" id="1_j1den"]
 [ext_resource type="Texture2D" uid="uid://cb8t7hq1qrfxx" path="res://game/icons/Save.svg" id="2_ave4i"]
 [ext_resource type="Texture2D" uid="uid://ht3bl7ryb38x" path="res://game/icons/VehicleBody3D.svg" id="2_cuuba"]
 [ext_resource type="FontFile" uid="uid://dwnwhuwmtxwoa" path="res://game/fonts/UbuntuMono-Regular.ttf" id="4_md26q"]
+[ext_resource type="Script" path="res://game/asset_editor/URDFCodeEdit.gd" id="5_gmqxa"]
 [ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="6_dx6hk"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hdc4v"]
@@ -47,9 +48,9 @@ mouse_force_pass_scroll_events = false
 
 [node name="Label" type="Label" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-text = "  Asset Name : "
+text = " Asset path : "
 
-[node name="AssetNameEdit" type="LineEdit" parent="AssetMargin/VBoxContainer/HBoxContainer"]
+[node name="AssetPathEdit" type="LineEdit" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
@@ -81,8 +82,21 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_colors/background_color = Color(0.12549, 0.12549, 0.12549, 1)
 theme_override_fonts/font = ExtResource("4_md26q")
 theme_override_font_sizes/font_size = 14
+gutters_draw_line_numbers = true
+code_completion_enabled = true
+auto_brace_completion_enabled = true
+auto_brace_completion_pairs = {
+"\"": "\"",
+"'": "'",
+"(": ")",
+"<": ">",
+"[": "]",
+"{": "}"
+}
+script = ExtResource("5_gmqxa")
 
 [node name="PreviewContainer" type="SubViewportContainer" parent="AssetMargin/VBoxContainer/HSplitContainer"]
 layout_mode = 2
@@ -147,6 +161,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Joint"
 
+[node name="OverwriteConfirmationDialog" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+dialog_text = "The file already exists. Do you want to overwrite the file? "
+
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/GenerateButton" to="." method="_on_generate_button_pressed"]
 [connection signal="text_changed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/URDFCodeEdit" to="." method="_on_urdf_code_edit_text_changed"]
@@ -154,3 +172,4 @@ text = "Joint"
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/CollisionCheckBox" to="." method="_on_collision_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/FrameCheckBox" to="." method="_on_link_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/JointCheckBox" to="." method="_on_joint_check_box_toggled"]
+[connection signal="confirmed" from="OverwriteConfirmationDialog" to="." method="_on_overwrite_confirmation_dialog_confirmed"]

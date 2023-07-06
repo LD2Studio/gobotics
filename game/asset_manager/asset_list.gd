@@ -79,13 +79,14 @@ func _on_item_activated(index):
 	edit_asset(asset_name)
 	
 func edit_asset(asset_name: String):
-	var asset_path = database.get_scene(asset_name)
-#	print("asset path: ", asset_path)
-	if asset_path.get_extension() != "tscn": return
+	var asset_filename = database.get_scene(asset_name)
+#	print_debug("asset filename: ", asset_filename)
+	if asset_filename.get_extension() != "tscn": return
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
-	asset_editor.asset_path = asset_path
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
+	asset_editor.asset_filename = asset_filename
+#	asset_editor.asset_path = asset_filename
 	%AssetEditorDialog.add_child(asset_editor)
 	%AssetEditorDialog.popup_centered(Vector2i(700, 500))
 

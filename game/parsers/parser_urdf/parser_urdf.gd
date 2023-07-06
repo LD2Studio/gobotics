@@ -2,6 +2,7 @@ extends RefCounted
 class_name URDFParser
 
 var scale: float = 1.0
+var asset_user_path: String
 var packages_path: String
 var parser = XMLParser.new()
 
@@ -28,6 +29,7 @@ func parse(filename: String):
 	clear_buffer()
 	_filename = filename
 	var root_node = get_root_node(filename)
+	if root_node == null: return
 	load_gobotics_params(filename)
 	load_materials(filename)
 	load_links(filename)
@@ -43,6 +45,7 @@ func parse_buffer(buffer: String):
 #	print("urdf pack: ", urdf_pack)
 	var err: int
 	var root_node = get_root_node(urdf_pack)
+	if root_node == null: return
 	load_gobotics_params(urdf_pack)
 	load_materials(urdf_pack)
 	err = load_links(urdf_pack)
@@ -52,10 +55,10 @@ func parse_buffer(buffer: String):
 	var base_link = get_kinematics_scene()
 	if base_link:
 		root_node.add_child(base_link)
+		kinematics_scene_owner_of(root_node)
+		add_script_to(root_node)
 	else:
 		printerr("No base link!")
-	kinematics_scene_owner_of(root_node)
-	add_script_to(root_node)
 #	var urdf_code = urdf_pack.get_string_from_ascii()
 #	print("urdf code: ", urdf_code)
 	return root_node
@@ -63,6 +66,7 @@ func parse_buffer(buffer: String):
 func get_root_node(urdf_data) -> Node3D:
 	var err
 	if urdf_data is PackedByteArray:
+		
 		err = parser.open_buffer(urdf_data)
 	elif urdf_data is String:
 		err = parser.open(urdf_data)
@@ -70,8 +74,11 @@ func get_root_node(urdf_data) -> Node3D:
 		printerr("URDF format error")
 		return null
 	if err:
+		if err == ERR_INVALID_DATA:
+			printerr("XML no valid")
+			return null
 		printerr("Error opening URDF file: ", err)
-		return
+		return null
 		
 	var root_node := Node3D.new()
 	while true:
@@ -305,7 +312,7 @@ func load_links(urdf_data) -> int:
 						link_attrib[name] = value
 						
 					var node := RigidBody3D.new()
-					if "name" in link_attrib:
+					if "name" in link_attrib and link_attrib.name != "":
 						node.name = link_attrib.name
 					else:
 						printerr("No name for link!")
@@ -617,8 +624,15 @@ func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape
 #							current_visual.position = xyz * scale
 #							current_visual.rotation = rpy
 	else:
-		var gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
-#		print("gltf filename: ", gltf_filename)
+		var gltf_filename: String
+#		print_debug("asset_user_path: ", asset_user_path)
+		if attrib.filename.begins_with("package://"):
+			gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
+		elif attrib.filename.begins_with("user://"):
+			gltf_filename = asset_user_path.path_join(attrib.filename.trim_prefix("user://"))
+#			print("gltf filename: ", gltf_filename)
+		else:
+			printerr("package or user path!")
 		var gltf_res := GLTFDocument.new()
 		var gltf_state = GLTFState.new()
 		var err = gltf_res.append_from_file(gltf_filename, gltf_state)

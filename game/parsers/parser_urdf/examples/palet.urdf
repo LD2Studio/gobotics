@@ -1,0 +1,25 @@
+<asset name="CreamCake">
+	<link name="Cake">
+	<inertial>
+		<mass value="0.1"/>
+	</inertial>
+	<visual>
+		<origin xyz="0 0 0.01"/>
+		<geometry>
+			<mesh filename="user://gltf/cake_layers.glb" object="CreamLayer"/>
+		</gemetry>
+	</visual>
+	<collision>
+		<origin xyz="0 0 0.01"/>
+		<geometry>
+			<cylinder radius="0.06" length="0.018"/>
+		</gemetry>
+	</collision>
+	<collision>
+		<origin xyz="0 0 0.01"/>
+		<geometry>
+			<box size="0.08 0.08 0.02"/>
+		</gemetry>
+	</collision>
+	</link>
+</asset>
