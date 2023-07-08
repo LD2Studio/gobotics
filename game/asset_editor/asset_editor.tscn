@@ -30,6 +30,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_hdc4v")
 script = ExtResource("1_j1den")
+asset_filename = "res://assets/noname.asset"
 
 [node name="AssetMargin" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -60,6 +61,10 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Save Asset"
 icon = ExtResource("2_ave4i")
+
+[node name="OverwriteConfirmationDialog" type="ConfirmationDialog" parent="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton"]
+unique_name_in_owner = true
+dialog_text = "The file already exists. Do you want to overwrite the file? "
 
 [node name="GenerateButton" type="Button" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -161,15 +166,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Joint"
 
-[node name="OverwriteConfirmationDialog" type="ConfirmationDialog" parent="."]
-unique_name_in_owner = true
-dialog_text = "The file already exists. Do you want to overwrite the file? "
-
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton" to="." method="_on_save_button_pressed"]
+[connection signal="confirmed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton/OverwriteConfirmationDialog" to="." method="_on_overwrite_confirmation_dialog_confirmed"]
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/GenerateButton" to="." method="_on_generate_button_pressed"]
 [connection signal="text_changed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/URDFCodeEdit" to="." method="_on_urdf_code_edit_text_changed"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/VisualCheckBox" to="." method="_on_visual_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/CollisionCheckBox" to="." method="_on_collision_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/FrameCheckBox" to="." method="_on_link_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/JointCheckBox" to="." method="_on_joint_check_box_toggled"]
-[connection signal="confirmed" from="OverwriteConfirmationDialog" to="." method="_on_overwrite_confirmation_dialog_confirmed"]

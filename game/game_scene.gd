@@ -135,7 +135,8 @@ func save_scene(path: String):
 			item.set_meta("transform", item.get_child(0).global_transform)
 		if item.is_in_group("ROBOTS"):
 			# print("%s is in ROBOT group" % [item])
-			item.set_meta("manual_control", item.control.manual)
+			if item.get("control"):
+				item.set_meta("manual_control", item.control.manual)
 		for child in item.get_children():
 			if child.is_in_group("PYTHON"):
 				item.set_meta("python_bridge_activate", child.activate)
@@ -171,7 +172,8 @@ func load_scene(path):
 		if part_name:
 			part_name.text = item.name
 		if item.is_in_group("ROBOTS"):
-			item.control.manual = item.get_meta("manual_control", true)
+			if item.get("control"):
+				item.control.manual = item.get_meta("manual_control", true)
 		for child in item.get_children():
 			if child.is_in_group("PYTHON"):
 				child.port = item.get_meta("python_bridge_port", 4242)

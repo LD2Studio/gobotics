@@ -14,7 +14,7 @@ func add_assets(search_path: String):
 	# Browse each scene
 	for file in files_tscn:
 #		print(file)
-		var scene: PackedScene = load(search_path.path_join(file))
+		var scene: PackedScene = ResourceLoader.load(search_path.path_join(file), "PackedScene")
 #		print("Loading ", scene)
 		if scene == null:
 			continue
@@ -46,9 +46,9 @@ func add_assets(search_path: String):
 	for search_dir in search_dirs:
 		add_assets(search_dir)
 		
-	var err = ResourceSaver.save(self, "res://assets/assets_db.tres")
-	if err:
-		printerr("Database not saving!")
+#	var err = ResourceSaver.save(self, "res://assets/assets_db.tres")
+#	if err:
+#		printerr("Database not saving!")
 		
 func get_scene(name: String):
 	for asset in assets:

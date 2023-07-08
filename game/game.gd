@@ -1,6 +1,6 @@
 extends Control
 
-@export var pck_dir: String = "assets"
+@export var asset_dir: String = "assets"
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
@@ -71,7 +71,7 @@ func _on_clear_button_pressed() -> void:
 	
 func load_pck():
 	var executable_path: String = OS.get_executable_path().get_base_dir()
-	var assets_dir: String = executable_path.path_join(pck_dir)
+	var assets_dir: String = executable_path.path_join(asset_dir)
 	var files = Array(DirAccess.get_files_at(assets_dir))
 	var pck_files = files.filter(func(file): return file.get_extension() == "pck")
 	var zip_files = files.filter(func(file): return file.get_extension() == "zip")
@@ -90,9 +90,18 @@ func load_pck():
 func load_assets_in_database():
 	database.assets.clear()
 	database.add_assets("res://game/assets")
-	if not OS.has_feature("editor"):
-		load_pck()
-	database.add_assets("res://" + pck_dir)
+#	if not OS.has_feature("editor"):
+#		load_pck()
+	if OS.has_feature("editor"):
+		if not DirAccess.dir_exists_absolute("res://".path_join(asset_dir)):
+			print("[ERROR] Asset Directory not exists")
+		else:
+			database.add_assets("res://".path_join(asset_dir))
+	else:
+		if not DirAccess.dir_exists_absolute(OS.get_executable_path().get_base_dir().path_join(asset_dir)):
+			print("[ERROR] Asset Directory not exists")
+		else:
+			database.add_assets(OS.get_executable_path().get_base_dir().path_join(asset_dir))
 
 func fill_assets_list():
 	assets_list.clear()

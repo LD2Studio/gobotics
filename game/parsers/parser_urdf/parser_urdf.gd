@@ -10,6 +10,7 @@ var _materials: Array
 var _links: Array
 var _joints: Array
 var _gobotics: Dictionary
+var _root_tag: int
 var _script := GDScript.new()
 var _filename : String
 var _frame_mesh : ArrayMesh = load("res://game/gizmos/frame_arrows.res")
