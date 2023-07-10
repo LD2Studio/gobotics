@@ -23,7 +23,7 @@ func add_assets(search_path: String):
 #	print("[Database] search path: ", search_path)
 	var files = Array(DirAccess.get_files_at(search_path))
 #	print("files: ", files)
-	if is_asset_ext:
+	if true:
 		# Filter asset files
 		var asset_files: Array = files.filter(func(file): return file.get_extension() == "asset")
 #		print("Asset files: ", asset_files)
@@ -50,7 +50,13 @@ func add_assets(search_path: String):
 					})
 			reader.close()
 			
-			
+		# search sub-folders
+		var dirs = Array(DirAccess.get_directories_at(search_path))
+	#	print_debug("dirs: ", dirs)
+		var search_dirs = dirs.map(func(dir): return search_path.path_join(dir))
+	#	print("search dirs: ", search_dirs)
+		for search_dir in search_dirs:
+			add_assets(search_dir)
 	else:
 		# Filter tscn files
 		var files_tscn: Array = files.filter(func(file): return file.get_extension() == "tscn")

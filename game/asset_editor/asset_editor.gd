@@ -1,7 +1,7 @@
 extends PanelContainer
 
 ## If true, Asset extension is .asset, else .tscn
-@export var is_asset_ext: bool = false
+@export var is_asset_ext: bool = true
 @export var asset_filename: String = ""
 
 signal asset_updated(name: StringName)
@@ -28,7 +28,7 @@ const urdf_robot_template = """<robot name="noname">
 func _ready():
 #	print("[AssetEditor] asset_filename: ", asset_filename)
 	if OS.has_feature("editor"):
-		assets_base_dir = "res://assets"
+		assets_base_dir = ProjectSettings.globalize_path("res://assets")
 	else:
 		assets_base_dir = OS.get_executable_path().get_base_dir().path_join("assets")
 	
@@ -37,6 +37,7 @@ func _ready():
 		urdf_code_edit.text = urdf_robot_template
 	else:
 		if true:
+			asset_user_path_edit.text = asset_filename.trim_prefix(assets_base_dir+"/").get_base_dir()
 			asset_filename = ProjectSettings.globalize_path(asset_filename)
 			var assets_path = DirAccess.open(assets_base_dir)
 			if assets_path.file_exists(asset_filename):

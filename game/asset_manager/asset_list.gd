@@ -80,14 +80,10 @@ func _on_item_activated(index):
 	
 func edit_asset(asset_name: String):
 	var asset_filename: String
-	if game.is_asset_ext:
-		asset_filename = database.get_asset_filename(asset_name)
-	else:
-		asset_filename = database.get_scene(asset_name)
+	asset_filename = database.get_asset_filename(asset_name)
 #	print("[ASSET LIST] asset filename: ", asset_filename)
-	if asset_filename.get_extension() != "tscn" and asset_filename.get_extension() != "asset": return
+#	if asset_filename.get_extension() != "asset": return
 	var asset_editor = asset_editor_packed_scene.instantiate()
-	asset_editor.is_asset_ext = owner.is_asset_ext
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
 	asset_editor.asset_filename = asset_filename
