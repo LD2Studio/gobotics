@@ -8,6 +8,7 @@ var game_area_pointed: bool = false
 
 #var python_threads: Array
 
+@onready var game = owner
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
 @onready var save_scene_button: Button = %SaveSceneButton
 @onready var python = PythonBridge.new(4242)
@@ -37,6 +38,7 @@ func init_scene():
 	add_child(scene)
 
 func new_scene(environment_path: String) -> void:
+#	print("environment path: ", environment_path)
 	delete_scene()
 	init_scene()
 	var environment = ResourceLoader.load(environment_path).instantiate()
@@ -125,33 +127,69 @@ func hide_part_parameters():
 	object_inspector.visible = false
 
 func save_scene(path: String):
-	assert(scene != null)
+	var scene_filename = path
+	print("scene filename: ", scene_filename)
+#	assert(scene != null)
 	# Take all blocks added in game scene for apply owner
 	var items = scene.get_children()
-	for item in items:
-#		print("item: ", item)
-		item.owner = scene
-		if %PositionSavedCheck.button_pressed:
-			item.set_meta("transform", item.get_child(0).global_transform)
-		if item.is_in_group("ROBOTS"):
-			# print("%s is in ROBOT group" % [item])
-			if item.get("control"):
-				item.set_meta("manual_control", item.control.manual)
-		for child in item.get_children():
-			if child.is_in_group("PYTHON"):
-				item.set_meta("python_bridge_activate", child.activate)
-				item.set_meta("python_bridge_port", child.port)
-				
-	if not path.ends_with(".tscn"):
-		path = path + ".tscn"
-	var scene_packed := PackedScene.new()
-	scene_packed.pack(scene)
+	var scene_objects = {
+		assets=[], environment="",
+	}
 	
-	var err = ResourceSaver.save(scene_packed, path)
-	if err:
-		printerr("Scene saving failed")
+	if owner.is_asset_ext:
+		for item in items:
+#			print("[GAME SCENE] item: ", item)
+			if item.is_in_group("ASSETS"):
+				var asset_name = item.name
+				var asset_filename = item.get_meta("asset_filename")
+				var asset_transform = item.get_child(0).global_transform
+				assert(asset_filename != null, "No filename for asset")
+#				print("asset filename: ", asset_filename)
+				scene_objects.assets.append(
+					{ 	name=asset_name,
+						filename=asset_filename,
+						transform=asset_transform,
+						})
+			if item.is_in_group("ENVIRONMENT"):
+#				print("environment : ", item.name)
+				var env_scene = game.database.get_environment(item.name)
+#				print("environment scene : ", env_scene)
+				scene_objects.environment = {
+					name=item.name,
+					scene=env_scene,
+					}
+		var scene_json = JSON.stringify(scene_objects, "\t", false)
+		print("scene JSON: ", scene_json)
+		
+		var file = FileAccess.open(scene_filename, FileAccess.WRITE)
+		file.store_string(scene_json)
+		
+				
 	else:
-		save_scene_button.disabled = false
+		for item in items:
+#			print("[GAME SCENE] item: ", item)
+			item.owner = scene
+			if %PositionSavedCheck.button_pressed:
+				item.set_meta("transform", item.get_child(0).global_transform)
+			if item.is_in_group("ROBOTS"):
+				# print("%s is in ROBOT group" % [item])
+				if item.get("control"):
+					item.set_meta("manual_control", item.control.manual)
+			for child in item.get_children():
+				if child.is_in_group("PYTHON"):
+					item.set_meta("python_bridge_activate", child.activate)
+					item.set_meta("python_bridge_port", child.port)
+					
+		if not path.ends_with(".tscn"):
+			path = path + ".tscn"
+		var scene_packed := PackedScene.new()
+		scene_packed.pack(scene)
+		
+		var err = ResourceSaver.save(scene_packed, path)
+		if err:
+			printerr("Scene saving failed")
+		else:
+			save_scene_button.disabled = false
 
 func load_scene(path):
 	if path == "" or path == "noname.tscn":

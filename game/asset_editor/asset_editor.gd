@@ -43,7 +43,7 @@ func _ready():
 				var reader := ZIPReader.new()
 				var err := reader.open(asset_filename)
 				if err != OK:
-					print("[ERROR]: ", )
+					print("[Asset Editor]: Error %d" % err )
 					return
 				var asset_name = asset_filename.get_basename().get_file()
 	#				print("asset_name: ", asset_name)
@@ -86,7 +86,7 @@ func _on_save_button_pressed():
 	if is_asset_ext:
 		var asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".asset"))
 		asset_filename = ProjectSettings.globalize_path(asset_filename)
-#		print_debug(asset_filename)
+#		print(asset_filename)
 		var assets_path = DirAccess.open(assets_base_dir)
 		if assets_path.file_exists(asset_filename):
 			%OverwriteConfirmationDialog.popup_centered()
@@ -105,7 +105,7 @@ func _on_overwrite_confirmation_dialog_confirmed():
 func save_scene():
 	if is_asset_ext:
 		var asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".asset"))
-		print("[Asset Editor] Save %s" % asset_filename)
+#		print("[Asset Editor] Save %s" % asset_filename)
 		var writer := ZIPPacker.new()
 		var err := writer.open(asset_filename)
 		if err != OK:
@@ -120,7 +120,7 @@ func save_scene():
 		var asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".tscn"))
 		var err := ResourceSaver.save(asset_scene, asset_filename)
 		if err != OK:
-			printerr("An error %d occurred while saving the scene to disk." % err)
+			printerr("[Asset Editor] An error %d occurred while saving the scene to disk." % err)
 			return
 
 #	print("[Asset Editor] asset name: ", asset_scene.get_state().get_node_name(0))

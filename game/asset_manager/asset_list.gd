@@ -28,7 +28,7 @@ func _get_drag_data(at_position: Vector2):
 
 	var asset_name = get_item_text(idx)
 	var asset = database.get_scene(asset_name)
-#	print(asset)
+#	print("[ASSET LIST] asset: ", asset)
 	if asset:
 		var _asset_res = load(asset)
 #		print(asset_res)
@@ -38,14 +38,14 @@ func _get_drag_data(at_position: Vector2):
 #			print("Preview exist")
 			node.get_node("./Preview").preview = false
 
-		var preview_path = database.get_preview(asset_name)
+#		var preview_path = database.get_preview(asset_name)
 #		print("preview: ", preview_path)
-		if ResourceLoader.exists(preview_path):
-			var preview_control = TextureRect.new()
-			preview_control.texture = load(preview_path)
-			preview_control.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			preview_control.size = Vector2(64,64)
-			set_drag_preview(preview_control)
+#		if ResourceLoader.exists(preview_path):
+#			var preview_control = TextureRect.new()
+#			preview_control.texture = load(preview_path)
+#			preview_control.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+#			preview_control.size = Vector2(64,64)
+#			set_drag_preview(preview_control)
 		return node
 	else:
 		return null
@@ -79,10 +79,15 @@ func _on_item_activated(index):
 	edit_asset(asset_name)
 	
 func edit_asset(asset_name: String):
-	var asset_filename = database.get_scene(asset_name)
-#	print("asset filename: ", asset_filename)
-	if asset_filename.get_extension() != "tscn": return
+	var asset_filename: String
+	if game.is_asset_ext:
+		asset_filename = database.get_asset_filename(asset_name)
+	else:
+		asset_filename = database.get_scene(asset_name)
+#	print("[ASSET LIST] asset filename: ", asset_filename)
+	if asset_filename.get_extension() != "tscn" and asset_filename.get_extension() != "asset": return
 	var asset_editor = asset_editor_packed_scene.instantiate()
+	asset_editor.is_asset_ext = owner.is_asset_ext
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
 	asset_editor.asset_filename = asset_filename

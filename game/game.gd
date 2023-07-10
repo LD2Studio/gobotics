@@ -1,6 +1,8 @@
 extends Control
 
 @export var asset_dir: String = "assets"
+## If true, Asset extension is .asset, else .tscn
+@export var is_asset_ext: bool = false
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
@@ -21,7 +23,10 @@ var current_filename: String:
 var database: GoboticsDB = GoboticsDB.new()
 
 func _enter_tree():
+	database.is_asset_ext = is_asset_ext
+	create_temp_dir()
 	load_assets_in_database()
+	load_environments_in_database()
 
 func _ready():
 	var app_name: String = ProjectSettings.get_setting("application/config/name")
@@ -41,8 +46,13 @@ func _on_new_scene_dialog_confirmed() -> void:
 	var items = %EnvironmentList.get_selected_items()
 	if items.is_empty(): return
 	var environment_name: String = %EnvironmentList.get_item_text(items[0])
-	current_filename = "noname.tscn"
-	game_scene.new_scene(database.get_scene(environment_name))
+	if is_asset_ext:
+		current_filename = "noname.scene"
+	else:
+		current_filename = "noname.tscn"
+	var env = database.get_environment(environment_name)
+	if env:
+		game_scene.new_scene(env)
 	
 func _on_load_scene_button_pressed():
 	%LoadSceneDialog.popup_centered(Vector2i(300,300))
@@ -89,23 +99,36 @@ func load_pck():
 			
 func load_assets_in_database():
 	database.assets.clear()
-	database.add_assets("res://game/assets")
+#	database.add_assets("res://game/assets")
 #	if not OS.has_feature("editor"):
 #		load_pck()
 	if OS.has_feature("editor"):
 		if not DirAccess.dir_exists_absolute("res://".path_join(asset_dir)):
-			print("[ERROR] Asset Directory not exists")
+			print("[Game] Asset Directory not exists")
 		else:
 			database.add_assets("res://".path_join(asset_dir))
 	else:
 		if not DirAccess.dir_exists_absolute(OS.get_executable_path().get_base_dir().path_join(asset_dir)):
-			print("[ERROR] Asset Directory not exists")
+			print("[Game] Asset Directory not exists")
 		else:
 			database.add_assets(OS.get_executable_path().get_base_dir().path_join(asset_dir))
 
+func load_environments_in_database():
+	database.add_environments("res://game/environments", true)
+	
+	
 func fill_assets_list():
 	assets_list.clear()
 #	print(database.assets)
 	for asset in database.assets:
 		if asset.group == "ITEMS" or asset.group == "ASSETS":
 			assets_list.add_item(asset.name)
+
+func create_temp_dir():
+	if OS.has_feature("editor"):
+		if DirAccess.dir_exists_absolute("res://temp"):
+			var files = DirAccess.get_files_at("res://temp")
+			for file in files:
+				DirAccess.remove_absolute("res://temp".path_join(file))
+			var err = DirAccess.remove_absolute("res://temp")
+		DirAccess.make_dir_absolute("res://temp")

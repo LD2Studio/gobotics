@@ -4,7 +4,6 @@ extends ItemList
 
 func _ready() -> void:
 	clear()
-	for asset in database.assets:
-		if asset.group == "ENVIRONMENT":
-			add_item(asset.name)
+	for environment in database.environments:
+		add_item(environment.name)
 
