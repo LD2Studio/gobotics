@@ -4,7 +4,7 @@ extends Resource
 @export var assets: Array
 @export var environments: Array
 
-var is_asset_ext: bool = false
+var is_asset_ext: bool = true
 var assets_base_dir: String
 var temp_dir: String
 var urdf_parser = URDFParser.new()
@@ -23,79 +23,40 @@ func add_assets(search_path: String):
 #	print("[Database] search path: ", search_path)
 	var files = Array(DirAccess.get_files_at(search_path))
 #	print("files: ", files)
-	if true:
-		# Filter asset files
-		var asset_files: Array = files.filter(func(file): return file.get_extension() == "asset")
+	# Filter asset files
+	var asset_files: Array = files.filter(func(file): return file.get_extension() == "asset")
 #		print("Asset files: ", asset_files)
-		
-		for file in asset_files:
-			var asset_filename = ProjectSettings.globalize_path(search_path.path_join(file))
+	
+	for file in asset_files:
+		var asset_filename = ProjectSettings.globalize_path(search_path.path_join(file))
 #			print("[Database] asset_filename: ", asset_filename)
-			var reader := ZIPReader.new()
-			var err := reader.open(asset_filename)
-			if err != OK:
-				print("[Database]: Open %s asset failed" % [file])
-				return
-			var asset_name = file.get_basename()
+		var reader := ZIPReader.new()
+		var err := reader.open(asset_filename)
+		if err != OK:
+			print("[Database]: Open %s asset failed" % [file])
+			return
+		var asset_name = file.get_basename()
 #			print("[Database] asset name: ", asset_name)
-			var asset_content = reader.get_files()
-			if (asset_name + ".urdf") in asset_content:
-				var res := reader.read_file(asset_name + ".urdf")
-				var scene_filename = generate_scene(res.get_string_from_ascii(), asset_name, asset_filename)
-				assets.append({
-					name=asset_name,
-					filename=asset_filename,
-					scene=scene_filename,
-					group="ASSETS",
-					})
-			reader.close()
-			
-		# search sub-folders
-		var dirs = Array(DirAccess.get_directories_at(search_path))
-	#	print_debug("dirs: ", dirs)
-		var search_dirs = dirs.map(func(dir): return search_path.path_join(dir))
-	#	print("search dirs: ", search_dirs)
-		for search_dir in search_dirs:
-			add_assets(search_dir)
-	else:
-		# Filter tscn files
-		var files_tscn: Array = files.filter(func(file): return file.get_extension() == "tscn")
-	#	print("files tscn: ", files_tscn)
-		# Browse each scene
-		for file in files_tscn:
-	#		print(file)
-			var scene: PackedScene = ResourceLoader.load(search_path.path_join(file), "PackedScene")
-	#		print("Loading ", scene)
-			if scene == null:
-				continue
-			var name: String = scene.get_state().get_node_name(0)
-	#		print("Scene name: ", name)
-			if scene.get_script():
-				print("script: ", scene.get_script())
-			var group: String
-			if scene.get_state().get_node_groups(0).is_empty():
-				continue
-			else:
-				group = scene.get_state().get_node_groups(0)[0]
-			var base_dir: String = search_path
-
-	#		print("name: %s, scene: %s, group: %s, base_dir: %s" % [name,file, group,base_dir])
-			
+		var asset_content = reader.get_files()
+		if (asset_name + ".urdf") in asset_content:
+			var res := reader.read_file(asset_name + ".urdf")
+			var scene_filename = generate_scene(res.get_string_from_ascii(), asset_name, asset_filename)
 			assets.append({
-				name=name,
-				scene=file,
-				group=group,
-				base_dir=base_dir,
+				name=asset_name,
+				filename=asset_filename,
+				scene=scene_filename,
+				group="ASSETS",
 				})
-				
-		# search sub-folders
-		var dirs = Array(DirAccess.get_directories_at(search_path))
-	#	print_debug("dirs: ", dirs)
-		var search_dirs = dirs.map(func(dir): return search_path.path_join(dir))
-	#	print("search dirs: ", search_dirs)
-		for search_dir in search_dirs:
-			add_assets(search_dir)
+		reader.close()
 		
+	# search sub-folders
+	var dirs = Array(DirAccess.get_directories_at(search_path))
+#	print_debug("dirs: ", dirs)
+	var search_dirs = dirs.map(func(dir): return search_path.path_join(dir))
+#	print("search dirs: ", search_dirs)
+	for search_dir in search_dirs:
+		add_assets(search_dir)
+	
 	var err = ResourceSaver.save(self, "res://temp/database.tres")
 	if err:
 		printerr("Database not saving!")
