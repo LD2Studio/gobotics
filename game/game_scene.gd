@@ -128,49 +128,47 @@ func hide_part_parameters():
 
 func save_scene(path: String):
 	var scene_filename = path
-	print("scene filename: ", scene_filename)
-#	assert(scene != null)
+#	print("scene filename: ", scene_filename)
 	# Take all blocks added in game scene for apply owner
 	var items = scene.get_children()
 	var scene_objects = {
 		assets=[], environment="",
 	}
 	
-	if owner.is_asset_ext:
+	if true:
 		for item in items:
 #			print("[GAME SCENE] item: ", item)
 			if item.is_in_group("ASSETS"):
-				var asset_name = item.name
-				var asset_filename = item.get_meta("asset_filename")
-				var asset_transform = item.get_child(0).global_transform
-				assert(asset_filename != null, "No filename for asset")
-#				print("asset filename: ", asset_filename)
-				scene_objects.assets.append(
-					{ 	name=asset_name,
-						filename=asset_filename,
+				var gl_transform: Transform3D = item.get_child(0).global_transform
+				
+				var asset_transform = {
+					origin=[gl_transform.origin.x, gl_transform.origin.y, gl_transform.origin.z],
+					basis=[
+						gl_transform.basis.x.x, gl_transform.basis.x.y, gl_transform.basis.x.z,
+						gl_transform.basis.y.x, gl_transform.basis.y.y, gl_transform.basis.y.z,
+						gl_transform.basis.z.x, gl_transform.basis.z.y, gl_transform.basis.z.z],
+				}
+				scene_objects.assets.append({
+						name=item.get_meta("asset_name"),
+						string_name=item.name,
 						transform=asset_transform,
 						})
 			if item.is_in_group("ENVIRONMENT"):
 #				print("environment : ", item.name)
-				var env_scene = game.database.get_environment(item.name)
-#				print("environment scene : ", env_scene)
 				scene_objects.environment = {
 					name=item.name,
-					scene=env_scene,
 					}
 		var scene_json = JSON.stringify(scene_objects, "\t", false)
-		print("scene JSON: ", scene_json)
+#		print("scene JSON: ", scene_json)
 		
 		var file = FileAccess.open(scene_filename, FileAccess.WRITE)
 		file.store_string(scene_json)
 		
-				
+		save_scene_button.disabled = false
+
 	else:
 		for item in items:
-#			print("[GAME SCENE] item: ", item)
 			item.owner = scene
-			if %PositionSavedCheck.button_pressed:
-				item.set_meta("transform", item.get_child(0).global_transform)
 			if item.is_in_group("ROBOTS"):
 				# print("%s is in ROBOT group" % [item])
 				if item.get("control"):
@@ -192,32 +190,71 @@ func save_scene(path: String):
 			save_scene_button.disabled = false
 
 func load_scene(path):
-	if path == "" or path == "noname.tscn":
-		return
-	delete_scene()
-	var res = ResourceLoader.load(path)
-	if res == null:
-		return
-	scene = res.instantiate()
-	add_child(scene)
-	## Get info from each items
-	for item in scene.get_children():
-		var transform_saved = item.get_meta("transform", Transform3D())
-		if transform_saved != Transform3D():
-			item.get_child(0).global_transform = transform_saved
-		freeze_item(item, true)
-		var part_name = item.get_node_or_null("%PartName")
-		if part_name:
-			part_name.text = item.name
-		if item.is_in_group("ROBOTS"):
-			if item.get("control"):
-				item.control.manual = item.get_meta("manual_control", true)
-		for child in item.get_children():
-			if child.is_in_group("PYTHON"):
-				child.port = item.get_meta("python_bridge_port", 4242)
-				child.activate = item.get_meta("python_bridge_activate", false)
-				item.python_script_finished.connect(_on_python_script_finished)
-				break
+	var scene_filename = path
+#	print("Load scene filename: ", scene_filename)
+	if scene_filename == "": return
+	if true:
+		var json = JSON.new()
+		var json_scene = FileAccess.get_file_as_string(scene_filename)
+		var error = json.parse(json_scene)
+		if error != OK:
+			print("JSON Parse Error: ", json.get_error_message(), " in ", json_scene, " at line ", json.get_error_line())
+			return
+			
+		var scene_objects = json.data
+#		print("scene_objects: ", scene_objects)
+		
+		delete_scene()
+		init_scene()
+		if "name" in scene_objects.environment:
+			var env_filename = game.database.get_environment(scene_objects.environment.name)
+			var environment = ResourceLoader.load(env_filename).instantiate()
+			scene.add_child(environment)
+			connect_pickable()
+		
+		for asset in scene_objects.assets:
+			if "name" in asset:
+				var asset_filename = game.database.get_asset_scene(asset.name)
+				var asset_node : Node3D = ResourceLoader.load(asset_filename).instantiate()
+				if "transform" in asset:
+					var origin = Vector3(asset.transform.origin[0], asset.transform.origin[1], asset.transform.origin[2])
+					var basis = Basis(
+						Vector3(asset.transform.basis[0], asset.transform.basis[1], asset.transform.basis[2]),
+						Vector3(asset.transform.basis[3], asset.transform.basis[4], asset.transform.basis[5]),
+						Vector3(asset.transform.basis[6], asset.transform.basis[7], asset.transform.basis[8]))
+					var tr = Transform3D(basis, origin)
+					asset_node.get_child(0).global_transform = tr
+				if "string_name" in asset:
+					asset_node.name = asset.string_name
+				freeze_item(asset_node, true)
+				scene.add_child(asset_node)
+				connect_editable()
+		
+
+	else:
+		var res = ResourceLoader.load(path)
+		if res == null:
+			return
+		scene = res.instantiate()
+		add_child(scene)
+		## Get info from each items
+		for item in scene.get_children():
+			var transform_saved = item.get_meta("transform", Transform3D())
+			if transform_saved != Transform3D():
+				item.get_child(0).global_transform = transform_saved
+			freeze_item(item, true)
+			var part_name = item.get_node_or_null("%PartName")
+			if part_name:
+				part_name.text = item.name
+			if item.is_in_group("ROBOTS"):
+				if item.get("control"):
+					item.control.manual = item.get_meta("manual_control", true)
+			for child in item.get_children():
+				if child.is_in_group("PYTHON"):
+					child.port = item.get_meta("python_bridge_port", 4242)
+					child.activate = item.get_meta("python_bridge_activate", false)
+					item.python_script_finished.connect(_on_python_script_finished)
+					break
 			
 	connect_pickable()
 	connect_editable()

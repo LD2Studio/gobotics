@@ -36,7 +36,7 @@ func _ready():
 		%SaveAssetButton.disabled = true
 		urdf_code_edit.text = urdf_robot_template
 	else:
-		if is_asset_ext:
+		if true:
 			asset_filename = ProjectSettings.globalize_path(asset_filename)
 			var assets_path = DirAccess.open(assets_base_dir)
 			if assets_path.file_exists(asset_filename):
@@ -83,7 +83,7 @@ func _on_save_button_pressed():
 		DirAccess.make_dir_recursive_absolute(path)
 	if asset_node == null: return
 	
-	if is_asset_ext:
+	if true:
 		var asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".asset"))
 		asset_filename = ProjectSettings.globalize_path(asset_filename)
 #		print(asset_filename)
@@ -103,7 +103,7 @@ func _on_overwrite_confirmation_dialog_confirmed():
 	save_scene()
 		
 func save_scene():
-	if is_asset_ext:
+	if true:
 		var asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".asset"))
 #		print("[Asset Editor] Save %s" % asset_filename)
 		var writer := ZIPPacker.new()

@@ -25,6 +25,7 @@ const COLLISION_FULL_TAG = """
 		</collision>
 """
 const BOX_GEOMETRY_TAG = """<box size="0.1 0.1 0.1"/>"""
+const SPHERE_GEOMETRY_TAG = """<sphere radius="0.1"/>"""
 
 const INLINE_COLOR_TAG = """<color rgba="0 0 0 1"/>"""
 enum Tag {
@@ -51,6 +52,7 @@ func _ready():
 	menu.add_item("Insert Collision", Tag.COLLISION)
 	menu.add_separator()
 	menu.add_item("Insert Box geometry", Tag.BOX)
+	menu.add_item("Insert Sphere geometry", Tag.SPHERE)
 	menu.add_item("Insert Inline Color", Tag.INLINE_COLOR)
 	# Connect callback.
 	menu.id_pressed.connect(_on_item_pressed)
@@ -68,6 +70,8 @@ func _on_item_pressed(id):
 			set_caret_line(get_caret_line() - 3)
 		Tag.BOX:
 			insert_text_at_caret(BOX_GEOMETRY_TAG)
+		Tag.SPHERE:
+			insert_text_at_caret(SPHERE_GEOMETRY_TAG)
 		Tag.INLINE_COLOR:
 			insert_text_at_caret(INLINE_COLOR_TAG)
 	

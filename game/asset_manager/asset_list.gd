@@ -97,6 +97,7 @@ func edit_asset(asset_name: String):
 func _on_new_asset_button_pressed() -> void:
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
+	asset_editor.asset_filename = ""
 	%AssetEditorDialog.add_child(asset_editor)
 	%AssetEditorDialog.popup_centered(Vector2i(700, 500))
 

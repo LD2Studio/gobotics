@@ -108,12 +108,11 @@ func add_environments(search_path: String, builtin: bool = false):
 			if scene == null:
 				continue
 			var name: String = scene.get_state().get_node_name(0)
-			var base_dir: String = search_path
+			var scene_filename: String = search_path.path_join(file)
 			
 			environments.append({
 				name=name,
-				scene=file,
-				base_dir=base_dir,
+				scene=scene_filename,
 				})
 				
 	var err = ResourceSaver.save(self, "res://temp/database.tres")
@@ -130,11 +129,8 @@ func generate_scene(urdf_description: String, asset_name: String, asset_filename
 	var root_node : Node3D = urdf_parser.parse_buffer(urdf_description)
 #	print("root node: ", root_node)
 	var scene_filename = temp_dir.path_join(asset_name + ".tscn")
-	if root_node == null:
-		return
-	else:
-#		print("set meta %", asset_filename)
-		root_node.set_meta("asset_filename", asset_filename)
+	if root_node == null: return
+	root_node.set_meta("asset_name", asset_name)
 	var asset_scene = PackedScene.new()
 	var result = asset_scene.pack(root_node)
 	if result != OK:
@@ -154,11 +150,14 @@ func get_scene(name: String):
 				return asset.base_dir.path_join(asset.scene)
 	return null
 	
+func get_asset_scene(name: String):
+	return get_scene(name)
+	
 func get_environment(name: String):
 	for env in environments:
 		if env.name == name:
 			if is_asset_ext:
-				return env.base_dir.path_join(env.scene)
+				return env.scene
 			else:
 				return env.base_dir.path_join(env.scene)
 	return null
