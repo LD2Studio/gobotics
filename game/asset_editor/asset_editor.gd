@@ -11,6 +11,7 @@ var urdf_syntaxhighlighter = URDFSyntaxHighlighter.new()
 var asset_scene : PackedScene = null
 var asset_node : Node3D = null
 var assets_base_dir: String
+var package_base_dir: String
 
 const urdf_robot_template = """<robot name="noname">
 	<link name="base_link">
@@ -29,9 +30,10 @@ func _ready():
 #	print("[AssetEditor] asset_filename: ", asset_filename)
 	if OS.has_feature("editor"):
 		assets_base_dir = ProjectSettings.globalize_path("res://assets")
+		package_base_dir = ProjectSettings.globalize_path("res://packages")
 	else:
 		assets_base_dir = OS.get_executable_path().get_base_dir().path_join("assets")
-	
+		package_base_dir = OS.get_executable_path().get_base_dir().path_join("packages")
 	if asset_filename == "":
 		%SaveAssetButton.disabled = true
 		urdf_code_edit.text = urdf_robot_template
@@ -54,8 +56,8 @@ func _ready():
 			reader.close()
 
 	urdf_parser.scale = 10
-	urdf_parser.packages_path = assets_base_dir.path_join("packages")
-	urdf_parser.asset_user_path = asset_filename.get_base_dir()
+	urdf_parser.packages_path = package_base_dir
+#	urdf_parser.asset_user_path = asset_filename.get_base_dir()
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	generate_scene()
 	show_visual_mesh(%VisualCheckBox.button_pressed)
@@ -70,9 +72,9 @@ func _on_save_button_pressed():
 		DirAccess.make_dir_recursive_absolute(path)
 	if asset_node == null: return
 	
-	var new_asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".asset"))
+	var new_asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name.to_lower() + ".asset"))
 	asset_filename = ProjectSettings.globalize_path(new_asset_filename)
-#	print(asset_filename)
+#	print("[ASSET EDITOR] Asset filename saving", asset_filename)
 	var assets_path = DirAccess.open(assets_base_dir)
 	if assets_path.file_exists(asset_filename):
 		%OverwriteConfirmationDialog.popup_centered()
@@ -88,7 +90,7 @@ func save_scene():
 	if err != OK:
 		print("[Asset Editor] Error %d opening %f" % [err, asset_filename])
 		return
-	writer.start_file("%s.urdf" % [asset_node.name])
+	writer.start_file("%s.urdf" % [asset_node.name.to_lower()])
 	writer.write_file(urdf_code_edit.text.to_ascii_buffer())
 	writer.close_file()
 	writer.close()

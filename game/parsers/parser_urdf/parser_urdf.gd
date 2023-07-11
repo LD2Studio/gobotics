@@ -481,12 +481,13 @@ func load_links(urdf_data) -> int:
 								if not "object" in attrib:
 									printerr("Object attribut missing!")
 									continue
-								load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag)
-
+								err = load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag)
+								if err!= OK:
+									printerr("Loading GLTF file failed!")
 							"dae":
 								pass
 							_:
-								printerr("3D format not supported !")
+								printerr("3D format not supported!")
 						
 				"origin":
 					if root_tag != Tag.LINK: continue
@@ -579,27 +580,27 @@ func load_links(urdf_data) -> int:
 
 func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag):
 	
-	if Engine.is_editor_hint():
-		var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
-#		print_debug(scene_filename)
-#		print("Editor")
-		var scene: PackedScene = load(scene_filename)
-#		print_debug(scene)
-		var scene_state = scene.get_state()
-#		print("node count: ", scene_state.get_node_count())
-		for idx in scene_state.get_node_count():
-#			print("node name: ", scene_state.get_node_name(idx))
-			if scene_state.get_node_name(idx) == attrib.object:
-				for prop_idx in scene_state.get_node_property_count(idx):
-					var prop_name = scene_state.get_node_property_name(idx, prop_idx)
-#					print("props: ", prop_name)
-					## Mesh attached to node
-					if prop_name == "mesh":
-						var mesh: ArrayMesh = scene_state.get_node_property_value(idx, prop_idx)
-#						print("mesh: ", mesh)
-						if current_tag == Tag.VISUAL:
-							current_visual.mesh = mesh
-							current_visual.scale = Vector3.ONE * scale
+#	if Engine.is_editor_hint():
+#		var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
+##		print_debug(scene_filename)
+##		print("Editor")
+#		var scene: PackedScene = load(scene_filename)
+##		print_debug(scene)
+#		var scene_state = scene.get_state()
+##		print("node count: ", scene_state.get_node_count())
+#		for idx in scene_state.get_node_count():
+##			print("node name: ", scene_state.get_node_name(idx))
+#			if scene_state.get_node_name(idx) == attrib.object:
+#				for prop_idx in scene_state.get_node_property_count(idx):
+#					var prop_name = scene_state.get_node_property_name(idx, prop_idx)
+##					print("props: ", prop_name)
+#					## Mesh attached to node
+#					if prop_name == "mesh":
+#						var mesh: ArrayMesh = scene_state.get_node_property_value(idx, prop_idx)
+##						print("mesh: ", mesh)
+#						if current_tag == Tag.VISUAL:
+#							current_visual.mesh = mesh
+#							current_visual.scale = Vector3.ONE * scale
 						
 #					if prop_name == "transform":
 #						var tr: Transform3D = scene_state.get_node_property_value(idx, prop_idx)
@@ -609,59 +610,58 @@ func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape
 #						if current_tag == Tag.VISUAL:
 #							current_visual.position = xyz * scale
 #							current_visual.rotation = rpy
+	
+	var gltf_filename: String
+	if attrib.filename.begins_with("package://"):
+		gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
+#		print("gltf filename: ", gltf_filename)
 	else:
-		var gltf_filename: String
-#		print_debug("asset_user_path: ", asset_user_path)
-		if attrib.filename.begins_with("package://"):
-			gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
-		elif attrib.filename.begins_with("user://"):
-			gltf_filename = asset_user_path.path_join(attrib.filename.trim_prefix("user://"))
-#			print("gltf filename: ", gltf_filename)
-		else:
-			printerr("package or user path!")
-		var gltf_res := GLTFDocument.new()
-		var gltf_state = GLTFState.new()
-		var err = gltf_res.append_from_file(gltf_filename, gltf_state)
-		if err:
-			printerr("Import glTF file failed!")
-			return
-		var nodes : Array[GLTFNode] = gltf_state.get_nodes()
-		var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
-		var idx = 0
-		for node in gltf_state.json.nodes:
-			if node.name == attrib.object:
-#				print("node.name:%s, id=%d " % [node.name, node.mesh])
-				var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
-				var mesh: ArrayMesh = imported_mesh.get_mesh()
-				if current_tag == Tag.VISUAL:
-					current_visual.mesh = mesh
-					if "transform" in attrib and attrib.transform == "true":
-						current_visual.position = nodes[idx].position * scale
-					if "scale" in attrib:
-						current_visual.scale = Vector3.ONE * scale * float(attrib.scale)
-					else:
-						current_visual.scale = Vector3.ONE * scale
-					break
-				elif current_tag == Tag.COLLISION:
-					pass
-					var mdt = MeshDataTool.new()
-					mdt.create_from_surface(mesh, 0)
-					for i in range(mdt.get_vertex_count()):
-						var vertex = mdt.get_vertex(i)
-						vertex *= scale
-						# Save your change.
-						mdt.set_vertex(i, vertex)
-					mesh.clear_surfaces()
-					mdt.commit_to_surface(mesh)
-					var shape = mesh.create_convex_shape()
-					current_collision.shape = shape
-					if "transform" in attrib and attrib.transform == "true":
-						current_collision.position = nodes[idx].position * scale
-					var debug_mesh: ArrayMesh = shape.get_debug_mesh()
-					current_col_debug.mesh = debug_mesh
-					break
-			idx += 1
-			
+		printerr("package or user path!")
+	var gltf_res := GLTFDocument.new()
+	var gltf_state = GLTFState.new()
+	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
+	if err:
+		printerr("Import glTF file failed!")
+		return
+	var nodes : Array[GLTFNode] = gltf_state.get_nodes()
+	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
+	var idx = 0
+	
+	for node in gltf_state.json.nodes:
+		if node.name == attrib.object:
+#			print("node.name:%s, id=%d " % [node.name, node.mesh])
+			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
+			var mesh: ArrayMesh = imported_mesh.get_mesh()
+			if current_tag == Tag.VISUAL:
+				current_visual.mesh = mesh
+				if "transform" in attrib and attrib.transform == "true":
+					current_visual.position = nodes[idx].position * scale
+				if "scale" in attrib:
+					current_visual.scale = Vector3.ONE * scale * float(attrib.scale)
+				else:
+					current_visual.scale = Vector3.ONE * scale
+				return OK
+			elif current_tag == Tag.COLLISION:
+				pass
+				var mdt = MeshDataTool.new()
+				mdt.create_from_surface(mesh, 0)
+				for i in range(mdt.get_vertex_count()):
+					var vertex = mdt.get_vertex(i)
+					vertex *= scale
+					# Save your change.
+					mdt.set_vertex(i, vertex)
+				mesh.clear_surfaces()
+				mdt.commit_to_surface(mesh)
+				var shape = mesh.create_convex_shape()
+				current_collision.shape = shape
+				if "transform" in attrib and attrib.transform == "true":
+					current_collision.position = nodes[idx].position * scale
+				var debug_mesh: ArrayMesh = shape.get_debug_mesh()
+				current_col_debug.mesh = debug_mesh
+				return OK
+		idx += 1
+	return ERR_CANT_RESOLVE
+	
 func add_selection_area():
 	pass
 		
@@ -806,6 +806,16 @@ func get_kinematics_scene():
 			"pin":
 				joint_node = PinJoint3D.new()
 				
+			"hinge":
+				joint_node = HingeJoint3D.new()
+				if not "axis" in joint:
+#					printerr("No axis for %s" % joint.name)
+					var new_basis = Basis.looking_at(Vector3(1,0,0))
+					joint_node.transform.basis = new_basis
+				elif joint.axis != Vector3.UP:
+					var new_basis = Basis.looking_at(joint.axis)
+					joint_node.transform.basis = new_basis
+					
 			"continuous":
 				joint_node = HingeJoint3D.new()
 				if "limit" in joint:

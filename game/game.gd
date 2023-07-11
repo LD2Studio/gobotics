@@ -1,9 +1,8 @@
 extends Control
 
 @export var asset_dir : String = "assets"
+@export var package_dir : String = "packages"
 @export var temp_dir : String = "temp"
-## If true, Asset extension is .asset, else .tscn
-var is_asset_ext: bool = true
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
@@ -21,11 +20,10 @@ var current_filename: String:
 		else:
 			%SceneFileName.text = "%s" % [current_filename.get_file().get_basename()]
 			
-var database: GoboticsDB = GoboticsDB.new()
+var database: GoboticsDB = GoboticsDB.new(package_dir)
 
 func _enter_tree():
-	database.is_asset_ext = is_asset_ext
-	create_temp_dir()
+	create_dir()
 	load_assets_in_database()
 	load_environments_in_database()
 
@@ -47,10 +45,7 @@ func _on_new_scene_dialog_confirmed() -> void:
 	var items = %EnvironmentList.get_selected_items()
 	if items.is_empty(): return
 	var environment_name: String = %EnvironmentList.get_item_text(items[0])
-	if is_asset_ext:
-		current_filename = "noname.scene"
-	else:
-		current_filename = "noname.tscn"
+	current_filename = "noname.scene"
 	var env = database.get_environment(environment_name)
 	if env:
 		game_scene.new_scene(env)
@@ -123,22 +118,26 @@ func fill_assets_list():
 	for asset in database.assets:
 		assets_list.add_item(asset.name)
 
-func create_temp_dir():
+func create_dir():
+	var temp_abs_path: String
 	if OS.has_feature("editor"):
-		var temp_path = "res://" + temp_dir
-		if DirAccess.dir_exists_absolute(temp_path):
-			# delete all files before remove temp dir
-			var files = DirAccess.get_files_at(temp_path)
-			for file in files:
-				DirAccess.remove_absolute(temp_path.path_join(file))
-			DirAccess.remove_absolute(temp_path)
-		DirAccess.make_dir_absolute(temp_path)
+		temp_abs_path = ProjectSettings.globalize_path("res://" + temp_dir)
 	else:
-		var temp_abs_path = OS.get_executable_path().get_base_dir().path_join(temp_dir)
-		if DirAccess.dir_exists_absolute(temp_abs_path):
-			# delete all files before remove temp dir
-			var files = DirAccess.get_files_at(temp_abs_path)
-			for file in files:
-				DirAccess.remove_absolute(temp_abs_path.path_join(file))
-			DirAccess.remove_absolute(temp_abs_path)
-		DirAccess.make_dir_absolute(temp_abs_path)
+		temp_abs_path = OS.get_executable_path().get_base_dir().path_join(temp_dir)
+		
+	if DirAccess.dir_exists_absolute(temp_abs_path):
+		# delete all files before remove temp dir
+		var files = DirAccess.get_files_at(temp_abs_path)
+		for file in files:
+			DirAccess.remove_absolute(temp_abs_path.path_join(file))
+		DirAccess.remove_absolute(temp_abs_path)
+	DirAccess.make_dir_absolute(temp_abs_path)
+
+	var package_abs_path: String
+	if OS.has_feature("editor"):
+		package_abs_path = ProjectSettings.globalize_path("res://" + package_dir)
+	else:
+		package_abs_path = OS.get_executable_path().get_base_dir().path_join(package_dir)
+		
+	if not DirAccess.dir_exists_absolute(package_abs_path):
+		DirAccess.make_dir_absolute(package_abs_path)	

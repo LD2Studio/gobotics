@@ -504,8 +504,9 @@ script = ExtResource("4_htgp6")
 
 [node name="ControlCamera3D" type="Camera3D" parent="SplitContainer/3DViewContainer/SceneViewport/GameScene"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.924759, 0.380553, 0, -0.380553, 0.924759, 0, 4.95161, 12.0326)
+transform = Transform3D(1, 0, 0, 0, 0.98925, 0.146235, 0, -0.146235, 0.98925, 0, 2.33553, 15.7994)
 current = true
+fov = 40.0
 script = ExtResource("5_i338u")
 action_mouse_button = "LEFT_BUTTON"
 translation_speed = 4.0

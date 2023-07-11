@@ -215,6 +215,9 @@ func load_scene(path):
 		for asset in scene_objects.assets:
 			if "name" in asset:
 				var asset_filename = game.database.get_asset_scene(asset.name)
+				if asset_filename == null:
+					printerr("Asset %s not available!" % [asset.name])
+					continue
 				var asset_node : Node3D = ResourceLoader.load(asset_filename).instantiate()
 				if "transform" in asset:
 					var origin = Vector3(asset.transform.origin[0], asset.transform.origin[1], asset.transform.origin[2])

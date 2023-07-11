@@ -1,0 +1,66 @@
+[remap]
+
+importer="scene"
+importer_version=1
+type="PackedScene"
+uid="uid://0wc3jsh5hk58"
+path="res://.godot/imported/sphere.glb-334820de4610d8ed6b1c6487953fe5e3.scn"
+
+[deps]
+
+source_file="res://packages/sphere/sphere.glb"
+dest_files=["res://.godot/imported/sphere.glb-334820de4610d8ed6b1c6487953fe5e3.scn"]
+
+[params]
+
+nodes/root_type="Node3D"
+nodes/root_name="Scene"
+nodes/apply_root_scale=true
+nodes/root_scale=1.0
+meshes/ensure_tangents=true
+meshes/generate_lods=false
+meshes/create_shadow_meshes=true
+meshes/light_baking=1
+meshes/lightmap_texel_size=0.2
+skins/use_named_skins=true
+animation/import=true
+animation/fps=30
+animation/trimming=false
+animation/remove_immutable_tracks=true
+import_script/path="res://game/blender_import/import_scene.gd"
+_subresources={
+"nodes": {
+"PATH:FrameCol": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 1
+},
+"PATH:FrameCol/BackWheel": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 4,
+"primitive/radius": 0.25
+},
+"PATH:FrameCol/FrontWheel": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 4,
+"primitive/radius": 0.25
+},
+"PATH:FrameCol/LeftWheel": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 5,
+"primitive/height": 0.2,
+"primitive/radius": 0.5
+},
+"PATH:FrameCol/RightWheel": {
+"generate/physics": true,
+"physics/body_type": 1,
+"physics/shape_type": 5,
+"primitive/height": 0.2,
+"primitive/radius": 0.5
+}
+}
+}
+gltf/embedded_image_handling=1

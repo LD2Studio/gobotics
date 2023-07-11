@@ -126,7 +126,7 @@ func update_assets_database():
 func update_assets_in_scene():
 	var assets = get_tree().get_nodes_in_group("ASSETS")
 #	print("assets: ", assets)
-#	print("[ASSET LIST] asset updated: ", _asset_updated)
+	print("[ASSET LIST] asset updated: ", _asset_updated)
 	if _asset_updated == "": return
 	for asset in assets:
 		if asset.ASSET_NAME == _asset_updated:
@@ -135,7 +135,7 @@ func update_assets_in_scene():
 #			print("asset position: ", asset.get_child(0).global_position)
 			var asset_name = asset.name
 			
-			var asset_res = database.get_scene(_asset_updated)
+			var asset_res = database.get_scene(_asset_updated.to_lower())
 #			print(asset_res)
 			var new_asset = load(asset_res).instantiate()
 			new_asset.name = asset_name
