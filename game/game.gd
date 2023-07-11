@@ -1,8 +1,9 @@
 extends Control
 
-@export var asset_dir: String = "assets"
+@export var asset_dir : String = "assets"
+@export var temp_dir : String = "temp"
 ## If true, Asset extension is .asset, else .tscn
-@export var is_asset_ext: bool = false
+var is_asset_ext: bool = true
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
@@ -99,7 +100,6 @@ func load_pck():
 			
 func load_assets_in_database():
 	database.assets.clear()
-#	database.add_assets("res://game/assets")
 #	if not OS.has_feature("editor"):
 #		load_pck()
 	if OS.has_feature("editor"):
@@ -108,27 +108,37 @@ func load_assets_in_database():
 		else:
 			database.add_assets("res://".path_join(asset_dir))
 	else:
-		if not DirAccess.dir_exists_absolute(OS.get_executable_path().get_base_dir().path_join(asset_dir)):
-			print("[Game] Asset Directory not exists")
+		var asset_abs_path = OS.get_executable_path().get_base_dir().path_join(asset_dir)
+		if not DirAccess.dir_exists_absolute(asset_abs_path):
+			print("[Game] Create Asset Directory")
+			DirAccess.make_dir_absolute(asset_abs_path)
 		else:
-			database.add_assets(OS.get_executable_path().get_base_dir().path_join(asset_dir))
+			database.add_assets(asset_abs_path)
 
 func load_environments_in_database():
 	database.add_environments("res://game/environments", true)
 	
-	
 func fill_assets_list():
 	assets_list.clear()
-#	print(database.assets)
 	for asset in database.assets:
-		if asset.group == "ITEMS" or asset.group == "ASSETS":
-			assets_list.add_item(asset.name)
+		assets_list.add_item(asset.name)
 
 func create_temp_dir():
 	if OS.has_feature("editor"):
-		if DirAccess.dir_exists_absolute("res://temp"):
-			var files = DirAccess.get_files_at("res://temp")
+		var temp_path = "res://" + temp_dir
+		if DirAccess.dir_exists_absolute(temp_path):
+			# delete all files before remove temp dir
+			var files = DirAccess.get_files_at(temp_path)
 			for file in files:
-				DirAccess.remove_absolute("res://temp".path_join(file))
-			var err = DirAccess.remove_absolute("res://temp")
-		DirAccess.make_dir_absolute("res://temp")
+				DirAccess.remove_absolute(temp_path.path_join(file))
+			DirAccess.remove_absolute(temp_path)
+		DirAccess.make_dir_absolute(temp_path)
+	else:
+		var temp_abs_path = OS.get_executable_path().get_base_dir().path_join(temp_dir)
+		if DirAccess.dir_exists_absolute(temp_abs_path):
+			# delete all files before remove temp dir
+			var files = DirAccess.get_files_at(temp_abs_path)
+			for file in files:
+				DirAccess.remove_absolute(temp_abs_path.path_join(file))
+			DirAccess.remove_absolute(temp_abs_path)
+		DirAccess.make_dir_absolute(temp_abs_path)

@@ -24,8 +24,20 @@ const COLLISION_FULL_TAG = """
 			</geometry>
 		</collision>
 """
+const INERTIAL_FULL_TAG = """
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<mass value="0.1"/>
+		</inertial>
+"""
+const INERTIAL_MINIMAL_TAG = """
+		<inertial>
+			<mass value="0.1"/>
+		</inertial>
+"""
 const BOX_GEOMETRY_TAG = """<box size="0.1 0.1 0.1"/>"""
 const SPHERE_GEOMETRY_TAG = """<sphere radius="0.1"/>"""
+const CYLINDER_GEOMETRY_TAG = """<cylinder radius="0.1" length="0.2"/>"""
 
 const INLINE_COLOR_TAG = """<color rgba="0 0 0 1"/>"""
 enum Tag {
@@ -33,6 +45,7 @@ enum Tag {
 	MATERIAL,
 	VISUAL,
 	COLLISION,
+	INERTIAL,
 	BOX,
 	SPHERE,
 	CYLINDER,
@@ -40,7 +53,6 @@ enum Tag {
 	INLINE_COLOR,
 }
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	var menu = get_menu()
 	# Remove all items after "Redo".
@@ -50,10 +62,19 @@ func _ready():
 	menu.add_item("Insert Link", Tag.LINK)
 	menu.add_item("Insert Visual", Tag.VISUAL)
 	menu.add_item("Insert Collision", Tag.COLLISION)
+	menu.add_item("Insert Inertial", Tag.INERTIAL)
 	menu.add_separator()
-	menu.add_item("Insert Box geometry", Tag.BOX)
-	menu.add_item("Insert Sphere geometry", Tag.SPHERE)
+	var submenu_geometry = PopupMenu.new()
+	submenu_geometry.name = "SubmenuGeometry"
+	submenu_geometry.add_item("Insert Box", Tag.BOX)
+	submenu_geometry.add_item("Insert Sphere", Tag.SPHERE)
+	submenu_geometry.add_item("Insert Cylinder", Tag.CYLINDER)
+	submenu_geometry.id_pressed.connect(_on_item_pressed)
+	menu.add_child(submenu_geometry)
+	menu.add_submenu_item("Geometry", "SubmenuGeometry")
+	
 	menu.add_item("Insert Inline Color", Tag.INLINE_COLOR)
+	
 	# Connect callback.
 	menu.id_pressed.connect(_on_item_pressed)
 
@@ -68,10 +89,14 @@ func _on_item_pressed(id):
 		Tag.COLLISION:
 			insert_text_at_caret(COLLISION_FULL_TAG)
 			set_caret_line(get_caret_line() - 3)
+		Tag.INERTIAL:
+			insert_text_at_caret(INERTIAL_MINIMAL_TAG)
 		Tag.BOX:
 			insert_text_at_caret(BOX_GEOMETRY_TAG)
 		Tag.SPHERE:
 			insert_text_at_caret(SPHERE_GEOMETRY_TAG)
+		Tag.CYLINDER:
+			insert_text_at_caret(CYLINDER_GEOMETRY_TAG)
 		Tag.INLINE_COLOR:
 			insert_text_at_caret(INLINE_COLOR_TAG)
 	

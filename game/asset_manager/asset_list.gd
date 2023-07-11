@@ -50,7 +50,7 @@ func _get_drag_data(at_position: Vector2):
 	else:
 		return null
 
-func _on_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
+func _on_item_clicked(_index: int, at_position: Vector2, mouse_button_index: int) -> void:
 	if mouse_button_index == MOUSE_BUTTON_RIGHT:
 		_at_position = at_position
 		asset_popup_menu.popup(Rect2i(get_global_mouse_position(), Vector2i(50,50)))
@@ -124,13 +124,12 @@ func update_assets_database():
 	show_joint_frame(false)
 	
 func update_assets_in_scene():
-	var assets = game_scene.scene.get_children()
+	var assets = get_tree().get_nodes_in_group("ASSETS")
 #	print("assets: ", assets)
-#	print("asset updated: ", _asset_updated)
+#	print("[ASSET LIST] asset updated: ", _asset_updated)
 	if _asset_updated == "": return
 	for asset in assets:
-		if asset.name.begins_with(_asset_updated):
-#			print("update asset: ", asset.name)
+		if asset.ASSET_NAME == _asset_updated:
 			var asset_position = asset.get_child(0).global_position
 			var asset_rotation = asset.get_child(0).global_rotation
 #			print("asset position: ", asset.get_child(0).global_position)

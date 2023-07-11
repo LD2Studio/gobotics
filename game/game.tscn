@@ -86,7 +86,6 @@ auto_translate = false
 mouse_filter = 1
 mouse_force_pass_scroll_events = false
 script = ExtResource("1_85jys")
-is_asset_ext = true
 
 [node name="SplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1
@@ -131,6 +130,7 @@ layout_mode = 2
 theme_override_constants/margin_left = 7
 theme_override_constants/margin_top = 7
 theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 7
 
 [node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer"]
 layout_mode = 2
@@ -176,7 +176,7 @@ size = Vector2i(558, 162)
 ok_button_text = "Open"
 file_mode = 0
 access = 2
-filters = PackedStringArray("*.tscn", "*.scene;Gobotics Scene")
+filters = PackedStringArray("*.scene;Gobotics Scene")
 
 [node name="SaveSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -192,7 +192,7 @@ text = "Save Scene As ..."
 unique_name_in_owner = true
 size = Vector2i(647, 162)
 access = 2
-filters = PackedStringArray("*.tscn", "*.scene")
+filters = PackedStringArray("*.scene;Gobotics scene")
 
 [node name="AssetsPanel" type="PanelContainer" parent="SplitContainer/ControlContainer/VBoxContainer"]
 layout_mode = 2

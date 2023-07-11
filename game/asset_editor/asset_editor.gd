@@ -36,37 +36,23 @@ func _ready():
 		%SaveAssetButton.disabled = true
 		urdf_code_edit.text = urdf_robot_template
 	else:
-		if true:
-			asset_user_path_edit.text = asset_filename.trim_prefix(assets_base_dir+"/").get_base_dir()
-			asset_filename = ProjectSettings.globalize_path(asset_filename)
-			var assets_path = DirAccess.open(assets_base_dir)
-			if assets_path.file_exists(asset_filename):
-				var reader := ZIPReader.new()
-				var err := reader.open(asset_filename)
-				if err != OK:
-					print("[Asset Editor]: Error %d" % err )
-					return
-				var asset_name = asset_filename.get_basename().get_file()
-	#				print("asset_name: ", asset_name)
-				var asset_files = reader.get_files()
-				if (asset_name + ".urdf") in asset_files:
-					var res := reader.read_file(asset_name + ".urdf")
-					urdf_code_edit.text = res.get_string_from_ascii()
-				reader.close()
-				
-				
-		else:
-			var asset_user_path = asset_filename.trim_prefix(assets_base_dir+"/").get_base_dir()
-	#		print("asset user path: ", asset_user_path)
-			asset_scene = load(asset_filename)
-			if asset_scene:
-				asset_node = asset_scene.instantiate()
-				freeze_asset(asset_node, true)
-				preview_scene.add_child(asset_node)
-				asset_user_path_edit.text = asset_user_path
-				if asset_node:
-					urdf_code_edit.text = asset_node.get_meta("urdf_code", urdf_robot_template)
-	
+		asset_user_path_edit.text = asset_filename.trim_prefix(assets_base_dir+"/").get_base_dir()
+		asset_filename = ProjectSettings.globalize_path(asset_filename)
+		var assets_path = DirAccess.open(assets_base_dir)
+		if assets_path.file_exists(asset_filename):
+			var reader := ZIPReader.new()
+			var err := reader.open(asset_filename)
+			if err != OK:
+				print("[Asset Editor]: Error %d" % err )
+				return
+			var asset_name = asset_filename.get_basename().get_file()
+#				print("asset_name: ", asset_name)
+			var asset_files = reader.get_files()
+			if (asset_name + ".urdf") in asset_files:
+				var res := reader.read_file(asset_name + ".urdf")
+				urdf_code_edit.text = res.get_string_from_ascii()
+			reader.close()
+
 	urdf_parser.scale = 10
 	urdf_parser.packages_path = assets_base_dir.path_join("packages")
 	urdf_parser.asset_user_path = asset_filename.get_base_dir()
@@ -84,45 +70,28 @@ func _on_save_button_pressed():
 		DirAccess.make_dir_recursive_absolute(path)
 	if asset_node == null: return
 	
-	if true:
-		var asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".asset"))
-		asset_filename = ProjectSettings.globalize_path(asset_filename)
-#		print(asset_filename)
-		var assets_path = DirAccess.open(assets_base_dir)
-		if assets_path.file_exists(asset_filename):
-			%OverwriteConfirmationDialog.popup_centered()
-		else:
-			save_scene()
+	var new_asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".asset"))
+	asset_filename = ProjectSettings.globalize_path(new_asset_filename)
+#	print(asset_filename)
+	var assets_path = DirAccess.open(assets_base_dir)
+	if assets_path.file_exists(asset_filename):
+		%OverwriteConfirmationDialog.popup_centered()
 	else:
-		var asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".tscn"))
-		if FileAccess.file_exists(asset_filename):
-			%OverwriteConfirmationDialog.popup_centered()
-		else:
-			save_scene()
+		save_scene()
 
 func _on_overwrite_confirmation_dialog_confirmed():
 	save_scene()
 		
 func save_scene():
-	if true:
-		var asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".asset"))
-#		print("[Asset Editor] Save %s" % asset_filename)
-		var writer := ZIPPacker.new()
-		var err := writer.open(asset_filename)
-		if err != OK:
-			print("[Asset Editor] Error %d opening %f" % [err, asset_filename])
-			return
-		writer.start_file("%s.urdf" % [asset_node.name])
-		writer.write_file(urdf_code_edit.text.to_ascii_buffer())
-		writer.close_file()
-		writer.close()
-
-	else:
-		var asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name + ".tscn"))
-		var err := ResourceSaver.save(asset_scene, asset_filename)
-		if err != OK:
-			printerr("[Asset Editor] An error %d occurred while saving the scene to disk." % err)
-			return
+	var writer := ZIPPacker.new()
+	var err := writer.open(asset_filename)
+	if err != OK:
+		print("[Asset Editor] Error %d opening %f" % [err, asset_filename])
+		return
+	writer.start_file("%s.urdf" % [asset_node.name])
+	writer.write_file(urdf_code_edit.text.to_ascii_buffer())
+	writer.close_file()
+	writer.close()
 
 #	print("[Asset Editor] asset name: ", asset_scene.get_state().get_node_name(0))
 	asset_updated.emit(asset_scene.get_state().get_node_name(0))
@@ -153,7 +122,6 @@ func generate_scene():
 	asset_node = asset_scene.instantiate()
 	freeze_asset(asset_node, true)
 	preview_scene.add_child(asset_node)
-#	print_debug("asset node:", asset_node.name)
 	
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)

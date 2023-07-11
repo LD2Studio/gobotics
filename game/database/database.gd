@@ -40,7 +40,7 @@ func add_assets(search_path: String):
 		var asset_content = reader.get_files()
 		if (asset_name + ".urdf") in asset_content:
 			var res := reader.read_file(asset_name + ".urdf")
-			var scene_filename = generate_scene(res.get_string_from_ascii(), asset_name, asset_filename)
+			var scene_filename = generate_scene(res.get_string_from_ascii(), asset_name)
 			assets.append({
 				name=asset_name,
 				filename=asset_filename,
@@ -86,13 +86,8 @@ func add_environments(search_path: String, builtin: bool = false):
 	if err:
 		printerr("[Database] not saving!")
 		
-func get_asset_filename(name: String):
-	for asset in assets:
-		if asset.name == name:
-			return asset.filename
 
-func generate_scene(urdf_description: String, asset_name: String, asset_filename: String):
-#	print("asset name: ", asset_name)
+func generate_scene(urdf_description: String, asset_name: String):
 	var root_node : Node3D = urdf_parser.parse_buffer(urdf_description)
 #	print("root node: ", root_node)
 	var scene_filename = temp_dir.path_join(asset_name + ".tscn")
@@ -107,14 +102,16 @@ func generate_scene(urdf_description: String, asset_name: String, asset_filename
 		printerr("[Database] An error %d occurred while saving the scene to disk." % err)
 		return null
 	return scene_filename
+	
+func get_asset_filename(name: String):
+	for asset in assets:
+		if asset.name == name:
+			return asset.filename
 		
 func get_scene(name: String):
 	for asset in assets:
 		if asset.name == name:
-			if is_asset_ext:
-				return asset.scene
-			else:
-				return asset.base_dir.path_join(asset.scene)
+			return asset.scene
 	return null
 	
 func get_asset_scene(name: String):
@@ -123,10 +120,7 @@ func get_asset_scene(name: String):
 func get_environment(name: String):
 	for env in environments:
 		if env.name == name:
-			if is_asset_ext:
-				return env.scene
-			else:
-				return env.base_dir.path_join(env.scene)
+			return env.scene
 	return null
 	
 #func get_preview(name: String):

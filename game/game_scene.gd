@@ -95,7 +95,7 @@ func show_part_parameters(asset_selected: Node3D):
 		%Z_pos.editable = true
 		%Z_rot.editable = true
 		
-	var script: GDScript = item_selected.get_script()
+#	var script: GDScript = item_selected.get_script()
 #	print_debug(script.get_script_property_list())
 	"""
 	PROPERTY_USAGE_SCRIPT_VARIABLE = 4096
@@ -218,18 +218,17 @@ func load_scene(path):
 				var asset_node : Node3D = ResourceLoader.load(asset_filename).instantiate()
 				if "transform" in asset:
 					var origin = Vector3(asset.transform.origin[0], asset.transform.origin[1], asset.transform.origin[2])
-					var basis = Basis(
+					var new_basis = Basis(
 						Vector3(asset.transform.basis[0], asset.transform.basis[1], asset.transform.basis[2]),
 						Vector3(asset.transform.basis[3], asset.transform.basis[4], asset.transform.basis[5]),
 						Vector3(asset.transform.basis[6], asset.transform.basis[7], asset.transform.basis[8]))
-					var tr = Transform3D(basis, origin)
-					asset_node.get_child(0).global_transform = tr
+					var new_transform = Transform3D(new_basis, origin)
+					asset_node.get_child(0).global_transform = new_transform
 				if "string_name" in asset:
 					asset_node.name = asset.string_name
 				freeze_item(asset_node, true)
 				scene.add_child(asset_node)
 				connect_editable()
-		
 
 	else:
 		var res = ResourceLoader.load(path)

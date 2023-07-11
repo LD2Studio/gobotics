@@ -88,9 +88,8 @@ func get_root_node(urdf_data) -> Node3D:
 		if type == XMLParser.NODE_ELEMENT:
 			var node_name = parser.get_node_name()
 			if node_name == "robot":
-				var attribut_count = parser.get_attribute_count()
-				var attrib: Dictionary
-				for idx in attribut_count:
+				var attrib = {}
+				for idx in parser.get_attribute_count():
 					var name = parser.get_attribute_name(idx)
 					var value = parser.get_attribute_value(idx)
 					attrib[name] = value
@@ -100,9 +99,8 @@ func get_root_node(urdf_data) -> Node3D:
 				break
 				
 			if node_name == "asset":
-				var attribut_count = parser.get_attribute_count()
-				var attrib: Dictionary
-				for idx in attribut_count:
+				var attrib = {}
+				for idx in parser.get_attribute_count():
 					var name = parser.get_attribute_name(idx)
 					var value = parser.get_attribute_value(idx)
 					attrib[name] = value
@@ -124,7 +122,6 @@ func load_gobotics_params(urdf_data):
 		return
 
 	var root_tag = Tag.NONE
-	var current_tag: int = Tag.NONE
 	while true:
 		if parser.read() != OK: # Ending parse XML file
 #			print("Ending link parser")
@@ -242,16 +239,15 @@ func load_materials(urdf_data):
 				mat_dict.res = res
 				
 			if node_name == "color" and not mat_dict.is_empty():
-				var color_dict: Dictionary
-				var attribut_count = parser.get_attribute_count()
-				for idx in attribut_count:
+				var attrib = {}
+				for idx in parser.get_attribute_count():
 					var name = parser.get_attribute_name(idx)
 					var value = parser.get_attribute_value(idx)
-					color_dict[name] = value
+					attrib[name] = value
 					
 				var color := Color.WHITE
-				if "rgba" in color_dict:
-					var rgba_arr = color_dict.rgba.split_floats(" ")
+				if "rgba" in attrib:
+					var rgba_arr = attrib.rgba.split_floats(" ")
 					color.r = rgba_arr[0]
 					color.g = rgba_arr[1]
 					color.b = rgba_arr[2]
@@ -288,7 +284,7 @@ func load_links(urdf_data) -> int:
 		printerr("Error opening URDF file: ", err)
 		return ERR_FILE_CANT_OPEN
 		
-	var link_attrib: Dictionary # {"name" , "node"}
+	var link_attrib = {}
 	var current_visual: MeshInstance3D
 	var current_collision: CollisionShape3D
 	var current_col_debug: MeshInstance3D
@@ -342,9 +338,8 @@ func load_links(urdf_data) -> int:
 					
 				"mass":
 					if root_tag != Tag.LINK: continue
-					var mass_tag: Dictionary
-					var attribut_count = parser.get_attribute_count()
-					for idx in attribut_count:
+					var mass_tag = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						mass_tag[name] = value
@@ -355,9 +350,8 @@ func load_links(urdf_data) -> int:
 				"visual":
 					if root_tag != Tag.LINK: continue
 					current_tag = Tag.VISUAL
-					var attrib: Dictionary
-					var attribut_count = parser.get_attribute_count()
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -374,9 +368,8 @@ func load_links(urdf_data) -> int:
 				"collision":
 					if root_tag != Tag.LINK: continue
 					current_tag = Tag.COLLISION
-					var attrib: Dictionary
-					var attribut_count = parser.get_attribute_count()
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -403,9 +396,8 @@ func load_links(urdf_data) -> int:
 				
 				"cylinder":
 					if root_tag != Tag.LINK: continue
-					var attrib: Dictionary
-					var attribut_count = parser.get_attribute_count()
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -426,9 +418,8 @@ func load_links(urdf_data) -> int:
 				
 				"box":
 					if root_tag != Tag.LINK: continue
-					var attrib: Dictionary
-					var attribut_count = parser.get_attribute_count()
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -452,9 +443,8 @@ func load_links(urdf_data) -> int:
 					
 				"sphere":
 					if root_tag != Tag.LINK: continue
-					var attrib: Dictionary
-					var attribut_count = parser.get_attribute_count()
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -472,9 +462,8 @@ func load_links(urdf_data) -> int:
 					
 				"mesh":
 					if root_tag != Tag.LINK: continue
-					var attrib: Dictionary
-					var attribut_count = parser.get_attribute_count()
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -501,21 +490,20 @@ func load_links(urdf_data) -> int:
 						
 				"origin":
 					if root_tag != Tag.LINK: continue
-					var attribut_count = parser.get_attribute_count()
-					var origin_tag: Dictionary
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
-						origin_tag[name] = value
+						attrib[name] = value
 					var xyz := Vector3.ZERO
-					if "xyz" in origin_tag:
-						var xyz_arr = origin_tag.xyz.split_floats(" ")
+					if "xyz" in attrib:
+						var xyz_arr = attrib.xyz.split_floats(" ")
 						xyz.x = xyz_arr[0]
 						xyz.y = xyz_arr[2]
 						xyz.z = -xyz_arr[1]
 					var rpy := Vector3.ZERO
-					if "rpy" in origin_tag:
-						var rpy_arr = origin_tag.rpy.split_floats(" ")
+					if "rpy" in attrib:
+						var rpy_arr = attrib.rpy.split_floats(" ")
 						rpy.x = rpy_arr[0]
 						rpy.y = rpy_arr[2]
 						rpy.z = -rpy_arr[1]
@@ -533,9 +521,8 @@ func load_links(urdf_data) -> int:
 				
 				"material":
 					if root_tag != Tag.LINK: continue
-					var attribut_count = parser.get_attribute_count()
-					var attrib: Dictionary
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -555,9 +542,8 @@ func load_links(urdf_data) -> int:
 				"color":
 					if root_tag != Tag.LINK: continue
 					if current_tag == Tag.INERTIAL: continue
-					var attrib: Dictionary
-					var attribut_count = parser.get_attribute_count()
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -689,9 +675,8 @@ func load_joints(urdf_data):
 	if err:
 		printerr("Error opening URDF file: ", err)
 		return
-	var current_tag: int = Tag.NONE
 	var root_tag: int = Tag.NONE
-	var joint_tag: Dictionary
+	var joint_tag = {}
 	while true:
 		if parser.read() != OK: # Ending parse XML file
 #			print("Ending joints parser")
@@ -712,9 +697,8 @@ func load_joints(urdf_data):
 						
 				"parent":
 					if not root_tag == Tag.JOINT: continue
-					var attribut_count = parser.get_attribute_count()
-					var attrib: Dictionary
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -722,9 +706,8 @@ func load_joints(urdf_data):
 					
 				"child":
 					if not root_tag == Tag.JOINT: continue
-					var attribut_count = parser.get_attribute_count()
-					var attrib: Dictionary
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -732,9 +715,8 @@ func load_joints(urdf_data):
 					
 				"origin":
 					if not root_tag == Tag.JOINT: continue
-					var attribut_count = parser.get_attribute_count()
-					var attrib: Dictionary
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -758,9 +740,8 @@ func load_joints(urdf_data):
 					
 				"axis":
 					if not root_tag == Tag.JOINT: continue
-					var attribut_count = parser.get_attribute_count()
-					var attrib: Dictionary
-					for idx in attribut_count:
+					var attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
@@ -774,7 +755,7 @@ func load_joints(urdf_data):
 						
 				"limit":
 					if not root_tag == Tag.JOINT: continue
-					var attrib: Dictionary
+					var attrib = {}
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
@@ -875,12 +856,12 @@ func _ready():
 	pass"""
 
 	var process_script = """
-func _process(delta: float):
+func _process(_delta: float):
 	pass"""
 	
 	_script.source_code = """extends Node3D
-var dummy = 1
-"""
+var ASSET_NAME = "%s"
+""" % [root_node.name]
 	if "control" in _gobotics and "type" in _gobotics.control:
 #		print_debug("type: ", _gobotics.control.type)
 		
