@@ -115,12 +115,12 @@ func generate_scene(urdf_description: String):
 	
 func get_asset_filename(name: String):
 	for asset in assets:
-		if asset.name == name:
+		if asset.name == name.to_lower():
 			return asset.filename
 		
 func get_scene(name: String):
 	for asset in assets:
-		if asset.name == name:
+		if asset.name == name.to_lower():
 			return asset.scene
 	return null
 	

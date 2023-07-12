@@ -1,9 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://bcv1hfrfva2qb"]
+[gd_scene load_steps=13 format=3 uid="uid://bcv1hfrfva2qb"]
 
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_d4jh8"]
 [ext_resource type="Script" path="res://game/asset_editor/asset_editor.gd" id="1_j1den"]
 [ext_resource type="Texture2D" uid="uid://cb8t7hq1qrfxx" path="res://game/icons/Save.svg" id="2_ave4i"]
 [ext_resource type="Texture2D" uid="uid://ht3bl7ryb38x" path="res://game/icons/VehicleBody3D.svg" id="2_cuuba"]
+[ext_resource type="Texture2D" uid="uid://bkljlbdc3saer" path="res://game/icons/DistractionFree.svg" id="4_255wc"]
 [ext_resource type="FontFile" uid="uid://dwnwhuwmtxwoa" path="res://game/fonts/UbuntuMono-Regular.ttf" id="4_md26q"]
 [ext_resource type="Script" path="res://game/asset_editor/URDFCodeEdit.gd" id="5_gmqxa"]
 [ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="6_dx6hk"]
@@ -71,6 +72,11 @@ layout_mode = 2
 size_flags_horizontal = 10
 text = "Generate"
 icon = ExtResource("2_cuuba")
+
+[node name="FullScreenButton" type="Button" parent="AssetMargin/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+toggle_mode = true
+icon = ExtResource("4_255wc")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="AssetMargin/VBoxContainer"]
 layout_mode = 2
@@ -169,6 +175,7 @@ text = "Joint"
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton" to="." method="_on_save_button_pressed"]
 [connection signal="confirmed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton/OverwriteConfirmationDialog" to="." method="_on_overwrite_confirmation_dialog_confirmed"]
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/GenerateButton" to="." method="_on_generate_button_pressed"]
+[connection signal="toggled" from="AssetMargin/VBoxContainer/HBoxContainer/FullScreenButton" to="." method="_on_full_screen_button_toggled"]
 [connection signal="text_changed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/URDFCodeEdit" to="." method="_on_urdf_code_edit_text_changed"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/VisualCheckBox" to="." method="_on_visual_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/CollisionCheckBox" to="." method="_on_collision_check_box_toggled"]

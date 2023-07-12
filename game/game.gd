@@ -116,7 +116,7 @@ func load_environments_in_database():
 func fill_assets_list():
 	assets_list.clear()
 	for asset in database.assets:
-		assets_list.add_item(asset.name)
+		assets_list.add_item(asset.fullname)
 
 func create_dir():
 	var temp_abs_path: String

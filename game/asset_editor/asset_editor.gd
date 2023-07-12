@@ -5,6 +5,7 @@ extends PanelContainer
 @export var asset_filename: String = ""
 
 signal asset_updated(name: StringName)
+signal fullscreen_toggled(button_pressed: bool)
 
 var urdf_parser = URDFParser.new()
 var urdf_syntaxhighlighter = URDFSyntaxHighlighter.new()
@@ -173,3 +174,18 @@ func _on_link_check_box_toggled(button_pressed):
 
 func _on_joint_check_box_toggled(button_pressed):
 	show_joint_frame(button_pressed)
+
+
+func _on_full_screen_button_pressed():
+	var root_size = get_tree().root.size
+	print("root_window_size: ", root_size)
+	var editor_window = get_parent()
+	if editor_window:
+		editor_window.position = Vector2i(0,0)
+		editor_window.size = root_size
+
+
+func _on_full_screen_button_toggled(button_pressed):
+	var root_size = get_tree().root.size
+	print("root_window_size: ", root_size)
+	fullscreen_toggled.emit(button_pressed)

@@ -48,12 +48,38 @@ const JOINT_HINGE_TAG = """
 		<axis xyz="1.0 0.0 0.0"/>
 	</joint>
 """
+const JOINT_CONTINUOUS_TAG = """
+	<joint name="joint_name" type="continuous">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<parent link=""/>
+		<child link=""/>
+		<axis xyz="1.0 0.0 0.0"/>
+		<limit effort="0.05" velocity="5.0"/>
+	</joint>
+"""
+const JOINT_PIN_TAG = """
+	<joint name="joint_name" type="pin">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<parent link=""/>
+		<child link=""/>
+	</joint>
+"""
 const BOX_GEOMETRY_TAG = """<box size="0.1 0.1 0.1"/>"""
 const SPHERE_GEOMETRY_TAG = """<sphere radius="0.1"/>"""
 const CYLINDER_GEOMETRY_TAG = """<cylinder radius="0.1" length="0.2"/>"""
 const MESH_GEOMETRY_TAG = """<mesh filename="package://" object="" />"""
 
 const INLINE_COLOR_TAG = """<color rgba="0 0 0 1"/>"""
+
+const GOBOTICS_CONTROL_TAG = """
+	<gobotics>
+		<control name="control_robot" type="diff_drive">
+			<right_wheel joint=""/>
+			<left_wheel joint=""/>
+			<max_speed value="6.0"/>
+		</control>
+	</gobotics>
+"""
 enum Tag {
 	LINK = MENU_MAX + 1,
 	MATERIAL,
@@ -66,6 +92,9 @@ enum Tag {
 	MESH,
 	INLINE_COLOR,
 	JOINT_HINGE,
+	JOINT_CONTINUOUS,
+	JOINT_PIN,
+	GOBOTICS_CONTROL,
 }
 
 func _ready():
@@ -83,6 +112,8 @@ func _ready():
 	var submenu_joint = PopupMenu.new()
 	submenu_joint.name = "SubmenuJoint"
 	submenu_joint.add_item("Insert Hinge Joint", Tag.JOINT_HINGE)
+	submenu_joint.add_item("Insert Continuous Joint", Tag.JOINT_CONTINUOUS)
+	submenu_joint.add_item("Insert Pin Joint", Tag.JOINT_PIN)
 	submenu_joint.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_joint)
 	menu.add_submenu_item("Joints", "SubmenuJoint")
@@ -98,6 +129,8 @@ func _ready():
 	menu.add_submenu_item("Geometry", "SubmenuGeometry")
 	
 	menu.add_item("Insert Inline Color", Tag.INLINE_COLOR)
+	
+	menu.add_item("Insert Robot Control", Tag.GOBOTICS_CONTROL)
 	
 	# Connect callback.
 	menu.id_pressed.connect(_on_item_pressed)
@@ -119,6 +152,10 @@ func _on_item_pressed(id):
 			insert_text_at_caret(MATERIAL_MINIMAL_TAG)
 		Tag.JOINT_HINGE:
 			insert_text_at_caret(JOINT_HINGE_TAG)
+		Tag.JOINT_CONTINUOUS:
+			insert_text_at_caret(JOINT_CONTINUOUS_TAG)
+		Tag.JOINT_PIN:
+			insert_text_at_caret(JOINT_PIN_TAG)
 		Tag.BOX:
 			insert_text_at_caret(BOX_GEOMETRY_TAG)
 		Tag.SPHERE:
@@ -129,4 +166,5 @@ func _on_item_pressed(id):
 			insert_text_at_caret(MESH_GEOMETRY_TAG)
 		Tag.INLINE_COLOR:
 			insert_text_at_caret(INLINE_COLOR_TAG)
-	
+		Tag.GOBOTICS_CONTROL:
+			insert_text_at_caret(GOBOTICS_CONTROL_TAG)
