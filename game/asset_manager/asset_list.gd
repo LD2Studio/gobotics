@@ -129,8 +129,7 @@ func update_assets_database():
 	
 func update_assets_in_scene():
 	var assets = get_tree().get_nodes_in_group("ASSETS")
-#	print("assets: ", assets)
-	print("[ASSET LIST] asset updated: ", _asset_updated)
+#	print("[ASSET LIST] asset updated: ", _asset_updated)
 	if _asset_updated == "": return
 	for asset in assets:
 		if asset.ASSET_NAME == _asset_updated:
@@ -173,7 +172,6 @@ func show_joint_frame(enable: bool):
 		node.visible = enable
 
 func _on_fullscreen_toggled(button_pressed: bool):
-	print("fullscreen: ", button_pressed)
 	if button_pressed:
 		_asset_editor_rect = Rect2i(asset_editor_dialog.position, asset_editor_dialog.size)
 		asset_editor_dialog.position = Vector2i(0,0)
@@ -184,7 +182,6 @@ func _on_fullscreen_toggled(button_pressed: bool):
 		asset_editor_dialog.position = _asset_editor_rect.position
 		asset_editor_dialog.size = _asset_editor_rect.size
 		get_tree().root.size_changed.disconnect(_on_asset_editor_dialog_size_changed)
-
 
 func _on_asset_editor_dialog_size_changed():
 	asset_editor_dialog.position = Vector2i(0,0)

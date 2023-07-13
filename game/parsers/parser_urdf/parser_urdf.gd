@@ -43,17 +43,15 @@ func parse_buffer(buffer: String):
 	clear_buffer()
 	var urdf_pack : PackedByteArray = buffer.to_ascii_buffer()
 #	print("urdf pack: ", urdf_pack)
-	var err: int
 	var root_node = get_root_node(urdf_pack)
 	if root_node == null: return
 	load_gobotics_params(urdf_pack)
 	load_materials(urdf_pack)
-	err = load_links(urdf_pack)
-	if err:
-		pass
+	load_links(urdf_pack)
 	load_joints(urdf_pack)
 	var base_link = get_kinematics_scene()
 	if base_link:
+		add_camera(base_link)
 		root_node.add_child(base_link)
 		kinematics_scene_owner_of(root_node)
 		add_script_to(root_node)
@@ -132,18 +130,14 @@ func load_gobotics_params(urdf_data):
 			var node_name = parser.get_node_name()
 			match node_name:
 				"gobotics":
+					if not root_tag == Tag.NONE: continue
 					root_tag = Tag.GOBOTICS
-				
-				"category":
-					if not root_tag == Tag.GOBOTICS: continue
-					var attrib: Dictionary = {}
-					for idx in parser.get_attribute_count():
-						var name = parser.get_attribute_name(idx)
-						var value = parser.get_attribute_value(idx)
-						attrib[name] = value
-					if "name" in attrib:
-						_gobotics.category = attrib.name
-				
+				"link":
+					if not root_tag == Tag.NONE: continue
+					root_tag = Tag.LINK
+				"joint":
+					if not root_tag == Tag.NONE: continue
+					root_tag = Tag.JOINT
 				"control":
 					if not root_tag == Tag.GOBOTICS: continue
 					var attrib: Dictionary = {}
@@ -187,12 +181,43 @@ func load_gobotics_params(urdf_data):
 						attrib[name] = value
 					if "value" in attrib:
 						_gobotics.control.max_speed = attrib.value
+						
+				"camera":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					_gobotics.camera = {}
+					var xyz := Vector3.ZERO
+					if "xyz" in attrib:
+						var xyz_arr = attrib.xyz.split_floats(" ")
+						xyz.x = xyz_arr[0]
+						xyz.y = xyz_arr[2]
+						xyz.z = -xyz_arr[1]
+					_gobotics.camera.position = xyz * scale
+					var rpy := Vector3.ZERO
+					if "rpy" in attrib:
+						var rpy_arr = attrib.rpy.split_floats(" ")
+						rpy.x = rpy_arr[0]
+						rpy.y = rpy_arr[2]
+						rpy.z = -rpy_arr[1]
+					_gobotics.camera.rotation = rpy
 					
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
 			var node_name = parser.get_node_name()
-			if node_name == "gobotics":
-				root_tag = Tag.NONE
+			match node_name:
+				"gobotics":
+					if root_tag == Tag.GOBOTICS:
+						root_tag = Tag.NONE
+				"link":
+					if root_tag == Tag.LINK:
+						root_tag = Tag.NONE
+				"joint":
+					if root_tag == Tag.JOINT:
+						root_tag = Tag.NONE
 				
 #	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 
@@ -662,9 +687,6 @@ func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape
 		idx += 1
 	return ERR_CANT_RESOLVE
 	
-func add_selection_area():
-	pass
-		
 func load_joints(urdf_data):
 	var err
 	if urdf_data is String:
@@ -848,6 +870,15 @@ func get_kinematics_scene():
 			break
 	return root_node
 	
+func add_camera(base_link):
+	if not "camera" in _gobotics: return
+#	print("Add camera")
+	var camera := Camera3D.new()
+	camera.name = &"EmbedCamera"
+	camera.position = _gobotics.camera.position
+	camera.rotation = _gobotics.camera.rotation
+	base_link.add_child(camera)
+	
 func kinematics_scene_owner_of(root_node: Node3D):
 	add_owner(root_node, root_node.get_children())
 	return root_node
@@ -857,7 +888,6 @@ func add_owner(owner_node, nodes: Array):
 		node.owner = owner_node
 		if node.get_child_count():
 			add_owner(owner_node, node.get_children())
-
 
 
 func add_script_to(root_node: Node3D):

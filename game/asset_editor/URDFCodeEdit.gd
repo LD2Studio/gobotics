@@ -72,13 +72,14 @@ const MESH_GEOMETRY_TAG = """<mesh filename="package://" object="" />"""
 const INLINE_COLOR_TAG = """<color rgba="0 0 0 1"/>"""
 
 const GOBOTICS_CONTROL_TAG = """
-	<gobotics>
-		<control name="control_robot" type="diff_drive">
-			<right_wheel joint=""/>
-			<left_wheel joint=""/>
-			<max_speed value="6.0"/>
-		</control>
-	</gobotics>
+	<control name="control_robot" type="diff_drive">
+		<right_wheel joint=""/>
+		<left_wheel joint=""/>
+		<max_speed value="6.0"/>
+	</control>
+"""
+const GOBOTICS_CAMERA_TAG = """
+	<camera xyz="0 -0.5 0.2" rpy="0 0 0"/>
 """
 enum Tag {
 	LINK = MENU_MAX + 1,
@@ -95,6 +96,7 @@ enum Tag {
 	JOINT_CONTINUOUS,
 	JOINT_PIN,
 	GOBOTICS_CONTROL,
+	GOBOTICS_CAMERA,
 }
 
 func _ready():
@@ -108,6 +110,8 @@ func _ready():
 	menu.add_item("Insert Collision", Tag.COLLISION)
 	menu.add_item("Insert Inertial", Tag.INERTIAL)
 	menu.add_item("Insert Material", Tag.MATERIAL)
+	menu.id_pressed.connect(_on_item_pressed)
+	
 	menu.add_separator()
 	var submenu_joint = PopupMenu.new()
 	submenu_joint.name = "SubmenuJoint"
@@ -117,6 +121,7 @@ func _ready():
 	submenu_joint.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_joint)
 	menu.add_submenu_item("Joints", "SubmenuJoint")
+	
 	menu.add_separator()
 	var submenu_geometry = PopupMenu.new()
 	submenu_geometry.name = "SubmenuGeometry"
@@ -127,13 +132,16 @@ func _ready():
 	submenu_geometry.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_geometry)
 	menu.add_submenu_item("Geometry", "SubmenuGeometry")
-	
 	menu.add_item("Insert Inline Color", Tag.INLINE_COLOR)
 	
-	menu.add_item("Insert Robot Control", Tag.GOBOTICS_CONTROL)
-	
-	# Connect callback.
-	menu.id_pressed.connect(_on_item_pressed)
+	menu.add_separator()
+	var submenu_gobotics = PopupMenu.new()
+	submenu_gobotics.name = "SubmenuGobotics"
+	submenu_gobotics.add_item("Insert Robot Control", Tag.GOBOTICS_CONTROL)
+	submenu_gobotics.add_item("Insert Follow Camera", Tag.GOBOTICS_CAMERA)
+	submenu_gobotics.id_pressed.connect(_on_item_pressed)
+	menu.add_child(submenu_gobotics)
+	menu.add_submenu_item("Gobotics", "SubmenuGobotics")
 
 func _on_item_pressed(id):
 	match id:
@@ -168,3 +176,5 @@ func _on_item_pressed(id):
 			insert_text_at_caret(INLINE_COLOR_TAG)
 		Tag.GOBOTICS_CONTROL:
 			insert_text_at_caret(GOBOTICS_CONTROL_TAG)
+		Tag.GOBOTICS_CAMERA:
+			insert_text_at_caret(GOBOTICS_CAMERA_TAG)
