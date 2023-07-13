@@ -180,6 +180,4 @@ func _on_joint_check_box_toggled(button_pressed):
 	show_joint_frame(button_pressed)
 
 func _on_full_screen_button_toggled(button_pressed):
-	var root_size = get_tree().root.size
-#	print("root_window_size: ", root_size)
 	fullscreen_toggled.emit(button_pressed)

@@ -18,6 +18,7 @@ func _drop_data(_at_position: Vector2, data) -> void:
 	game_scene.freeze_item(data, true)
 	game_scene.get_node("Scene").add_child(data)
 	game_scene.connect_editable()
+	game_scene.update_camera_view_menu()
 	
 	var part_name = data.get_node_or_null("%PartName")
 	if part_name:

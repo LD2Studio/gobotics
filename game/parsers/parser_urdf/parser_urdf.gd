@@ -850,7 +850,6 @@ func get_kinematics_scene():
 				elif joint.axis != Vector3.UP:
 					var new_basis = Basis.looking_at(joint.axis)
 					joint_node.transform.basis = new_basis
-#				joint_node.rotate_x(-PI/2) # Y axis -> Z axis
 				var joint_script := GDScript.new()
 				joint_script.source_code = get_continuous_joint_script()
 				joint_node.set_script(joint_script)
@@ -874,9 +873,13 @@ func add_camera(base_link):
 	if not "camera" in _gobotics: return
 #	print("Add camera")
 	var camera := Camera3D.new()
-	camera.name = &"EmbedCamera"
+	camera.name = &"RobotCamera"
+	camera.add_to_group("CAMERA", true)
 	camera.position = _gobotics.camera.position
 	camera.rotation = _gobotics.camera.rotation
+	var camera_script := GDScript.new()
+	camera_script.source_code = follow_camera_script(_gobotics.camera.position)
+	camera.set_script(camera_script)
 	base_link.add_child(camera)
 	
 func kinematics_scene_owner_of(root_node: Node3D):
@@ -888,7 +891,6 @@ func add_owner(owner_node, nodes: Array):
 		node.owner = owner_node
 		if node.get_child_count():
 			add_owner(owner_node, node.get_children())
-
 
 func add_script_to(root_node: Node3D):
 	var ready_script = """
@@ -933,7 +935,6 @@ var control : RobotDiffDriveExt
 			joint.target_velocity = value
 """ % [prop.name, prop.name, prop.path]
 		_script.source_code += export_target_vel
-	
 	_script.source_code += ready_script
 	_script.source_code += process_script
 	root_node.set_script(_script)
@@ -971,6 +972,27 @@ func _ready():
 	set_param(PARAM_MOTOR_TARGET_VELOCITY, target_velocity)
 
 """
+	return source_code
+	
+func follow_camera_script(position: Vector3):
+	var source_code = """extends Camera3D
+var lerp_speed = 3.0
+var target_path = "../"
+var offset = Vector3%s
+
+var target = null
+
+func _ready():
+	top_level = true
+	if target_path:
+		target = get_node(target_path)
+
+func _physics_process(delta):
+	if target:
+		var target_xform = target.global_transform.translated_local(offset)
+		global_transform = global_transform.interpolate_with(target_xform, lerp_speed * delta)
+		look_at(target.global_transform.origin, target.transform.basis.y)
+""" % [position]
 	return source_code
 
 func clear_buffer():

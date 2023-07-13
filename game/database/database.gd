@@ -46,8 +46,6 @@ func add_assets(search_path: String):
 		var asset_content = reader.get_files()
 		if (asset_name + ".urdf") in asset_content:
 			var res := reader.read_file(asset_name + ".urdf")
-			var asset_full_name: String
-			var scene_filename: String
 			var result = generate_scene(res.get_string_from_ascii())
 #			print("scene_filename: ", result.scene_filename)
 			assets.append({

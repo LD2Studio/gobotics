@@ -30,12 +30,10 @@ func _get_drag_data(at_position: Vector2):
 
 	var asset_name = get_item_text(idx)
 	var asset = database.get_scene(asset_name)
-	print("[ASSET LIST] asset: ", asset)
+#	print("[ASSET LIST] asset: ", asset)
 	if asset:
 		var _asset_res = load(asset)
-#		print(asset_res)
 		var node = load(asset).instantiate()
-#		print("node: ", node)
 		if node.get_node_or_null("./Preview"):
 #			print("Preview exist")
 			node.get_node("./Preview").preview = false

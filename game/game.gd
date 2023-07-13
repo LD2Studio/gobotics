@@ -7,8 +7,8 @@ extends Control
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
 @onready var assets_list = %AssetList
-@onready var control_camera_3d: Camera3D = %ControlCamera3D
-@onready var top_camera_2d: Camera3D = %TopCamera2D
+@onready var control_camera_3d: Camera3D = %"3DView"
+@onready var top_camera_2d: Camera3D = %TopView
 @onready var object_inspector = %ObjectInspector
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 
@@ -68,9 +68,6 @@ func _on_save_scene_as_button_pressed():
 func _on_save_scene_dialog_file_selected(path):
 	current_filename = path
 	game_scene.save_scene(path)
-
-func _on_view_button_toggled(button_pressed: bool) -> void:
-	top_camera_2d.current = true if button_pressed else false
 
 func _on_clear_button_pressed() -> void:
 	%TerminalOutput.text = ""

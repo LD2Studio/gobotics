@@ -6,6 +6,8 @@ var item_selected: Node3D
 var mouse_pos_on_area: Vector3
 var game_area_pointed: bool = false
 
+var _cams : Array
+
 #var python_threads: Array
 
 @onready var game = owner
@@ -15,9 +17,11 @@ var game_area_pointed: bool = false
 @onready var terminal_output = %TerminalOutput
 @onready var object_inspector: PanelContainer = %ObjectInspector
 @onready var udp_port_number: SpinBox = %UDPPortNumber
+@onready var camera_view_button = %CameraViewButton
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
+	update_camera_view_menu()
 	python.activate = true
 	add_child(python)
 	
@@ -69,6 +73,34 @@ func connect_editable():
 			node.mouse_entered.connect(_on_editable_mouse_entered)
 		if not node.is_connected("mouse_exited", _on_editable_mouse_exited):
 			node.mouse_exited.connect(_on_editable_mouse_exited)
+			
+func update_camera_view_menu():
+	var cam_popup: PopupMenu = camera_view_button.get_popup()
+	cam_popup.index_pressed.connect(_camera_view_selected)
+	cam_popup.clear()
+	_cams.clear()
+	var builtin_cams = get_tree().get_nodes_in_group("BUILTIN_CAMERA")
+	for cam in builtin_cams:
+		_cams.push_back(cam)
+		cam_popup.add_check_item(cam.name)
+	
+	var embed_cams = get_tree().get_nodes_in_group("CAMERA")
+	if not embed_cams.is_empty():
+		cam_popup.add_separator("Embedded Cameras")
+		_cams.push_back("Embedded Cameras")
+	for cam in embed_cams:
+		_cams.push_back(cam)
+		cam_popup.add_check_item(cam.owner.name)
+	_camera_view_selected(0)
+		
+func _camera_view_selected(idx: int):
+	var cam_popup: PopupMenu = camera_view_button.get_popup()
+	for i in cam_popup.item_count:
+		if idx == i:
+			cam_popup.set_item_checked(i, true)
+		else:
+			cam_popup.set_item_checked(i, false)
+	_cams[idx].current = true
 			
 func show_part_parameters(asset_selected: Node3D):
 #	print_debug(asset_selected)
@@ -193,73 +225,67 @@ func load_scene(path):
 	var scene_filename = path
 #	print("Load scene filename: ", scene_filename)
 	if scene_filename == "": return
-	if true:
-		var json = JSON.new()
-		var json_scene = FileAccess.get_file_as_string(scene_filename)
-		var error = json.parse(json_scene)
-		if error != OK:
-			print("JSON Parse Error: ", json.get_error_message(), " in ", json_scene, " at line ", json.get_error_line())
-			return
-			
-		var scene_objects = json.data
-#		print("scene_objects: ", scene_objects)
-		
-		delete_scene()
-		init_scene()
-		if "name" in scene_objects.environment:
-			var env_filename = game.database.get_environment(scene_objects.environment.name)
-			var environment = ResourceLoader.load(env_filename).instantiate()
-			scene.add_child(environment)
-			connect_pickable()
-		
-		for asset in scene_objects.assets:
-			if "name" in asset:
-				var asset_filename = game.database.get_asset_scene(asset.name)
-				if asset_filename == null:
-					printerr("Asset %s not available!" % [asset.name])
-					continue
-				var asset_node : Node3D = ResourceLoader.load(asset_filename).instantiate()
-				if "transform" in asset:
-					var origin = Vector3(asset.transform.origin[0], asset.transform.origin[1], asset.transform.origin[2])
-					var new_basis = Basis(
-						Vector3(asset.transform.basis[0], asset.transform.basis[1], asset.transform.basis[2]),
-						Vector3(asset.transform.basis[3], asset.transform.basis[4], asset.transform.basis[5]),
-						Vector3(asset.transform.basis[6], asset.transform.basis[7], asset.transform.basis[8]))
-					var new_transform = Transform3D(new_basis, origin)
-					asset_node.get_child(0).global_transform = new_transform
-				if "string_name" in asset:
-					asset_node.name = asset.string_name
-				freeze_item(asset_node, true)
-				scene.add_child(asset_node)
-				connect_editable()
+	var json = JSON.new()
+	var json_scene = FileAccess.get_file_as_string(scene_filename)
+	var error = json.parse(json_scene)
+	if error != OK:
+		print("JSON Parse Error: ", json.get_error_message(), " in ", json_scene, " at line ", json.get_error_line())
+		return
+	var scene_objects = json.data
+	delete_scene()
+	init_scene()
+	if "name" in scene_objects.environment:
+		var env_filename = game.database.get_environment(scene_objects.environment.name)
+		var environment = ResourceLoader.load(env_filename).instantiate()
+		scene.add_child(environment)
+	
+	for asset in scene_objects.assets:
+		if "name" in asset:
+			var asset_filename = game.database.get_asset_scene(asset.name)
+			if asset_filename == null:
+				printerr("Asset %s not available!" % [asset.name])
+				continue
+			var asset_node : Node3D = ResourceLoader.load(asset_filename).instantiate()
+			if "transform" in asset:
+				var origin = Vector3(asset.transform.origin[0], asset.transform.origin[1], asset.transform.origin[2])
+				var new_basis = Basis(
+					Vector3(asset.transform.basis[0], asset.transform.basis[1], asset.transform.basis[2]),
+					Vector3(asset.transform.basis[3], asset.transform.basis[4], asset.transform.basis[5]),
+					Vector3(asset.transform.basis[6], asset.transform.basis[7], asset.transform.basis[8]))
+				var new_transform = Transform3D(new_basis, origin)
+				asset_node.get_child(0).global_transform = new_transform
+			if "string_name" in asset:
+				asset_node.name = asset.string_name
+			freeze_item(asset_node, true)
+			scene.add_child(asset_node)
 
-	else:
-		var res = ResourceLoader.load(path)
-		if res == null:
-			return
-		scene = res.instantiate()
-		add_child(scene)
-		## Get info from each items
-		for item in scene.get_children():
-			var transform_saved = item.get_meta("transform", Transform3D())
-			if transform_saved != Transform3D():
-				item.get_child(0).global_transform = transform_saved
-			freeze_item(item, true)
-			var part_name = item.get_node_or_null("%PartName")
-			if part_name:
-				part_name.text = item.name
-			if item.is_in_group("ROBOTS"):
-				if item.get("control"):
-					item.control.manual = item.get_meta("manual_control", true)
-			for child in item.get_children():
-				if child.is_in_group("PYTHON"):
-					child.port = item.get_meta("python_bridge_port", 4242)
-					child.activate = item.get_meta("python_bridge_activate", false)
-					item.python_script_finished.connect(_on_python_script_finished)
-					break
+#		var res = ResourceLoader.load(path)
+#		if res == null:
+#			return
+#		scene = res.instantiate()
+#		add_child(scene)
+#		## Get info from each items
+#		for item in scene.get_children():
+#			var transform_saved = item.get_meta("transform", Transform3D())
+#			if transform_saved != Transform3D():
+#				item.get_child(0).global_transform = transform_saved
+#			freeze_item(item, true)
+#			var part_name = item.get_node_or_null("%PartName")
+#			if part_name:
+#				part_name.text = item.name
+#			if item.is_in_group("ROBOTS"):
+#				if item.get("control"):
+#					item.control.manual = item.get_meta("manual_control", true)
+#			for child in item.get_children():
+#				if child.is_in_group("PYTHON"):
+#					child.port = item.get_meta("python_bridge_port", 4242)
+#					child.activate = item.get_meta("python_bridge_activate", false)
+#					item.python_script_finished.connect(_on_python_script_finished)
+#					break
 			
 	connect_pickable()
 	connect_editable()
+	update_camera_view_menu()
 	%RunStopButton.button_pressed = false
 	save_scene_as_button.disabled = false
 	save_scene_button.disabled = false
