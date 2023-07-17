@@ -149,7 +149,7 @@ func update_assets_in_scene():
 			new_asset.get_child(0).global_rotation = asset_rotation
 			game_scene.connect_editable()
 			game_scene.connect_pickable()
-			game_scene.freeze_item(new_asset, true)
+			game_scene.freeze_asset(new_asset, true)
 			
 	_asset_updated = ""
 

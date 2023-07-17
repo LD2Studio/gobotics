@@ -103,10 +103,10 @@ func _camera_view_selected(idx: int):
 	_cams[idx].current = true
 			
 func show_part_parameters(asset_selected: Node3D):
-#	print_debug(asset_selected)
+	print("Asset name: ", asset_selected.name)
 	item_selected = asset_selected
 	if not asset_selected.get_child(0) is RigidBody3D: return
-	var base_rigid = asset_selected.get_child(0)
+	var base_rigid : RigidBody3D = asset_selected.get_child(0)
 	
 	object_inspector.visible = true
 #	# Update data in inspector
@@ -127,16 +127,26 @@ func show_part_parameters(asset_selected: Node3D):
 		%Z_pos.editable = true
 		%Z_rot.editable = true
 		
-#	var script: GDScript = item_selected.get_script()
-#	print_debug(script.get_script_property_list())
-	"""
-	PROPERTY_USAGE_SCRIPT_VARIABLE = 4096
-	The property is a script variable which should be serialized and saved in the scene file.
-	PROPERTY_USAGE_STORAGE = 2
-	The property is serialized and saved in the scene file (default).
-	PROPERTY_USAGE_EDITOR = 4
-	The property is shown in the EditorInspector (default).
-	"""
+	var all_continuous_joints = get_tree().get_nodes_in_group("CONTINUOUS")
+	var continuous_joints = all_continuous_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
+	print("Continuous joints: ", continuous_joints)
+	if not continuous_joints.is_empty():
+		for child in %JointsContainer.get_children():
+			%JointsContainer.remove_child(child)
+			child.queue_free()
+			
+		for joint in continuous_joints:
+			var velocity_label = Label.new()
+			velocity_label.text = joint.name
+			velocity_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			%JointsContainer.add_child(velocity_label)
+			var velocity_edit = HSlider.new()
+			velocity_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			velocity_edit.min_value = -10
+			velocity_edit.max_value = 10
+			velocity_edit.tick_count = 3
+			velocity_edit.value_changed.connect(joint._target_velocity_changed)
+			%JointsContainer.add_child(velocity_edit)
 	
 	if item_selected.is_in_group("ROBOTS"):
 		if item_selected.get("control"):
@@ -256,7 +266,7 @@ func load_scene(path):
 				asset_node.get_child(0).global_transform = new_transform
 			if "string_name" in asset:
 				asset_node.name = asset.string_name
-			freeze_item(asset_node, true)
+			freeze_asset(asset_node, true)
 			scene.add_child(asset_node)
 
 #		var res = ResourceLoader.load(path)
@@ -302,12 +312,14 @@ func delete_scene():
 	scene_node.queue_free()
 	save_scene_as_button.disabled = true
 	
-func freeze_item(item, frozen):
-	item.set_physics_process(not frozen)
-	freeze_children(item, frozen)
+func freeze_asset(asset, frozen):
+	asset.set_physics_process(not frozen)
+	freeze_children(asset, frozen)
 
 func freeze_children(node, frozen):
-	if node is RigidBody3D:
+	if node.is_in_group("STATIC"):
+		node.freeze = true
+	elif node is RigidBody3D:
 		node.freeze = frozen
 #		set_physics_process(not frozen)
 	for child in node.get_children():
@@ -341,17 +353,17 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 		running = true
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
-		for item in scene.get_children():
-			freeze_item(item, false)
-			if item.is_in_group("PYTHON"):
-				item.run()
+		for asset in scene.get_children():
+			freeze_asset(asset, false)
+			if asset.is_in_group("PYTHON"):
+				asset.run()
 	else:
 		running = false
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
 		hide_part_parameters()
 		for item in scene.get_children():
-			freeze_item(item, true)
+			freeze_asset(item, true)
 			if item.is_in_group("PYTHON"):
 				item.stop()
 

@@ -435,6 +435,23 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Edit Script"
 
+[node name="JointsContainer" type="GridContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 2
+
+[node name="Label" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/JointsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Motor"
+
+[node name="HSlider" type="HSlider" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/JointsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -10.0
+max_value = 10.0
+tick_count = 3
+
 [node name="ToolBar" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
 anchors_preset = 5
 anchor_left = 0.5
