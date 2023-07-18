@@ -103,7 +103,7 @@ func _camera_view_selected(idx: int):
 	_cams[idx].current = true
 			
 func show_part_parameters(asset_selected: Node3D):
-	print("Asset name: ", asset_selected.name)
+#	print("Asset name: ", asset_selected.name)
 	item_selected = asset_selected
 	if not asset_selected.get_child(0) is RigidBody3D: return
 	var base_rigid : RigidBody3D = asset_selected.get_child(0)
@@ -126,15 +126,15 @@ func show_part_parameters(asset_selected: Node3D):
 		%Y_pos.editable = true
 		%Z_pos.editable = true
 		%Z_rot.editable = true
+	# Remove joint parameters
+	for child in %JointsContainer.get_children():
+		%JointsContainer.remove_child(child)
+		child.queue_free()
 		
 	var all_continuous_joints = get_tree().get_nodes_in_group("CONTINUOUS")
 	var continuous_joints = all_continuous_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
-	print("Continuous joints: ", continuous_joints)
+#	print("Continuous joints: ", continuous_joints)
 	if not continuous_joints.is_empty():
-		for child in %JointsContainer.get_children():
-			%JointsContainer.remove_child(child)
-			child.queue_free()
-			
 		for joint in continuous_joints:
 			var velocity_label = Label.new()
 			velocity_label.text = joint.name
@@ -145,8 +145,28 @@ func show_part_parameters(asset_selected: Node3D):
 			velocity_edit.min_value = -10
 			velocity_edit.max_value = 10
 			velocity_edit.tick_count = 3
+			velocity_edit.value = joint.target_velocity
 			velocity_edit.value_changed.connect(joint._target_velocity_changed)
 			%JointsContainer.add_child(velocity_edit)
+			
+	var all_revolute_joints = get_tree().get_nodes_in_group("REVOLUTE")
+	var revolute_joints = all_revolute_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
+#	print("Revolute joints: ", revolute_joints)
+	if not revolute_joints.is_empty():
+		for joint in revolute_joints:
+			var angle_label = Label.new()
+			angle_label.text = joint.name
+			angle_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			%JointsContainer.add_child(angle_label)
+			var angle_edit = HSlider.new()
+			angle_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			angle_edit.min_value = -90
+			angle_edit.max_value = 90
+			angle_edit.tick_count = 3
+			angle_edit.value = joint.target_angle
+			angle_edit.value_changed.connect(joint._target_angle_changed)
+			%JointsContainer.add_child(angle_edit)
+			
 	
 	if item_selected.is_in_group("ROBOTS"):
 		if item_selected.get("control"):

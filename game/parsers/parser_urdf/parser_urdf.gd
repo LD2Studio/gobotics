@@ -218,7 +218,7 @@ func load_gobotics_params(urdf_data):
 				"joint":
 					if root_tag == Tag.JOINT:
 						root_tag = Tag.NONE
-				
+	
 #	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 
 func load_materials(urdf_data):
@@ -679,7 +679,6 @@ func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape
 				mdt.commit_to_surface(mesh)
 				var shape
 				if trimesh:
-					print("mesh is trimesh")
 					shape = mesh.create_trimesh_shape()
 				else:
 					shape = mesh.create_convex_shape()
@@ -808,7 +807,9 @@ func create_scene():
 			if link.name == parent_name:
 				parent_node = link.node
 #		print("parent_node: ", parent_node)
-		
+		if parent_node == null:
+			printerr("Parent link not finding!")
+			return null
 		var child_name: String = joint.child.link
 		var child_node: Node3D
 		for link in _links:
@@ -863,6 +864,7 @@ func create_scene():
 				
 			"revolute":
 				joint_node = HingeJoint3D.new()
+				joint_node.add_to_group("REVOLUTE", true)
 				if "limit" in joint:
 					if "effort" in joint.limit:
 						joint_node.set_param(HingeJoint3D.PARAM_MOTOR_MAX_IMPULSE, float(joint.limit.effort))
@@ -872,6 +874,9 @@ func create_scene():
 					joint_node.transform.basis = new_basis
 				elif joint.axis != Vector3.UP:
 					var new_basis = Basis.looking_at(joint.axis)
+					joint_node.transform.basis = new_basis
+				else:
+					var new_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
 					joint_node.transform.basis = new_basis
 				var joint_script := GDScript.new()
 				joint_script.source_code = get_revolute_joint_script()
@@ -889,6 +894,7 @@ func create_scene():
 			base_link = link.node
 			if link.name == "world":
 				link.node.add_to_group("STATIC", true)
+				link.node.add_to_group("PICKABLE", true)
 			break
 	return base_link
 	
@@ -942,19 +948,19 @@ var control : RobotDiffDriveExt
 	control.update_input()"""
 
 		
-	var continuous_joints_props = get_hinge_joints_properties(root_node)
+#	var continuous_joints_props = get_hinge_joints_properties(root_node)
 #	print("Joint props: ", continuous_joints_props)
-	for prop in continuous_joints_props:
+#	for prop in continuous_joints_props:
 #		var onready_var = "@onready var %s = get_node(\"%s\")\n" % [prop.name, prop.path]
 #		_script.source_code += onready_var
-		var export_target_vel = """var %s_target_velocity: float = 0:
-	set(value):
-		%s_target_velocity = value
-		var joint = get_node_or_null("%s")
-		if joint:
-			joint.target_velocity = value
-""" % [prop.name, prop.name, prop.path]
-		_script.source_code += export_target_vel
+#		var export_target_vel = """var %s_target_velocity: float = 0:
+#	set(value):
+#		%s_target_velocity = value
+#		var joint = get_node_or_null("%s")
+#		if joint:
+#			joint.target_velocity = value
+#""" % [prop.name, prop.name, prop.path]
+#		_script.source_code += export_target_vel
 	_script.source_code += ready_script
 	_script.source_code += process_script
 	root_node.set_script(_script)
@@ -1004,10 +1010,8 @@ func _target_velocity_changed(value: float):
 	
 func get_revolute_joint_script() -> String:
 	var source_code = """extends HingeJoint3D
-@onready var link: RigidBody3D = $".."
-var target_angle: float = 0.0:
-	set(value):
-		target_angle = value
+@onready var link: RigidBody3D = get_node("../")
+var target_angle: float = 0.0
 var max_speed: float = 1.0
 var k : float = 1.0
 
@@ -1016,7 +1020,9 @@ func _ready():
 	set_flag(FLAG_ENABLE_MOTOR, true)
 
 func _physics_process(_delta):
-	var err = deg_to_rad(target_angle) - link.rotation.z
+	var arm_basis = link.transform.basis * transform.basis
+	var angle = arm_basis.get_euler(EULER_ORDER_XYZ).z
+	var err = deg_to_rad(target_angle) - angle
 #	print("err: ", err)
 	var speed: float
 	if abs(err) > deg_to_rad(1):
@@ -1026,6 +1032,9 @@ func _physics_process(_delta):
 #		print("near")
 		speed = err * k
 	set_param(HingeJoint3D.PARAM_MOTOR_TARGET_VELOCITY, -speed)
+
+func _target_angle_changed(value: float):
+	target_angle = value
 """
 	return source_code
 	
