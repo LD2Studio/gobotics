@@ -5,9 +5,11 @@ var scale: float = 1.0
 var asset_user_path: String
 var packages_path: String
 var parser = XMLParser.new()
+var parse_error_message: String
 
 var _materials: Array
-var _links: Array
+## Links of robot
+var links: Array
 var _joints: Array
 var _gobotics: Dictionary
 var _script := GDScript.new()
@@ -55,12 +57,13 @@ func parse_buffer(buffer: String):
 		root_node.add_child(base_link)
 		kinematics_scene_owner_of(root_node)
 		add_script_to(root_node)
+		return root_node
 	else:
-		printerr("No base link!")
-#	var urdf_code = urdf_pack.get_string_from_ascii()
-#	print("urdf code: ", urdf_code)
-	return root_node
+		delete_links()
+		root_node.free()
+		return parse_error_message
 	
+## Return the root node of URDF tree <robot> or <asset>
 func get_root_node(urdf_data) -> Node3D:
 	var err
 	if urdf_data is PackedByteArray:
@@ -310,6 +313,7 @@ func load_links(urdf_data) -> int:
 		return ERR_FILE_CANT_OPEN
 		
 	var link_attrib = {}
+	var link: RigidBody3D
 	var current_visual: MeshInstance3D
 	var current_collision: CollisionShape3D
 	var current_col_debug: MeshInstance3D
@@ -325,29 +329,34 @@ func load_links(urdf_data) -> int:
 			var tag_name = parser.get_node_name()
 			match tag_name:
 				"link":
+					if root_tag != Tag.NONE: continue
 					root_tag = Tag.LINK
+					var attrib = {}
 					var attribut_count = parser.get_attribute_count()
 					for idx in attribut_count:
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						link_attrib[name] = value
+						attrib[name] = value
 						
-					var node := RigidBody3D.new()
+					link = RigidBody3D.new()
+					link.set_meta("orphan", true)
 					if "name" in link_attrib and link_attrib.name != "":
-						node.name = link_attrib.name
+						link.name = attrib.name
 					else:
 						printerr("No name for link!")
 						return ERR_PARSE_ERROR
 						
-					node.add_to_group("SELECT", true)
+					link.add_to_group("SELECT", true)
 					if "xyz" in link_attrib:
 						var xyz := Vector3.ZERO
 						var xyz_arr = link_attrib.xyz.split_floats(" ")
 						xyz.x = xyz_arr[0]
 						xyz.y = xyz_arr[2]
 						xyz.z = -xyz_arr[1]
-						node.position = xyz * scale
-					link_attrib.node = node
+#						node.position = xyz * scale
+						link.position = xyz * scale
+#					link_attrib.node = node
 					## Add frame gizmo
 					var frame_visual := MeshInstance3D.new()
 					frame_visual.name = link_attrib.name + "_frame"
@@ -355,7 +364,8 @@ func load_links(urdf_data) -> int:
 					frame_visual.mesh = _frame_mesh
 					frame_visual.scale = Vector3.ONE * scale
 					frame_visual.visible = false
-					node.add_child(frame_visual)
+#					node.add_child(frame_visual)
+					link.add_child(frame_visual)
 				
 				"inertial":
 					if root_tag != Tag.LINK: continue
@@ -370,7 +380,8 @@ func load_links(urdf_data) -> int:
 						mass_tag[name] = value
 					if current_tag == Tag.INERTIAL:
 						if mass_tag.value:
-							link_attrib.node.mass = float(mass_tag.value)
+#							link_attrib.node.mass = float(mass_tag.value)
+							link.mass = float(mass_tag.value)
 				
 				"visual":
 					if root_tag != Tag.LINK: continue
@@ -388,7 +399,8 @@ func load_links(urdf_data) -> int:
 					else:
 						current_visual.name = link_attrib.name + "_mesh"
 	#				print("current visual: ", current_visual)
-					link_attrib.node.add_child(current_visual)
+#					link_attrib.node.add_child(current_visual)
+					link.add_child(current_visual)
 
 				"collision":
 					if root_tag != Tag.LINK: continue
@@ -405,7 +417,8 @@ func load_links(urdf_data) -> int:
 					else:
 						current_collision.name = link_attrib.name + "_col"
 	#				print("current collision: ", current_collision)
-					link_attrib.node.add_child(current_collision)
+#					link_attrib.node.add_child(current_collision)
+					link.add_child(current_collision)
 					
 					current_col_debug = MeshInstance3D.new()
 					current_col_debug.add_to_group("COLLISION", true)
@@ -414,7 +427,8 @@ func load_links(urdf_data) -> int:
 						current_col_debug.name = attrib.name + "_debug"
 					else:
 						current_col_debug.name = link_attrib.name + "_debug"
-					link_attrib.node.add_child(current_col_debug)
+#					link_attrib.node.add_child(current_col_debug)
+					link.add_child(current_col_debug)
 	
 				"geometry":
 					if root_tag != Tag.LINK: continue
@@ -506,7 +520,7 @@ func load_links(urdf_data) -> int:
 								if not "object" in attrib:
 									printerr("Object attribut missing!")
 									continue
-								err = load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag, link_attrib.node.name == "world")
+								err = load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag, link.name == "world")
 								if err!= OK:
 									printerr("Loading GLTF file failed!")
 							"dae":
@@ -544,6 +558,8 @@ func load_links(urdf_data) -> int:
 					elif current_tag == Tag.INERTIAL:
 						link_attrib.node.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 						link_attrib.node.center_of_mass = xyz * scale
+						link.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+						link.center_of_mass = xyz * scale
 				
 				"material":
 					if root_tag != Tag.LINK: continue
@@ -590,8 +606,8 @@ func load_links(urdf_data) -> int:
 			var node_name = parser.get_node_name()
 			match node_name:
 				"link":
-					_links.append(link_attrib.duplicate(true))
-					link_attrib.clear()
+					links.append(link.duplicate())
+					link.queue_free()
 					root_tag = Tag.NONE
 				"intertial":
 					current_tag = Tag.NONE
@@ -600,7 +616,7 @@ func load_links(urdf_data) -> int:
 				"collision":
 					current_tag = Tag.NONE
 				
-#	print("links: ", JSON.stringify(_links, "\t", false))
+#	print("links: ", JSON.stringify(links, "\t", false))
 	return OK
 
 func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag, trimesh=false):
@@ -787,6 +803,8 @@ func load_joints(urdf_data):
 					joint_tag.limit = {}
 					if "effort" in attrib:
 						joint_tag.limit.effort = attrib.effort
+					if "velocity" in attrib:
+						joint_tag.limit.velocity = attrib.velocity
 				
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
@@ -801,25 +819,30 @@ func load_joints(urdf_data):
 func create_scene():
 	for joint in _joints:
 		var parent_name: String = joint.parent.link
-#		print(parent_name)
 		var parent_node: Node3D
-		for link in _links:
+		for link in links:
 			if link.name == parent_name:
-				parent_node = link.node
-#		print("parent_node: ", parent_node)
+				parent_node = link
+				link.set_meta("orphan", false)
 		if parent_node == null:
-			printerr("Parent link not finding!")
+			parse_error_message += "Joint <%s> has no parent link!" % [joint.name]
 			return null
+		
 		var child_name: String = joint.child.link
 		var child_node: Node3D
-		for link in _links:
+		for link in links:
 			if link.name == child_name:
-				child_node = link.node
+				child_node = link
+				link.set_meta("orphan", false)
+		if child_node == null:
+			parse_error_message += "Joint <%s> has no child link!" % [joint.name]
+			return null
 		if "origin" in joint:
 			child_node.position = joint.origin.xyz * scale
 			child_node.rotation = joint.origin.rpy
 #		print("add child %s to parent %s" % [child_node, parent_node])
 		parent_node.add_child(child_node)
+		
 		var joint_node : Joint3D
 		if not "type" in joint:
 			printerr("joint %s has no type" % joint.name)
@@ -845,9 +868,12 @@ func create_scene():
 			"continuous":
 				joint_node = HingeJoint3D.new()
 				joint_node.add_to_group("CONTINUOUS", true)
+				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
 						joint_node.set_param(HingeJoint3D.PARAM_MOTOR_MAX_IMPULSE, float(joint.limit.effort))
+					if "velocity" in joint.limit:
+						limit_velocity = float(joint.limit.velocity)
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
 					var new_basis = Basis.looking_at(Vector3(1,0,0))
@@ -859,15 +885,18 @@ func create_scene():
 					var new_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
 					joint_node.transform.basis = new_basis
 				var joint_script := GDScript.new()
-				joint_script.source_code = get_continuous_joint_script()
+				joint_script.source_code = get_continuous_joint_script(limit_velocity)
 				joint_node.set_script(joint_script)
 				
 			"revolute":
 				joint_node = HingeJoint3D.new()
 				joint_node.add_to_group("REVOLUTE", true)
+				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
 						joint_node.set_param(HingeJoint3D.PARAM_MOTOR_MAX_IMPULSE, float(joint.limit.effort))
+					if "velocity" in joint.limit:
+						limit_velocity = float(joint.limit.velocity)
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
 					var new_basis = Basis.looking_at(Vector3(1,0,0))
@@ -879,7 +908,7 @@ func create_scene():
 					var new_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
 					joint_node.transform.basis = new_basis
 				var joint_script := GDScript.new()
-				joint_script.source_code = get_revolute_joint_script()
+				joint_script.source_code = get_revolute_joint_script(limit_velocity)
 				joint_node.set_script(joint_script)
 				
 		joint_node.name = joint.name
@@ -889,14 +918,19 @@ func create_scene():
 		child_node.add_child(joint_node)
 		
 	var base_link: Node3D
-	for link in _links:
-		if link and link.node.get_parent() == null:
-			base_link = link.node
+	for link in links:
+		if link and link.get_parent() == null:
+			base_link = link
+			link.set_meta("orphan", false)
 			if link.name == "world":
-				link.node.add_to_group("STATIC", true)
-				link.node.add_to_group("PICKABLE", true)
+				link.add_to_group("STATIC", true)
+				link.add_to_group("PICKABLE", true)
 			break
+			
+	clean_links()
+
 	return base_link
+	
 	
 func add_camera(base_link):
 	if not "camera" in _gobotics: return
@@ -921,6 +955,7 @@ func add_owner(owner_node, nodes: Array):
 			add_owner(owner_node, node.get_children())
 
 func add_script_to(root_node: Node3D):
+	var base_link = root_node.get_child(0)
 	var ready_script = """
 func _ready():
 	pass"""
@@ -932,70 +967,71 @@ func _process(_delta: float):
 	_script.source_code = """extends Node3D
 var ASSET_NAME = "%s"
 """ % [root_node.name]
-	if "control" in _gobotics and "type" in _gobotics.control:
-#		print_debug("type: ", _gobotics.control.type)
+
+	## Control Tag
+	if root_node.is_in_group("ROBOTS"):
+		if not "control" in _gobotics:
+			_script.source_code += """
+var control : RobotExt
+"""
+			ready_script += """
+	control = RobotExt.new()
+	add_child(control)
+"""
 		
-		match _gobotics.control.type:
-			"diff_drive":
-				_script.source_code += """
+		elif "control" in _gobotics and "type" in _gobotics.control:
+			match _gobotics.control.type:
+				"diff_drive":
+					_script.source_code += """
 var control : RobotDiffDriveExt
 """
-				ready_script += """
-	control = RobotDiffDriveExt.new(%%%s, %%%s, %f)""" % [_gobotics.control.right_wheel_joint,
-													 _gobotics.control.left_wheel_joint,
-													float(_gobotics.control.max_speed)]
-				process_script += """
-	control.update_input()"""
-
-		
-#	var continuous_joints_props = get_hinge_joints_properties(root_node)
-#	print("Joint props: ", continuous_joints_props)
-#	for prop in continuous_joints_props:
-#		var onready_var = "@onready var %s = get_node(\"%s\")\n" % [prop.name, prop.path]
-#		_script.source_code += onready_var
-#		var export_target_vel = """var %s_target_velocity: float = 0:
-#	set(value):
-#		%s_target_velocity = value
-#		var joint = get_node_or_null("%s")
-#		if joint:
-#			joint.target_velocity = value
-#""" % [prop.name, prop.name, prop.path]
-#		_script.source_code += export_target_vel
+					ready_script += """
+	control = RobotDiffDriveExt.new($%s, %%%s, %%%s, %f)""" % [
+			base_link.name,
+			_gobotics.control.right_wheel_joint,
+			_gobotics.control.left_wheel_joint,
+			float(_gobotics.control.max_speed),
+			]
+					ready_script += """
+	add_child(control)
+"""
 	_script.source_code += ready_script
 	_script.source_code += process_script
+
 	root_node.set_script(_script)
 	
-func get_hinge_joints_properties(root_node: Node3D) -> Array:
-	var joints_properties = Array()
-	
-	for child in root_node.get_children():
-		if child is HingeJoint3D:
-			var joint_script : Script = child.get_script()
-			if joint_script == null: continue
-#			print("joint script: ", joint_script)
-			var props = joint_script.get_script_property_list()
-#			print("props: ", props)
-			var methods = joint_script.get_script_method_list()
-#			print("methods: ", methods)
-			var name = child.name
-			var root = child.owner
-			var dict = {
-				name = child.name,
-				path = root.get_path_to(child),
-			}
-			joints_properties.append(dict)
-		if child.get_child_count() != 0:
-			var props: Array = get_hinge_joints_properties(child)
-			if not props.is_empty():
-				joints_properties.append_array(props)
-		
-	return joints_properties
+#func get_hinge_joints_properties(root_node: Node3D) -> Array:
+#	var joints_properties = Array()
+#
+#	for child in root_node.get_children():
+#		if child is HingeJoint3D:
+#			var joint_script : Script = child.get_script()
+#			if joint_script == null: continue
+##			print("joint script: ", joint_script)
+#			var props = joint_script.get_script_property_list()
+##			print("props: ", props)
+#			var methods = joint_script.get_script_method_list()
+##			print("methods: ", methods)
+#			var name = child.name
+#			var root = child.owner
+#			var dict = {
+#				name = child.name,
+#				path = root.get_path_to(child),
+#			}
+#			joints_properties.append(dict)
+#		if child.get_child_count() != 0:
+#			var props: Array = get_hinge_joints_properties(child)
+#			if not props.is_empty():
+#				joints_properties.append_array(props)
+#
+#	return joints_properties
 
-func get_continuous_joint_script() -> String:
+func get_continuous_joint_script(limit_velocity: float) -> String:
 	var source_code = """extends HingeJoint3D
 @onready var link: RigidBody3D = $".."
 var target_velocity: float = 0.0:
 	set = _target_velocity_changed
+const LIMIT_VELOCITY = %d
 
 func _ready():
 	link.can_sleep = false
@@ -1005,37 +1041,39 @@ func _ready():
 func _target_velocity_changed(value: float):
 	target_velocity = value
 	set_param(PARAM_MOTOR_TARGET_VELOCITY, target_velocity)
-"""
+""" % [limit_velocity]
 	return source_code
 	
-func get_revolute_joint_script() -> String:
+func get_revolute_joint_script(limit_velocity: float) -> String:
 	var source_code = """extends HingeJoint3D
 @onready var link: RigidBody3D = get_node("../")
-var target_angle: float = 0.0
-var max_speed: float = 1.0
+@export var target_angle: float = 0.0
 var k : float = 1.0
+var rest_angle: float
+const LIMIT_VELOCITY = %d
 
 func _ready():
 	link.can_sleep = false
 	set_flag(FLAG_ENABLE_MOTOR, true)
+	var arm_basis = link.transform.basis * transform.basis
+	rest_angle = arm_basis.get_euler(EULER_ORDER_XYZ).z
 
 func _physics_process(_delta):
 	var arm_basis = link.transform.basis * transform.basis
-	var angle = arm_basis.get_euler(EULER_ORDER_XYZ).z
+	var angle = arm_basis.get_euler(EULER_ORDER_XYZ).z - rest_angle
 	var err = deg_to_rad(target_angle) - angle
-#	print("err: ", err)
 	var speed: float
 	if abs(err) > deg_to_rad(1):
-#		print("far")
-		speed = max_speed * sign(err)
-	else:
-#		print("near")
+		speed = LIMIT_VELOCITY * sign(err)
+	elif abs(err) > deg_to_rad(0.1):
 		speed = err * k
+	else:
+		speed = 0
 	set_param(HingeJoint3D.PARAM_MOTOR_TARGET_VELOCITY, -speed)
 
 func _target_angle_changed(value: float):
 	target_angle = value
-"""
+""" % [limit_velocity]
 	return source_code
 	
 func follow_camera_script(position: Vector3):
@@ -1061,6 +1099,17 @@ func _physics_process(delta):
 
 func clear_buffer():
 	_materials.clear()
-	_links.clear()
+	links.clear()
 	_joints.clear()
 	_gobotics.clear()
+	parse_error_message = ""
+
+func delete_links():
+	for link in links:
+		link.free()
+
+func clean_links():
+	for link in links:
+		if link.get_meta("orphan"):
+#			print("freeing %s" % link)
+			link.queue_free()

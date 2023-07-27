@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://beb342vhig8ha"]
+
+[ext_resource type="Script" path="res://game/ui/property_slider.gd" id="1_j4r1f"]
+
+[node name="PropertySlider" type="VBoxContainer"]
+offset_right = 191.0
+offset_bottom = 69.0
+script = ExtResource("1_j4r1f")

@@ -1,4 +1,4 @@
-extends PanelContainer
+class_name AssetEditor extends PanelContainer
 
 ## If true, Asset extension is .asset, else .tscn
 @export var is_asset_ext: bool = true
@@ -62,13 +62,17 @@ func _ready():
 
 	urdf_parser.scale = 10
 	urdf_parser.packages_path = package_base_dir
-#	urdf_parser.asset_user_path = asset_filename.get_base_dir()
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	generate_scene()
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)
 	show_link_frame(%FrameCheckBox.button_pressed)
 	show_joint_frame(%JointCheckBox.button_pressed)
+	
+func _exit_tree():
+	pass
+	if urdf_parser:
+		urdf_parser.unreference()
 
 func _on_save_button_pressed():
 	var path = assets_base_dir.path_join(asset_user_path_edit.text)
@@ -108,16 +112,24 @@ func _on_generate_button_pressed() -> void:
 	
 func generate_scene():
 	var urdf_code = urdf_code_edit.text
-#	print("urdf code: ", urdf_code)
-	var root_node : Node3D = urdf_parser.parse_buffer(urdf_code)
-#	print_debug("root node: ", root_node)
+	var result = urdf_parser.parse_buffer(urdf_code)
+	# If result return error message
+	if result is String:
+		%MessageContainer.visible = true
+		%MessageLabel.text = result
+		return
+	else:
+		%MessageContainer.visible = false
+		
+	var root_node = result
+	
 	if root_node == null: return
 	if root_node:
 		root_node.set_meta("urdf_code", urdf_code)
 	
 	asset_scene = PackedScene.new()
-	var result = asset_scene.pack(root_node)
-	if result == OK:
+	var err = asset_scene.pack(root_node)
+	if err == OK:
 		%SaveAssetButton.disabled = false
 	else:
 		%SaveAssetButton.disabled = true
@@ -134,6 +146,8 @@ func generate_scene():
 	show_collision_shape(%CollisionCheckBox.button_pressed)
 	show_link_frame(%FrameCheckBox.button_pressed)
 	show_joint_frame(%JointCheckBox.button_pressed)
+	# Freeing nodes
+	root_node.queue_free()
 	
 func _on_urdf_code_edit_text_changed() -> void:
 	%SaveAssetButton.disabled = true

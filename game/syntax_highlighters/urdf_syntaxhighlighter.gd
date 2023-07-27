@@ -17,8 +17,9 @@ func _init():
 		asset = Color.ROYAL_BLUE,
 		link = Color.ROYAL_BLUE,
 		joint = Color.ROYAL_BLUE,
+		material = Color.ROYAL_BLUE,
 		gobotics = Color.ROYAL_BLUE,
-		inertial = Color.DODGER_BLUE,
-		visual = Color.DODGER_BLUE,
-		collision = Color.DODGER_BLUE,
+		inertial = Color.ROYAL_BLUE,
+		visual = Color.ROYAL_BLUE,
+		collision = Color.ROYAL_BLUE,
 	}

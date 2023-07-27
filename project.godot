@@ -28,7 +28,7 @@ export/convert_text_resources_to_binary=false
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/control_camera3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/control_camera3d/plugin.cfg", "res://addons/editor_physics/plugin.cfg")
 
 [importer_defaults]
 

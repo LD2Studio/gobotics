@@ -1,9 +1,12 @@
-extends RefCounted
+extends Node
 class_name RobotExt
 
 var joypads_connected: Array[int]
 var joypad_connected: bool = false
 var joypad_selected: int = 0
+var manual: bool = true
+
+@onready var python = PythonBridge.new(self, 4243)
 
 func _init():
 	Input.joy_connection_changed.connect(_on_joypad_changed)
@@ -14,6 +17,9 @@ func _init():
 		joypad_connected = true
 	else:
 		joypad_connected = false
+		
+func _ready():
+	add_child(python)
 
 func _on_joypad_changed(device: int, connected: bool):
 	print("device %d connected: %s" % [device, connected])
@@ -22,3 +28,4 @@ func _on_joypad_changed(device: int, connected: bool):
 		joypad_connected = true
 	else:
 		joypad_connected = false
+

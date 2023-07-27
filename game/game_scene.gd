@@ -13,7 +13,7 @@ var _cams : Array
 @onready var game = owner
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
 @onready var save_scene_button: Button = %SaveSceneButton
-@onready var python = PythonBridge.new(4242)
+@onready var python = PythonBridge.new(self, 4242)
 @onready var terminal_output = %TerminalOutput
 @onready var object_inspector: PanelContainer = %ObjectInspector
 @onready var udp_port_number: SpinBox = %UDPPortNumber
@@ -26,16 +26,14 @@ func _ready() -> void:
 	add_child(python)
 	
 func _input(event: InputEvent) -> void:
-#	print("[game scene]: ", event.as_text())
 	if event.is_action_pressed("DELETE"):
-#		print(selected_block)
 		if item_selected == null: return
 		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [item_selected.name]
 		%ConfirmDeleteDialog.popup_centered()
 		
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
-		
+	
 func init_scene():
 	scene = Node3D.new()
 	scene.name = &"Scene"
@@ -76,7 +74,8 @@ func connect_editable():
 			
 func update_camera_view_menu():
 	var cam_popup: PopupMenu = camera_view_button.get_popup()
-	cam_popup.index_pressed.connect(_camera_view_selected)
+	if not cam_popup.index_pressed.is_connected(_camera_view_selected):
+		cam_popup.index_pressed.connect(_camera_view_selected)
 	cam_popup.clear()
 	_cams.clear()
 	var builtin_cams = get_tree().get_nodes_in_group("BUILTIN_CAMERA")
@@ -102,7 +101,7 @@ func _camera_view_selected(idx: int):
 			cam_popup.set_item_checked(i, false)
 	_cams[idx].current = true
 			
-func show_part_parameters(asset_selected: Node3D):
+func show_asset_parameters(asset_selected: Node3D):
 #	print("Asset name: ", asset_selected.name)
 	item_selected = asset_selected
 	if not asset_selected.get_child(0) is RigidBody3D: return
@@ -112,7 +111,7 @@ func show_part_parameters(asset_selected: Node3D):
 #	# Update data in inspector
 	%InspectorPartName.text = item_selected.name
 	%X_pos.value = base_rigid.global_position.x / 10.0
-	%Y_pos.value = base_rigid.global_position.z * -1 / 10.0
+	%Y_pos.value = -base_rigid.global_position.z / 10.0
 	%Z_pos.value = base_rigid.global_position.y / 10.0
 	%Z_rot.value = base_rigid.rotation_degrees.y
 	
@@ -140,14 +139,15 @@ func show_part_parameters(asset_selected: Node3D):
 			velocity_label.text = joint.name
 			velocity_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			%JointsContainer.add_child(velocity_label)
-			var velocity_edit = HSlider.new()
+			var velocity_edit = PropertySlider.new()
+			%JointsContainer.add_child(velocity_edit)
 			velocity_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			velocity_edit.min_value = -10
-			velocity_edit.max_value = 10
-			velocity_edit.tick_count = 3
+			velocity_edit.min_value = -joint.LIMIT_VELOCITY
+			velocity_edit.max_value = joint.LIMIT_VELOCITY
+			velocity_edit.step = joint.LIMIT_VELOCITY / 10.0
+#			velocity_edit.tick_count = 3
 			velocity_edit.value = joint.target_velocity
 			velocity_edit.value_changed.connect(joint._target_velocity_changed)
-			%JointsContainer.add_child(velocity_edit)
 			
 	var all_revolute_joints = get_tree().get_nodes_in_group("REVOLUTE")
 	var revolute_joints = all_revolute_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
@@ -158,34 +158,28 @@ func show_part_parameters(asset_selected: Node3D):
 			angle_label.text = joint.name
 			angle_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			%JointsContainer.add_child(angle_label)
-			var angle_edit = HSlider.new()
+			var angle_edit = PropertySlider.new()
+			%JointsContainer.add_child(angle_edit)
 			angle_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			angle_edit.min_value = -90
 			angle_edit.max_value = 90
-			angle_edit.tick_count = 3
 			angle_edit.value = joint.target_angle
 			angle_edit.value_changed.connect(joint._target_angle_changed)
-			%JointsContainer.add_child(angle_edit)
-			
-	
+		
 	if item_selected.is_in_group("ROBOTS"):
 		if item_selected.get("control"):
 			%KeysControlContainer.visible = true
 			%KeysControlCheck.set_pressed_no_signal(item_selected.control.manual)
 		else:
 			%KeysControlContainer.visible = false
+		%PythonBridgeContainer.visible = true
+		%PythonRemoteButton.set_pressed_no_signal(item_selected.control.python.activate)
+		%UDPPortNumber.value = item_selected.control.python.port
 	else:
 		%KeysControlContainer.visible = false
-
-	if item_selected.is_in_group("PYTHON"):
-		%PythonBridgeContainer.visible = true
-		%PythonRemoteButton.set_pressed_no_signal(item_selected.python.activate)
-		%UDPPortNumber.value = item_selected.python.port
-		%BuiltinScriptCheckBox.button_pressed = item_selected.builtin
-	else:
 		%PythonBridgeContainer.visible = false
 
-func hide_part_parameters():
+func hide_asset_parameters():
 	object_inspector.visible = false
 
 func save_scene(path: String):
@@ -381,7 +375,7 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 		running = false
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
-		hide_part_parameters()
+		hide_asset_parameters()
 		for item in scene.get_children():
 			freeze_asset(item, true)
 			if item.is_in_group("PYTHON"):
@@ -393,7 +387,7 @@ func _on_reset_button_pressed():
 func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
 	mouse_pos_on_area = mouse_position
 	if event.is_action_pressed("EDIT"):
-		hide_part_parameters()
+		hide_asset_parameters()
 
 func _on_ground_mouse_entered():
 	game_area_pointed = true
@@ -405,7 +399,7 @@ func _on_editable_block_input_event(_camera, event: InputEvent, _mouse_position,
 	if event.is_action_pressed("EDIT"):
 		var asset_selected: Node3D = node.owner
 		if asset_selected.is_in_group("ASSETS"):
-			show_part_parameters(asset_selected)
+			show_asset_parameters(asset_selected)
 
 func _on_editable_mouse_entered():
 	owner.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -439,14 +433,14 @@ func _on_z_rot_value_changed(value: float) -> void:
 
 func _on_python_remote_button_toggled(button_pressed: bool) -> void:
 	if item_selected == null: return
-	if item_selected.is_in_group("PYTHON"):
-		item_selected.python.activate = button_pressed
-		item_selected.python.port = int(udp_port_number.value)
+	if item_selected.is_in_group("ROBOTS"):
+		item_selected.control.python.activate = button_pressed
+		item_selected.control.python.port = int(udp_port_number.value)
 
 func _on_udp_port_number_value_changed(value: float) -> void:
 	if item_selected == null: return
-	if item_selected.is_in_group("PYTHON"):
-		item_selected.python.port = int(value)
+	if item_selected.is_in_group("ROBOTS"):
+		item_selected.control.python.port = int(value)
 		
 func _on_open_script_button_pressed() -> void:
 	if item_selected == null: return

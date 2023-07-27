@@ -1,5 +1,4 @@
-class_name PythonBridge
-extends Node
+class_name PythonBridge extends Node
 
 signal python_client_connected
 
@@ -22,16 +21,11 @@ signal python_client_connected
 
 var server := UDPServer.new()
 var client_peer: PacketPeerUDP
+var caller: Object
 
-func _init(port_num: int):
-	port = port_num
-
-func _enter_tree() -> void:
-	add_to_group("PYTHON")
-
-func _ready():
-	pass
-#	print("PB parent: ", get_parent())
+func _init(new_caller: Object, new_port: int):
+	caller = new_caller
+	port = new_port
 
 func _process(_delta):
 	if not server.is_listening(): return
@@ -59,10 +53,8 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 		return
 	var message = json.data
 	if "namefunc" in message:
-		if get_parent().has_method(message.namefunc):
+		if caller.has_method(message.namefunc):
 #			print("method %s exits" % [message.namefunc])
-#		if has_method(message.namefunc):
-#		print_debug("<%s> method exist" % message)
 			var params: Array = message.params
 #			print(params)
 			var args = Array()
@@ -80,7 +72,7 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 					var vec3 = Vector3(p.value[0], p.value[1], p.value[2])
 					args.append(vec3)
 #			var c = Callable(self, message.namefunc)
-			var c = Callable(get_parent(), message.namefunc)
+			var c = Callable(caller, message.namefunc)
 			if message.typefunc == "setter":
 #				print("return setter")
 				c.callv(args)

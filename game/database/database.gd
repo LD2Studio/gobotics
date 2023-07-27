@@ -1,23 +1,20 @@
-class_name GoboticsDB
-extends Resource
+class_name GoboticsDB extends Resource
 
 @export var assets: Array
 @export var environments: Array
 
 var is_asset_ext: bool = true
-var assets_base_dir: String
-var temp_dir: String
+var temp_abs_path: String
 var package_abs_path: String
 var urdf_parser = URDFParser.new()
+var reader := ZIPReader.new()
 
-func _init(package_dir: String):
+func _init(package_dir: String, temp_dir: String):
 	if OS.has_feature("editor"):
-		assets_base_dir = "res://assets"
-		temp_dir = "res://temp"
-		package_abs_path = ProjectSettings.globalize_path(package_dir)
+		temp_abs_path = ProjectSettings.globalize_path("res://" + temp_dir)
+		package_abs_path = ProjectSettings.globalize_path("res://" + package_dir)
 	else:
-		assets_base_dir = OS.get_executable_path().get_base_dir().path_join("assets")
-		temp_dir = OS.get_executable_path().get_base_dir().path_join("temp")
+		temp_abs_path = OS.get_executable_path().get_base_dir().path_join(temp_dir)
 		package_abs_path = OS.get_executable_path().get_base_dir().path_join(package_dir)
 		
 	urdf_parser.scale = 10
@@ -29,14 +26,10 @@ func add_assets(search_path: String):
 #	print("files: ", files)
 	# Filter asset files
 	var asset_files: Array = files.filter(func(file): return file.get_extension() == "asset")
-	if not asset_files.is_empty():
-		pass
-#		print("[Database] Asset files: ", asset_files)
 	
 	for file in asset_files:
 		var asset_filename = ProjectSettings.globalize_path(search_path.path_join(file))
 #		print("[Database] asset_filename: ", asset_filename)
-		var reader := ZIPReader.new()
 		var err := reader.open(asset_filename)
 		if err != OK:
 			print("[Database]: Open %s asset failed" % [file])
@@ -47,14 +40,22 @@ func add_assets(search_path: String):
 		if (asset_name + ".urdf") in asset_content:
 			var res := reader.read_file(asset_name + ".urdf")
 			var result = generate_scene(res.get_string_from_ascii())
-#			print("scene_filename: ", result.scene_filename)
-			assets.append({
-				name=asset_name,
-				fullname=result.full_name,
-				filename=asset_filename,
-				scene=result.scene_filename,
-				group="ASSETS",
-				})
+			if result == null:
+				assets.append({
+					name=asset_name,
+					fullname=asset_name,
+					filename=asset_filename,
+					scene=null,
+					group="ASSETS",
+					})
+			else:
+				assets.append({
+					name=asset_name,
+					fullname=result.full_name,
+					filename=asset_filename,
+					scene=result.scene_filename,
+					group="ASSETS",
+					})
 		reader.close()
 		
 	# search sub-folders
@@ -65,9 +66,9 @@ func add_assets(search_path: String):
 	for search_dir in search_dirs:
 		add_assets(search_dir)
 	
-	var err = ResourceSaver.save(self, "res://temp/database.tres")
-	if err:
-		printerr("Database not saving!")
+#	var err = ResourceSaver.save(self, "res://temp/database.tres")
+#	if err:
+#		printerr("Database not saving!")
 		
 func add_environments(search_path: String, builtin: bool = false):
 #	print("[Database] search env path: ", search_path)
@@ -90,25 +91,35 @@ func add_environments(search_path: String, builtin: bool = false):
 				scene=scene_filename,
 				})
 				
-	var err = ResourceSaver.save(self, "res://temp/database.tres")
-	if err:
-		printerr("[Database] not saving!")
+#	var err = ResourceSaver.save(self, "res://temp/database.tres")
+#	if err:
+#		printerr("[Database] not saving!")
 		
-func generate_scene(urdf_description: String):
-	var root_node : Node3D = urdf_parser.parse_buffer(urdf_description)
-#	print("[DATABASE] root_node.name : ", root_node.name)
+func generate_scene(urdf_code: String):
+#	var root_node = Node3D.new()
+	var result = urdf_parser.parse_buffer(urdf_code)
+	# If result return error message
+	if result is String:
+		print("error message: ", result)
+		return null
+		
+	var root_node = result
 	var full_name = root_node.name
-	var scene_filename = temp_dir.path_join(root_node.name.to_lower() + ".tscn")
+	var scene_filename = temp_abs_path.path_join(root_node.name.to_lower() + ".tscn")
 	if root_node == null: return
+	
 	root_node.set_meta("asset_name", root_node.name.to_lower())
 	var asset_scene = PackedScene.new()
-	var result = asset_scene.pack(root_node)
-	if result != OK:
+	var err = asset_scene.pack(root_node)
+	if err != OK:
 		return null
-	var err := ResourceSaver.save(asset_scene, scene_filename)
+	err = ResourceSaver.save(asset_scene, scene_filename)
 	if err != OK:
 		printerr("[Database] An error %d occurred while saving the scene to disk." % err)
 		return null
+	
+#	root_node.print_tree_pretty()
+	root_node.queue_free()	# Delete orphan nodes
 	return {scene_filename=scene_filename, full_name=full_name}
 	
 func get_asset_filename(name: String):

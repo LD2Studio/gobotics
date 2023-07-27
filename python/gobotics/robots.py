@@ -1,6 +1,6 @@
-from gobotics import Item
+from gobotics import Robots
 
-class DifferentialRobot(Item):
+class DifferentialRobot(Robot):
     def is_running(self) -> bool:
         return self.get("is_running")
     

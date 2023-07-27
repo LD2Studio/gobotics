@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bcv1hfrfva2qb"]
+[gd_scene load_steps=14 format=3 uid="uid://bcv1hfrfva2qb"]
 
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_d4jh8"]
 [ext_resource type="Script" path="res://game/asset_editor/asset_editor.gd" id="1_j1den"]
@@ -22,6 +22,10 @@ sky_material = SubResource("ProceduralSkyMaterial_77vla")
 [sub_resource type="Environment" id="Environment_nftkf"]
 background_mode = 2
 sky = SubResource("Sky_xa5ux")
+
+[sub_resource type="LabelSettings" id="LabelSettings_2w3f3"]
+font_size = 12
+font_color = Color(1, 0, 0, 1)
 
 [node name="AssetEditor" type="PanelContainer"]
 anchors_preset = 15
@@ -175,6 +179,26 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Joint"
+
+[node name="MessageContainer" type="PanelContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
+unique_name_in_owner = true
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+
+[node name="MessageLabel" type="Label" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/MessageContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_2w3f3")
+horizontal_alignment = 1
 
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton" to="." method="_on_save_button_pressed"]
 [connection signal="confirmed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton/OverwriteConfirmationDialog" to="." method="_on_overwrite_confirmation_dialog_confirmed"]
