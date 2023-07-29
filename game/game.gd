@@ -5,6 +5,9 @@ class_name Game extends Control
 @export var package_dir : String = "packages"
 @export var temp_dir : String = "temp"
 
+var asset_base_dir: String
+var package_base_dir: String
+
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
 @onready var assets_list = %AssetList
@@ -13,15 +16,16 @@ class_name Game extends Control
 @onready var object_inspector = %ObjectInspector
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 
+var database: GoboticsDB = GoboticsDB.new(package_dir, temp_dir)
+
 var current_filename: String:
 	set(value):
 		current_filename = value
 		if current_filename == "":
-			%SceneFileName.text = "No Scene"
+			%SceneFileName.text = "No Scene saved"
 		else:
 			%SceneFileName.text = "%s" % [current_filename.get_file().get_basename()]
 			
-var database: GoboticsDB = GoboticsDB.new(package_dir, temp_dir)
 
 func _enter_tree():
 	create_dir()
@@ -46,7 +50,7 @@ func _on_new_scene_dialog_confirmed() -> void:
 	var items = %EnvironmentList.get_selected_items()
 	if items.is_empty(): return
 	var environment_name: String = %EnvironmentList.get_item_text(items[0])
-	current_filename = "noname.scene"
+	current_filename = ""
 	var env = database.get_environment(environment_name)
 	if env:
 		game_scene.new_scene(env)
@@ -93,18 +97,18 @@ func load_pck():
 			
 ## Loading assets located in the <assets> directory and places them in a GoboticsDB database
 func load_assets_in_database():
-	var asset_abs_path: String
-	if OS.has_feature("editor"):
-		asset_abs_path = ProjectSettings.globalize_path("res://" + asset_dir)
-	else:
-		asset_abs_path = OS.get_executable_path().get_base_dir().path_join(asset_dir)
-		
-	if not DirAccess.dir_exists_absolute(asset_abs_path):
-		printerr("Asset Directory not exists")
-		return
+#	if OS.has_feature("editor"):
+#		asset_base_dir = ProjectSettings.globalize_path("res://" + asset_dir)
+#	else:
+#		asset_base_dir = OS.get_executable_path().get_base_dir().path_join(asset_dir)
+#
+#	if not DirAccess.dir_exists_absolute(asset_base_dir):
+#		printerr("Asset Directory not exists")
+#		return
+	database.asset_base_dir = asset_base_dir
 		
 	database.assets.clear()
-	database.add_assets(asset_abs_path)
+	database.add_assets(asset_base_dir)
 
 func load_environments_in_database():
 	database.environments.clear()
@@ -125,9 +129,12 @@ func load_environments_in_database():
 func fill_assets_list():
 	assets_list.clear()
 	for asset in database.assets:
-		assets_list.add_item(asset.fullname)
+		var idx = assets_list.add_item(asset.name)
+		assets_list.set_item_metadata(idx, asset.fullname)
+		assets_list.set_item_tooltip(idx, asset.fullname)
 
 ## Create missing directory in application folder like assets, environments, packages and temp.
+## Must be called first.
 func create_dir():
 	# Creating temp directory
 	var temp_abs_path: String
@@ -145,14 +152,14 @@ func create_dir():
 	DirAccess.make_dir_absolute(temp_abs_path)
 
 	# Creating packages directory
-	var package_abs_path: String
+	
 	if OS.has_feature("editor"):
-		package_abs_path = ProjectSettings.globalize_path("res://" + package_dir)
+		package_base_dir = ProjectSettings.globalize_path("res://" + package_dir)
 	else:
-		package_abs_path = OS.get_executable_path().get_base_dir().path_join(package_dir)
+		package_base_dir = OS.get_executable_path().get_base_dir().path_join(package_dir)
 		
-	if not DirAccess.dir_exists_absolute(package_abs_path):
-		DirAccess.make_dir_absolute(package_abs_path)
+	if not DirAccess.dir_exists_absolute(package_base_dir):
+		DirAccess.make_dir_absolute(package_base_dir)
 		
 	# Creating environments directory
 	var env_abs_path: String
@@ -165,11 +172,10 @@ func create_dir():
 		DirAccess.make_dir_absolute(env_abs_path)
 		
 	# Creating assets directory
-	var asset_abs_path: String
 	if OS.has_feature("editor"):
-		asset_abs_path = ProjectSettings.globalize_path("res://" + asset_dir)
+		asset_base_dir = ProjectSettings.globalize_path("res://" + asset_dir)
 	else:
-		asset_abs_path = OS.get_executable_path().get_base_dir().path_join(asset_dir)
+		asset_base_dir = OS.get_executable_path().get_base_dir().path_join(asset_dir)
 		
-	if not DirAccess.dir_exists_absolute(asset_abs_path):
-		DirAccess.make_dir_absolute(asset_abs_path)
+	if not DirAccess.dir_exists_absolute(asset_base_dir):
+		DirAccess.make_dir_absolute(asset_base_dir)

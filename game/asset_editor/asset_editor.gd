@@ -1,8 +1,7 @@
 class_name AssetEditor extends PanelContainer
 
-## If true, Asset extension is .asset, else .tscn
-@export var is_asset_ext: bool = true
 @export var asset_filename: String = ""
+var asset_name: String = ""
 
 signal asset_updated(name: StringName)
 signal fullscreen_toggled(button_pressed: bool)
@@ -10,9 +9,15 @@ signal fullscreen_toggled(button_pressed: bool)
 var urdf_parser = URDFParser.new()
 var urdf_syntaxhighlighter = URDFSyntaxHighlighter.new()
 var asset_scene : PackedScene = null
-var asset_node : Node3D = null
-var assets_base_dir: String
-var package_base_dir: String
+var asset_node : Node3D = null:
+	set(value):
+		asset_node = value
+		if asset_node == null:
+			%SaveAssetButton.disabled = true
+		else:
+			%SaveAssetButton.disabled = false
+var asset_base_dir: String = ProjectSettings.globalize_path("res://assets")
+var package_base_dir: String = ProjectSettings.globalize_path("res://packages")
 
 const urdf_robot_template = """<robot name="noname">
 	<link name="base_link">
@@ -26,68 +31,53 @@ const urdf_robot_template = """<robot name="noname">
 """
 
 @onready var urdf_code_edit: CodeEdit = %URDFCodeEdit
-@onready var asset_user_path_edit: LineEdit = %AssetPathEdit
 @onready var preview_viewport = %PreviewViewport
 @onready var preview_scene = %PreviewScene
 
 
 func _ready():
-#	print("[AssetEditor] asset_filename: ", asset_filename)
-	if OS.has_feature("editor"):
-		assets_base_dir = ProjectSettings.globalize_path("res://assets")
-		package_base_dir = ProjectSettings.globalize_path("res://packages")
-	else:
-		assets_base_dir = OS.get_executable_path().get_base_dir().path_join("assets")
-		package_base_dir = OS.get_executable_path().get_base_dir().path_join("packages")
+	urdf_parser.scale = 10
+	urdf_parser.packages_path = package_base_dir
+	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
+	
 	if asset_filename == "":
 		%SaveAssetButton.disabled = true
 		urdf_code_edit.text = urdf_robot_template
 	else:
-		asset_user_path_edit.text = asset_filename.trim_prefix(assets_base_dir+"/").get_base_dir()
+		var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
+		%AssetFilenameEdit.text = fullname.get_basename()
 		asset_filename = ProjectSettings.globalize_path(asset_filename)
-		var assets_path = DirAccess.open(assets_base_dir)
+		var assets_path = DirAccess.open(asset_base_dir)
 		if assets_path.file_exists(asset_filename):
 			var reader := ZIPReader.new()
 			var err := reader.open(asset_filename)
 			if err != OK:
 				print("[Asset Editor]: Error %d" % err )
 				return
-			var asset_name = asset_filename.get_basename().get_file()
-#				print("asset_name: ", asset_name)
 			var asset_files = reader.get_files()
-			if (asset_name + ".urdf") in asset_files:
-				var res := reader.read_file(asset_name + ".urdf")
+			if ("urdf.xml") in asset_files:
+				var res := reader.read_file("urdf.xml")
 				urdf_code_edit.text = res.get_string_from_ascii()
 			reader.close()
-
-	urdf_parser.scale = 10
-	urdf_parser.packages_path = package_base_dir
-	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
-	generate_scene()
+			generate_scene(urdf_code_edit.text, fullname)
+			
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)
 	show_link_frame(%FrameCheckBox.button_pressed)
 	show_joint_frame(%JointCheckBox.button_pressed)
-	
-func _exit_tree():
-	pass
-	if urdf_parser:
-		urdf_parser.unreference()
 
 func _on_save_button_pressed():
-	var path = assets_base_dir.path_join(asset_user_path_edit.text)
+	var path = asset_base_dir.path_join(%AssetFilenameEdit.text + ".asset").get_base_dir()
 	if not DirAccess.dir_exists_absolute(path):
 		print("[INFO] %s not exist ()" % path)
 		DirAccess.make_dir_recursive_absolute(path)
 	if asset_node == null: return
-	
-	var new_asset_filename = assets_base_dir.path_join(asset_user_path_edit.text.path_join(asset_node.name.to_lower() + ".asset"))
-	asset_filename = ProjectSettings.globalize_path(new_asset_filename)
-#	print("[ASSET EDITOR] Asset filename saving", asset_filename)
-	var assets_path = DirAccess.open(assets_base_dir)
-	if assets_path.file_exists(asset_filename):
+
+	var new_asset_filename = asset_base_dir.path_join(%AssetFilenameEdit.text + ".asset")
+	if FileAccess.file_exists(new_asset_filename):
 		%OverwriteConfirmationDialog.popup_centered()
 	else:
+		asset_filename = new_asset_filename
 		save_scene()
 
 func _on_overwrite_confirmation_dialog_confirmed():
@@ -99,19 +89,20 @@ func save_scene():
 	if err != OK:
 		print("[Asset Editor] Error %d opening %f" % [err, asset_filename])
 		return
-	writer.start_file("%s.urdf" % [asset_node.name.to_lower()])
+	
+	writer.start_file("urdf.xml")
 	writer.write_file(urdf_code_edit.text.to_ascii_buffer())
 	writer.close_file()
 	writer.close()
 
-#	print("[Asset Editor] asset name: ", asset_scene.get_state().get_node_name(0))
-	asset_updated.emit(asset_scene.get_state().get_node_name(0))
+	var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
+	asset_updated.emit(fullname)
 
 func _on_generate_button_pressed() -> void:
-	generate_scene()
+	var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
+	generate_scene(urdf_code_edit.text, fullname)
 	
-func generate_scene():
-	var urdf_code = urdf_code_edit.text
+func generate_scene(urdf_code: String, fullname: String, asset_metadata: Dictionary = {}):
 	var result = urdf_parser.parse_buffer(urdf_code)
 	# If result return error message
 	if result is String:
@@ -195,3 +186,9 @@ func _on_joint_check_box_toggled(button_pressed):
 
 func _on_full_screen_button_toggled(button_pressed):
 	fullscreen_toggled.emit(button_pressed)
+
+func _on_asset_filename_edit_text_changed(new_text):
+	if new_text == "" or asset_node:
+		%SaveAssetButton.disabled = true
+	else:
+		%SaveAssetButton.disabled = false

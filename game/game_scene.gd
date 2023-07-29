@@ -40,7 +40,6 @@ func init_scene():
 	add_child(scene)
 
 func new_scene(environment_path: String) -> void:
-#	print("environment path: ", environment_path)
 	delete_scene()
 	init_scene()
 	var environment = ResourceLoader.load(environment_path).instantiate()
@@ -184,66 +183,40 @@ func hide_asset_parameters():
 
 func save_scene(path: String):
 	var scene_filename = path
-#	print("scene filename: ", scene_filename)
+
 	# Take all blocks added in game scene for apply owner
 	var items = scene.get_children()
 	var scene_objects = {
 		assets=[], environment="",
 	}
 	
-	if true:
-		for item in items:
-#			print("[GAME SCENE] item: ", item)
-			if item.is_in_group("ASSETS"):
-				var gl_transform: Transform3D = item.get_child(0).global_transform
-				
-				var asset_transform = {
-					origin=[gl_transform.origin.x, gl_transform.origin.y, gl_transform.origin.z],
-					basis=[
-						gl_transform.basis.x.x, gl_transform.basis.x.y, gl_transform.basis.x.z,
-						gl_transform.basis.y.x, gl_transform.basis.y.y, gl_transform.basis.y.z,
-						gl_transform.basis.z.x, gl_transform.basis.z.y, gl_transform.basis.z.z],
+	for item in items:
+		if item.is_in_group("ASSETS"):
+			var gl_transform: Transform3D = item.get_child(0).global_transform
+			
+			var asset_transform = {
+				origin=[gl_transform.origin.x, gl_transform.origin.y, gl_transform.origin.z],
+				basis=[
+					gl_transform.basis.x.x, gl_transform.basis.x.y, gl_transform.basis.x.z,
+					gl_transform.basis.y.x, gl_transform.basis.y.y, gl_transform.basis.y.z,
+					gl_transform.basis.z.x, gl_transform.basis.z.y, gl_transform.basis.z.z],
+			}
+			scene_objects.assets.append({
+					fullname=item.get_meta("fullname"),
+					string_name=item.name,
+					transform=asset_transform,
+					})
+		if item.is_in_group("ENVIRONMENT"):
+#			print("environment : ", item.name)
+			scene_objects.environment = {
+				name=item.name,
 				}
-				scene_objects.assets.append({
-						name=item.get_meta("asset_name"),
-						string_name=item.name,
-						transform=asset_transform,
-						})
-			if item.is_in_group("ENVIRONMENT"):
-#				print("environment : ", item.name)
-				scene_objects.environment = {
-					name=item.name,
-					}
-		var scene_json = JSON.stringify(scene_objects, "\t", false)
+	var scene_json = JSON.stringify(scene_objects, "\t", false)
 #		print("scene JSON: ", scene_json)
-		
-		var file = FileAccess.open(scene_filename, FileAccess.WRITE)
-		file.store_string(scene_json)
-		
-		save_scene_button.disabled = false
-
-	else:
-		for item in items:
-			item.owner = scene
-			if item.is_in_group("ROBOTS"):
-				# print("%s is in ROBOT group" % [item])
-				if item.get("control"):
-					item.set_meta("manual_control", item.control.manual)
-			for child in item.get_children():
-				if child.is_in_group("PYTHON"):
-					item.set_meta("python_bridge_activate", child.activate)
-					item.set_meta("python_bridge_port", child.port)
-					
-		if not path.ends_with(".tscn"):
-			path = path + ".tscn"
-		var scene_packed := PackedScene.new()
-		scene_packed.pack(scene)
-		
-		var err = ResourceSaver.save(scene_packed, path)
-		if err:
-			printerr("Scene saving failed")
-		else:
-			save_scene_button.disabled = false
+	
+	var file = FileAccess.open(scene_filename, FileAccess.WRITE)
+	file.store_string(scene_json)
+	save_scene_button.disabled = false
 
 func load_scene(path):
 	var scene_filename = path
@@ -258,14 +231,15 @@ func load_scene(path):
 	var scene_objects = json.data
 	delete_scene()
 	init_scene()
+	
 	if "name" in scene_objects.environment:
 		var env_filename = game.database.get_environment(scene_objects.environment.name)
 		var environment = ResourceLoader.load(env_filename).instantiate()
 		scene.add_child(environment)
 	
 	for asset in scene_objects.assets:
-		if "name" in asset:
-			var asset_filename = game.database.get_asset_scene(asset.name)
+		if "fullname" in asset:
+			var asset_filename = game.database.get_asset_scene(asset.fullname)
 			if asset_filename == null:
 				printerr("Asset %s not available!" % [asset.name])
 				continue
@@ -283,30 +257,6 @@ func load_scene(path):
 			freeze_asset(asset_node, true)
 			scene.add_child(asset_node)
 
-#		var res = ResourceLoader.load(path)
-#		if res == null:
-#			return
-#		scene = res.instantiate()
-#		add_child(scene)
-#		## Get info from each items
-#		for item in scene.get_children():
-#			var transform_saved = item.get_meta("transform", Transform3D())
-#			if transform_saved != Transform3D():
-#				item.get_child(0).global_transform = transform_saved
-#			freeze_item(item, true)
-#			var part_name = item.get_node_or_null("%PartName")
-#			if part_name:
-#				part_name.text = item.name
-#			if item.is_in_group("ROBOTS"):
-#				if item.get("control"):
-#					item.control.manual = item.get_meta("manual_control", true)
-#			for child in item.get_children():
-#				if child.is_in_group("PYTHON"):
-#					child.port = item.get_meta("python_bridge_port", 4242)
-#					child.activate = item.get_meta("python_bridge_activate", false)
-#					item.python_script_finished.connect(_on_python_script_finished)
-#					break
-			
 	connect_pickable()
 	connect_editable()
 	update_camera_view_menu()
@@ -348,7 +298,7 @@ func stop():
 	_on_run_stop_button_toggled(false)
 
 func reload():
-	_on_reset_button_pressed()
+	_on_reload_button_pressed()
 	
 func is_running() -> bool:
 	return running
@@ -380,9 +330,10 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 			freeze_asset(item, true)
 			if item.is_in_group("PYTHON"):
 				item.stop()
-
-func _on_reset_button_pressed():
-	load_scene(owner.current_filename)
+				
+func _on_reload_button_pressed():
+	if owner.current_filename != "":
+		load_scene(owner.current_filename)
 
 func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
 	mouse_pos_on_area = mouse_position

@@ -965,8 +965,7 @@ func _process(_delta: float):
 	pass"""
 	
 	_script.source_code = """extends Node3D
-var ASSET_NAME = "%s"
-""" % [root_node.name]
+"""
 
 	## Control Tag
 	if root_node.is_in_group("ROBOTS"):

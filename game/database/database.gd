@@ -3,7 +3,7 @@ class_name GoboticsDB extends Resource
 @export var assets: Array
 @export var environments: Array
 
-var is_asset_ext: bool = true
+var asset_base_dir: String
 var temp_abs_path: String
 var package_abs_path: String
 var urdf_parser = URDFParser.new()
@@ -28,19 +28,23 @@ func add_assets(search_path: String):
 	var asset_files: Array = files.filter(func(file): return file.get_extension() == "asset")
 	
 	for file in asset_files:
-		var asset_filename = ProjectSettings.globalize_path(search_path.path_join(file))
-#		print("[Database] asset_filename: ", asset_filename)
+		var asset_filename = search_path.path_join(file)
+#		print("asset_filename: ", asset_filename)
 		var err := reader.open(asset_filename)
 		if err != OK:
-			print("[Database]: Open %s asset failed" % [file])
+			print("Open %s asset failed" % [file])
 			return
 		var asset_name = file.get_basename()
-#		print("[Database] asset name: ", asset_name)
+#		print("asset name: ", asset_name)
 		var asset_content = reader.get_files()
-		if (asset_name + ".urdf") in asset_content:
-			var res := reader.read_file(asset_name + ".urdf")
-			var result = generate_scene(res.get_string_from_ascii())
-			if result == null:
+
+		if ("urdf.xml") in asset_content:
+			var res := reader.read_file("urdf.xml")
+			var fullname : String = search_path.trim_prefix(asset_base_dir).trim_prefix("/").path_join(file)
+#			print("fullname: ", fullname)
+			var output_metadata = {}
+			var scene_filename = generate_scene(res.get_string_from_ascii(), fullname, output_metadata)
+			if scene_filename == null:
 				assets.append({
 					name=asset_name,
 					fullname=asset_name,
@@ -50,10 +54,10 @@ func add_assets(search_path: String):
 					})
 			else:
 				assets.append({
-					name=asset_name,
-					fullname=result.full_name,
+					name=output_metadata.name,
+					fullname=fullname,
 					filename=asset_filename,
-					scene=result.scene_filename,
+					scene=scene_filename,
 					group="ASSETS",
 					})
 		reader.close()
@@ -66,9 +70,9 @@ func add_assets(search_path: String):
 	for search_dir in search_dirs:
 		add_assets(search_dir)
 	
-#	var err = ResourceSaver.save(self, "res://temp/database.tres")
-#	if err:
-#		printerr("Database not saving!")
+	var err = ResourceSaver.save(self, "res://temp/database.tres")
+	if err:
+		printerr("Database not saving!")
 		
 func add_environments(search_path: String, builtin: bool = false):
 #	print("[Database] search env path: ", search_path)
@@ -95,8 +99,7 @@ func add_environments(search_path: String, builtin: bool = false):
 #	if err:
 #		printerr("[Database] not saving!")
 		
-func generate_scene(urdf_code: String):
-#	var root_node = Node3D.new()
+func generate_scene(urdf_code: String, fullname: String, asset_metadata: Dictionary = {}):
 	var result = urdf_parser.parse_buffer(urdf_code)
 	# If result return error message
 	if result is String:
@@ -104,11 +107,11 @@ func generate_scene(urdf_code: String):
 		return null
 		
 	var root_node = result
-	var full_name = root_node.name
-	var scene_filename = temp_abs_path.path_join(root_node.name.to_lower() + ".tscn")
+	asset_metadata.name = root_node.name
+	var scene_filename = temp_abs_path.path_join(fullname.get_basename().validate_node_name() + ".tscn")
 	if root_node == null: return
-	
-	root_node.set_meta("asset_name", root_node.name.to_lower())
+#	root_node.set_meta("asset_name", root_node.name)
+	root_node.set_meta("fullname", fullname)
 	var asset_scene = PackedScene.new()
 	var err = asset_scene.pack(root_node)
 	if err != OK:
@@ -120,21 +123,24 @@ func generate_scene(urdf_code: String):
 	
 #	root_node.print_tree_pretty()
 	root_node.queue_free()	# Delete orphan nodes
-	return {scene_filename=scene_filename, full_name=full_name}
+	return scene_filename
 	
-func get_asset_filename(name: String):
+func get_asset_filename(fullname: String):
 	for asset in assets:
-		if asset.name == name.to_lower():
+		if asset.fullname == fullname:
 			return asset.filename
-		
-func get_scene(name: String):
+	
+func get_scene_from_fullname(fullname: String):
 	for asset in assets:
-		if asset.name == name.to_lower():
+		if asset.fullname == fullname:
 			return asset.scene
 	return null
 	
-func get_asset_scene(name: String):
-	return get_scene(name)
+func get_asset_scene(fullname: String):
+	for asset in assets:
+		if asset.fullname == fullname:
+			return asset.scene
+	return null
 	
 func get_environment(name: String):
 	for env in environments:

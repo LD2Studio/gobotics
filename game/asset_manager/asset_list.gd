@@ -9,28 +9,27 @@ extends ItemList
 var asset_editor_packed_scene = preload("res://game/asset_editor/asset_editor.tscn")
 
 enum AssetId {
-	NEW,
 	EDIT,
+	DELETE,
 }
 
 var _at_position: Vector2i
 var _asset_updated: StringName = ""
 var _asset_editor_rect: Rect2i
+var selected_asset_filename: String
 
 func _ready() -> void:
-	asset_popup_menu.add_item("New", AssetId.NEW)
 	asset_popup_menu.add_item("Edit", AssetId.EDIT)
+	asset_popup_menu.add_item("Delete", AssetId.DELETE)
 	asset_popup_menu.id_pressed.connect(_on_item_menu_select)
-	
 
 func _get_drag_data(at_position: Vector2):
 	var idx = get_item_at_position(at_position, true)
 	if idx == -1 or %GameScene.running:
 		return null
 
-	var asset_name = get_item_text(idx)
-	var asset = database.get_scene(asset_name)
-#	print("[ASSET LIST] asset: ", asset)
+	var fullname = get_item_metadata(idx)
+	var asset = database.get_scene_from_fullname(fullname)
 	if asset:
 		var _asset_res = load(asset)
 		var node = load(asset).instantiate()
@@ -57,43 +56,34 @@ func _on_item_clicked(_index: int, at_position: Vector2, mouse_button_index: int
 		asset_popup_menu.popup(Rect2i(get_global_mouse_position(), Vector2i(50,50)))
 
 func _on_item_menu_select(id: int):
-#	print("id: ", id)
 	match id:
 		AssetId.EDIT:
 			var idx = get_item_at_position(_at_position, true)
 			if idx == -1 or %GameScene.running:
 				return null
-			var asset_name = get_item_text(idx)
-#			print("asset name: ", asset_name)
-			edit_asset(asset_name)
+			var fullname = get_item_metadata(idx)
+			launch_asset_editor(fullname)
 			
-			
-		AssetId.NEW:
-			var asset_editor = asset_editor_packed_scene.instantiate()
-			asset_editor.name = &"AssetEditor"
-			%AssetEditorDialog.add_child(asset_editor)
-			%AssetEditorDialog.popup_centered(Vector2i(600, 500))
+		AssetId.DELETE:
+			var idx = get_item_at_position(_at_position, true)
+			if idx == -1 or %GameScene.running:
+				return null
+			var fullname = get_item_metadata(idx)
+			delete_asset(fullname)
 			
 func _on_item_activated(index):
-	var asset_name = get_item_text(index)
-#	print("item text: ", get_item_text(index))
-	edit_asset(asset_name)
-	
-func edit_asset(asset_name: String):
-	var asset_filename: String
-	asset_filename = database.get_asset_filename(asset_name)
-#	print("[ASSET LIST] asset filename: ", asset_filename)
-	launch_asset_editor(asset_filename)
-#	print("Position: ", %AssetEditorDialog.position)
-#	print("Size: ", %AssetEditorDialog.size)
+	var fullname = get_item_metadata(index)
+	launch_asset_editor(fullname)
 
 func _on_new_asset_button_pressed() -> void:
-	launch_asset_editor("")
+	launch_asset_editor()
 	
-func launch_asset_editor(asset_filename):
+func launch_asset_editor(fullname: String = ""):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
-	asset_editor.asset_filename = asset_filename
+	asset_editor.asset_filename = database.get_asset_filename(fullname)
+	asset_editor.asset_base_dir = game.asset_base_dir
+	asset_editor.package_base_dir = game.package_base_dir
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor_dialog.add_child(asset_editor)
@@ -102,7 +92,6 @@ func launch_asset_editor(asset_filename):
 func _on_asset_editor_dialog_confirmed():
 	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")
 	if asset_editor:
-#		print("remove asset editor")
 		asset_editor_dialog.remove_child(asset_editor)
 		asset_editor.queue_free()
 		update_assets_database()
@@ -112,10 +101,20 @@ func _on_asset_editor_dialog_confirmed():
 func _on_asset_editor_dialog_canceled():
 	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")
 	if asset_editor:
-#		print("remove asset editor")
 		asset_editor_dialog.remove_child(asset_editor)
 		asset_editor.queue_free()
 		update_assets_database()
+		
+func delete_asset(fullname: String):
+	selected_asset_filename = database.get_asset_filename(fullname)
+	%DeleteConfirmationDialog.dialog_text = "Do you want to delete the asset file \"%s\"" % [fullname]
+	%DeleteConfirmationDialog.popup_centered()
+	
+func _on_delete_confirmation_dialog_confirmed():
+#	DirAccess.remove_absolute(selected_asset_filename)
+	OS.move_to_trash(selected_asset_filename)
+	update_assets_database()
+	update_assets_in_scene()
 
 func update_assets_database():
 	game.load_assets_in_database()
@@ -127,16 +126,13 @@ func update_assets_database():
 	
 func update_assets_in_scene():
 	var assets = get_tree().get_nodes_in_group("ASSETS")
-#	print("[ASSET LIST] asset updated: ", _asset_updated)
 	if _asset_updated == "": return
 	for asset in assets:
-		if asset.ASSET_NAME == _asset_updated:
+		if asset.get_meta("fullname") == _asset_updated:
 			var asset_position = asset.get_child(0).global_position
 			var asset_rotation = asset.get_child(0).global_rotation
-#			print("asset position: ", asset.get_child(0).global_position)
 			var asset_name = asset.name
-			
-			var asset_res = database.get_scene(_asset_updated.to_lower())
+			var asset_res = database.get_asset_scene(_asset_updated)
 #			print(asset_res)
 			var new_asset = load(asset_res).instantiate()
 			new_asset.name = asset_name

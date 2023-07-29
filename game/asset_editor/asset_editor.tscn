@@ -35,7 +35,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_hdc4v")
 script = ExtResource("1_j1den")
-asset_filename = "res://assets/noname.asset"
+asset_filename = "/media/laurent/LD2STUDIO/LD2Studio/Gobotics/Gobotics Game/assets/continuous.asset"
 
 [node name="AssetMargin" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -54,9 +54,9 @@ mouse_force_pass_scroll_events = false
 
 [node name="Label" type="Label" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-text = " Asset path : "
+text = " Asset filename : "
 
-[node name="AssetPathEdit" type="LineEdit" parent="AssetMargin/VBoxContainer/HBoxContainer"]
+[node name="AssetFilenameEdit" type="LineEdit" parent="AssetMargin/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
@@ -69,6 +69,7 @@ icon = ExtResource("2_ave4i")
 
 [node name="OverwriteConfirmationDialog" type="ConfirmationDialog" parent="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton"]
 unique_name_in_owner = true
+always_on_top = true
 dialog_text = "The file already exists. Do you want to overwrite the file? "
 
 [node name="FilenameLabel" type="Label" parent="AssetMargin/VBoxContainer/HBoxContainer"]
@@ -200,6 +201,7 @@ layout_mode = 2
 label_settings = SubResource("LabelSettings_2w3f3")
 horizontal_alignment = 1
 
+[connection signal="text_changed" from="AssetMargin/VBoxContainer/HBoxContainer/AssetFilenameEdit" to="." method="_on_asset_filename_edit_text_changed"]
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton" to="." method="_on_save_button_pressed"]
 [connection signal="confirmed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton/OverwriteConfirmationDialog" to="." method="_on_overwrite_confirmation_dialog_confirmed"]
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/GenerateButton" to="." method="_on_generate_button_pressed"]
