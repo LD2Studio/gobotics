@@ -219,6 +219,7 @@ BOOST={
 [physics]
 
 common/physics_ticks_per_second=240
+3d/physics_engine="JoltPhysics3D"
 3d/default_gravity=98.0
 3d/sleep_threshold_angular=0.5
 
