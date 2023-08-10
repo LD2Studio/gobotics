@@ -5,6 +5,7 @@ var running: bool = false
 var item_selected: Node3D
 var mouse_pos_on_area: Vector3
 var game_area_pointed: bool = false
+var asset_focused : Node3D = null
 
 var _cams : Array
 
@@ -22,6 +23,7 @@ var _cams : Array
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
 	update_camera_view_menu()
+	python.name = &"AppPython"
 	python.activate = true
 	add_child(python)
 	
@@ -31,15 +33,15 @@ func _input(event: InputEvent) -> void:
 		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [item_selected.name]
 		%ConfirmDeleteDialog.popup_centered()
 		
+#	if asset_focused and event is InputEventMouseMotion:
+#		get_viewport().set_input_as_handled()
+#		print("asset position: ", asset_focused.get_child(0).global_position)
+		
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
 	
-func init_scene():
-	scene = Node3D.new()
-	scene.name = &"Scene"
-	add_child(scene)
-
 func new_scene(environment_path: String) -> void:
+#	print("Env path: ", environment_path)
 	delete_scene()
 	init_scene()
 	var environment = ResourceLoader.load(environment_path).instantiate()
@@ -209,7 +211,7 @@ func save_scene(path: String):
 		if item.is_in_group("ENVIRONMENT"):
 #			print("environment : ", item.name)
 			scene_objects.environment = {
-				name=item.name,
+				fullname=item.get_meta("fullname"),
 				}
 	var scene_json = JSON.stringify(scene_objects, "\t", false)
 #		print("scene JSON: ", scene_json)
@@ -232,8 +234,8 @@ func load_scene(path):
 	delete_scene()
 	init_scene()
 	
-	if "name" in scene_objects.environment:
-		var env_filename = game.database.get_environment(scene_objects.environment.name)
+	if "fullname" in scene_objects.environment:
+		var env_filename = game.database.get_scene_from_fullname(scene_objects.environment.fullname)
 		var environment = ResourceLoader.load(env_filename).instantiate()
 		scene.add_child(environment)
 	
@@ -263,6 +265,11 @@ func load_scene(path):
 	%RunStopButton.button_pressed = false
 	save_scene_as_button.disabled = false
 	save_scene_button.disabled = false
+	
+func init_scene():
+	scene = Node3D.new()
+	scene.name = &"Scene"
+	add_child(scene)
 	
 func delete_scene():
 	var scene_node = get_node_or_null("Scene")
@@ -338,6 +345,7 @@ func _on_reload_button_pressed():
 func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
 	mouse_pos_on_area = mouse_position
 	if event.is_action_pressed("EDIT"):
+		asset_focused = null
 		hide_asset_parameters()
 
 func _on_ground_mouse_entered():
@@ -347,10 +355,11 @@ func _on_ground_mouse_exited():
 	game_area_pointed = false
 
 func _on_editable_block_input_event(_camera, event: InputEvent, _mouse_position, _normal, _shape_idx, node):
+	
 	if event.is_action_pressed("EDIT"):
 		var asset_selected: Node3D = node.owner
-		if asset_selected.is_in_group("ASSETS"):
-			show_asset_parameters(asset_selected)
+		asset_focused = asset_selected
+		show_asset_parameters(asset_selected)
 
 func _on_editable_mouse_entered():
 	owner.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND

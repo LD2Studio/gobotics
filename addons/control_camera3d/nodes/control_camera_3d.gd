@@ -73,6 +73,8 @@ func _process(_delta: float) -> void:
 		_pole_mesh.surface_end()
 
 func _unhandled_input(event: InputEvent) -> void:
+	
+#	print("camera event: ", event.as_text())
 	if not current: return
 	
 	if event is InputEventMouseButton:

@@ -13,8 +13,9 @@ func _init():
 	number_color = Color.LIGHT_YELLOW
 
 	keyword_colors = {
-		robot = Color.ROYAL_BLUE,
-		asset = Color.ROYAL_BLUE,
+		robot = Color.GREEN_YELLOW,
+		standalone = Color.GREEN_YELLOW,
+		env = Color.GREEN_YELLOW,
 		link = Color.ROYAL_BLUE,
 		joint = Color.ROYAL_BLUE,
 		material = Color.ROYAL_BLUE,

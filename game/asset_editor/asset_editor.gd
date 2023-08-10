@@ -2,6 +2,8 @@ class_name AssetEditor extends PanelContainer
 
 @export var asset_filename: String = ""
 var asset_name: String = ""
+var is_new_asset = false
+var asset_type : int
 
 signal asset_updated(name: StringName)
 signal fullscreen_toggled(button_pressed: bool)
@@ -19,30 +21,32 @@ var asset_node : Node3D = null:
 var asset_base_dir: String = ProjectSettings.globalize_path("res://assets")
 var package_base_dir: String = ProjectSettings.globalize_path("res://packages")
 
-const urdf_robot_template = """<robot name="noname">
-	<link name="base_link">
-	
-	</link>
-	
-	<gobotics>
-	
-	<gobotics/>
-</robot>
-"""
-
 @onready var urdf_code_edit: CodeEdit = %URDFCodeEdit
 @onready var preview_viewport = %PreviewViewport
 @onready var preview_scene = %PreviewScene
 
+enum NewAsset {
+	STANDALONE,
+	ROBOT,
+	ENVIRONMENT,
+}
 
 func _ready():
 	urdf_parser.scale = 10
 	urdf_parser.packages_path = package_base_dir
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	
-	if asset_filename == "":
+	if is_new_asset:
 		%SaveAssetButton.disabled = true
-		urdf_code_edit.text = urdf_robot_template
+		match asset_type:
+			NewAsset.STANDALONE:
+				urdf_code_edit.text = urdf_standalone_template
+			
+			NewAsset.ROBOT:
+				urdf_code_edit.text = urdf_robot_template
+				
+			NewAsset.ENVIRONMENT:
+				urdf_code_edit.text = urdf_environment_template
 	else:
 		var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
 		%AssetFilenameEdit.text = fullname.get_basename()
@@ -67,6 +71,8 @@ func _ready():
 	show_joint_frame(%JointCheckBox.button_pressed)
 
 func _on_save_button_pressed():
+	if %AssetFilenameEdit.text == "":
+		return
 	var path = asset_base_dir.path_join(%AssetFilenameEdit.text + ".asset").get_base_dir()
 	if not DirAccess.dir_exists_absolute(path):
 		print("[INFO] %s not exist ()" % path)
@@ -102,7 +108,7 @@ func _on_generate_button_pressed() -> void:
 	var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
 	generate_scene(urdf_code_edit.text, fullname)
 	
-func generate_scene(urdf_code: String, fullname: String, asset_metadata: Dictionary = {}):
+func generate_scene(urdf_code: String, _fullname: String, _asset_metadata: Dictionary = {}):
 	var result = urdf_parser.parse_buffer(urdf_code)
 	# If result return error message
 	if result is String:
@@ -120,7 +126,8 @@ func generate_scene(urdf_code: String, fullname: String, asset_metadata: Diction
 	
 	asset_scene = PackedScene.new()
 	var err = asset_scene.pack(root_node)
-	if err == OK:
+	
+	if err == OK and %AssetFilenameEdit.text != "":
 		%SaveAssetButton.disabled = false
 	else:
 		%SaveAssetButton.disabled = true
@@ -192,3 +199,28 @@ func _on_asset_filename_edit_text_changed(new_text):
 		%SaveAssetButton.disabled = true
 	else:
 		%SaveAssetButton.disabled = false
+
+const urdf_robot_template = """<robot name="noname">
+	<link name="base_link">
+	
+	</link>
+	
+	<gobotics>
+	
+	<gobotics/>
+</robot>
+"""
+
+const urdf_standalone_template = """<standalone name="noname">
+	<link name="base_link">
+	
+	</link>
+</standalone>
+"""
+
+const urdf_environment_template = """<env name="noname">
+	<link name="world">
+	
+	</link>
+</env>
+"""

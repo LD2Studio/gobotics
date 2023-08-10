@@ -5,6 +5,7 @@ extends ItemList
 @onready var database: GoboticsDB = owner.database
 @onready var asset_popup_menu: PopupMenu = %AssetPopupMenu
 @onready var asset_editor_dialog = %AssetEditorDialog
+@onready var new_asset_button = %NewAssetButton
 
 var asset_editor_packed_scene = preload("res://game/asset_editor/asset_editor.tscn")
 
@@ -30,7 +31,8 @@ func _get_drag_data(at_position: Vector2):
 
 	var fullname = get_item_metadata(idx)
 	var asset = database.get_scene_from_fullname(fullname)
-	if asset:
+	var type = database.get_type(fullname)
+	if asset and type and type == "standalone" or type == "robot":
 		var _asset_res = load(asset)
 		var node = load(asset).instantiate()
 		if node.get_node_or_null("./Preview"):
@@ -47,7 +49,6 @@ func _get_drag_data(at_position: Vector2):
 #			set_drag_preview(preview_control)
 		return node
 	else:
-		printerr("Asset is not in database!")
 		return null
 
 func _on_item_clicked(_index: int, at_position: Vector2, mouse_button_index: int) -> void:
@@ -62,7 +63,7 @@ func _on_item_menu_select(id: int):
 			if idx == -1 or %GameScene.running:
 				return null
 			var fullname = get_item_metadata(idx)
-			launch_asset_editor(fullname)
+			edit_asset(fullname)
 			
 		AssetId.DELETE:
 			var idx = get_item_at_position(_at_position, true)
@@ -73,19 +74,28 @@ func _on_item_menu_select(id: int):
 			
 func _on_item_activated(index):
 	var fullname = get_item_metadata(index)
-	launch_asset_editor(fullname)
-
-func _on_new_asset_button_pressed() -> void:
-	launch_asset_editor()
+	edit_asset(fullname)
 	
-func launch_asset_editor(fullname: String = ""):
+func edit_asset(fullname: String):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
-	asset_editor.asset_filename = database.get_asset_filename(fullname)
 	asset_editor.asset_base_dir = game.asset_base_dir
 	asset_editor.package_base_dir = game.package_base_dir
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
+	asset_editor.asset_filename = database.get_asset_filename(fullname)
+	asset_editor_dialog.add_child(asset_editor)
+	asset_editor_dialog.popup_centered(Vector2i(700, 500))
+	
+func create_new_asset(asset_type: int):
+	var asset_editor = asset_editor_packed_scene.instantiate()
+	asset_editor.name = &"AssetEditor"
+	asset_editor.asset_base_dir = game.asset_base_dir
+	asset_editor.package_base_dir = game.package_base_dir
+	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
+	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
+	asset_editor.is_new_asset = true
+	asset_editor.asset_type = asset_type
 	asset_editor_dialog.add_child(asset_editor)
 	asset_editor_dialog.popup_centered(Vector2i(700, 500))
 
@@ -133,7 +143,6 @@ func update_assets_in_scene():
 			var asset_rotation = asset.get_child(0).global_rotation
 			var asset_name = asset.name
 			var asset_res = database.get_asset_scene(_asset_updated)
-#			print(asset_res)
 			var new_asset = load(asset_res).instantiate()
 			new_asset.name = asset_name
 			
@@ -146,7 +155,7 @@ func update_assets_in_scene():
 			game_scene.connect_editable()
 			game_scene.connect_pickable()
 			game_scene.freeze_asset(new_asset, true)
-			
+	game_scene.update_camera_view_menu()
 	_asset_updated = ""
 
 func show_visual_mesh(enable: bool):

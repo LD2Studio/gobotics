@@ -27,31 +27,23 @@ enum Tag {
 		GOBOTICS,
 	}
 	
-func parse(filename: String):
-	clear_buffer()
-	_filename = filename
-	var root_node = get_root_node(filename)
-	if root_node == null: return
-	load_gobotics_params(filename)
-	load_materials(filename)
-	load_links(filename)
-	load_joints(filename)
-	root_node.add_child(create_scene())
-	kinematics_scene_owner_of(root_node)
-	add_script_to(root_node)
-	return root_node
-	
-func parse_buffer(buffer: String):
+func parse_buffer(buffer: String, asset={}):
 	clear_buffer()
 	var urdf_pack : PackedByteArray = buffer.to_ascii_buffer()
 #	print("urdf pack: ", urdf_pack)
 	var root_node = get_root_node(urdf_pack)
 	if root_node == null: return
+	asset.name = root_node.name
+	asset.type = root_node.get_meta("type")
 	load_gobotics_params(urdf_pack)
 	load_materials(urdf_pack)
-	load_links(urdf_pack)
+	if load_links(urdf_pack, root_node) != OK:
+		delete_links()
+		root_node.free()
+		return parse_error_message
+		
 	load_joints(urdf_pack)
-	var base_link = create_scene()
+	var base_link = create_scene(root_node)
 	if base_link:
 		add_camera(base_link)
 		root_node.add_child(base_link)
@@ -95,18 +87,31 @@ func get_root_node(urdf_data) -> Node3D:
 					var value = parser.get_attribute_value(idx)
 					attrib[name] = value
 				root_node.name = attrib.name
+				root_node.set_meta("type", "robot")
 				root_node.add_to_group("ASSETS", true)
 				root_node.add_to_group("ROBOTS", true)
 				break
 				
-			if node_name == "asset":
+			if node_name == "standalone":
 				var attrib = {}
 				for idx in parser.get_attribute_count():
 					var name = parser.get_attribute_name(idx)
 					var value = parser.get_attribute_value(idx)
 					attrib[name] = value
 				root_node.name = attrib.name
+				root_node.set_meta("type", "standalone")
 				root_node.add_to_group("ASSETS", true)
+				break
+				
+			if node_name == "env":
+				var attrib = {}
+				for idx in parser.get_attribute_count():
+					var name = parser.get_attribute_name(idx)
+					var value = parser.get_attribute_value(idx)
+					attrib[name] = value
+				root_node.name = attrib.name
+				root_node.set_meta("type", "env")
+				root_node.add_to_group("ENVIRONMENT", true)
 				break
 				
 	return root_node
@@ -125,7 +130,6 @@ func load_gobotics_params(urdf_data):
 	var root_tag = Tag.NONE
 	while true:
 		if parser.read() != OK: # Ending parse XML file
-#			print("Ending link parser")
 			break
 		var type = parser.get_node_type()
 		if type == XMLParser.NODE_ELEMENT:
@@ -133,8 +137,14 @@ func load_gobotics_params(urdf_data):
 			var node_name = parser.get_node_name()
 			match node_name:
 				"gobotics":
-					if not root_tag == Tag.NONE: continue
+					if root_tag != Tag.NONE: continue
 					root_tag = Tag.GOBOTICS
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+						
 				"link":
 					if not root_tag == Tag.NONE: continue
 					root_tag = Tag.LINK
@@ -186,7 +196,7 @@ func load_gobotics_params(urdf_data):
 						_gobotics.control.max_speed = attrib.value
 						
 				"camera":
-					if not root_tag == Tag.GOBOTICS: continue
+					if root_tag != Tag.GOBOTICS: continue
 					var attrib: Dictionary = {}
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
@@ -239,7 +249,6 @@ func load_materials(urdf_data):
 	var current_tag: int = Tag.NONE
 	while true:
 		if parser.read() != OK: # Ending parse XML file
-#			print("Ending link parser")
 			break
 		var type = parser.get_node_type()
 		if type == XMLParser.NODE_ELEMENT:
@@ -301,7 +310,7 @@ func load_materials(urdf_data):
 
 #	print("materials: ", _materials)
 
-func load_links(urdf_data) -> int:
+func load_links(urdf_data, root_node: Node3D) -> int:
 	var err
 	if urdf_data is String:
 		err = parser.open(urdf_data)
@@ -331,32 +340,30 @@ func load_links(urdf_data) -> int:
 				"link":
 					if root_tag != Tag.NONE: continue
 					root_tag = Tag.LINK
-					var attrib = {}
-					var attribut_count = parser.get_attribute_count()
-					for idx in attribut_count:
+					link_attrib = {}
+					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						link_attrib[name] = value
-						attrib[name] = value
 						
 					link = RigidBody3D.new()
 					link.set_meta("orphan", true)
 					if "name" in link_attrib and link_attrib.name != "":
-						link.name = attrib.name
+						link.name = link_attrib.name
 					else:
 						printerr("No name for link!")
 						return ERR_PARSE_ERROR
 						
-					link.add_to_group("SELECT", true)
+					if root_node.get_meta("type") == "standalone" or root_node.get_meta("type") == "robot":
+						link.add_to_group("SELECT", true)
 					if "xyz" in link_attrib:
 						var xyz := Vector3.ZERO
 						var xyz_arr = link_attrib.xyz.split_floats(" ")
 						xyz.x = xyz_arr[0]
 						xyz.y = xyz_arr[2]
 						xyz.z = -xyz_arr[1]
-#						node.position = xyz * scale
 						link.position = xyz * scale
-#					link_attrib.node = node
+
 					## Add frame gizmo
 					var frame_visual := MeshInstance3D.new()
 					frame_visual.name = link_attrib.name + "_frame"
@@ -364,7 +371,6 @@ func load_links(urdf_data) -> int:
 					frame_visual.mesh = _frame_mesh
 					frame_visual.scale = Vector3.ONE * scale
 					frame_visual.visible = false
-#					node.add_child(frame_visual)
 					link.add_child(frame_visual)
 				
 				"inertial":
@@ -380,7 +386,6 @@ func load_links(urdf_data) -> int:
 						mass_tag[name] = value
 					if current_tag == Tag.INERTIAL:
 						if mass_tag.value:
-#							link_attrib.node.mass = float(mass_tag.value)
 							link.mass = float(mass_tag.value)
 				
 				"visual":
@@ -398,8 +403,6 @@ func load_links(urdf_data) -> int:
 						current_visual.name = attrib.name + "_mesh"
 					else:
 						current_visual.name = link_attrib.name + "_mesh"
-	#				print("current visual: ", current_visual)
-#					link_attrib.node.add_child(current_visual)
 					link.add_child(current_visual)
 
 				"collision":
@@ -416,8 +419,6 @@ func load_links(urdf_data) -> int:
 						current_collision.name = attrib.name + "_col"
 					else:
 						current_collision.name = link_attrib.name + "_col"
-	#				print("current collision: ", current_collision)
-#					link_attrib.node.add_child(current_collision)
 					link.add_child(current_collision)
 					
 					current_col_debug = MeshInstance3D.new()
@@ -427,7 +428,6 @@ func load_links(urdf_data) -> int:
 						current_col_debug.name = attrib.name + "_debug"
 					else:
 						current_col_debug.name = link_attrib.name + "_debug"
-#					link_attrib.node.add_child(current_col_debug)
 					link.add_child(current_col_debug)
 	
 				"geometry":
@@ -522,7 +522,7 @@ func load_links(urdf_data) -> int:
 									continue
 								err = load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag, link.name == "world")
 								if err!= OK:
-									printerr("Loading GLTF file failed!")
+									return ERR_PARSE_ERROR
 							"dae":
 								pass
 							_:
@@ -556,8 +556,6 @@ func load_links(urdf_data) -> int:
 						current_col_debug.position = xyz * scale
 						current_col_debug.rotation = rpy
 					elif current_tag == Tag.INERTIAL:
-						link_attrib.node.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-						link_attrib.node.center_of_mass = xyz * scale
 						link.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 						link.center_of_mass = xyz * scale
 				
@@ -658,12 +656,16 @@ func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape
 #		print("gltf filename: ", gltf_filename)
 	else:
 		printerr("package or user path!")
+	if not FileAccess.file_exists(gltf_filename):
+		parse_error_message = "GLTF file not found!"
+		return ERR_FILE_NOT_FOUND
 	var gltf_res := GLTFDocument.new()
 	var gltf_state = GLTFState.new()
 	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
 	if err:
-		printerr("Import glTF file failed!")
-		return
+		parse_error_message = "GLTF file import failed!"
+		return ERR_PARSE_ERROR
+		
 	var nodes : Array[GLTFNode] = gltf_state.get_nodes()
 	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
 	var idx = 0
@@ -816,7 +818,7 @@ func load_joints(urdf_data):
 
 #	print("joints: ", JSON.stringify(_joints, "\t", false))
 
-func create_scene():
+func create_scene(root_node: Node3D):
 	for joint in _joints:
 		var parent_name: String = joint.parent.link
 		var parent_node: Node3D
@@ -917,7 +919,7 @@ func create_scene():
 		joint_node.unique_name_in_owner = true
 		child_node.add_child(joint_node)
 		
-	var base_link: Node3D
+	var base_link: RigidBody3D
 	for link in links:
 		if link and link.get_parent() == null:
 			base_link = link
@@ -925,6 +927,8 @@ func create_scene():
 			if link.name == "world":
 				link.add_to_group("STATIC", true)
 				link.add_to_group("PICKABLE", true)
+			if root_node.get_meta("type") == "env":
+				base_link.freeze = true
 			break
 			
 	clean_links()
@@ -998,32 +1002,7 @@ var control : RobotDiffDriveExt
 	_script.source_code += process_script
 
 	root_node.set_script(_script)
-	
-#func get_hinge_joints_properties(root_node: Node3D) -> Array:
-#	var joints_properties = Array()
-#
-#	for child in root_node.get_children():
-#		if child is HingeJoint3D:
-#			var joint_script : Script = child.get_script()
-#			if joint_script == null: continue
-##			print("joint script: ", joint_script)
-#			var props = joint_script.get_script_property_list()
-##			print("props: ", props)
-#			var methods = joint_script.get_script_method_list()
-##			print("methods: ", methods)
-#			var name = child.name
-#			var root = child.owner
-#			var dict = {
-#				name = child.name,
-#				path = root.get_path_to(child),
-#			}
-#			joints_properties.append(dict)
-#		if child.get_child_count() != 0:
-#			var props: Array = get_hinge_joints_properties(child)
-#			if not props.is_empty():
-#				joints_properties.append_array(props)
-#
-#	return joints_properties
+
 
 func get_continuous_joint_script(limit_velocity: float) -> String:
 	var source_code = """extends HingeJoint3D

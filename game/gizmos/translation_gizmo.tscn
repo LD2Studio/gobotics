@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://1mjrp16eb146"]
+
+[ext_resource type="ArrayMesh" uid="uid://diysidewt22iv" path="res://game/gizmos/frame_arrows.res" id="1_ilmxf"]
+
+[node name="translation_gizmo" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+mesh = ExtResource("1_ilmxf")

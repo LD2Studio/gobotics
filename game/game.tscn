@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=25 format=3 uid="uid://b4s6pohitqafc"]
 
 [ext_resource type="Script" path="res://game/game.gd" id="1_85jys"]
 [ext_resource type="Texture2D" uid="uid://cws42r7tqpygr" path="res://game/icons/Tools.svg" id="2_hpbft"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://game/LevelContainer.gd" id="3_n66nd"]
 [ext_resource type="Script" path="res://game/asset_manager/asset_list.gd" id="3_webwb"]
 [ext_resource type="Script" path="res://game/game_scene.gd" id="4_htgp6"]
+[ext_resource type="Script" path="res://game/asset_manager/new_asset_button.gd" id="5_c4llk"]
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="5_i338u"]
 [ext_resource type="Texture2D" uid="uid://dcedg06r2n4f1" path="res://game/icons/ViewportSpeed.svg" id="6_6ryau"]
 [ext_resource type="Script" path="res://game/TopCamera2D.gd" id="7_eidv5"]
@@ -212,9 +213,14 @@ text = "Assets"
 horizontal_alignment = 1
 
 [node name="NewAssetButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 10
 icon = ExtResource("3_bkwo3")
+script = ExtResource("5_c4llk")
+
+[node name="NewAssetMenu" type="PopupMenu" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton"]
+unique_name_in_owner = true
 
 [node name="AssetList" type="ItemList" parent="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer"]
 unique_name_in_owner = true
@@ -576,7 +582,7 @@ offset_bottom = 8.0
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton" to="." method="_on_save_scene_as_button_pressed"]
 [connection signal="file_selected" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_new_asset_button_pressed"]
+[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" method="_on_pressed"]
 [connection signal="item_activated" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_activated"]
 [connection signal="item_clicked" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_clicked"]
 [connection signal="canceled" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/AssetEditorDialog" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_asset_editor_dialog_canceled"]

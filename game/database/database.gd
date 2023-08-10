@@ -41,24 +41,24 @@ func add_assets(search_path: String):
 		if ("urdf.xml") in asset_content:
 			var res := reader.read_file("urdf.xml")
 			var fullname : String = search_path.trim_prefix(asset_base_dir).trim_prefix("/").path_join(file)
-#			print("fullname: ", fullname)
-			var output_metadata = {}
-			var scene_filename = generate_scene(res.get_string_from_ascii(), fullname, output_metadata)
+			var asset = {} # Output of generate_scene()
+			var scene_filename = generate_scene(res.get_string_from_ascii(), fullname, asset)
+#			print("asset output: ", asset)
 			if scene_filename == null:
 				assets.append({
 					name=asset_name,
 					fullname=asset_name,
 					filename=asset_filename,
 					scene=null,
-					group="ASSETS",
+					type="ASSETS",
 					})
 			else:
 				assets.append({
-					name=output_metadata.name,
-					fullname=fullname,
-					filename=asset_filename,
-					scene=scene_filename,
-					group="ASSETS",
+					name=asset.name, # asset name setting in URDF
+					fullname=fullname, # relative path
+					filename=asset_filename, # absolute path of file
+					scene=scene_filename, # absolute path of scene
+					type=asset.type, # 
 					})
 		reader.close()
 		
@@ -77,7 +77,6 @@ func add_assets(search_path: String):
 func add_environments(search_path: String, builtin: bool = false):
 #	print("[Database] search env path: ", search_path)
 	var files = Array(DirAccess.get_files_at(search_path))
-#	print("env files: ", files)
 	if builtin:
 		# Filter tscn files
 		var files_tscn: Array = files.filter(func(file): return file.get_extension() == "tscn")
@@ -95,22 +94,22 @@ func add_environments(search_path: String, builtin: bool = false):
 				scene=scene_filename,
 				})
 				
-#	var err = ResourceSaver.save(self, "res://temp/database.tres")
-#	if err:
-#		printerr("[Database] not saving!")
+	var err = ResourceSaver.save(self, "res://temp/database.tres")
+	if err:
+		printerr("[Database] not saving!")
 		
-func generate_scene(urdf_code: String, fullname: String, asset_metadata: Dictionary = {}):
-	var result = urdf_parser.parse_buffer(urdf_code)
-	# If result return error message
+## Create a scene from URDF description, and return asset filename
+func generate_scene(urdf_code: String, fullname: String, asset: Dictionary = {}):
+	var result = urdf_parser.parse_buffer(urdf_code, asset)
+	
 	if result is String:
 		print("error message: ", result)
 		return null
 		
 	var root_node = result
-	asset_metadata.name = root_node.name
 	var scene_filename = temp_abs_path.path_join(fullname.get_basename().validate_node_name() + ".tscn")
 	if root_node == null: return
-#	root_node.set_meta("asset_name", root_node.name)
+
 	root_node.set_meta("fullname", fullname)
 	var asset_scene = PackedScene.new()
 	var err = asset_scene.pack(root_node)
@@ -140,6 +139,12 @@ func get_asset_scene(fullname: String):
 	for asset in assets:
 		if asset.fullname == fullname:
 			return asset.scene
+	return null
+	
+func get_type(fullname: String):
+	for asset in assets:
+		if asset.fullname == fullname:
+			return asset.type
 	return null
 	
 func get_environment(name: String):

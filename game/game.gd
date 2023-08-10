@@ -1,7 +1,6 @@
 class_name Game extends Control
 
 @export var asset_dir : String = "assets"
-@export var env_dir : String = "environments"
 @export var package_dir : String = "packages"
 @export var temp_dir : String = "temp"
 
@@ -25,8 +24,7 @@ var current_filename: String:
 			%SceneFileName.text = "No Scene saved"
 		else:
 			%SceneFileName.text = "%s" % [current_filename.get_file().get_basename()]
-			
-
+		
 func _enter_tree():
 	create_dir()
 	load_assets_in_database()
@@ -49,9 +47,12 @@ func _on_new_scene_button_pressed() -> void:
 func _on_new_scene_dialog_confirmed() -> void:
 	var items = %EnvironmentList.get_selected_items()
 	if items.is_empty(): return
-	var environment_name: String = %EnvironmentList.get_item_text(items[0])
+	var idx = items[0]
+	var fullname = %EnvironmentList.get_item_metadata(idx)
+#	var environment_name: String = %EnvironmentList.get_item_text(items[0])
 	current_filename = ""
-	var env = database.get_environment(environment_name)
+#	var env = database.get_environment(environment_name)
+	var env = database.get_scene_from_fullname(fullname)
 	if env:
 		game_scene.new_scene(env)
 	
@@ -77,54 +78,34 @@ func _on_save_scene_dialog_file_selected(path):
 func _on_clear_button_pressed() -> void:
 	%TerminalOutput.text = ""
 	
-func load_pck():
-	var executable_path: String = OS.get_executable_path().get_base_dir()
-	var assets_dir: String = executable_path.path_join(asset_dir)
-	var files = Array(DirAccess.get_files_at(assets_dir))
-	var pck_files = files.filter(func(file): return file.get_extension() == "pck")
-	var zip_files = files.filter(func(file): return file.get_extension() == "zip")
-#	print(pck_files)
-	
-	for pck_file in pck_files:
-		var pck_abs_path: String = assets_dir.path_join(pck_file)
-		if not ProjectSettings.load_resource_pack(pck_abs_path, false):
-			print("Packed resource not loading")
-	
-	for pck_file in zip_files:
-		var pck_abs_path: String = assets_dir.path_join(pck_file)
-		if not ProjectSettings.load_resource_pack(pck_abs_path, false):
-			print("Packed resource not loading")
-			
-## Loading assets located in the <assets> directory and places them in a GoboticsDB database
-func load_assets_in_database():
-#	if OS.has_feature("editor"):
-#		asset_base_dir = ProjectSettings.globalize_path("res://" + asset_dir)
-#	else:
-#		asset_base_dir = OS.get_executable_path().get_base_dir().path_join(asset_dir)
+#func load_pck():
+#	var executable_path: String = OS.get_executable_path().get_base_dir()
+#	var assets_dir: String = executable_path.path_join(asset_dir)
+#	var files = Array(DirAccess.get_files_at(assets_dir))
+#	var pck_files = files.filter(func(file): return file.get_extension() == "pck")
+#	var zip_files = files.filter(func(file): return file.get_extension() == "zip")
+##	print(pck_files)
 #
-#	if not DirAccess.dir_exists_absolute(asset_base_dir):
-#		printerr("Asset Directory not exists")
-#		return
+#	for pck_file in pck_files:
+#		var pck_abs_path: String = assets_dir.path_join(pck_file)
+#		if not ProjectSettings.load_resource_pack(pck_abs_path, false):
+#			print("Packed resource not loading")
+#
+#	for pck_file in zip_files:
+#		var pck_abs_path: String = assets_dir.path_join(pck_file)
+#		if not ProjectSettings.load_resource_pack(pck_abs_path, false):
+#			print("Packed resource not loading")
+			
+## Loading assets located in the <asset> directory and places them in a GoboticsDB database
+func load_assets_in_database():
 	database.asset_base_dir = asset_base_dir
-		
 	database.assets.clear()
 	database.add_assets(asset_base_dir)
 
+## Loading environments located in the <env> directory and places them in a GoboticsDB database
 func load_environments_in_database():
 	database.environments.clear()
 	database.add_environments("res://game/environments", true)
-	
-	var env_abs_path: String
-	if OS.has_feature("editor"):
-		env_abs_path = ProjectSettings.globalize_path("res://" + env_dir)
-	else:
-		env_abs_path = OS.get_executable_path().get_base_dir().path_join(env_dir)
-		
-	if not DirAccess.dir_exists_absolute(env_abs_path):
-		printerr("Environment Directory not exists")
-		return
-		
-	database.add_environments(env_abs_path, false)
 	
 func fill_assets_list():
 	assets_list.clear()
@@ -133,7 +114,7 @@ func fill_assets_list():
 		assets_list.set_item_metadata(idx, asset.fullname)
 		assets_list.set_item_tooltip(idx, asset.fullname)
 
-## Create missing directory in application folder like assets, environments, packages and temp.
+## Create missing directory in application folder like assets, packages and temp.
 ## Must be called first.
 func create_dir():
 	# Creating temp directory
@@ -160,16 +141,6 @@ func create_dir():
 		
 	if not DirAccess.dir_exists_absolute(package_base_dir):
 		DirAccess.make_dir_absolute(package_base_dir)
-		
-	# Creating environments directory
-	var env_abs_path: String
-	if OS.has_feature("editor"):
-		env_abs_path = ProjectSettings.globalize_path("res://" + env_dir)
-	else:
-		env_abs_path = OS.get_executable_path().get_base_dir().path_join(env_dir)
-		
-	if not DirAccess.dir_exists_absolute(env_abs_path):
-		DirAccess.make_dir_absolute(env_abs_path)
 		
 	# Creating assets directory
 	if OS.has_feature("editor"):
