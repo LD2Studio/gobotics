@@ -933,7 +933,7 @@ func create_scene(root_node: Node3D):
 			parse_error_message += "Joint <%s> has no child link!" % [joint.name]
 			return null
 			
-		var joint_node : Joint3D
+		var joint_node
 		var new_joint_basis : Basis
 		if not "type" in joint:
 			printerr("joint %s has no type" % joint.name)
@@ -969,7 +969,7 @@ func create_scene(root_node: Node3D):
 					joint_node.transform.basis = new_basis
 					
 			"continuous":
-				joint_node = HingeJoint3D.new()
+				joint_node = JoltHingeJoint3D.new()
 				joint_node.name = joint.name
 				joint_node.add_to_group("CONTINUOUS", true)
 				if "origin" in joint:
@@ -979,7 +979,7 @@ func create_scene(root_node: Node3D):
 				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
-						joint_node.set_param(HingeJoint3D.PARAM_MOTOR_MAX_IMPULSE, float(joint.limit.effort))
+						joint_node.motor_max_torque = float(joint.limit.effort)
 					if "velocity" in joint.limit:
 						limit_velocity = float(joint.limit.velocity)
 				if not "axis" in joint:
@@ -1136,7 +1136,7 @@ var control : RobotDiffDriveExt
 
 
 func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
-	var source_code = """extends HingeJoint3D
+	var source_code = """extends JoltHingeJoint3D
 @onready var child_link: RigidBody3D = $%s
 var target_velocity: float = 0.0:
 	set = _target_velocity_changed
@@ -1144,12 +1144,12 @@ const LIMIT_VELOCITY = %d
 
 func _ready():
 	child_link.can_sleep = false
-	set_flag(FLAG_ENABLE_MOTOR, true)
-	set_param(PARAM_MOTOR_TARGET_VELOCITY, target_velocity)
+	motor_enabled = true
+	motor_target_velocity = target_velocity
 	
 func _target_velocity_changed(value: float):
 	target_velocity = value
-	set_param(PARAM_MOTOR_TARGET_VELOCITY, target_velocity)
+	motor_target_velocity = target_velocity
 """ % [child_node.name, limit_velocity]
 	return source_code
 	
