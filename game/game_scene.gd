@@ -433,3 +433,7 @@ func _on_builtin_script_check_box_toggled(button_pressed: bool) -> void:
 func _on_frame_check_box_toggled(button_pressed):
 	for node in get_tree().get_nodes_in_group("FRAME"):
 		node.visible = button_pressed
+
+func _on_joint_check_box_toggled(button_pressed):
+	for node in get_tree().get_nodes_in_group("JOINT"):
+		node.visible = button_pressed

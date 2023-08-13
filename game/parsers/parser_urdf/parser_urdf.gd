@@ -820,16 +820,17 @@ func load_joints(urdf_data):
 
 func create_scene(root_node: Node3D):
 	for joint in _joints:
+		# search for the link that matches the parent link of joint
 		var parent_name: String = joint.parent.link
 		var parent_node: Node3D
 		for link in links:
 			if link.name == parent_name:
 				parent_node = link
-				link.set_meta("orphan", false)
+				link.set_meta("orphan", false) # Marked as used
 		if parent_node == null:
 			parse_error_message += "Joint <%s> has no parent link!" % [joint.name]
 			return null
-		
+		# search for the link that matches the child link of joint
 		var child_name: String = joint.child.link
 		var child_node: Node3D
 		for link in links:
@@ -839,13 +840,9 @@ func create_scene(root_node: Node3D):
 		if child_node == null:
 			parse_error_message += "Joint <%s> has no child link!" % [joint.name]
 			return null
-		if "origin" in joint:
-			child_node.position = joint.origin.xyz * scale
-			child_node.rotation = joint.origin.rpy
-#		print("add child %s to parent %s" % [child_node, parent_node])
-		parent_node.add_child(child_node)
-		
+			
 		var joint_node : Joint3D
+		var new_joint_basis : Basis
 		if not "type" in joint:
 			printerr("joint %s has no type" % joint.name)
 			return null
@@ -853,12 +850,21 @@ func create_scene(root_node: Node3D):
 		match joint.type:
 			"fixed":
 				joint_node = Generic6DOFJoint3D.new()
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
 
 			"pin":
 				joint_node = PinJoint3D.new()
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
 				
 			"hinge":
 				joint_node = HingeJoint3D.new()
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
 					var new_basis = Basis.looking_at(Vector3(1,0,0))
@@ -870,6 +876,10 @@ func create_scene(root_node: Node3D):
 			"continuous":
 				joint_node = HingeJoint3D.new()
 				joint_node.add_to_group("CONTINUOUS", true)
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
+				
 				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
@@ -878,21 +888,26 @@ func create_scene(root_node: Node3D):
 						limit_velocity = float(joint.limit.velocity)
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
-					var new_basis = Basis.looking_at(Vector3(1,0,0))
-					joint_node.transform.basis = new_basis
+					new_joint_basis = Basis.looking_at(Vector3(1,0,0))
+					joint_node.transform.basis = new_joint_basis
 				elif joint.axis != Vector3.UP:
-					var new_basis = Basis.looking_at(joint.axis)
-					joint_node.transform.basis = new_basis
+					new_joint_basis = Basis.looking_at(joint.axis)
+					joint_node.transform.basis = new_joint_basis
 				else:
-					var new_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
-					joint_node.transform.basis = new_basis
+					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
+					joint_node.transform.basis = new_joint_basis
+					
+				
 				var joint_script := GDScript.new()
-				joint_script.source_code = get_continuous_joint_script(limit_velocity)
+				joint_script.source_code = get_continuous_joint_script(child_node, limit_velocity)
 				joint_node.set_script(joint_script)
 				
 			"revolute":
 				joint_node = HingeJoint3D.new()
 				joint_node.add_to_group("REVOLUTE", true)
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
 				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
@@ -901,23 +916,37 @@ func create_scene(root_node: Node3D):
 						limit_velocity = float(joint.limit.velocity)
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
-					var new_basis = Basis.looking_at(Vector3(1,0,0))
-					joint_node.transform.basis = new_basis
+					new_joint_basis = Basis.looking_at(Vector3(1,0,0))
+					joint_node.transform.basis = new_joint_basis
 				elif joint.axis != Vector3.UP:
-					var new_basis = Basis.looking_at(joint.axis)
-					joint_node.transform.basis = new_basis
+					new_joint_basis = Basis.looking_at(joint.axis)
+					joint_node.transform.basis = new_joint_basis
 				else:
-					var new_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
-					joint_node.transform.basis = new_basis
+					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
+					joint_node.transform.basis = new_joint_basis
 				var joint_script := GDScript.new()
-				joint_script.source_code = get_revolute_joint_script(limit_velocity)
+				joint_script.source_code = get_revolute_joint_script(child_node, limit_velocity)
 				joint_node.set_script(joint_script)
 				
 		joint_node.name = joint.name
-		joint_node.node_a = ^"../.."
-		joint_node.node_b = ^"../"
+		joint_node.node_a = ^"../"
+		joint_node.node_b = NodePath("%s" % [child_node.name])
 		joint_node.unique_name_in_owner = true
-		child_node.add_child(joint_node)
+		# Add frame gizmo
+		var frame_visual := MeshInstance3D.new()
+		frame_visual.name = joint_node.name + "_frame"
+		frame_visual.add_to_group("JOINT", true)
+		frame_visual.mesh = _frame_mesh
+		if new_joint_basis:
+			frame_visual.transform.basis = new_joint_basis.inverse()
+		frame_visual.scale = Vector3.ONE * scale
+		frame_visual.visible = false
+		joint_node.add_child(frame_visual)
+		
+		joint_node.add_child(child_node)
+		if new_joint_basis:
+			child_node.transform.basis = new_joint_basis.inverse()
+		parent_node.add_child(joint_node)
 		
 	var base_link: RigidBody3D
 	for link in links:
@@ -1004,27 +1033,27 @@ var control : RobotDiffDriveExt
 	root_node.set_script(_script)
 
 
-func get_continuous_joint_script(limit_velocity: float) -> String:
+func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends HingeJoint3D
-@onready var link: RigidBody3D = $".."
+@onready var child_link: RigidBody3D = $%s
 var target_velocity: float = 0.0:
 	set = _target_velocity_changed
 const LIMIT_VELOCITY = %d
 
 func _ready():
-	link.can_sleep = false
+	child_link.can_sleep = false
 	set_flag(FLAG_ENABLE_MOTOR, true)
 	set_param(PARAM_MOTOR_TARGET_VELOCITY, target_velocity)
 	
 func _target_velocity_changed(value: float):
 	target_velocity = value
 	set_param(PARAM_MOTOR_TARGET_VELOCITY, target_velocity)
-""" % [limit_velocity]
+""" % [child_node.name, limit_velocity]
 	return source_code
 	
-func get_revolute_joint_script(limit_velocity: float) -> String:
+func get_revolute_joint_script(child_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends HingeJoint3D
-@onready var link: RigidBody3D = get_node("../")
+@onready var link: RigidBody3D = $%s
 @export var target_angle: float = 0.0
 var k : float = 1.0
 var rest_angle: float
@@ -1051,7 +1080,7 @@ func _physics_process(_delta):
 
 func _target_angle_changed(value: float):
 	target_angle = value
-""" % [limit_velocity]
+""" % [child_node.name, limit_velocity]
 	return source_code
 	
 func follow_camera_script(position: Vector3):

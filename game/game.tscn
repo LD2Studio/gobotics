@@ -530,6 +530,10 @@ layout_mode = 2
 layout_mode = 2
 text = "Frame"
 
+[node name="JointCheckBox" type="CheckBox" parent="SplitContainer/3DViewContainer/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer"]
+layout_mode = 2
+text = "Joint"
+
 [node name="GameScene" type="Node3D" parent="SplitContainer/3DViewContainer/SceneViewport"]
 unique_name_in_owner = true
 script = ExtResource("4_htgp6")
@@ -601,5 +605,6 @@ offset_bottom = 8.0
 [connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ToolBar/RunStopButton" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
 [connection signal="pressed" from="SplitContainer/3DViewContainer/SceneViewport/ToolBar/ReloadButton" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_reload_button_pressed"]
 [connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/FrameCheckBox" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_frame_check_box_toggled"]
+[connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/JointCheckBox" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_joint_check_box_toggled"]
 [connection signal="confirmed" from="SplitContainer/3DViewContainer/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_confirm_delete_dialog_confirmed"]
 [connection signal="confirmed" from="SplitContainer/3DViewContainer/SceneViewport/GameScene/ScriptDialog" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_script_dialog_confirmed"]
