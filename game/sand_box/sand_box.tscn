@@ -1,21 +1,32 @@
-[gd_scene load_steps=4 format=3 uid="uid://ccy058h2et4uf"]
+[gd_scene load_steps=6 format=3 uid="uid://ddnmvsiucbusy"]
 
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_1ul6h"]
 [ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="3_53itu"]
-[ext_resource type="PackedScene" uid="uid://cuwt8dscf0d1r" path="res://temp/servo.tscn" id="3_sqm3l"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1vm2n"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_emmcy"]
+sky_material = SubResource("ProceduralSkyMaterial_1vm2n")
+
+[sub_resource type="Environment" id="Environment_7ak27"]
+background_mode = 2
+sky = SubResource("Sky_emmcy")
+tonemap_mode = 2
+glow_enabled = true
 
 [node name="SandBox" type="Node3D"]
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_7ak27")
+
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.935475, 0.146056, -0.321799, 0.131205, 0.701969, 0.700018, 0.328134, -0.697071, 0.637511, 0, 2.0046, 9.21941)
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
 
 [node name="ControlCamera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.927435, 0.373985, 0, -0.373985, 0.927435, 0, 3.70431, 9.18621)
+transform = Transform3D(1, 0, 0, 0, 0.951709, 0.307001, 0, -0.307001, 0.951709, 0, 2.53403, 7.85553)
 script = ExtResource("1_1ul6h")
-action_mouse_button = "LEFT_BUTTON"
-zoom_speed = 1.5
-zoom_out = 30.0
 
 [node name="DarkEnvironment" parent="." instance=ExtResource("3_53itu")]
-
-[node name="Servo" parent="." instance=ExtResource("3_sqm3l")]

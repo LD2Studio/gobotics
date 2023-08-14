@@ -850,18 +850,21 @@ func create_scene(root_node: Node3D):
 		match joint.type:
 			"fixed":
 				joint_node = Generic6DOFJoint3D.new()
+				joint_node.name = joint.name
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
 
 			"pin":
 				joint_node = PinJoint3D.new()
+				joint_node.name = joint.name
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
 				
 			"hinge":
 				joint_node = HingeJoint3D.new()
+				joint_node.name = joint.name
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
@@ -875,6 +878,7 @@ func create_scene(root_node: Node3D):
 					
 			"continuous":
 				joint_node = HingeJoint3D.new()
+				joint_node.name = joint.name
 				joint_node.add_to_group("CONTINUOUS", true)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
@@ -897,13 +901,13 @@ func create_scene(root_node: Node3D):
 					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
 					joint_node.transform.basis = new_joint_basis
 					
-				
 				var joint_script := GDScript.new()
 				joint_script.source_code = get_continuous_joint_script(child_node, limit_velocity)
 				joint_node.set_script(joint_script)
 				
 			"revolute":
 				joint_node = HingeJoint3D.new()
+				joint_node.name = joint.name
 				joint_node.add_to_group("REVOLUTE", true)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
@@ -924,11 +928,18 @@ func create_scene(root_node: Node3D):
 				else:
 					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
 					joint_node.transform.basis = new_joint_basis
+					
+				var basis_node = Node3D.new()
+				basis_node.name = joint_node.name + "_basis_inv"
+				basis_node.unique_name_in_owner = true
+				basis_node.transform.basis = new_joint_basis
+				child_node.add_child(basis_node)
+					
 				var joint_script := GDScript.new()
-				joint_script.source_code = get_revolute_joint_script(child_node, limit_velocity)
+				joint_script.source_code = get_revolute_joint_script(child_node, basis_node, limit_velocity)
 				joint_node.set_script(joint_script)
 				
-		joint_node.name = joint.name
+		
 		joint_node.node_a = ^"../"
 		joint_node.node_b = NodePath("%s" % [child_node.name])
 		joint_node.unique_name_in_owner = true
@@ -942,7 +953,6 @@ func create_scene(root_node: Node3D):
 		frame_visual.scale = Vector3.ONE * scale
 		frame_visual.visible = false
 		joint_node.add_child(frame_visual)
-		
 		joint_node.add_child(child_node)
 		if new_joint_basis:
 			child_node.transform.basis = new_joint_basis.inverse()
@@ -1051,36 +1061,36 @@ func _target_velocity_changed(value: float):
 """ % [child_node.name, limit_velocity]
 	return source_code
 	
-func get_revolute_joint_script(child_node: Node3D, limit_velocity: float) -> String:
+func get_revolute_joint_script(child_node: Node3D, basis_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends HingeJoint3D
-@onready var link: RigidBody3D = $%s
+@onready var child_link: RigidBody3D = $%s
+@onready var basis_inv: Node3D = %%%s
 @export var target_angle: float = 0.0
-var k : float = 1.0
+
+var angle_step: float
 var rest_angle: float
-const LIMIT_VELOCITY = %d
+var LIMIT_VELOCITY: float = %d
 
 func _ready():
-	link.can_sleep = false
+	child_link.can_sleep = false
 	set_flag(FLAG_ENABLE_MOTOR, true)
-	var arm_basis = link.transform.basis * transform.basis
-	rest_angle = arm_basis.get_euler(EULER_ORDER_XYZ).z
+	angle_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
+#	rest_angle = arm_basis.get_euler(EULER_ORDER_XYZ).z
 
 func _physics_process(_delta):
-	var arm_basis = link.transform.basis * transform.basis
-	var angle = arm_basis.get_euler(EULER_ORDER_XYZ).z - rest_angle
+	var child_basis: Basis = child_link.transform.basis
+	var angle = (child_basis * basis_inv.transform.basis).get_euler().z
 	var err = deg_to_rad(target_angle) - angle
 	var speed: float
-	if abs(err) > deg_to_rad(1):
+	if abs(err) > angle_step:
 		speed = LIMIT_VELOCITY * sign(err)
-	elif abs(err) > deg_to_rad(0.1):
-		speed = err * k
 	else:
 		speed = 0
 	set_param(HingeJoint3D.PARAM_MOTOR_TARGET_VELOCITY, -speed)
 
 func _target_angle_changed(value: float):
 	target_angle = value
-""" % [child_node.name, limit_velocity]
+""" % [child_node.name, basis_node.name, limit_velocity]
 	return source_code
 	
 func follow_camera_script(position: Vector3):
