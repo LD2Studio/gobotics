@@ -7,13 +7,13 @@ var max_speed: float
 
 class Robot:
 	var base_link: RigidBody3D
-	var right_wheel: Joint3D
-	var left_wheel: Joint3D
+	var right_wheel
+	var left_wheel
 	var state: int
 	var task_finished: bool = true
 
 
-func _init(base_link: RigidBody3D, right_wheel_joint: Joint3D, left_wheel_joint: Joint3D, max_speed: float = 5.0):
+func _init(base_link: RigidBody3D, right_wheel_joint, left_wheel_joint, max_speed: float = 5.0):
 	super()
 	robot.base_link = base_link
 	robot.right_wheel = right_wheel_joint

@@ -243,7 +243,7 @@ func load_scene(path):
 		if "fullname" in asset:
 			var asset_filename = game.database.get_asset_scene(asset.fullname)
 			if asset_filename == null:
-				printerr("Asset %s not available!" % [asset.name])
+				printerr("Asset %s not available!" % [asset.fullname])
 				continue
 			var asset_node : Node3D = ResourceLoader.load(asset_filename).instantiate()
 			if "transform" in asset:
