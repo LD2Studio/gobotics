@@ -6,7 +6,6 @@ export_presets.cfg
 __pycache__/
 
 # Project Specific
-/assets/
 /asset/
 /environments/
 /packages/
