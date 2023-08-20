@@ -275,7 +275,6 @@ func delete_scene():
 	var scene_node = get_node_or_null("Scene")
 	if scene_node == null:
 		return
-	assert(scene_node!=null)
 	for node in scene_node.get_children():
 		scene_node.remove_child(node)
 		node.queue_free()

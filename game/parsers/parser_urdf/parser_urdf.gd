@@ -386,7 +386,10 @@ func load_links(urdf_data, root_node: Node3D) -> int:
 						mass_tag[name] = value
 					if current_tag == Tag.INERTIAL:
 						if mass_tag.value:
-							link.mass = float(mass_tag.value)
+							if float(mass_tag.value) == 0:
+								link.mass = 1.0
+							else:
+								link.mass = float(mass_tag.value)
 				
 				"visual":
 					if root_tag != Tag.LINK: continue
