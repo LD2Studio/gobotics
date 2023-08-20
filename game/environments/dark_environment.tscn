@@ -1,8 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://b1l2mlf7hsuwm"]
 
-[ext_resource type="Texture2D" uid="uid://cgwuo8ikfadac" path="res://game/assets/environments/tex/texture_01.png" id="1_00e8d"]
+[ext_resource type="Texture2D" uid="uid://cgwuo8ikfadac" path="res://game/assets/tex/texture_01.png" id="1_00e8d"]
 
-[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_pcu85"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_7w2gt"]
+size = Vector3(100, 1, 100)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_njqku"]
 size = Vector2(100, 100)
@@ -18,7 +19,7 @@ texture_filter = 4
 [node name="Floor" type="StaticBody3D" parent="." groups=["PICKABLE"]]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
-shape = SubResource("WorldBoundaryShape3D_pcu85")
+shape = SubResource("BoxShape3D_7w2gt")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
 mesh = SubResource("PlaneMesh_njqku")

@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://ddnmvsiucbusy"]
 
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_1ul6h"]
-[ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="3_53itu"]
+[ext_resource type="PackedScene" uid="uid://b1l2mlf7hsuwm" path="res://game/environments/dark_environment.tscn" id="2_mocwi"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1vm2n"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -29,4 +29,4 @@ shadow_enabled = true
 transform = Transform3D(1, 0, 0, 0, 0.951709, 0.307001, 0, -0.307001, 0.951709, 0, 2.53403, 7.85553)
 script = ExtResource("1_1ul6h")
 
-[node name="DarkEnvironment" parent="." instance=ExtResource("3_53itu")]
+[node name="DarkEnvironment" parent="." instance=ExtResource("2_mocwi")]

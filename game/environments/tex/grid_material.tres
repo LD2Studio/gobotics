@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://jrcfjh8erboe"]
 
-[ext_resource type="Shader" path="res://game/assets/environments/tex/grid_material.gdshader" id="1_3ptpl"]
+[ext_resource type="Shader" path="res://game/assets/res/grid_material.gdshader" id="1_3ptpl"]
 
 [resource]
 render_priority = 0

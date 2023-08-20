@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bkljlbdc3saer" path="res://game/icons/DistractionFree.svg" id="4_255wc"]
 [ext_resource type="FontFile" uid="uid://dwnwhuwmtxwoa" path="res://game/fonts/UbuntuMono-Regular.ttf" id="4_md26q"]
 [ext_resource type="Script" path="res://game/asset_editor/URDFCodeEdit.gd" id="5_gmqxa"]
-[ext_resource type="PackedScene" uid="uid://dmeydy06akfvx" path="res://game/assets/environments/dark_environment.tscn" id="6_dx6hk"]
+[ext_resource type="PackedScene" uid="uid://b1l2mlf7hsuwm" path="res://game/environments/dark_environment.tscn" id="8_1dki6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hdc4v"]
 bg_color = Color(0.466667, 0.580392, 0.341176, 1)
@@ -129,7 +129,7 @@ own_world_3d = true
 transparent_bg = true
 handle_input_locally = false
 msaa_3d = 2
-size = Vector2i(2, 2)
+size = Vector2i(789, 755)
 render_target_update_mode = 4
 
 [node name="PreviewScene" type="Node3D" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
@@ -146,7 +146,7 @@ environment = SubResource("Environment_nftkf")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene"]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -10, 0, 0)
 
-[node name="DarkEnvironment" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene" instance=ExtResource("6_dx6hk")]
+[node name="DarkEnvironment" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene" instance=ExtResource("8_1dki6")]
 
 [node name="OptionsContainer" type="PanelContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
 offset_right = 40.0
