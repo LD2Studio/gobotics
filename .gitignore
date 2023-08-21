@@ -8,7 +8,7 @@ __pycache__/
 # Project Specific
 /asset/
 /assets/
-/environments/
+/package/
 /packages/
 /examples/
 /temp/
