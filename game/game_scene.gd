@@ -238,8 +238,9 @@ func load_scene(path):
 	
 	if "fullname" in scene_objects.environment:
 		var env_filename = game.database.get_scene_from_fullname(scene_objects.environment.fullname)
-		var environment = ResourceLoader.load(env_filename).instantiate()
-		scene.add_child(environment)
+		if env_filename:
+			var environment = ResourceLoader.load(env_filename).instantiate()
+			scene.add_child(environment)
 	
 	for asset in scene_objects.assets:
 		if "fullname" in asset:
