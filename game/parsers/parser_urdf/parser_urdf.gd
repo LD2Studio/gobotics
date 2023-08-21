@@ -572,6 +572,7 @@ func load_links(urdf_data, asset_type: String) -> int:
 				
 				"material":
 					if root_tag != Tag.LINK: continue
+					if current_visual.get_surface_override_material_count() == 0: continue
 					var attrib = {}
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
