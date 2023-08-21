@@ -39,6 +39,8 @@ func _input(event: InputEvent) -> void:
 		
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
+#	print("game scene _process")
+#	Node.print_orphan_nodes()
 	
 func new_scene(environment_path: String) -> void:
 #	print("Env path: ", environment_path)

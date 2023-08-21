@@ -28,7 +28,6 @@ var current_filename: String:
 func _enter_tree():
 	create_dir()
 	load_assets_in_database()
-	load_environments_in_database()
 
 func _ready():
 	var app_name: String = ProjectSettings.get_setting("application/config/name")
@@ -49,9 +48,7 @@ func _on_new_scene_dialog_confirmed() -> void:
 	if items.is_empty(): return
 	var idx = items[0]
 	var fullname = %EnvironmentList.get_item_metadata(idx)
-#	var environment_name: String = %EnvironmentList.get_item_text(items[0])
 	current_filename = ""
-#	var env = database.get_environment(environment_name)
 	var env = database.get_scene_from_fullname(fullname)
 	if env:
 		game_scene.new_scene(env)
@@ -101,11 +98,6 @@ func load_assets_in_database():
 	database.asset_base_dir = asset_base_dir
 	database.assets.clear()
 	database.add_assets(asset_base_dir)
-
-## Loading environments located in the <env> directory and places them in a GoboticsDB database
-func load_environments_in_database():
-	database.environments.clear()
-	database.add_environments("res://game/environments", true)
 	
 func fill_assets_list():
 	assets_list.clear()

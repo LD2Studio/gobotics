@@ -23,10 +23,6 @@ config/version="0.1.0-alpha"
 window/size/viewport_width=1600
 window/size/viewport_height=800
 
-[editor]
-
-export/convert_text_resources_to_binary=false
-
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/control_camera3d/plugin.cfg", "res://addons/editor_physics/plugin.cfg")

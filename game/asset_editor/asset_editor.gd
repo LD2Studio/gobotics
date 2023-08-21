@@ -109,16 +109,14 @@ func _on_generate_button_pressed() -> void:
 	generate_scene(urdf_code_edit.text, fullname)
 	
 func generate_scene(urdf_code: String, _fullname: String, _asset_metadata: Dictionary = {}):
-	var result = urdf_parser.parse_buffer(urdf_code)
+	var root_node = urdf_parser.parse_buffer(urdf_code)
 	# If result return error message
-	if result is String:
+	if root_node is String:
 		%MessageContainer.visible = true
-		%MessageLabel.text = result
+		%MessageLabel.text = root_node
 		return
 	else:
 		%MessageContainer.visible = false
-		
-	var root_node = result
 	
 	if root_node == null: return
 	if root_node:
@@ -144,7 +142,7 @@ func generate_scene(urdf_code: String, _fullname: String, _asset_metadata: Dicti
 	show_collision_shape(%CollisionCheckBox.button_pressed)
 	show_link_frame(%FrameCheckBox.button_pressed)
 	show_joint_frame(%JointCheckBox.button_pressed)
-	# Freeing nodes
+	# Freeing orphan nodes
 	root_node.queue_free()
 	
 func _on_urdf_code_edit_text_changed() -> void:

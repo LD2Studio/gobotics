@@ -106,9 +106,9 @@ func generate_scene(urdf_code: String, fullname: String, asset: Dictionary = {})
 		print("error message: ", result)
 		return null
 		
-	var root_node = result
+	var root_node : Node3D = result
 	var scene_filename = temp_abs_path.path_join(fullname.get_basename().validate_node_name() + ".tscn")
-	if root_node == null: return
+	if root_node == null: return null
 
 	root_node.set_meta("fullname", fullname)
 	var asset_scene = PackedScene.new()
@@ -121,7 +121,8 @@ func generate_scene(urdf_code: String, fullname: String, asset: Dictionary = {})
 		return null
 	
 #	root_node.print_tree_pretty()
-	root_node.queue_free()	# Delete orphan nodes
+	
+	root_node.free()	# Delete orphan nodes
 	return scene_filename
 	
 func get_asset_filename(fullname: String):

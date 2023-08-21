@@ -37,7 +37,7 @@ func parse_buffer(buffer: String, asset={}):
 	asset.type = root_node.get_meta("type")
 	load_gobotics_params(urdf_pack)
 	load_materials(urdf_pack)
-	if load_links(urdf_pack, root_node) != OK:
+	if load_links(urdf_pack, root_node.get_meta("type")) != OK:
 		delete_links()
 		root_node.free()
 		return parse_error_message
@@ -310,7 +310,7 @@ func load_materials(urdf_data):
 
 #	print("materials: ", _materials)
 
-func load_links(urdf_data, root_node: Node3D) -> int:
+func load_links(urdf_data, asset_type: String) -> int:
 	var err
 	if urdf_data is String:
 		err = parser.open(urdf_data)
@@ -354,7 +354,7 @@ func load_links(urdf_data, root_node: Node3D) -> int:
 						printerr("No name for link!")
 						return ERR_PARSE_ERROR
 						
-					if root_node.get_meta("type") == "standalone" or root_node.get_meta("type") == "robot":
+					if asset_type == "standalone" or asset_type == "robot":
 						link.add_to_group("SELECT", true)
 					if "xyz" in link_attrib:
 						var xyz := Vector3.ZERO
@@ -523,9 +523,17 @@ func load_links(urdf_data, root_node: Node3D) -> int:
 								if not "object" in attrib:
 									printerr("Object attribut missing!")
 									continue
-								err = load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag, link.name == "world")
-								if err!= OK:
-									return ERR_PARSE_ERROR
+								if current_tag == Tag.VISUAL:
+									var mesh: ArrayMesh = get_gltf_mesh(attrib)
+									if mesh == null:
+										printerr("Failed to load gltf file")
+										continue
+									current_visual.mesh = mesh
+									current_visual.scale = Vector3.ONE * scale
+								elif current_tag == Tag.COLLISION:
+									pass
+#								err = load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag, link.name == "world")
+
 							"dae":
 								pass
 							_:
@@ -619,6 +627,40 @@ func load_links(urdf_data, root_node: Node3D) -> int:
 				
 #	print("links: ", JSON.stringify(links, "\t", false))
 	return OK
+	
+func get_gltf_mesh(attrib: Dictionary) -> ArrayMesh:
+	var gltf_filename: String
+	if attrib.filename.begins_with("package://"):
+		gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
+#		print("gltf filename: ", gltf_filename)
+	else:
+		printerr("package or user path not found!")
+	if not FileAccess.file_exists(gltf_filename):
+		parse_error_message = "GLTF file not found!"
+		return null
+	var gltf_res := GLTFDocument.new()
+	var gltf_state := GLTFState.new()
+	
+	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
+	if err:
+		parse_error_message = "GLTF file import failed!"
+		return null
+#	print("unique name: ", gltf_state.get_unique_names())
+	
+	var nodes : Array[GLTFNode] = gltf_state.get_nodes()
+	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
+	
+	var mesh: ArrayMesh
+	for node in gltf_state.json.nodes:
+		if node.name == attrib.object:
+#			print("node.name:%s, id=%d " % [node.name, node.mesh])
+			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
+			mesh = imported_mesh.get_mesh()
+			# To avoid orphan nodes created by append_from_file()
+			var scene_node = gltf_res.generate_scene(gltf_state)
+			scene_node.queue_free()
+			return mesh
+	return mesh
 
 func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag, trimesh=false):
 	
@@ -1126,7 +1168,7 @@ func clear_buffer():
 
 func delete_links():
 	for link in links:
-		link.free()
+		link.queue_free()
 
 func clean_links():
 	for link in links:
