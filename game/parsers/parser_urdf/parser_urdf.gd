@@ -524,14 +524,18 @@ func load_links(urdf_data, asset_type: String) -> int:
 									printerr("Object attribut missing!")
 									continue
 								if current_tag == Tag.VISUAL:
-									var mesh: ArrayMesh = get_gltf_mesh(attrib)
+									var mesh: ArrayMesh = get_mesh_from_gltf(attrib)
 									if mesh == null:
 										printerr("Failed to load gltf file")
 										continue
 									current_visual.mesh = mesh
 									current_visual.scale = Vector3.ONE * scale
 								elif current_tag == Tag.COLLISION:
-									pass
+									var shape: Shape3D = get_shape_from_gltf(attrib, current_col_debug, link.name == "world")
+									if shape == null:
+										printerr("Failed to load gltf file")
+										continue
+									current_collision.shape = shape
 #								err = load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag, link.name == "world")
 
 							"dae":
@@ -629,11 +633,10 @@ func load_links(urdf_data, asset_type: String) -> int:
 #	print("links: ", JSON.stringify(links, "\t", false))
 	return OK
 	
-func get_gltf_mesh(attrib: Dictionary) -> ArrayMesh:
+func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
 	var gltf_filename: String
 	if attrib.filename.begins_with("package://"):
 		gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
-#		print("gltf filename: ", gltf_filename)
 	else:
 		printerr("package or user path not found!")
 	if not FileAccess.file_exists(gltf_filename):
@@ -646,22 +649,66 @@ func get_gltf_mesh(attrib: Dictionary) -> ArrayMesh:
 	if err:
 		parse_error_message = "GLTF file import failed!"
 		return null
-#	print("unique name: ", gltf_state.get_unique_names())
 	
-	var nodes : Array[GLTFNode] = gltf_state.get_nodes()
+#	var nodes : Array[GLTFNode] = gltf_state.get_nodes()
 	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
-	
-	var mesh: ArrayMesh
+
 	for node in gltf_state.json.nodes:
 		if node.name == attrib.object:
 #			print("node.name:%s, id=%d " % [node.name, node.mesh])
 			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
-			mesh = imported_mesh.get_mesh()
+			var mesh: ArrayMesh = imported_mesh.get_mesh()
 			# To avoid orphan nodes created by append_from_file()
 			var scene_node = gltf_res.generate_scene(gltf_state)
 			scene_node.queue_free()
 			return mesh
-	return mesh
+	return null
+	
+func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
+	var gltf_filename: String
+	if attrib.filename.begins_with("package://"):
+		gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
+	else:
+		printerr("package or user path not found!")
+	if not FileAccess.file_exists(gltf_filename):
+		parse_error_message = "GLTF file not found!"
+		return null
+	var gltf_res := GLTFDocument.new()
+	var gltf_state := GLTFState.new()
+	
+	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
+	if err:
+		parse_error_message = "GLTF file import failed!"
+		return null
+	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
+	
+	for node in gltf_state.json.nodes:
+		if node.name == attrib.object:
+			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
+			var mesh = imported_mesh.get_mesh()
+			var mdt = MeshDataTool.new()
+			mdt.create_from_surface(mesh, 0)
+			for i in range(mdt.get_vertex_count()):
+				var vertex = mdt.get_vertex(i)
+				vertex *= scale
+				# Save your change.
+				mdt.set_vertex(i, vertex)
+			mesh.clear_surfaces()
+			mdt.commit_to_surface(mesh)
+			var shape: Shape3D
+			if trimesh:
+				shape = mesh.create_trimesh_shape()
+			else:
+				shape = mesh.create_convex_shape()
+			if debug_col:
+				var debug_mesh = shape.get_debug_mesh()
+				debug_col.mesh = debug_mesh
+			# To avoid orphan nodes created by append_from_file()
+			var scene_node = gltf_res.generate_scene(gltf_state)
+			scene_node.queue_free()
+			return shape
+	return null
+
 
 func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag, trimesh=false):
 	
@@ -731,7 +778,6 @@ func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape
 					current_visual.scale = Vector3.ONE * scale
 				return OK
 			elif current_tag == Tag.COLLISION:
-				pass
 				var mdt = MeshDataTool.new()
 				mdt.create_from_surface(mesh, 0)
 				for i in range(mdt.get_vertex_count()):
