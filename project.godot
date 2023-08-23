@@ -14,7 +14,6 @@ config/name="Gobotics"
 config/tags=PackedStringArray("project")
 run/main_scene="res://game/game.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
-run/low_processor_mode=true
 config/icon="res://gobotics_logo.svg"
 config/version="0.1.0-alpha"
 
@@ -206,6 +205,7 @@ common/physics_ticks_per_second=240
 3d/physics_engine="JoltPhysics3D"
 3d/default_gravity=98.0
 3d/sleep_threshold_angular=0.5
+jolt_3d/solver/contact_allowed_penetration=0.001
 
 [rendering]
 
