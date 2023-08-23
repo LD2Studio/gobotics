@@ -125,7 +125,6 @@ func create_dir():
 	DirAccess.make_dir_absolute(temp_abs_path)
 
 	# Creating packages directory
-	
 	if OS.has_feature("editor"):
 		package_base_dir = ProjectSettings.globalize_path("res://" + package_dir)
 	else:

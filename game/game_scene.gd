@@ -278,9 +278,6 @@ func delete_scene():
 	var scene_node = get_node_or_null("Scene")
 	if scene_node == null:
 		return
-	for node in scene_node.get_children():
-		scene_node.remove_child(node)
-		node.queue_free()
 	remove_child(scene_node)
 	scene_node.queue_free()
 	save_scene_as_button.disabled = true
