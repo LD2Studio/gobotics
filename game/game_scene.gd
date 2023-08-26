@@ -279,7 +279,7 @@ func delete_scene():
 	if scene_node == null:
 		return
 	remove_child(scene_node)
-	scene_node.queue_free()
+	scene_node.free()
 	save_scene_as_button.disabled = true
 	
 func freeze_asset(asset, frozen):

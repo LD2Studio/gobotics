@@ -998,7 +998,7 @@ func create_scene(root_node: Node3D):
 				joint_node.set_script(joint_script)
 				
 			"revolute":
-				joint_node = HingeJoint3D.new()
+				joint_node = JoltHingeJoint3D.new()
 				joint_node.name = joint.name
 				joint_node.add_to_group("REVOLUTE", true)
 				if "origin" in joint:
@@ -1007,15 +1007,15 @@ func create_scene(root_node: Node3D):
 				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
-						joint_node.set_param(HingeJoint3D.PARAM_MOTOR_MAX_IMPULSE, float(joint.limit.effort))
+						joint_node.motor_max_torque = float(joint.limit.effort)
 					if "velocity" in joint.limit:
 						limit_velocity = float(joint.limit.velocity)
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
-					new_joint_basis = Basis.looking_at(Vector3(1,0,0))
+					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
 					joint_node.transform.basis = new_joint_basis
 				elif joint.axis != Vector3.UP:
-					new_joint_basis = Basis.looking_at(joint.axis)
+					new_joint_basis = Basis.looking_at(-joint.axis)
 					joint_node.transform.basis = new_joint_basis
 				else:
 					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
@@ -1154,7 +1154,7 @@ func _target_velocity_changed(value: float):
 	return source_code
 	
 func get_revolute_joint_script(child_node: Node3D, basis_node: Node3D, limit_velocity: float) -> String:
-	var source_code = """extends HingeJoint3D
+	var source_code = """extends JoltHingeJoint3D
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
 @export var target_angle: float = 0.0
@@ -1165,9 +1165,8 @@ var LIMIT_VELOCITY: float = %d
 
 func _ready():
 	child_link.can_sleep = false
-	set_flag(FLAG_ENABLE_MOTOR, true)
+	motor_enabled = true
 	angle_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
-#	rest_angle = arm_basis.get_euler(EULER_ORDER_XYZ).z
 
 func _physics_process(_delta):
 	var child_basis: Basis = child_link.transform.basis
@@ -1178,7 +1177,7 @@ func _physics_process(_delta):
 		speed = LIMIT_VELOCITY * sign(err)
 	else:
 		speed = 0
-	set_param(HingeJoint3D.PARAM_MOTOR_TARGET_VELOCITY, -speed)
+	motor_target_velocity = speed
 
 func _target_angle_changed(value: float):
 	target_angle = value
