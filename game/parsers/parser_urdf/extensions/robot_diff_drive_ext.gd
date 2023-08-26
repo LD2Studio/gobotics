@@ -2,6 +2,7 @@ extends RobotExt
 class_name RobotDiffDriveExt
 
 var robot = Robot.new()
+var physics_engine : String = ProjectSettings.get_setting("physics/3d/physics_engine")
 
 var max_speed: float
 
@@ -19,7 +20,7 @@ func _init(base_link: RigidBody3D, right_wheel_joint, left_wheel_joint, max_spee
 	robot.right_wheel = right_wheel_joint
 	robot.left_wheel = left_wheel_joint
 	self.max_speed = max_speed
-
+	print("Physics Engine: ",physics_engine)
 
 func _physics_process(_delta):
 	if manual:
