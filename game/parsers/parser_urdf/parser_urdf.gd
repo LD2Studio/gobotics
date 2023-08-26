@@ -984,10 +984,10 @@ func create_scene(root_node: Node3D):
 						limit_velocity = float(joint.limit.velocity)
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
-					new_joint_basis = Basis.looking_at(Vector3(1,0,0))
+					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
 					joint_node.transform.basis = new_joint_basis
 				elif joint.axis != Vector3.UP:
-					new_joint_basis = Basis.looking_at(joint.axis)
+					new_joint_basis = Basis.looking_at(-joint.axis)
 					joint_node.transform.basis = new_joint_basis
 				else:
 					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
