@@ -985,13 +985,13 @@ func create_scene(root_node: Node3D):
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
 					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
-					joint_node.transform.basis = new_joint_basis
+					joint_node.transform.basis *= new_joint_basis
 				elif joint.axis != Vector3.UP:
 					new_joint_basis = Basis.looking_at(-joint.axis)
-					joint_node.transform.basis = new_joint_basis
+					joint_node.transform.basis *= new_joint_basis
 				else:
 					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
-					joint_node.transform.basis = new_joint_basis
+					joint_node.transform.basis *= new_joint_basis
 					
 				var joint_script := GDScript.new()
 				joint_script.source_code = get_continuous_joint_script(child_node, limit_velocity)
@@ -1013,13 +1013,13 @@ func create_scene(root_node: Node3D):
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
 					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
-					joint_node.transform.basis = new_joint_basis
+					joint_node.transform.basis *= new_joint_basis
 				elif joint.axis != Vector3.UP:
 					new_joint_basis = Basis.looking_at(-joint.axis)
-					joint_node.transform.basis = new_joint_basis
+					joint_node.transform.basis *= new_joint_basis
 				else:
 					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
-					joint_node.transform.basis = new_joint_basis
+					joint_node.transform.basis *= new_joint_basis
 					
 				var basis_node = Node3D.new()
 				basis_node.name = joint_node.name + "_basis_inv"
