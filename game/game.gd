@@ -14,6 +14,7 @@ var package_base_dir: String
 @onready var top_camera_2d: Camera3D = %TopView
 @onready var object_inspector = %ObjectInspector
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
+@onready var environment_list = %EnvironmentList
 
 var database: GoboticsDB = GoboticsDB.new(package_dir, temp_dir)
 
@@ -41,6 +42,7 @@ func _ready():
 	current_filename = ""
 
 func _on_new_scene_button_pressed() -> void:
+	environment_list.update_list()
 	%NewSceneDialog.popup_centered(Vector2i(200, 300))
 
 func _on_new_scene_dialog_confirmed() -> void:

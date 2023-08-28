@@ -26,7 +26,7 @@ func add_assets(search_path: String):
 #	print("files: ", files)
 	# Filter asset files
 	var asset_files: Array = files.filter(func(file): return file.get_extension() == "asset")
-	
+#	print("asset files: ", asset_files)
 	for file in asset_files:
 		var asset_filename = search_path.path_join(file)
 #		print("asset_filename: ", asset_filename)

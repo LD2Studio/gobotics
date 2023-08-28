@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://game/game.gd" id="1_85jys"]
 [ext_resource type="Texture2D" uid="uid://cws42r7tqpygr" path="res://game/icons/Tools.svg" id="2_hpbft"]
 [ext_resource type="Texture2D" uid="uid://kr5y1p8nf73q" path="res://game/icons/Add.svg" id="3_bkwo3"]
-[ext_resource type="Script" path="res://game/environment_manager/EnvironmentList.gd" id="3_h8w2c"]
 [ext_resource type="Script" path="res://game/LevelContainer.gd" id="3_n66nd"]
+[ext_resource type="Script" path="res://game/environment_manager/env_list.gd" id="3_nau71"]
 [ext_resource type="Script" path="res://game/asset_manager/asset_list.gd" id="3_webwb"]
 [ext_resource type="Script" path="res://game/game_scene.gd" id="4_htgp6"]
 [ext_resource type="Script" path="res://game/asset_manager/new_asset_button.gd" id="5_c4llk"]
@@ -165,7 +165,7 @@ offset_left = 8.0
 offset_top = 8.0
 offset_right = 192.0
 offset_bottom = 51.0
-script = ExtResource("3_h8w2c")
+script = ExtResource("3_nau71")
 
 [node name="LoadSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
