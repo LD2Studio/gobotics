@@ -232,10 +232,11 @@ func load_scene(path):
 	if error != OK:
 		print("JSON Parse Error: ", json.get_error_message(), " in ", json_scene, " at line ", json.get_error_line())
 		return
-	var scene_objects = json.data
+		
 	delete_scene()
 	init_scene()
 	
+	var scene_objects = json.data
 	if "fullname" in scene_objects.environment:
 		var env_filename = game.database.get_scene_from_fullname(scene_objects.environment.fullname)
 		if env_filename:
@@ -268,6 +269,9 @@ func load_scene(path):
 	%RunStopButton.button_pressed = false
 	save_scene_as_button.disabled = false
 	save_scene_button.disabled = false
+	
+func add_assets_to_scene():
+	pass
 	
 func init_scene():
 	scene = Node3D.new()

@@ -15,7 +15,7 @@ config/tags=PackedStringArray("project")
 run/main_scene="res://game/game.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
 config/icon="res://gobotics_logo.svg"
-config/version="0.1.0-alpha"
+config/version="0.1.0"
 
 [display]
 

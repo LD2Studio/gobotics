@@ -105,8 +105,9 @@ func _on_asset_editor_dialog_confirmed():
 		asset_editor_dialog.remove_child(asset_editor)
 		asset_editor.queue_free()
 		update_assets_database()
-		if game_scene.scene != null:
-			update_assets_in_scene()
+		## Comment fix bug
+#		if game_scene.scene != null:
+#			update_assets_in_scene()
 
 func _on_asset_editor_dialog_canceled():
 	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")
@@ -142,12 +143,12 @@ func update_assets_in_scene():
 			var asset_position = asset.get_child(0).global_position
 			var asset_rotation = asset.get_child(0).global_rotation
 			var asset_name = asset.name
+			game_scene.scene.remove_child(asset)
+			asset.free()
+			
 			var asset_res = database.get_asset_scene(_asset_updated)
 			var new_asset = load(asset_res).instantiate()
 			new_asset.name = asset_name
-			
-			game_scene.scene.remove_child(asset)
-			asset.queue_free()
 			
 			game_scene.scene.add_child(new_asset)
 			new_asset.get_child(0).global_position = asset_position
