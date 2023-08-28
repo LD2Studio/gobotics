@@ -4,6 +4,7 @@ class_name URDFParser
 var scale: float = 1.0
 var asset_user_path: String
 var packages_path: String
+var meshes_list: Array
 var parser = XMLParser.new()
 var parse_error_message: String
 
@@ -526,14 +527,14 @@ func load_links(urdf_data, asset_type: String) -> int:
 								if current_tag == Tag.VISUAL:
 									var mesh: ArrayMesh = get_mesh_from_gltf(attrib)
 									if mesh == null:
-										printerr("Failed to load gltf file")
+										printerr("Failed to load mesh into gltf")
 										continue
 									current_visual.mesh = mesh
 									current_visual.scale = Vector3.ONE * scale
 								elif current_tag == Tag.COLLISION:
 									var shape: Shape3D = get_shape_from_gltf(attrib, current_col_debug, link.name == "world")
 									if shape == null:
-										printerr("Failed to load gltf file")
+										printerr("Failed to load shape into gltf")
 										continue
 									current_collision.shape = shape
 #								err = load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag, link.name == "world")
@@ -634,19 +635,23 @@ func load_links(urdf_data, asset_type: String) -> int:
 	return OK
 	
 func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
-	var gltf_filename: String
+	var gltf_name: String
 	if attrib.filename.begins_with("package://"):
-		gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
+		gltf_name = attrib.filename.trim_prefix("package://")
 	else:
 		printerr("package or user path not found!")
-	if not FileAccess.file_exists(gltf_filename):
-		parse_error_message = "GLTF file not found!"
 		return null
+	
 	var gltf_res := GLTFDocument.new()
 	var gltf_state := GLTFState.new()
-	
-	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
+	var gltf_data: PackedByteArray
+	for mesh in meshes_list:
+		if mesh.name == gltf_name:
+			gltf_data = mesh.data
+			break
+	var err = gltf_res.append_from_buffer(gltf_data, "", gltf_state)
 	if err:
+		printerr("gltf from buffer failed")
 		parse_error_message = "GLTF file import failed!"
 		return null
 	

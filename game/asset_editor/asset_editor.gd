@@ -2,6 +2,7 @@ class_name AssetEditor extends PanelContainer
 
 @export var asset_filename: String = ""
 var asset_name: String = ""
+var meshes_list: Array
 var is_new_asset = false
 var asset_type : int
 
@@ -24,6 +25,7 @@ var package_base_dir: String = ProjectSettings.globalize_path("res://packages")
 @onready var urdf_code_edit: CodeEdit = %URDFCodeEdit
 @onready var preview_viewport = %PreviewViewport
 @onready var preview_scene = %PreviewScene
+@onready var replace_mesh_dialog = %ReplaceMeshDialog
 
 enum NewAsset {
 	STANDALONE,
@@ -58,11 +60,21 @@ func _ready():
 			if err != OK:
 				print("[Asset Editor]: Error %d" % err )
 				return
-			var asset_files = reader.get_files()
-			if ("urdf.xml") in asset_files:
+			var files = reader.get_files()
+			if ("urdf.xml") in files:
 				var res := reader.read_file("urdf.xml")
 				urdf_code_edit.text = res.get_string_from_ascii()
+			for file in files:
+				if file.get_extension() == "glb":
+					var res := reader.read_file(file)
+					meshes_list.append(
+						{
+							name = file,
+							data = res,
+						}
+					)
 			reader.close()
+			urdf_parser.meshes_list = meshes_list
 			generate_scene(urdf_code_edit.text, fullname)
 			
 	show_visual_mesh(%VisualCheckBox.button_pressed)
@@ -91,18 +103,37 @@ func _on_overwrite_confirmation_dialog_confirmed():
 		
 func save_scene():
 	var writer := ZIPPacker.new()
-	var err := writer.open(asset_filename)
+	var err
+	err = writer.open(asset_filename, ZIPPacker.APPEND_CREATE)
 	if err != OK:
-		print("[Asset Editor] Error %d opening %f" % [err, asset_filename])
+		print("[Asset Editor] Error %d opening %s" % [err, asset_filename])
 		return
-	
 	writer.start_file("urdf.xml")
 	writer.write_file(urdf_code_edit.text.to_ascii_buffer())
 	writer.close_file()
+	
+	for mesh in meshes_list:
+		writer.start_file(mesh.name)
+		writer.write_file(mesh.data)
+		writer.close_file()
+		
 	writer.close()
 
 	var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
 	asset_updated.emit(fullname)
+	
+func add_mesh(mesh_data: PackedByteArray, gltf_name: String):
+	meshes_list.append(
+		{
+			name = gltf_name,
+			data = mesh_data,
+		})
+		
+func replace_mesh(gltf_name: String, new_mesh_data: PackedByteArray):
+	for mesh in meshes_list:
+		if mesh.name == gltf_name:
+			mesh.data = new_mesh_data
+			return
 
 func _on_generate_button_pressed() -> void:
 	var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
@@ -222,3 +253,27 @@ const urdf_environment_template = """<env name="noname">
 	</link>
 </env>
 """
+
+func _on_import_mesh_button_pressed():
+	%ImportMeshFileDialog.popup_centered(Vector2i(300,400))
+
+func _on_import_mesh_file_dialog_file_selected(path: String):
+#	print("mesh file: ", path)
+	if path.get_extension() == "glb":
+		var gltf_res := GLTFDocument.new()
+		var gltf_state = GLTFState.new()
+		var err = gltf_res.append_from_file(path, gltf_state)
+		if err:
+			return
+		var gltf_data = gltf_res.generate_buffer(gltf_state)
+		var gltf_name = path.get_file()
+		for mesh in meshes_list:
+			if mesh.name == gltf_name:
+				%ReplaceMeshDialog.mesh_name = gltf_name
+				%ReplaceMeshDialog.mesh_data = gltf_data
+				%ReplaceMeshDialog.popup_centered()
+				return
+		add_mesh(gltf_data, gltf_name)
+
+func _on_replace_mesh_dialog_confirmed():
+	replace_mesh(replace_mesh_dialog.mesh_name, replace_mesh_dialog.mesh_data)
