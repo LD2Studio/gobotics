@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://bcv1hfrfva2qb"]
+[gd_scene load_steps=16 format=3 uid="uid://bcv1hfrfva2qb"]
 
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_d4jh8"]
 [ext_resource type="Script" path="res://game/asset_editor/asset_editor.gd" id="1_j1den"]
@@ -8,6 +8,7 @@
 [ext_resource type="FontFile" uid="uid://dwnwhuwmtxwoa" path="res://game/fonts/UbuntuMono-Regular.ttf" id="4_md26q"]
 [ext_resource type="Script" path="res://game/asset_editor/URDFCodeEdit.gd" id="5_gmqxa"]
 [ext_resource type="Script" path="res://game/asset_editor/replace_mesh_dialog.gd" id="5_s0y0b"]
+[ext_resource type="Script" path="res://game/asset_editor/delete_mesh_dialog.gd" id="6_k4k17"]
 [ext_resource type="PackedScene" uid="uid://b1l2mlf7hsuwm" path="res://game/environments/dark_environment.tscn" id="8_1dki6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hdc4v"]
@@ -70,6 +71,7 @@ icon = ExtResource("2_ave4i")
 
 [node name="OverwriteConfirmationDialog" type="ConfirmationDialog" parent="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton"]
 unique_name_in_owner = true
+size = Vector2i(457, 100)
 always_on_top = true
 dialog_text = "The file already exists. Do you want to overwrite the file? "
 
@@ -84,34 +86,6 @@ layout_mode = 2
 toggle_mode = true
 icon = ExtResource("4_255wc")
 
-[node name="MeshContainer" type="HBoxContainer" parent="AssetMargin/VBoxContainer"]
-layout_mode = 2
-
-[node name="EditMeshesButton" type="Button" parent="AssetMargin/VBoxContainer/MeshContainer"]
-layout_mode = 2
-text = "Edit Meshes"
-
-[node name="ImportMeshButton" type="Button" parent="AssetMargin/VBoxContainer/MeshContainer"]
-layout_mode = 2
-text = "Import Mesh"
-
-[node name="ImportMeshFileDialog" type="FileDialog" parent="AssetMargin/VBoxContainer/MeshContainer/ImportMeshButton"]
-unique_name_in_owner = true
-title = "Open a File"
-size = Vector2i(530, 162)
-exclusive = false
-always_on_top = true
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-
-[node name="ReplaceMeshDialog" type="ConfirmationDialog" parent="AssetMargin/VBoxContainer/MeshContainer/ImportMeshButton"]
-unique_name_in_owner = true
-ok_button_text = "Yes"
-dialog_text = "Do you replace mesh ?"
-cancel_button_text = "No"
-script = ExtResource("5_s0y0b")
-
 [node name="HSplitContainer" type="HSplitContainer" parent="AssetMargin/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -121,6 +95,65 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
+
+[node name="MeshButtonContainer" type="HBoxContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ShowMeshesButton" type="Button" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshButtonContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "Show Meshes"
+
+[node name="MeshViewContainer" type="HBoxContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.3
+
+[node name="MeshesList" type="ItemList" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+max_columns = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer"]
+layout_mode = 2
+
+[node name="ImportMeshButton" type="Button" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer"]
+layout_mode = 2
+text = "Import Mesh"
+
+[node name="ImportMeshFileDialog" type="FileDialog" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer/ImportMeshButton"]
+unique_name_in_owner = true
+title = "Open a File"
+size = Vector2i(530, 162)
+exclusive = false
+always_on_top = true
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.glb, *.gltf ; GLTF files")
+
+[node name="ReplaceMeshDialog" type="ConfirmationDialog" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer/ImportMeshButton"]
+unique_name_in_owner = true
+size = Vector2i(494, 100)
+ok_button_text = "Yes"
+dialog_text = "The mesh already exists. Do you want to overwrite the mesh? "
+cancel_button_text = "No"
+script = ExtResource("5_s0y0b")
+
+[node name="DeleteMeshButton" type="Button" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer"]
+layout_mode = 2
+text = "Delete Mesh"
+
+[node name="DeleteMeshDialog" type="ConfirmationDialog" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer/DeleteMeshButton"]
+unique_name_in_owner = true
+title = ""
+ok_button_text = "Yes"
+cancel_button_text = "No"
+script = ExtResource("6_k4k17")
 
 [node name="URDFCodeEdit" type="CodeEdit" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -154,7 +187,7 @@ own_world_3d = true
 transparent_bg = true
 handle_input_locally = false
 msaa_3d = 2
-size = Vector2i(789, 720)
+size = Vector2i(789, 755)
 render_target_update_mode = 4
 
 [node name="PreviewScene" type="Node3D" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
@@ -231,9 +264,13 @@ horizontal_alignment = 1
 [connection signal="confirmed" from="AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton/OverwriteConfirmationDialog" to="." method="_on_overwrite_confirmation_dialog_confirmed"]
 [connection signal="pressed" from="AssetMargin/VBoxContainer/HBoxContainer/GenerateButton" to="." method="_on_generate_button_pressed"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HBoxContainer/FullScreenButton" to="." method="_on_full_screen_button_toggled"]
-[connection signal="pressed" from="AssetMargin/VBoxContainer/MeshContainer/ImportMeshButton" to="." method="_on_import_mesh_button_pressed"]
-[connection signal="file_selected" from="AssetMargin/VBoxContainer/MeshContainer/ImportMeshButton/ImportMeshFileDialog" to="." method="_on_import_mesh_file_dialog_file_selected"]
-[connection signal="confirmed" from="AssetMargin/VBoxContainer/MeshContainer/ImportMeshButton/ReplaceMeshDialog" to="." method="_on_replace_mesh_dialog_confirmed"]
+[connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshButtonContainer/ShowMeshesButton" to="." method="_on_show_meshes_button_toggled"]
+[connection signal="item_selected" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/MeshesList" to="." method="_on_meshes_list_item_selected"]
+[connection signal="pressed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer/ImportMeshButton" to="." method="_on_import_mesh_button_pressed"]
+[connection signal="file_selected" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer/ImportMeshButton/ImportMeshFileDialog" to="." method="_on_import_mesh_file_dialog_file_selected"]
+[connection signal="confirmed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer/ImportMeshButton/ReplaceMeshDialog" to="." method="_on_replace_mesh_dialog_confirmed"]
+[connection signal="pressed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer/DeleteMeshButton" to="." method="_on_delete_mesh_button_pressed"]
+[connection signal="confirmed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshViewContainer/VBoxContainer/DeleteMeshButton/DeleteMeshDialog" to="." method="_on_delete_mesh_dialog_confirmed"]
 [connection signal="text_changed" from="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/URDFCodeEdit" to="." method="_on_urdf_code_edit_text_changed"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/VisualCheckBox" to="." method="_on_visual_check_box_toggled"]
 [connection signal="toggled" from="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/CollisionCheckBox" to="." method="_on_collision_check_box_toggled"]

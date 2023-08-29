@@ -26,6 +26,9 @@ var package_base_dir: String = ProjectSettings.globalize_path("res://packages")
 @onready var preview_viewport = %PreviewViewport
 @onready var preview_scene = %PreviewScene
 @onready var replace_mesh_dialog = %ReplaceMeshDialog
+@onready var mesh_view_container = %MeshViewContainer
+@onready var mesh_item_list = %MeshesList
+@onready var delete_mesh_dialog = %DeleteMeshDialog
 
 enum NewAsset {
 	STANDALONE,
@@ -34,6 +37,7 @@ enum NewAsset {
 }
 
 func _ready():
+	mesh_view_container.visible = false
 	urdf_parser.scale = 10
 	urdf_parser.packages_path = package_base_dir
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
@@ -274,6 +278,39 @@ func _on_import_mesh_file_dialog_file_selected(path: String):
 				%ReplaceMeshDialog.popup_centered()
 				return
 		add_mesh(gltf_data, gltf_name)
+		update_mesh_item_list()
 
 func _on_replace_mesh_dialog_confirmed():
 	replace_mesh(replace_mesh_dialog.mesh_name, replace_mesh_dialog.mesh_data)
+	update_mesh_item_list()
+
+func _on_show_meshes_button_toggled(button_pressed):
+	%ShowMeshesButton.text = "Hide Meshes" if button_pressed else "Show Meshes"
+	update_mesh_item_list()
+	mesh_view_container.visible = button_pressed
+
+func update_mesh_item_list():
+	mesh_item_list.clear()
+	for mesh_item in meshes_list:
+		mesh_item_list.add_item(mesh_item.name)
+		
+func _on_delete_mesh_button_pressed():
+	if delete_mesh_dialog.mesh_name != "":
+		delete_mesh_dialog.dialog_text = "Do you want to delete %s ?" % delete_mesh_dialog.mesh_name
+		delete_mesh_dialog.popup_centered()
+
+func _on_delete_mesh_dialog_confirmed():
+	var list_idx = 0
+	for mesh_item in meshes_list:
+		if mesh_item.name == delete_mesh_dialog.mesh_name:
+			meshes_list.remove_at(list_idx)
+			break
+		list_idx += 1
+		
+	update_mesh_item_list()
+
+func _on_meshes_list_item_selected(index):
+#	print("item: ", mesh_item_list.get_item_text(index))
+	delete_mesh_dialog.mesh_name = mesh_item_list.get_item_text(index)
+
+
