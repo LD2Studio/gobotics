@@ -20,6 +20,7 @@ func _init(package_dir: String, temp_dir: String):
 		
 	urdf_parser.scale = 10
 	urdf_parser.packages_path = package_abs_path
+	urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
 
 func add_assets(search_path: String):
 #	print("[Database] search path: ", search_path)

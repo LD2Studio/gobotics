@@ -16,8 +16,6 @@ class Gobotics(GodotBridge):
         self.set("print_on_terminal", msg)
 
 class Robot(GodotBridge):
-    def get_pose(self):
-        return self.get("get_pose")
     def set_position(self, x: float, y: float, z: float):
         self.set("set_pos", (x,y,z))
 

@@ -2,6 +2,7 @@ extends RefCounted
 class_name URDFParser
 
 var scale: float = 1.0
+var gravity_scale: float = 1.0
 var asset_user_path: String
 var packages_path: String
 var meshes_list: Array
@@ -901,7 +902,7 @@ func load_joints(urdf_data):
 						attrib[name] = value
 					joint_tag.limit = {}
 					if "effort" in attrib:
-						joint_tag.limit.effort = attrib.effort
+						joint_tag.limit.effort = float(attrib.effort) * scale * gravity_scale
 					if "velocity" in attrib:
 						joint_tag.limit.velocity = attrib.velocity
 				

@@ -1,11 +1,11 @@
-from gobotics import Robots
+from gobotics import Robot
 
 class DifferentialRobot(Robot):
     def is_running(self) -> bool:
         return self.get("is_running")
     
-    def set_pose(self, x, z, a):
-        self.set("set_pose", x, z, a)
+    def set_pose(self, x, y, a):
+        self.set("set_pose", x, y, a)
 
     def get_pose(self):
         return self.get("get_pose")

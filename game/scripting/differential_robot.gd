@@ -14,8 +14,8 @@ enum {
 
 class Robot:
 	var frame: RigidBody3D
-	var right_wheel: RotationActuator3D
-	var left_wheel: RotationActuator3D
+	var right_wheel
+	var left_wheel
 	var speed: float
 	var state: int
 	var task_finished: bool = true
@@ -29,7 +29,7 @@ func _enter_tree():
 	add_to_group("PYTHON")
 	add_to_group("ROBOT")
 
-func init(right_wheel: RotationActuator3D = null, left_wheel: RotationActuator3D = null):
+func init(right_wheel = null, left_wheel = null):
 	super()
 #	add_child(python)
 	var frame = get_child(0)

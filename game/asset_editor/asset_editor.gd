@@ -79,6 +79,7 @@ func _ready():
 					)
 			reader.close()
 			urdf_parser.meshes_list = meshes_list
+			urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
 			generate_scene(urdf_code_edit.text, fullname)
 			
 	show_visual_mesh(%VisualCheckBox.button_pressed)
