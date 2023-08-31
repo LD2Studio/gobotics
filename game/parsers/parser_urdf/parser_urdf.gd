@@ -1151,11 +1151,11 @@ const LIMIT_VELOCITY = %d
 func _ready():
 	child_link.can_sleep = false
 	motor_enabled = true
-	motor_target_velocity = target_velocity
+	motor_target_velocity = -target_velocity
 	
 func _target_velocity_changed(value: float):
 	target_velocity = value
-	motor_target_velocity = target_velocity
+	motor_target_velocity = -target_velocity
 """ % [child_node.name, limit_velocity]
 	return source_code
 	
@@ -1183,7 +1183,7 @@ func _physics_process(_delta):
 		speed = LIMIT_VELOCITY * sign(err)
 	else:
 		speed = 0
-	motor_target_velocity = speed
+	motor_target_velocity = -speed
 
 func _target_angle_changed(value: float):
 	target_angle = value
