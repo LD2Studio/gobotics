@@ -48,6 +48,8 @@ func parse_buffer(buffer: String, asset={}):
 	var base_link = create_scene(root_node)
 	if base_link:
 		add_camera(base_link)
+		if root_node.is_in_group("ROBOTS"):
+			add_camera_on_robot(root_node, base_link)
 		root_node.add_child(base_link)
 		kinematics_scene_owner_of(root_node)
 		add_script_to(root_node)
@@ -57,11 +59,10 @@ func parse_buffer(buffer: String, asset={}):
 		root_node.free()
 		return parse_error_message
 	
-## Return the root node of URDF tree <robot> or <asset>
+## Return the root node of URDF tree
 func get_root_node(urdf_data) -> Node3D:
 	var err
 	if urdf_data is PackedByteArray:
-		
 		err = parser.open_buffer(urdf_data)
 	elif urdf_data is String:
 		err = parser.open(urdf_data)
@@ -1085,6 +1086,23 @@ func add_camera(base_link):
 	camera.set_script(camera_script)
 	base_link.add_child(camera)
 	
+func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
+#	print("Add camera on robot")
+	var pivot := Node3D.new()
+	pivot.name = &"PivotCamera"
+	var camera := Camera3D.new()
+	camera.name = &"RobotCamera2"
+	camera.add_to_group("CAMERA", true)
+	camera.position = Vector3(0, 2.5 , 6.0)
+	camera.look_at_from_position(camera.position, pivot.position)
+	var camera_script := GDScript.new()
+	var base_link_path = "../" + base_link.name
+#	print("BaseLink NodePath: ", base_link_path)
+	camera_script.source_code = get_pivot_camera_script(base_link_path)
+	pivot.set_script(camera_script)
+	pivot.add_child(camera)
+	root_node.add_child(pivot)
+	
 func kinematics_scene_owner_of(root_node: Node3D):
 	add_owner(root_node, root_node.get_children())
 	return root_node
@@ -1096,7 +1114,13 @@ func add_owner(owner_node, nodes: Array):
 			add_owner(owner_node, node.get_children())
 
 func add_script_to(root_node: Node3D):
-	var base_link = root_node.get_child(0)
+	var base_link: RigidBody3D
+	for child in root_node.get_children():
+		if child is RigidBody3D:
+			base_link = child
+			break
+	if base_link == null: return null
+#	var base_link = root_node.get_child(0)
 	var ready_script = """
 func _ready():
 	pass"""
@@ -1137,9 +1161,7 @@ var control : RobotDiffDriveExt
 """
 	_script.source_code += ready_script
 	_script.source_code += process_script
-
 	root_node.set_script(_script)
-
 
 func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends JoltHingeJoint3D
@@ -1211,6 +1233,14 @@ func _physics_process(delta):
 """ % [position]
 	return source_code
 
+func get_pivot_camera_script(node_path: NodePath) -> String:
+	var source_code = """extends Node3D
+
+func _physics_process(_delta):
+	global_position = get_node("%s").global_position
+""" % [node_path]
+	return source_code
+	
 func clear_buffer():
 	_materials.clear()
 	links.clear()

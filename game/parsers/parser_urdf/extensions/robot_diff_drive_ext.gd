@@ -14,12 +14,12 @@ class Robot:
 	var task_finished: bool = true
 
 
-func _init(base_link: RigidBody3D, right_wheel_joint, left_wheel_joint, max_speed: float = 5.0):
+func _init(base_link: RigidBody3D, right_wheel_joint, left_wheel_joint, new_max_speed: float = 5.0):
 	super()
 	robot.base_link = base_link
 	robot.right_wheel = right_wheel_joint
 	robot.left_wheel = left_wheel_joint
-	self.max_speed = max_speed
+	max_speed = new_max_speed
 #	print("Physics Engine: ",physics_engine)
 
 func _physics_process(_delta):

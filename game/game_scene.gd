@@ -107,16 +107,20 @@ func _camera_view_selected(idx: int):
 func show_asset_parameters(asset_selected: Node3D):
 #	print("Asset name: ", asset_selected.name)
 	item_selected = asset_selected
-	if not asset_selected.get_child(0) is RigidBody3D: return
-	var base_rigid : RigidBody3D = asset_selected.get_child(0)
-	
+	var base_link: RigidBody3D
+	for child in asset_selected.get_children():
+		if child is RigidBody3D:
+			base_link = child
+			break
+	if base_link == null: return
+
 	object_inspector.visible = true
 #	# Update data in inspector
 	%InspectorPartName.text = item_selected.name
-	%X_pos.value = base_rigid.global_position.x / 10.0
-	%Y_pos.value = -base_rigid.global_position.z / 10.0
-	%Z_pos.value = base_rigid.global_position.y / 10.0
-	%Z_rot.value = base_rigid.rotation_degrees.y
+	%X_pos.value = base_link.global_position.x / 10.0
+	%Y_pos.value = -base_link.global_position.z / 10.0
+	%Z_pos.value = base_link.global_position.y / 10.0
+	%Z_rot.value = base_link.rotation_degrees.y
 	
 	if running:
 		%X_pos.editable = false
@@ -250,6 +254,12 @@ func load_scene(path):
 				printerr("Asset %s not available!" % [asset.fullname])
 				continue
 			var asset_node : Node3D = ResourceLoader.load(asset_filename).instantiate()
+			var base_link: RigidBody3D
+			for child in asset_node.get_children():
+				if child is RigidBody3D:
+					base_link = child
+					break
+			if base_link == null: return null
 			if "transform" in asset:
 				var origin = Vector3(asset.transform.origin[0], asset.transform.origin[1], asset.transform.origin[2])
 				var new_basis = Basis(
@@ -257,7 +267,7 @@ func load_scene(path):
 					Vector3(asset.transform.basis[3], asset.transform.basis[4], asset.transform.basis[5]),
 					Vector3(asset.transform.basis[6], asset.transform.basis[7], asset.transform.basis[8]))
 				var new_transform = Transform3D(new_basis, origin)
-				asset_node.get_child(0).global_transform = new_transform
+				base_link.global_transform = new_transform
 			if "string_name" in asset:
 				asset_node.name = asset.string_name
 			freeze_asset(asset_node, true)
