@@ -47,7 +47,6 @@ func parse_buffer(buffer: String, asset={}):
 	load_joints(urdf_pack)
 	var base_link = create_scene(root_node)
 	if base_link:
-		add_camera(base_link)
 		if root_node.is_in_group("ROBOTS"):
 			add_camera_on_robot(root_node, base_link)
 		root_node.add_child(base_link)
@@ -198,28 +197,6 @@ func load_gobotics_params(urdf_data):
 					if "value" in attrib:
 						_gobotics.control.max_speed = attrib.value
 						
-				"camera":
-					if root_tag != Tag.GOBOTICS: continue
-					var attrib: Dictionary = {}
-					for idx in parser.get_attribute_count():
-						var name = parser.get_attribute_name(idx)
-						var value = parser.get_attribute_value(idx)
-						attrib[name] = value
-					_gobotics.camera = {}
-					var xyz := Vector3.ZERO
-					if "xyz" in attrib:
-						var xyz_arr = attrib.xyz.split_floats(" ")
-						xyz.x = xyz_arr[0]
-						xyz.y = xyz_arr[2]
-						xyz.z = -xyz_arr[1]
-					_gobotics.camera.position = xyz * scale
-					var rpy := Vector3.ZERO
-					if "rpy" in attrib:
-						var rpy_arr = attrib.rpy.split_floats(" ")
-						rpy.x = rpy_arr[0]
-						rpy.y = rpy_arr[2]
-						rpy.z = -rpy_arr[1]
-					_gobotics.camera.rotation = rpy
 					
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
@@ -1074,33 +1051,23 @@ func create_scene(root_node: Node3D):
 	return base_link
 	
 	
-func add_camera(base_link):
-	if not "camera" in _gobotics: return
-	var camera := Camera3D.new()
-	camera.name = &"RobotCamera"
-	camera.add_to_group("CAMERA", true)
-	camera.position = _gobotics.camera.position
-	camera.rotation = _gobotics.camera.rotation
-	var camera_script := GDScript.new()
-	camera_script.source_code = follow_camera_script(_gobotics.camera.position)
-	camera.set_script(camera_script)
-	base_link.add_child(camera)
-	
 func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
-#	print("Add camera on robot")
 	var pivot := Node3D.new()
 	pivot.name = &"PivotCamera"
+	var boom := Node3D.new()
+	boom.name = &"Boom"
+	boom.rotation_degrees.x = -30
 	var camera := Camera3D.new()
-	camera.name = &"RobotCamera2"
+	camera.name = &"Camera"
 	camera.add_to_group("CAMERA", true)
-	camera.position = Vector3(0, 2.5 , 6.0)
-	camera.look_at_from_position(camera.position, pivot.position)
+	camera.position = Vector3(0, 0 , 6.0)
 	var camera_script := GDScript.new()
 	var base_link_path = "../" + base_link.name
 #	print("BaseLink NodePath: ", base_link_path)
 	camera_script.source_code = get_pivot_camera_script(base_link_path)
 	pivot.set_script(camera_script)
-	pivot.add_child(camera)
+	boom.add_child(camera)
+	pivot.add_child(boom)
 	root_node.add_child(pivot)
 	
 func kinematics_scene_owner_of(root_node: Node3D):
@@ -1234,10 +1201,9 @@ func _physics_process(delta):
 	return source_code
 
 func get_pivot_camera_script(node_path: NodePath) -> String:
-	var source_code = """extends Node3D
-
-func _physics_process(_delta):
-	global_position = get_node("%s").global_position
+	var source_code = """extends CameraExt
+func _ready():
+	base_link_path = "%s"
 """ % [node_path]
 	return source_code
 	

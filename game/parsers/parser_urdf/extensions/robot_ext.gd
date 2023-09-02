@@ -19,6 +19,7 @@ func _init():
 		joypad_connected = false
 		
 func _ready():
+	name = &"RobotExt"
 	add_child(python)
 
 func _on_joypad_changed(device: int, connected: bool):

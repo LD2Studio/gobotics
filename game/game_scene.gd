@@ -2,7 +2,7 @@ extends Node3D
 
 var scene : Node3D
 var running: bool = false
-var item_selected: Node3D
+var asset_selected: Node3D
 var mouse_pos_on_area: Vector3
 var game_area_pointed: bool = false
 var asset_focused : Node3D = null
@@ -29,8 +29,8 @@ func _ready() -> void:
 	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("DELETE"):
-		if item_selected == null: return
-		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [item_selected.name]
+		if asset_selected == null: return
+		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [asset_selected.name]
 		%ConfirmDeleteDialog.popup_centered()
 		
 #	if asset_focused and event is InputEventMouseMotion:
@@ -104,9 +104,8 @@ func _camera_view_selected(idx: int):
 			cam_popup.set_item_checked(i, false)
 	_cams[idx].current = true
 			
-func show_asset_parameters(asset_selected: Node3D):
-#	print("Asset name: ", asset_selected.name)
-	item_selected = asset_selected
+func show_asset_parameters(asset: Node3D):
+	asset_selected = asset
 	var base_link: RigidBody3D
 	for child in asset_selected.get_children():
 		if child is RigidBody3D:
@@ -116,7 +115,7 @@ func show_asset_parameters(asset_selected: Node3D):
 
 	object_inspector.visible = true
 #	# Update data in inspector
-	%InspectorPartName.text = item_selected.name
+	%InspectorPartName.text = asset_selected.name
 	%X_pos.value = base_link.global_position.x / 10.0
 	%Y_pos.value = -base_link.global_position.z / 10.0
 	%Z_pos.value = base_link.global_position.y / 10.0
@@ -173,15 +172,15 @@ func show_asset_parameters(asset_selected: Node3D):
 			angle_edit.value = joint.target_angle
 			angle_edit.value_changed.connect(joint._target_angle_changed)
 		
-	if item_selected.is_in_group("ROBOTS"):
-		if item_selected.get("control"):
+	if asset_selected.is_in_group("ROBOTS"):
+		if asset_selected.get("control"):
 			%KeysControlContainer.visible = true
-			%KeysControlCheck.set_pressed_no_signal(item_selected.control.manual)
+			%KeysControlCheck.set_pressed_no_signal(asset_selected.control.manual)
 		else:
 			%KeysControlContainer.visible = false
 		%PythonBridgeContainer.visible = true
-		%PythonRemoteButton.set_pressed_no_signal(item_selected.control.python.activate)
-		%UDPPortNumber.value = item_selected.control.python.port
+		%PythonRemoteButton.set_pressed_no_signal(asset_selected.control.python.activate)
+		%UDPPortNumber.value = asset_selected.control.python.port
 	else:
 		%KeysControlContainer.visible = false
 		%PythonBridgeContainer.visible = false
@@ -308,6 +307,14 @@ func freeze_children(node, frozen):
 #		set_physics_process(not frozen)
 	for child in node.get_children():
 		freeze_children(child, frozen)
+		
+## Helper functions
+
+func get_base_link(asset: Node) -> RigidBody3D:
+	for child in asset.get_children():
+		if child is RigidBody3D:
+			return child
+	return null
 
 ## Python functions
 
@@ -368,11 +375,10 @@ func _on_ground_mouse_exited():
 	game_area_pointed = false
 
 func _on_editable_block_input_event(_camera, event: InputEvent, _mouse_position, _normal, _shape_idx, node):
-	
 	if event.is_action_pressed("EDIT"):
-		var asset_selected: Node3D = node.owner
-		asset_focused = asset_selected
-		show_asset_parameters(asset_selected)
+		var asset: Node3D = node.owner
+		asset_focused = asset
+		show_asset_parameters(asset)
 
 func _on_editable_mouse_entered():
 	owner.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -381,67 +387,67 @@ func _on_editable_mouse_exited():
 	owner.mouse_default_cursor_shape = Control.CURSOR_ARROW
 
 func _on_x_pos_value_changed(value: float) -> void:
-	if item_selected == null:
+	if asset_selected == null:
 		return
-	var base_link = item_selected.get_child(0)
+	var base_link = get_base_link(asset_selected)
 	base_link.global_position.x = value * 10.0
 
 func _on_y_pos_value_changed(value: float) -> void:
-	if item_selected == null:
+	if asset_selected == null:
 		return
-	var base_link = item_selected.get_child(0)
+	var base_link = get_base_link(asset_selected)
 	base_link.global_position.z = -value * 10.0
 
 func _on_z_pos_value_changed(value: float) -> void:
-	if item_selected == null:
+	if asset_selected == null:
 		return
-	var base_link = item_selected.get_child(0)
+	var base_link = get_base_link(asset_selected)
 	base_link.global_position.y = value * 10.0
 
 func _on_z_rot_value_changed(value: float) -> void:
-	if item_selected == null:
+	if asset_selected == null:
 		return
-	var base_link = item_selected.get_child(0)
+	var base_link = get_base_link(asset_selected)
 	base_link.rotation_degrees.y = value
 
 func _on_python_remote_button_toggled(button_pressed: bool) -> void:
-	if item_selected == null: return
-	if item_selected.is_in_group("ROBOTS"):
-		item_selected.control.python.activate = button_pressed
-		item_selected.control.python.port = int(udp_port_number.value)
+	if asset_selected == null: return
+	if asset_selected.is_in_group("ROBOTS"):
+		asset_selected.control.python.activate = button_pressed
+		asset_selected.control.python.port = int(udp_port_number.value)
 
 func _on_udp_port_number_value_changed(value: float) -> void:
-	if item_selected == null: return
-	if item_selected.is_in_group("ROBOTS"):
-		item_selected.control.python.port = int(value)
+	if asset_selected == null: return
+	if asset_selected.is_in_group("ROBOTS"):
+		asset_selected.control.python.port = int(value)
 		
 func _on_open_script_button_pressed() -> void:
-	if item_selected == null: return
-	if item_selected.is_in_group("PYTHON"):
-		%SourceCodeEdit.text = item_selected.source_code
+	if asset_selected == null: return
+	if asset_selected.is_in_group("PYTHON"):
+		%SourceCodeEdit.text = asset_selected.source_code
 		%ScriptDialog.popup_centered()
 
 func _on_keys_control_check_toggled(button_pressed: bool) -> void:
-	if item_selected == null: return
-	if item_selected.is_in_group("ROBOTS"):
-		item_selected.control.manual = button_pressed
+	if asset_selected == null: return
+	if asset_selected.is_in_group("ROBOTS"):
+		asset_selected.control.manual = button_pressed
 
 func _on_confirm_delete_dialog_confirmed() -> void:
 	if scene:
-		scene.remove_child(item_selected)
-		item_selected.queue_free()
+		scene.remove_child(asset_selected)
+		asset_selected.queue_free()
 
 func _on_script_dialog_confirmed() -> void:
-	if item_selected == null: return
-	item_selected.source_code = %SourceCodeEdit.text
+	if asset_selected == null: return
+	asset_selected.source_code = %SourceCodeEdit.text
 	
 func _on_python_script_finished(new_text: String):
 #	print(new_text)
 	%TerminalOutput.text += new_text
 
 func _on_builtin_script_check_box_toggled(button_pressed: bool) -> void:
-	if item_selected == null: return
-	item_selected.builtin = button_pressed
+	if asset_selected == null: return
+	asset_selected.builtin = button_pressed
 
 func _on_frame_check_box_toggled(button_pressed):
 	for node in get_tree().get_nodes_in_group("FRAME"):
