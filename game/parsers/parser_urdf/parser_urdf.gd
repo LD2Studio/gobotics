@@ -618,7 +618,7 @@ func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
 	if attrib.filename.begins_with("package://"):
 		gltf_name = attrib.filename.trim_prefix("package://")
 	else:
-		printerr("package or user path not found!")
+		printerr("filename not found!")
 		return null
 	
 	var gltf_res := GLTFDocument.new()
@@ -651,19 +651,25 @@ func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
 func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
 	var gltf_filename: String
 	if attrib.filename.begins_with("package://"):
-		gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
+		gltf_filename = attrib.filename.trim_prefix("package://")
 	else:
-		printerr("package or user path not found!")
-	if not FileAccess.file_exists(gltf_filename):
-		parse_error_message = "GLTF file not found!"
+		printerr("filename not found!")
 		return null
+		
 	var gltf_res := GLTFDocument.new()
 	var gltf_state := GLTFState.new()
+	var gltf_data: PackedByteArray
+	for mesh in meshes_list:
+		if mesh.name == gltf_filename:
+			gltf_data = mesh.data
+			break
 	
-	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
+	var err = gltf_res.append_from_buffer(gltf_data, "", gltf_state)
 	if err:
+		printerr("gltf from buffer failed")
 		parse_error_message = "GLTF file import failed!"
 		return null
+	
 	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
 	
 	for node in gltf_state.json.nodes:

@@ -15,7 +15,7 @@ config/tags=PackedStringArray("project")
 run/main_scene="res://game/game.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
 run/low_processor_mode=true
-run/low_processor_mode_sleep_usec=13800
+run/low_processor_mode_sleep_usec=16667
 config/icon="res://gobotics_logo.svg"
 config/version="0.1.0"
 

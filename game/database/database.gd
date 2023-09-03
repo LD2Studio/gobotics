@@ -34,12 +34,12 @@ func add_assets(search_path: String):
 #		print("asset_filename: ", asset_filename)
 		var err := reader.open(asset_filename)
 		if err != OK:
-			print("Open %s asset failed" % [file])
+			printerr("Open %s asset failed" % [file])
 			return
 		var asset_name = file.get_basename()
 #		print("asset name: ", asset_name)
 		var asset_content = reader.get_files()
-		var meshes_list: Array
+		var meshes_list := Array()
 		for asset_file in asset_content:
 			if asset_file.get_extension() == "glb":
 				var res := reader.read_file(asset_file)
