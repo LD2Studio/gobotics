@@ -6,7 +6,7 @@ class_name GoboticsDB extends Resource
 var asset_base_dir: String
 var temp_abs_path: String
 var package_abs_path: String
-var meshes_list: Array
+#var meshes_list: Array
 var urdf_parser = URDFParser.new()
 var reader := ZIPReader.new()
 
@@ -39,7 +39,7 @@ func add_assets(search_path: String):
 		var asset_name = file.get_basename()
 #		print("asset name: ", asset_name)
 		var asset_content = reader.get_files()
-		
+		var meshes_list: Array
 		for asset_file in asset_content:
 			if asset_file.get_extension() == "glb":
 				var res := reader.read_file(asset_file)
@@ -49,7 +49,7 @@ func add_assets(search_path: String):
 						data = res,
 					}
 				)
-		urdf_parser.meshes_list = meshes_list
+		urdf_parser.meshes_list = meshes_list.duplicate(true)
 
 		if ("urdf.xml") in asset_content:
 			var res := reader.read_file("urdf.xml")
