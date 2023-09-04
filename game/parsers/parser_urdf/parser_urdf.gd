@@ -327,6 +327,8 @@ func load_links(urdf_data, asset_type: String) -> int:
 						link_attrib[name] = value
 						
 					link = RigidBody3D.new()
+					var physics_material = PhysicsMaterial.new()
+					link.physics_material_override = physics_material
 					link.set_meta("orphan", true)
 					if "name" in link_attrib and link_attrib.name != "":
 						link.name = link_attrib.name
@@ -370,6 +372,17 @@ func load_links(urdf_data, asset_type: String) -> int:
 								link.mass = 1.0
 							else:
 								link.mass = float(mass_tag.value)
+								
+				"friction":
+					if root_tag != Tag.LINK: continue
+					if current_tag == Tag.INERTIAL:
+						var attrib = {}
+						for idx in parser.get_attribute_count():
+							var name = parser.get_attribute_name(idx)
+							var value = parser.get_attribute_value(idx)
+							attrib[name] = value
+						if attrib.value:
+							link.physics_material_override.friction = float(attrib.value)
 				
 				"visual":
 					if root_tag != Tag.LINK: continue
@@ -931,32 +944,18 @@ func create_scene(root_node: Node3D):
 			
 		match joint.type:
 			"fixed":
-				joint_node = Generic6DOFJoint3D.new()
+				joint_node = JoltGeneric6DOFJoint3D.new()
 				joint_node.name = joint.name
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
 
 			"pin":
-				joint_node = PinJoint3D.new()
+				joint_node = JoltPinJoint3D.new()
 				joint_node.name = joint.name
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
-				
-			"hinge":
-				joint_node = HingeJoint3D.new()
-				joint_node.name = joint.name
-				if "origin" in joint:
-					joint_node.position = joint.origin.xyz * scale
-					joint_node.rotation = joint.origin.rpy
-				if not "axis" in joint:
-#					printerr("No axis for %s" % joint.name)
-					var new_basis = Basis.looking_at(Vector3(1,0,0))
-					joint_node.transform.basis = new_basis
-				elif joint.axis != Vector3.UP:
-					var new_basis = Basis.looking_at(joint.axis)
-					joint_node.transform.basis = new_basis
 					
 			"continuous":
 				joint_node = JoltHingeJoint3D.new()
