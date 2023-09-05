@@ -20,7 +20,6 @@ var asset_node : Node3D = null:
 		else:
 			%SaveAssetButton.disabled = false
 var asset_base_dir: String = ProjectSettings.globalize_path("res://assets")
-var package_base_dir: String = ProjectSettings.globalize_path("res://packages")
 
 @onready var urdf_code_edit: CodeEdit = %URDFCodeEdit
 @onready var preview_viewport = %PreviewViewport
@@ -39,7 +38,6 @@ enum NewAsset {
 func _ready():
 	mesh_view_container.visible = false
 	urdf_parser.scale = 10
-	urdf_parser.packages_path = package_base_dir
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	
 	if is_new_asset:

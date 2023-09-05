@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://cgwuo8ikfadac" path="res://game/assets/tex/texture_01.png" id="1_00e8d"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_7w2gt"]
-size = Vector3(100, 1, 100)
+size = Vector3(100, 0.01, 100)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_njqku"]
 size = Vector2(100, 100)

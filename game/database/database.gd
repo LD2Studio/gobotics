@@ -5,21 +5,16 @@ class_name GoboticsDB extends Resource
 
 var asset_base_dir: String
 var temp_abs_path: String
-var package_abs_path: String
-#var meshes_list: Array
 var urdf_parser = URDFParser.new()
 var reader := ZIPReader.new()
 
-func _init(package_dir: String, temp_dir: String):
+func _init(temp_dir: String):
 	if OS.has_feature("editor"):
 		temp_abs_path = ProjectSettings.globalize_path("res://" + temp_dir)
-		package_abs_path = ProjectSettings.globalize_path("res://" + package_dir)
 	else:
 		temp_abs_path = OS.get_executable_path().get_base_dir().path_join(temp_dir)
-		package_abs_path = OS.get_executable_path().get_base_dir().path_join(package_dir)
 		
 	urdf_parser.scale = 10
-	urdf_parser.packages_path = package_abs_path
 	urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
 
 func add_assets(search_path: String):

@@ -79,7 +79,6 @@ func edit_asset(fullname: String):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_base_dir = game.asset_base_dir
-	asset_editor.package_base_dir = game.package_base_dir
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_filename = database.get_asset_filename(fullname)
@@ -90,7 +89,6 @@ func create_new_asset(asset_type: int):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_base_dir = game.asset_base_dir
-	asset_editor.package_base_dir = game.package_base_dir
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.is_new_asset = true

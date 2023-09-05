@@ -4,7 +4,6 @@ class_name URDFParser
 var scale: float = 1.0
 var gravity_scale: float = 1.0
 var asset_user_path: String
-var packages_path: String
 var meshes_list: Array
 var parser = XMLParser.new()
 var parse_error_message: String
@@ -747,11 +746,7 @@ func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape
 #							current_visual.rotation = rpy
 	
 	var gltf_filename: String
-	if attrib.filename.begins_with("package://"):
-		gltf_filename = packages_path.path_join(attrib.filename.trim_prefix("package://"))
-#		print("gltf filename: ", gltf_filename)
-	else:
-		printerr("package or user path!")
+	
 	if not FileAccess.file_exists(gltf_filename):
 		parse_error_message = "GLTF file not found!"
 		return ERR_FILE_NOT_FOUND

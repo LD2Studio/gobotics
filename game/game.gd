@@ -1,11 +1,9 @@
 class_name Game extends Control
 
 @export var asset_dir : String = "assets"
-@export var package_dir : String = "packages"
 @export var temp_dir : String = "temp"
 
 var asset_base_dir: String
-var package_base_dir: String
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
@@ -16,7 +14,7 @@ var package_base_dir: String
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 @onready var environment_list = %EnvironmentList
 
-var database: GoboticsDB = GoboticsDB.new(package_dir, temp_dir)
+var database: GoboticsDB = GoboticsDB.new(temp_dir)
 
 var current_filename: String:
 	set(value):
@@ -108,7 +106,7 @@ func fill_assets_list():
 		assets_list.set_item_metadata(idx, asset.fullname)
 		assets_list.set_item_tooltip(idx, asset.fullname)
 
-## Create missing directory in application folder like assets, packages and temp.
+## Create missing directory in application folder like assets and temp.
 ## Must be called first.
 func create_dir():
 	# Creating temp directory
@@ -125,15 +123,6 @@ func create_dir():
 			DirAccess.remove_absolute(temp_abs_path.path_join(file))
 		DirAccess.remove_absolute(temp_abs_path)
 	DirAccess.make_dir_absolute(temp_abs_path)
-
-	# Creating packages directory
-	if OS.has_feature("editor"):
-		package_base_dir = ProjectSettings.globalize_path("res://" + package_dir)
-	else:
-		package_base_dir = OS.get_executable_path().get_base_dir().path_join(package_dir)
-		
-	if not DirAccess.dir_exists_absolute(package_base_dir):
-		DirAccess.make_dir_absolute(package_base_dir)
 		
 	# Creating assets directory
 	if OS.has_feature("editor"):
