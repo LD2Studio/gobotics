@@ -14,7 +14,7 @@ albedo_texture = ExtResource("1_cumwc")
 uv1_scale = Vector3(5, 5, 5)
 texture_filter = 4
 
-[node name="LightEnvironment" type="Node3D" groups=["ENVIRONMENT"]]
+[node name="LightEnv" type="Node3D" groups=["BUILTIN", "ENVIRONMENT"]]
 
 [node name="Floor" type="StaticBody3D" parent="." groups=["PICKABLE"]]
 

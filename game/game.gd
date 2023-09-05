@@ -3,7 +3,12 @@ class_name Game extends Control
 @export var asset_dir : String = "assets"
 @export var temp_dir : String = "temp"
 
-var asset_base_dir: String
+var asset_base_dir: String # Full pathname
+
+var builtin_env = [
+	{ name = "DarkEnv", scene_filename = "res://game/environments/dark_environment.tscn"},
+	{ name = "LightEnv", scene_filename = "res://game/environments/light_environment.tscn"},
+]
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
@@ -26,7 +31,7 @@ var current_filename: String:
 		
 func _enter_tree():
 	create_dir()
-	load_assets_in_database()
+	database.generate(asset_base_dir, builtin_env)
 
 func _ready():
 	var app_name: String = ProjectSettings.get_setting("application/config/name")
@@ -47,9 +52,8 @@ func _on_new_scene_dialog_confirmed() -> void:
 	var items = %EnvironmentList.get_selected_items()
 	if items.is_empty(): return
 	var idx = items[0]
-	var fullname = %EnvironmentList.get_item_metadata(idx)
+	var env = %EnvironmentList.get_item_metadata(idx)
 	current_filename = ""
-	var env = database.get_scene_from_fullname(fullname)
 	if env:
 		game_scene.new_scene(env)
 	
@@ -92,16 +96,14 @@ func _on_clear_button_pressed() -> void:
 #		var pck_abs_path: String = assets_dir.path_join(pck_file)
 #		if not ProjectSettings.load_resource_pack(pck_abs_path, false):
 #			print("Packed resource not loading")
-			
-## Loading assets located in the <asset> directory and places them in a GoboticsDB database
+	
 func load_assets_in_database():
-	database.asset_base_dir = asset_base_dir
-	database.assets.clear()
-	database.add_assets(asset_base_dir)
+	database.generate(asset_base_dir, builtin_env)
 	
 func fill_assets_list():
 	assets_list.clear()
 	for asset in database.assets:
+		if asset.type == "builtin_env": continue
 		var idx = assets_list.add_item(asset.name)
 		assets_list.set_item_metadata(idx, asset.fullname)
 		assets_list.set_item_tooltip(idx, asset.fullname)

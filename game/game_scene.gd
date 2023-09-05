@@ -9,8 +9,6 @@ var asset_focused : Node3D = null
 
 var _cams : Array
 
-#var python_threads: Array
-
 @onready var game = owner
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
 @onready var save_scene_button: Button = %SaveSceneButton
@@ -194,7 +192,7 @@ func save_scene(path: String):
 	# Take all blocks added in game scene for apply owner
 	var items = scene.get_children()
 	var scene_objects = {
-		assets=[], environment="",
+		assets=[], environment={},
 	}
 	
 	for item in items:
@@ -215,9 +213,14 @@ func save_scene(path: String):
 					})
 		if item.is_in_group("ENVIRONMENT"):
 #			print("environment : ", item.name)
-			scene_objects.environment = {
-				fullname=item.get_meta("fullname"),
-				}
+			if item.is_in_group("BUILTIN"):
+				scene_objects.environment = {
+					fullname="%s.builtin" % item.name,
+					}
+			else:
+				scene_objects.environment = {
+					fullname=item.get_meta("fullname"),
+					}
 	var scene_json = JSON.stringify(scene_objects, "\t", false)
 #		print("scene JSON: ", scene_json)
 	
@@ -240,11 +243,12 @@ func load_scene(path):
 	init_scene()
 	
 	var scene_objects = json.data
+	var env_filename: String = ""
 	if "fullname" in scene_objects.environment:
-		var env_filename = game.database.get_scene_from_fullname(scene_objects.environment.fullname)
-		if env_filename:
-			var environment = ResourceLoader.load(env_filename).instantiate()
-			scene.add_child(environment)
+		env_filename = game.database.get_scene_from_fullname(scene_objects.environment.fullname)
+	if env_filename:
+		var environment = ResourceLoader.load(env_filename).instantiate()
+		scene.add_child(environment)
 	
 	for asset in scene_objects.assets:
 		if "fullname" in asset:

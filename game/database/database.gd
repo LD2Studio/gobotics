@@ -1,9 +1,7 @@
 class_name GoboticsDB extends Resource
 
 @export var assets: Array
-@export var environments: Array
 
-var asset_base_dir: String
 var temp_abs_path: String
 var urdf_parser = URDFParser.new()
 var reader := ZIPReader.new()
@@ -16,8 +14,25 @@ func _init(temp_dir: String):
 		
 	urdf_parser.scale = 10
 	urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
+	
+func generate(asset_base_dir: String, builtin_env: Array):
+	assets.clear()
+	add_builtin_env(builtin_env)
+	add_assets(asset_base_dir, asset_base_dir)
+	
 
-func add_assets(search_path: String):
+func add_builtin_env(builtin_env: Array):
+	for env in builtin_env:
+		assets.append({
+			name=env.name, # env name
+			fullname="%s.builtin" % env.name,
+			filename=null,
+			scene=env.scene_filename,
+			type="builtin_env",
+		})
+		
+
+func add_assets(search_path: String, asset_base_dir: String):
 #	print("[Database] search path: ", search_path)
 	var files = Array(DirAccess.get_files_at(search_path))
 #	print("files: ", files)
@@ -76,35 +91,13 @@ func add_assets(search_path: String):
 	var search_dirs = dirs.map(func(dir): return search_path.path_join(dir))
 #	print("search dirs: ", search_dirs)
 	for search_dir in search_dirs:
-		add_assets(search_dir)
+		add_assets(search_dir, asset_base_dir)
 	
 	var err = ResourceSaver.save(self, "res://temp/database.tres")
 	if err:
 		printerr("Database not saving!")
 		
-func add_environments(search_path: String, builtin: bool = false):
-#	print("[Database] search env path: ", search_path)
-	var files = Array(DirAccess.get_files_at(search_path))
-	if builtin:
-		# Filter tscn files
-		var files_tscn: Array = files.filter(func(file): return file.get_extension() == "tscn")
-#		print("[Database] Env files tscn: ", files_tscn)
-		for file in files_tscn:
-			var scene: PackedScene = ResourceLoader.load(search_path.path_join(file))
-	#		print("Loading ", scene)
-			if scene == null:
-				continue
-			var name: String = scene.get_state().get_node_name(0)
-			var scene_filename: String = search_path.path_join(file)
-			
-			environments.append({
-				name=name,
-				scene=scene_filename,
-				})
-				
-	var err = ResourceSaver.save(self, "res://temp/database.tres")
-	if err:
-		printerr("[Database] not saving!")
+
 		
 ## Create a scene from URDF description, and return asset filename
 func generate_scene(urdf_code: String, fullname: String, asset: Dictionary = {}):
@@ -156,14 +149,3 @@ func get_type(fullname: String):
 			return asset.type
 	return null
 	
-func get_environment(name: String):
-	for env in environments:
-		if env.name == name:
-			return env.scene
-	return null
-	
-#func get_preview(name: String):
-#	for asset in assets:
-#		if asset.name == name:
-#			return asset.base_dir.path_join(asset.name + ".png")
-#	return null

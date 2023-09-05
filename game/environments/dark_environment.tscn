@@ -14,7 +14,7 @@ albedo_texture = ExtResource("1_00e8d")
 uv1_scale = Vector3(5, 5, 5)
 texture_filter = 4
 
-[node name="DarkEnvironment" type="Node3D" groups=["ENVIRONMENT"]]
+[node name="DarkEnv" type="Node3D" groups=["BUILTIN", "ENVIRONMENT"]]
 
 [node name="Floor" type="StaticBody3D" parent="." groups=["PICKABLE"]]
 
