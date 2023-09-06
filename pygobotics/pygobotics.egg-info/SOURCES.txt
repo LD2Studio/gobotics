@@ -1,10 +1,7 @@
 pyproject.toml
-setup.py
 gobotics/__init__.py
 gobotics/godotbridge.py
 gobotics/helper.py
-gobotics/props.py
-gobotics/robots.py
 pygobotics.egg-info/PKG-INFO
 pygobotics.egg-info/SOURCES.txt
 pygobotics.egg-info/dependency_links.txt

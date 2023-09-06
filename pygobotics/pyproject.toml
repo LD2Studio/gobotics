@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pygobotics"
+version = "0.1.0"
+authors = [
+    {name = "Laurent Dethoor", email = "ld2studiogame@gmail.com"}
+]
+dependencies = [
+    "numpy",
+]
+[tool.setuptools]
+packages = ["gobotics"]

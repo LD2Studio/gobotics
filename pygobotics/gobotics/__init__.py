@@ -15,8 +15,15 @@ class Gobotics(GodotBridge):
     def print(self, msg: str):
         self.set("print_on_terminal", msg)
 
-class Robot(GodotBridge):
-    def set_position(self, x: float, y: float, z: float):
-        self.set("set_pos", (x,y,z))
+class DifferentialRobot(GodotBridge):
+    
+    def set_pose(self, x, y, a):
+        self.set("set_pose", x, y, a)
+
+    def get_pose(self):
+        return self.get("get_pose")
+    
+    def move(self, right_vel, left_vel):
+        self.set("move", right_vel, left_vel)
 
 app = Gobotics(4242)
