@@ -330,7 +330,7 @@ func load_links(urdf_data, asset_type: String) -> int:
 					link.physics_material_override = physics_material
 					link.set_meta("orphan", true)
 					if "name" in link_attrib and link_attrib.name != "":
-						link.name = link_attrib.name
+						link.name = link_attrib.name.replace(" ", "_")
 					else:
 						printerr("No name for link!")
 						return ERR_PARSE_ERROR
@@ -712,7 +712,7 @@ func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
 	return null
 
 
-func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag, trimesh=false):
+#func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag, trimesh=false):
 	
 #	if Engine.is_editor_hint():
 #		var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
@@ -745,59 +745,59 @@ func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape
 #							current_visual.position = xyz * scale
 #							current_visual.rotation = rpy
 	
-	var gltf_filename: String
-	
-	if not FileAccess.file_exists(gltf_filename):
-		parse_error_message = "GLTF file not found!"
-		return ERR_FILE_NOT_FOUND
-	var gltf_res := GLTFDocument.new()
-	var gltf_state = GLTFState.new()
-	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
-	if err:
-		parse_error_message = "GLTF file import failed!"
-		return ERR_PARSE_ERROR
-		
-	var nodes : Array[GLTFNode] = gltf_state.get_nodes()
-	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
-	var idx = 0
-	
-	for node in gltf_state.json.nodes:
-		if node.name == attrib.object:
-#			print("node.name:%s, id=%d " % [node.name, node.mesh])
-			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
-			var mesh: ArrayMesh = imported_mesh.get_mesh()
-			if current_tag == Tag.VISUAL:
-				current_visual.mesh = mesh
-				if "transform" in attrib and attrib.transform == "true":
-					current_visual.position = nodes[idx].position * scale
-				if "scale" in attrib:
-					current_visual.scale = Vector3.ONE * scale * float(attrib.scale)
-				else:
-					current_visual.scale = Vector3.ONE * scale
-				return OK
-			elif current_tag == Tag.COLLISION:
-				var mdt = MeshDataTool.new()
-				mdt.create_from_surface(mesh, 0)
-				for i in range(mdt.get_vertex_count()):
-					var vertex = mdt.get_vertex(i)
-					vertex *= scale
-					# Save your change.
-					mdt.set_vertex(i, vertex)
-				mesh.clear_surfaces()
-				mdt.commit_to_surface(mesh)
-				var shape
-				if trimesh:
-					shape = mesh.create_trimesh_shape()
-				else:
-					shape = mesh.create_convex_shape()
-				current_collision.shape = shape
-				if "transform" in attrib and attrib.transform == "true":
-					current_collision.position = nodes[idx].position * scale
-				var debug_mesh: ArrayMesh = shape.get_debug_mesh()
-				current_col_debug.mesh = debug_mesh
-				return OK
-		idx += 1
-	return ERR_CANT_RESOLVE
+#	var gltf_filename: String
+#
+#	if not FileAccess.file_exists(gltf_filename):
+#		parse_error_message = "GLTF file not found!"
+#		return ERR_FILE_NOT_FOUND
+#	var gltf_res := GLTFDocument.new()
+#	var gltf_state = GLTFState.new()
+#	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
+#	if err:
+#		parse_error_message = "GLTF file import failed!"
+#		return ERR_PARSE_ERROR
+#
+#	var nodes : Array[GLTFNode] = gltf_state.get_nodes()
+#	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
+#	var idx = 0
+#
+#	for node in gltf_state.json.nodes:
+#		if node.name == attrib.object:
+##			print("node.name:%s, id=%d " % [node.name, node.mesh])
+#			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
+#			var mesh: ArrayMesh = imported_mesh.get_mesh()
+#			if current_tag == Tag.VISUAL:
+#				current_visual.mesh = mesh
+#				if "transform" in attrib and attrib.transform == "true":
+#					current_visual.position = nodes[idx].position * scale
+#				if "scale" in attrib:
+#					current_visual.scale = Vector3.ONE * scale * float(attrib.scale)
+#				else:
+#					current_visual.scale = Vector3.ONE * scale
+#				return OK
+#			elif current_tag == Tag.COLLISION:
+#				var mdt = MeshDataTool.new()
+#				mdt.create_from_surface(mesh, 0)
+#				for i in range(mdt.get_vertex_count()):
+#					var vertex = mdt.get_vertex(i)
+#					vertex *= scale
+#					# Save your change.
+#					mdt.set_vertex(i, vertex)
+#				mesh.clear_surfaces()
+#				mdt.commit_to_surface(mesh)
+#				var shape
+#				if trimesh:
+#					shape = mesh.create_trimesh_shape()
+#				else:
+#					shape = mesh.create_convex_shape()
+#				current_collision.shape = shape
+#				if "transform" in attrib and attrib.transform == "true":
+#					current_collision.position = nodes[idx].position * scale
+#				var debug_mesh: ArrayMesh = shape.get_debug_mesh()
+#				current_col_debug.mesh = debug_mesh
+#				return OK
+#		idx += 1
+#	return ERR_CANT_RESOLVE
 	
 func load_joints(urdf_data):
 	var err
@@ -810,7 +810,7 @@ func load_joints(urdf_data):
 		printerr("Error opening URDF file: ", err)
 		return
 	var root_tag: int = Tag.NONE
-	var joint_tag = {}
+	var joint_attrib = {}
 	while true:
 		if parser.read() != OK: # Ending parse XML file
 			break
@@ -824,8 +824,10 @@ func load_joints(urdf_data):
 					root_tag = Tag.JOINT
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
-						var value = parser.get_attribute_value(idx)
-						joint_tag[name] = value
+						var value : String = parser.get_attribute_value(idx)
+						joint_attrib[name] = value
+					if "name" in joint_attrib:
+						joint_attrib.name = joint_attrib.name.replace(" ", "_")
 						
 				"parent":
 					if not root_tag == Tag.JOINT: continue
@@ -833,8 +835,8 @@ func load_joints(urdf_data):
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
-						attrib[name] = value
-					joint_tag.parent = attrib
+						attrib[name] = value.replace(" ", "_")
+					joint_attrib.parent = attrib
 					
 				"child":
 					if not root_tag == Tag.JOINT: continue
@@ -842,8 +844,8 @@ func load_joints(urdf_data):
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
-						attrib[name] = value
-					joint_tag.child = attrib
+						attrib[name] = value.replace(" ", "_")
+					joint_attrib.child = attrib
 					
 				"origin":
 					if not root_tag == Tag.JOINT: continue
@@ -868,7 +870,7 @@ func load_joints(urdf_data):
 						"xyz": xyz,
 						"rpy": rpy,
 					}
-					joint_tag.origin = new_origin_dict
+					joint_attrib.origin = new_origin_dict
 					
 				"axis":
 					if not root_tag == Tag.JOINT: continue
@@ -883,7 +885,7 @@ func load_joints(urdf_data):
 						axis.x = xyz_arr[0]
 						axis.y = xyz_arr[2]
 						axis.z = -xyz_arr[1]
-					joint_tag.axis = axis
+					joint_attrib.axis = axis
 						
 				"limit":
 					if not root_tag == Tag.JOINT: continue
@@ -892,18 +894,18 @@ func load_joints(urdf_data):
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
-					joint_tag.limit = {}
+					joint_attrib.limit = {}
 					if "effort" in attrib:
-						joint_tag.limit.effort = float(attrib.effort) * scale * gravity_scale
+						joint_attrib.limit.effort = float(attrib.effort) * scale * gravity_scale
 					if "velocity" in attrib:
-						joint_tag.limit.velocity = attrib.velocity
+						joint_attrib.limit.velocity = attrib.velocity
 				
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
 			var node_name = parser.get_node_name()
 			if node_name == "joint":
-				_joints.append(joint_tag.duplicate(true))
-				joint_tag.clear()
+				_joints.append(joint_attrib.duplicate(true))
+				joint_attrib.clear()
 				root_tag = Tag.NONE
 
 #	print("joints: ", JSON.stringify(_joints, "\t", false))
