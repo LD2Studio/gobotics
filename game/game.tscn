@@ -151,6 +151,18 @@ layout_mode = 2
 size_flags_horizontal = 10
 icon = ExtResource("2_hpbft")
 
+[node name="SetupDialog" type="ConfirmationDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton"]
+unique_name_in_owner = true
+
+[node name="GravityCheckBox" type="CheckBox" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton/SetupDialog"]
+unique_name_in_owner = true
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 192.0
+offset_bottom = 51.0
+button_pressed = true
+text = "Gravity"
+
 [node name="NewSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "New Scene"
@@ -579,6 +591,8 @@ unique_name_in_owner = true
 offset_right = 8.0
 offset_bottom = 8.0
 
+[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton" to="." method="_on_setup_scene_button_pressed"]
+[connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton/SetupDialog" to="." method="_on_setup_dialog_confirmed"]
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton" to="." method="_on_new_scene_button_pressed"]
 [connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton/NewSceneDialog" to="." method="_on_new_scene_dialog_confirmed"]
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton" to="." method="_on_load_scene_button_pressed"]
