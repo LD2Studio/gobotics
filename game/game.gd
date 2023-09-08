@@ -4,6 +4,7 @@ class_name Game extends Control
 @export var temp_dir : String = "temp"
 
 var asset_base_dir: String # Full pathname
+var gravity_enabled: bool = true
 
 var builtin_env = [
 	{ name = "DarkEnv", scene_filename = "res://game/environments/dark_environment.tscn"},
@@ -134,3 +135,17 @@ func create_dir():
 		
 	if not DirAccess.dir_exists_absolute(asset_base_dir):
 		DirAccess.make_dir_absolute(asset_base_dir)
+
+
+func _on_setup_scene_button_pressed():
+	%GravityCheckBox.button_pressed = gravity_enabled
+	%SetupDialog.popup_centered()
+
+
+func _on_setup_dialog_confirmed():
+	gravity_enabled = %GravityCheckBox.button_pressed
+	if gravity_enabled:
+		PhysicsServer3D.area_set_param(get_viewport().find_world_3d().space, PhysicsServer3D.AREA_PARAM_GRAVITY, 98)
+	else:
+		PhysicsServer3D.area_set_param(get_viewport().find_world_3d().space, PhysicsServer3D.AREA_PARAM_GRAVITY, 0)
+
