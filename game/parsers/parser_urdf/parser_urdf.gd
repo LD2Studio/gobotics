@@ -1034,8 +1034,52 @@ func create_scene(root_node: Node3D):
 				joint_script.source_code = get_revolute_joint_script(child_node, basis_node, limit_velocity)
 				joint_node.set_script(joint_script)
 				
+<<<<<<< HEAD
 			_:
 				return null
+=======
+			"prismatic":
+				joint_node = JoltSliderJoint3D.new()
+				joint_node.name = joint.name
+				joint_node.limit_enabled = true
+				joint_node.add_to_group("PRISMATIC", true)
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
+				var limit_velocity : float = 1.0
+				if "limit" in joint:
+					if "effort" in joint.limit:
+						joint_node.motor_max_force = float(joint.limit.effort)
+					if "velocity" in joint.limit:
+						limit_velocity = float(joint.limit.velocity)
+					if "lower" in joint.limit:
+						joint_node.limit_upper = -joint.limit.lower
+					else:
+						joint_node.limit_upper = 0.0
+					if "upper" in joint.limit:
+						joint_node.limit_lower = -joint.limit.upper
+					else:
+						joint_node.limit_lower = 0.0
+				if not "axis" in joint:
+					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
+					joint_node.transform.basis *= new_joint_basis
+				elif joint.axis != Vector3.UP:
+					new_joint_basis = Basis.looking_at(-joint.axis)
+					joint_node.transform.basis *= new_joint_basis
+				else:
+					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
+					joint_node.transform.basis *= new_joint_basis
+					
+				var basis_node = Node3D.new()
+				basis_node.name = joint_node.name + "_basis_inv"
+				basis_node.unique_name_in_owner = true
+				basis_node.transform.basis = new_joint_basis
+				child_node.add_child(basis_node)
+				
+				var joint_script := GDScript.new()
+				joint_script.source_code = get_prismatic_joint_script(child_node, basis_node, limit_velocity)
+				joint_node.set_script(joint_script)
+>>>>>>> 4a25685 (Added prismatic joint)
 				
 		joint_node.node_a = ^"../"
 		joint_node.node_b = NodePath("%s" % [child_node.name])
@@ -1188,6 +1232,40 @@ func _physics_process(_delta):
 	var child_basis: Basis = child_link.transform.basis
 	var angle = (child_basis * basis_inv.transform.basis).get_euler().z
 	var err = deg_to_rad(target_angle) - angle
+	var speed: float
+	if abs(err) > angle_step:
+		speed = LIMIT_VELOCITY * sign(err)
+	else:
+		speed = 0
+	motor_target_velocity = -speed
+
+func _target_angle_changed(value: float):
+	target_angle = value
+""" % [child_node.name, basis_node.name, limit_velocity]
+	return source_code
+	
+func get_prismatic_joint_script(child_node: Node3D, basis_node: Node3D, limit_velocity: float) -> String:
+	var source_code = """extends JoltSliderJoint3D
+@onready var child_link: RigidBody3D = $%s
+@onready var basis_inv: Node3D = %%%s
+@export var target_angle: float = 0.0
+
+var angle_step: float
+var rest_angle: float
+var LIMIT_VELOCITY: float = %d
+
+func _ready():
+	child_link.can_sleep = false
+	motor_enabled = true
+	angle_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
+
+func _physics_process(_delta):
+	var child_tr: Transform3D = child_link.transform
+	var dist = -(child_tr * basis_inv.transform).origin.x
+#	print("origin: ", (child_tr * basis_inv.transform).origin)
+#	print("dist: ", dist)
+	var err = target_angle - dist
+#	print("err: ", err)
 	var speed: float
 	if abs(err) > angle_step:
 		speed = LIMIT_VELOCITY * sign(err)
