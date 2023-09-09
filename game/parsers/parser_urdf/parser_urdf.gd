@@ -1034,10 +1034,6 @@ func create_scene(root_node: Node3D):
 				joint_script.source_code = get_revolute_joint_script(child_node, basis_node, limit_velocity)
 				joint_node.set_script(joint_script)
 				
-<<<<<<< HEAD
-			_:
-				return null
-=======
 			"prismatic":
 				joint_node = JoltSliderJoint3D.new()
 				joint_node.name = joint.name
@@ -1079,7 +1075,9 @@ func create_scene(root_node: Node3D):
 				var joint_script := GDScript.new()
 				joint_script.source_code = get_prismatic_joint_script(child_node, basis_node, limit_velocity)
 				joint_node.set_script(joint_script)
->>>>>>> 4a25685 (Added prismatic joint)
+
+			_:
+				return null
 				
 		joint_node.node_a = ^"../"
 		joint_node.node_b = NodePath("%s" % [child_node.name])
