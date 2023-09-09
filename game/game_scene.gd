@@ -165,8 +165,8 @@ func show_asset_parameters(asset: Node3D):
 			var angle_edit = PropertySlider.new()
 			%JointsContainer.add_child(angle_edit)
 			angle_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			angle_edit.min_value = -90
-			angle_edit.max_value = 90
+			angle_edit.min_value = rad_to_deg(-joint.limit_upper)
+			angle_edit.max_value = rad_to_deg(-joint.limit_lower)
 			angle_edit.value = joint.target_angle
 			angle_edit.value_changed.connect(joint._target_angle_changed)
 		

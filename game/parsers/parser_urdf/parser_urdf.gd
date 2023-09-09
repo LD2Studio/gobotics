@@ -899,6 +899,14 @@ func load_joints(urdf_data):
 						joint_attrib.limit.effort = float(attrib.effort) * scale * gravity_scale
 					if "velocity" in attrib:
 						joint_attrib.limit.velocity = attrib.velocity
+					if "lower" in attrib:
+						joint_attrib.limit.lower = float(attrib.lower)
+					else:
+						joint_attrib.limit.lower = 0.0
+					if "upper" in attrib:
+						joint_attrib.limit.upper = float(attrib.upper)
+					else:
+						joint_attrib.limit.upper = 0.0
 				
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
@@ -986,6 +994,7 @@ func create_scene(root_node: Node3D):
 			"revolute":
 				joint_node = JoltHingeJoint3D.new()
 				joint_node.name = joint.name
+				joint_node.limit_enabled = true
 				joint_node.add_to_group("REVOLUTE", true)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
@@ -996,6 +1005,14 @@ func create_scene(root_node: Node3D):
 						joint_node.motor_max_torque = float(joint.limit.effort)
 					if "velocity" in joint.limit:
 						limit_velocity = float(joint.limit.velocity)
+					if "lower" in joint.limit:
+						joint_node.limit_upper = -joint.limit.lower
+					else:
+						joint_node.limit_upper = 0.0
+					if "upper" in joint.limit:
+						joint_node.limit_lower = -joint.limit.upper
+					else:
+						joint_node.limit_lower = 0.0
 				if not "axis" in joint:
 #					printerr("No axis for %s" % joint.name)
 					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
