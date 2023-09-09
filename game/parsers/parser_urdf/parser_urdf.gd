@@ -1034,7 +1034,9 @@ func create_scene(root_node: Node3D):
 				joint_script.source_code = get_revolute_joint_script(child_node, basis_node, limit_velocity)
 				joint_node.set_script(joint_script)
 				
-		
+			_:
+				return null
+				
 		joint_node.node_a = ^"../"
 		joint_node.node_b = NodePath("%s" % [child_node.name])
 		joint_node.unique_name_in_owner = true
