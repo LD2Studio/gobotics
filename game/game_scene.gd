@@ -197,7 +197,13 @@ func save_scene(path: String):
 	
 	for item in items:
 		if item.is_in_group("ASSETS"):
-			var gl_transform: Transform3D = item.get_child(0).global_transform
+			var base_link: RigidBody3D
+			for child in item.get_children():
+				if child is RigidBody3D:
+					base_link = child
+					break
+			if base_link == null: return null
+			var gl_transform: Transform3D = base_link.global_transform
 			
 			var asset_transform = {
 				origin=[gl_transform.origin.x, gl_transform.origin.y, gl_transform.origin.z],
