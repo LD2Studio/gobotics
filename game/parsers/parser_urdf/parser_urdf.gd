@@ -1049,11 +1049,11 @@ func create_scene(root_node: Node3D):
 					if "velocity" in joint.limit:
 						limit_velocity = float(joint.limit.velocity)
 					if "lower" in joint.limit:
-						joint_node.limit_lower = joint.limit.lower
+						joint_node.limit_lower = joint.limit.lower * scale
 					else:
 						joint_node.limit_lower = 0.0
 					if "upper" in joint.limit:
-						joint_node.limit_upper = joint.limit.upper
+						joint_node.limit_upper = joint.limit.upper * scale
 					else:
 						joint_node.limit_upper = 0.0
 				if not "axis" in joint:
@@ -1269,7 +1269,7 @@ func _physics_process(_delta):
 	motor_target_velocity = speed
 
 func _target_dist_changed(value: float):
-	target_dist = value
+	target_dist = value * 10.0
 """ % [child_node.name, basis_node.name, limit_velocity]
 	return source_code
 	

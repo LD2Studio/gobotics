@@ -182,10 +182,10 @@ func show_asset_parameters(asset: Node3D):
 			var dist_edit = PropertySlider.new()
 			%JointsContainer.add_child(dist_edit)
 			dist_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			dist_edit.min_value = joint.limit_lower
-			dist_edit.max_value = joint.limit_upper
-			dist_edit.step = 0.1
-			dist_edit.value = joint.target_dist
+			dist_edit.min_value = joint.limit_lower / 10.0
+			dist_edit.max_value = joint.limit_upper / 10.0
+			dist_edit.step = 0.01
+			dist_edit.value = joint.target_dist / 10.0
 			dist_edit.value_changed.connect(joint._target_dist_changed)
 		
 	if asset_selected.is_in_group("ROBOTS"):
