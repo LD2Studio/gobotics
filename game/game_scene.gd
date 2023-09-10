@@ -175,18 +175,18 @@ func show_asset_parameters(asset: Node3D):
 #	print("Prismatic joints: ", primatic_joints)
 	if not primatic_joints.is_empty():
 		for joint in primatic_joints:
-			var angle_label = Label.new()
-			angle_label.text = joint.name
-			angle_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			%JointsContainer.add_child(angle_label)
-			var angle_edit = PropertySlider.new()
-			%JointsContainer.add_child(angle_edit)
-			angle_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			angle_edit.min_value = -joint.limit_upper
-			angle_edit.max_value = -joint.limit_lower
-			angle_edit.step = (-joint.limit_upper + joint.limit_lower)/10.0
-			angle_edit.value = joint.target_angle
-			angle_edit.value_changed.connect(joint._target_angle_changed)
+			var dist_label = Label.new()
+			dist_label.text = joint.name
+			dist_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			%JointsContainer.add_child(dist_label)
+			var dist_edit = PropertySlider.new()
+			%JointsContainer.add_child(dist_edit)
+			dist_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			dist_edit.min_value = joint.limit_lower
+			dist_edit.max_value = joint.limit_upper
+			dist_edit.step = 0.1
+			dist_edit.value = joint.target_dist
+			dist_edit.value_changed.connect(joint._target_dist_changed)
 		
 	if asset_selected.is_in_group("ROBOTS"):
 		if asset_selected.get("control"):

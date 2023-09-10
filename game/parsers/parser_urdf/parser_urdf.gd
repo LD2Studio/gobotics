@@ -1049,21 +1049,21 @@ func create_scene(root_node: Node3D):
 					if "velocity" in joint.limit:
 						limit_velocity = float(joint.limit.velocity)
 					if "lower" in joint.limit:
-						joint_node.limit_upper = -joint.limit.lower
-					else:
-						joint_node.limit_upper = 0.0
-					if "upper" in joint.limit:
-						joint_node.limit_lower = -joint.limit.upper
+						joint_node.limit_lower = joint.limit.lower
 					else:
 						joint_node.limit_lower = 0.0
+					if "upper" in joint.limit:
+						joint_node.limit_upper = joint.limit.upper
+					else:
+						joint_node.limit_upper = 0.0
 				if not "axis" in joint:
-					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
+					new_joint_basis = Basis.looking_at(Vector3(1,0,0)).rotated(Vector3.UP, PI/2)
 					joint_node.transform.basis *= new_joint_basis
 				elif joint.axis != Vector3.UP:
-					new_joint_basis = Basis.looking_at(-joint.axis)
+					new_joint_basis = Basis.looking_at(joint.axis).rotated(Vector3.UP, PI/2)
 					joint_node.transform.basis *= new_joint_basis
 				else:
-					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
+					new_joint_basis = Basis().rotated(Vector3.BACK, PI/2)
 					joint_node.transform.basis *= new_joint_basis
 					
 				var basis_node = Node3D.new()
@@ -1246,33 +1246,30 @@ func get_prismatic_joint_script(child_node: Node3D, basis_node: Node3D, limit_ve
 	var source_code = """extends JoltSliderJoint3D
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
-@export var target_angle: float = 0.0
+@export var target_dist: float = 0.0
 
-var angle_step: float
+var dist_step: float
 var rest_angle: float
 var LIMIT_VELOCITY: float = %d
 
 func _ready():
 	child_link.can_sleep = false
 	motor_enabled = true
-	angle_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
+	dist_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
 
 func _physics_process(_delta):
 	var child_tr: Transform3D = child_link.transform
-	var dist = -(child_tr * basis_inv.transform).origin.x
-#	print("origin: ", (child_tr * basis_inv.transform).origin)
-#	print("dist: ", dist)
-	var err = target_angle - dist
-#	print("err: ", err)
+	var dist = (child_tr * basis_inv.transform).origin.x
+	var err = target_dist - dist
 	var speed: float
-	if abs(err) > angle_step:
+	if abs(err) > dist_step:
 		speed = LIMIT_VELOCITY * sign(err)
 	else:
 		speed = 0
-	motor_target_velocity = -speed
+	motor_target_velocity = speed
 
-func _target_angle_changed(value: float):
-	target_angle = value
+func _target_dist_changed(value: float):
+	target_dist = value
 """ % [child_node.name, basis_node.name, limit_velocity]
 	return source_code
 	
