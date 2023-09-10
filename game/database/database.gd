@@ -108,8 +108,13 @@ func generate_scene(urdf_code: String, fullname: String, asset: Dictionary = {})
 		return null
 		
 	var root_node : Node3D = result
-	var scene_filename = temp_abs_path.path_join(fullname.get_basename().validate_node_name() + ".tscn")
 	if root_node == null: return null
+	var scene_filename: String
+	if ProjectSettings.get_setting("application/config/create_binary_scene"):
+		scene_filename = temp_abs_path.path_join(fullname.get_basename().validate_node_name() + ".scn")
+	else:
+		scene_filename = temp_abs_path.path_join(fullname.get_basename().validate_node_name() + ".tscn")
+	
 
 	root_node.set_meta("fullname", fullname)
 	var asset_scene = PackedScene.new()
