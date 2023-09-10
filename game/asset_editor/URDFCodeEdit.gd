@@ -40,14 +40,6 @@ const MATERIAL_MINIMAL_TAG = """
 		<color rgba="1 1 1 1"/>
 	</material>
 """
-const JOINT_HINGE_TAG = """
-	<joint name="joint_name" type="hinge">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link=""/>
-		<child link=""/>
-		<axis xyz="1.0 0.0 0.0"/>
-	</joint>
-"""
 const JOINT_CONTINUOUS_TAG = """
 	<joint name="joint_name" type="continuous">
 		<origin xyz="0 0 0" rpy="0 0 0"/>
@@ -59,6 +51,15 @@ const JOINT_CONTINUOUS_TAG = """
 """
 const JOINT_REVOLUTE_TAG = """
 	<joint name="joint_name" type="revolute">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<parent link=""/>
+		<child link=""/>
+		<axis xyz="1.0 0.0 0.0"/>
+		<limit lower="0.0" upper="0.0" effort="1.0" velocity="5.0"/>
+	</joint>
+"""
+const JOINT_PRISMATIC_TAG = """
+	<joint name="joint_name" type="prismatic">
 		<origin xyz="0 0 0" rpy="0 0 0"/>
 		<parent link=""/>
 		<child link=""/>
@@ -101,9 +102,9 @@ enum Tag {
 	CYLINDER,
 	MESH,
 	INLINE_COLOR,
-	JOINT_HINGE,
 	JOINT_CONTINUOUS,
 	JOINT_REVOLUTE,
+	JOINT_PRISMATIC,
 	JOINT_PIN,
 	GOBOTICS_CONTROL,
 	GOBOTICS_CAMERA,
@@ -125,9 +126,9 @@ func _ready():
 	menu.add_separator()
 	var submenu_joint = PopupMenu.new()
 	submenu_joint.name = "SubmenuJoint"
-	submenu_joint.add_item("Insert Hinge Joint", Tag.JOINT_HINGE)
 	submenu_joint.add_item("Insert Continuous Joint", Tag.JOINT_CONTINUOUS)
 	submenu_joint.add_item("Insert Revolute Joint", Tag.JOINT_REVOLUTE)
+	submenu_joint.add_item("Insert Prismatic Joint", Tag.JOINT_PRISMATIC)
 	submenu_joint.add_item("Insert Pin Joint", Tag.JOINT_PIN)
 	submenu_joint.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_joint)
@@ -169,8 +170,8 @@ func _on_item_pressed(id):
 			insert_text_at_caret(INERTIAL_MINIMAL_TAG)
 		Tag.MATERIAL:
 			insert_text_at_caret(MATERIAL_MINIMAL_TAG)
-		Tag.JOINT_HINGE:
-			insert_text_at_caret(JOINT_HINGE_TAG)
+		Tag.JOINT_PRISMATIC:
+			insert_text_at_caret(JOINT_PRISMATIC_TAG)
 		Tag.JOINT_CONTINUOUS:
 			insert_text_at_caret(JOINT_CONTINUOUS_TAG)
 		Tag.JOINT_REVOLUTE:
