@@ -239,7 +239,7 @@ const urdf_robot_template = """<robot name="noname">
 	
 	<gobotics>
 	
-	<gobotics/>
+	</gobotics>
 </robot>
 """
 
