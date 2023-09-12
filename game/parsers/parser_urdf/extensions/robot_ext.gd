@@ -5,6 +5,7 @@ var joypads_connected: Array[int]
 var joypad_connected: bool = false
 var joypad_selected: int = 0
 var manual: bool = true
+var revolute_joints := Array()
 
 @onready var python = PythonBridge.new(self, 4243)
 
@@ -30,3 +31,13 @@ func _on_joypad_changed(device: int, connected: bool):
 	else:
 		joypad_connected = false
 
+## Functions usable through GodotBridge
+
+func set_revolute(jname: String, value: float):
+	var joint_name = jname.replace(" ", "_")
+#	print("Revolute joint name: %s = %f " % [joint_name, value])
+#	print("Revolute joints: ", revolute_joints)
+	if joint_name in revolute_joints:
+		var joint_node = get_parent().get_node("%%%s" % [joint_name])
+		if joint_node:
+			joint_node.target_angle = value

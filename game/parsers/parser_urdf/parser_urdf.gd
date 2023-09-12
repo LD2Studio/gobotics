@@ -1161,8 +1161,20 @@ func _process(_delta: float):
 	
 	_script.source_code = """extends Node3D
 """
-
-	## Control Tag
+	# Add joints in script
+	var revolute_joints := Array()
+	for joint in _joints:
+		if "type" in joint and joint.type == "revolute":
+			revolute_joints.append(joint.name)
+			
+#	print("revolute joints: ", revolute_joints)
+	var revolute_script: String = "var revolute_joints = ["
+	for revolute in revolute_joints:
+		revolute_script += "\"%s\"," % [revolute]
+	revolute_script += "]\n"
+	_script.source_code += revolute_script
+	
+	# Control Tag
 	if root_node.is_in_group("ROBOTS"):
 		if not "control" in _gobotics:
 			_script.source_code += """
@@ -1170,6 +1182,7 @@ var control : RobotExt
 """
 			ready_script += """
 	control = RobotExt.new()
+	control.revolute_joints = revolute_joints
 	add_child(control)
 """
 		
