@@ -482,5 +482,5 @@ func _on_frame_check_box_toggled(button_pressed):
 		node.visible = button_pressed
 
 func _on_joint_check_box_toggled(button_pressed):
-	for node in get_tree().get_nodes_in_group("JOINT"):
+	for node in get_tree().get_nodes_in_group("JOINT_GIZMO"):
 		node.visible = button_pressed

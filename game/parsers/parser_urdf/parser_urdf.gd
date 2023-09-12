@@ -1085,7 +1085,7 @@ func create_scene(root_node: Node3D):
 		# Add frame gizmo
 		var frame_visual := MeshInstance3D.new()
 		frame_visual.name = joint_node.name + "_frame"
-		frame_visual.add_to_group("JOINT", true)
+		frame_visual.add_to_group("JOINT_GIZMO", true)
 		frame_visual.mesh = _frame_mesh
 		if new_joint_basis:
 			frame_visual.transform.basis = new_joint_basis.inverse()

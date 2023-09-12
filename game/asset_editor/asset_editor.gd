@@ -208,7 +208,7 @@ func show_link_frame(enable: bool):
 		node.visible = enable
 		
 func show_joint_frame(enable: bool):
-	for node in preview_viewport.get_tree().get_nodes_in_group("JOINT"):
+	for node in preview_viewport.get_tree().get_nodes_in_group("JOINT_GIZMO"):
 		node.visible = enable
 	
 func _on_visual_check_box_toggled(button_pressed):
