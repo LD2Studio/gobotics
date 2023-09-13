@@ -6,6 +6,7 @@ var joypad_connected: bool = false
 var joypad_selected: int = 0
 var manual: bool = true
 var revolute_joints := Array()
+var prismatic_joints := Array()
 
 @onready var python = PythonBridge.new(self, 4243)
 
@@ -41,3 +42,12 @@ func set_revolute(jname: String, value: float):
 		var joint_node = get_parent().get_node("%%%s" % [joint_name])
 		if joint_node:
 			joint_node.target_angle = value
+
+func set_prismatic(jname: String, value: float):
+	var joint_name = jname.replace(" ", "_")
+#	print("Prismatic joint name: %s = %f " % [joint_name, value])
+#	print("Prismatic joints: ", revolute_joints)
+	if joint_name in prismatic_joints:
+		var joint_node = get_parent().get_node("%%%s" % [joint_name])
+		if joint_node:
+			joint_node.target_dist = value * 10.0

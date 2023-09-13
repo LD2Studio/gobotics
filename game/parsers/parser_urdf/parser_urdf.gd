@@ -1161,7 +1161,7 @@ func _process(_delta: float):
 	
 	_script.source_code = """extends Node3D
 """
-	# Add joints in script
+	# Add revolute joints in script
 	var revolute_joints := Array()
 	for joint in _joints:
 		if "type" in joint and joint.type == "revolute":
@@ -1174,6 +1174,19 @@ func _process(_delta: float):
 	revolute_script += "]\n"
 	_script.source_code += revolute_script
 	
+	# Add prismatic joints in script
+	var prismatic_joints := Array()
+	for joint in _joints:
+		if "type" in joint and joint.type == "prismatic":
+			prismatic_joints.append(joint.name)
+			
+#	print("prismatic joints: ", prismatic_joints)
+	var prismatic_script: String = "var prismatic_joints = ["
+	for prismatic in prismatic_joints:
+		prismatic_script += "\"%s\"," % [prismatic]
+	prismatic_script += "]\n"
+	_script.source_code += prismatic_script
+	
 	# Control Tag
 	if root_node.is_in_group("ROBOTS"):
 		if not "control" in _gobotics:
@@ -1183,6 +1196,7 @@ var control : RobotExt
 			ready_script += """
 	control = RobotExt.new()
 	control.revolute_joints = revolute_joints
+	control.prismatic_joints = prismatic_joints
 	add_child(control)
 """
 		
