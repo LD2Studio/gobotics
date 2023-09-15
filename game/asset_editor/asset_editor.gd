@@ -84,6 +84,8 @@ func _ready():
 	show_collision_shape(%CollisionCheckBox.button_pressed)
 	show_link_frame(%FrameCheckBox.button_pressed)
 	show_joint_frame(%JointCheckBox.button_pressed)
+	folding_link_tags()
+	
 
 func _on_save_button_pressed():
 	if %AssetFilenameEdit.text == "":
@@ -206,6 +208,15 @@ func show_link_frame(enable: bool):
 	var scene_tree : SceneTree = preview_viewport.get_tree()
 	for node in scene_tree.get_nodes_in_group("FRAME"):
 		node.visible = enable
+		
+func folding_link_tags():
+	for line_num in urdf_code_edit.get_line_count():
+		if urdf_code_edit.can_fold_line(line_num):
+			if not urdf_code_edit.get_line(line_num).begins_with("<standalone") and \
+				not urdf_code_edit.get_line(line_num).begins_with("<robot") and \
+				not urdf_code_edit.get_line(line_num).begins_with("<env") :
+#				print("Fold line %d" % [line_num])
+				urdf_code_edit.fold_line(line_num)
 		
 func show_joint_frame(enable: bool):
 	for node in preview_viewport.get_tree().get_nodes_in_group("JOINT_GIZMO"):
