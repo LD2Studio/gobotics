@@ -582,7 +582,7 @@ func load_links(urdf_data, asset_type: String) -> int:
 	#								print("[global material tag] current visual: ", current_visual)
 									current_visual.set_surface_override_material(0, mat.res)
 						## Local material
-						else:
+						if current_visual.get_surface_override_material(0) == null:
 	#						print("[local material tag] current visual: ", current_visual)
 							var res := StandardMaterial3D.new()
 							current_visual.set_surface_override_material(0, res)
