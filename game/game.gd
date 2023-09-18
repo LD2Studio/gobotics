@@ -74,7 +74,6 @@ func _on_save_scene_as_button_pressed():
 	%SaveSceneDialog.popup_centered(Vector2i(300, 300))
 
 func _on_save_scene_dialog_file_selected(path):
-	current_filename = path
 	game_scene.save_scene(path)
 
 func _on_clear_button_pressed() -> void:

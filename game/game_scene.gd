@@ -237,7 +237,14 @@ func hide_asset_parameters():
 	object_inspector.visible = false
 
 func save_scene(path: String):
+	if path.get_extension() != "scene":
+		game.current_filename = ""
+		return
+	if path.get_file().trim_suffix(".scene") == "":
+		game.current_filename = ""
+		return
 	var scene_filename = path
+	game.current_filename = path
 
 	# Take all blocks added in game scene for apply owner
 	var items = scene.get_children()
