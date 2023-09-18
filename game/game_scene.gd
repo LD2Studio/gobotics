@@ -8,6 +8,7 @@ var game_area_pointed: bool = false
 var asset_focused : Node3D = null
 
 var _cams : Array
+var _robots_in_scene = Array()	# List of robots actually into scene
 
 @onready var game = owner
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
@@ -17,6 +18,8 @@ var _cams : Array
 @onready var object_inspector: PanelContainer = %ObjectInspector
 @onready var udp_port_number: SpinBox = %UDPPortNumber
 @onready var camera_view_button = %CameraViewButton
+@onready var robot_selected_button = %RobotSelectedButton
+
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
@@ -47,6 +50,7 @@ func new_scene(environment_path: String) -> void:
 	var environment = ResourceLoader.load(environment_path).instantiate()
 	scene.add_child(environment)
 	connect_pickable()
+	update_robot_select_menu()
 	%RunStopButton.button_pressed = false
 	save_scene_as_button.disabled = false
 	save_scene_button.disabled = true
@@ -102,6 +106,38 @@ func _camera_view_selected(idx: int):
 			cam_popup.set_item_checked(i, false)
 	_cams[idx].current = true
 			
+func update_robot_select_menu():
+	if not is_robots_inside_scene():
+		robot_selected_button.visible = false
+		return
+	robot_selected_button.visible = true
+	var robot_popup: PopupMenu = robot_selected_button.get_popup()
+	if not robot_popup.index_pressed.is_connected(_on_robot_selected):
+		robot_popup.index_pressed.connect(_on_robot_selected)
+	robot_popup.clear()
+	_robots_in_scene.clear()
+	var robots = get_tree().get_nodes_in_group("ROBOTS")
+	for robot in robots:
+		_robots_in_scene.push_back(robot)
+		robot_popup.add_check_item(robot.name)
+	_on_robot_selected(0)
+	
+func _on_robot_selected(idx: int):
+	var robot_popup: PopupMenu = robot_selected_button.get_popup()
+	for item_idx in robot_popup.item_count:
+		if idx == item_idx:
+			robot_popup.set_item_checked(item_idx, true)
+			activate_robot(_robots_in_scene[item_idx])
+		else:
+			robot_popup.set_item_checked(item_idx, false)
+			deactivate_robot(_robots_in_scene[item_idx])
+		
+func activate_robot(robot: Node):
+	robot.control.manual = true
+	
+func deactivate_robot(robot: Node):
+	robot.control.manual = false
+		
 func show_asset_parameters(asset: Node3D):
 	asset_selected = asset
 	var base_link: RigidBody3D
@@ -303,6 +339,7 @@ func load_scene(path):
 	connect_pickable()
 	connect_editable()
 	update_camera_view_menu()
+	update_robot_select_menu()
 	%RunStopButton.button_pressed = false
 	save_scene_as_button.disabled = false
 	save_scene_button.disabled = false
@@ -358,6 +395,12 @@ func reload():
 func is_running() -> bool:
 	return running
 	
+func is_robots_inside_scene() -> bool:
+	var robots = get_tree().get_nodes_in_group("ROBOTS")
+	if robots.is_empty():
+		return false
+	return true
+		
 func print_on_terminal(text: String):
 	terminal_output.text += "%s\n" % text
 	
@@ -464,6 +507,8 @@ func _on_confirm_delete_dialog_confirmed() -> void:
 	if scene:
 		scene.remove_child(asset_selected)
 		asset_selected.queue_free()
+		update_camera_view_menu()
+		update_robot_select_menu()
 
 func _on_script_dialog_confirmed() -> void:
 	if asset_selected == null: return

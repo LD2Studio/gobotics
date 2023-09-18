@@ -504,6 +504,14 @@ icon = ExtResource("8_hvuby")
 flat = false
 switch_on_hover = true
 
+[node name="RobotSelectedButton" type="MenuButton" parent="SplitContainer/3DViewContainer/SceneViewport/ToolBar"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Robots"
+flat = false
+switch_on_hover = true
+
 [node name="StatisticsPanel" type="PanelContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
 offset_right = 40.0
 offset_bottom = 40.0
