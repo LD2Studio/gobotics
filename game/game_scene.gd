@@ -41,7 +41,6 @@ func _input(event: InputEvent) -> void:
 		
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
-#	print("game scene _process")
 #	Node.print_orphan_nodes()
 	
 func new_scene(environment_path: String) -> void:
@@ -228,16 +227,10 @@ func show_asset_parameters(asset: Node3D):
 			dist_edit.value_changed.connect(joint._target_dist_changed)
 		
 	if asset_selected.is_in_group("ROBOTS"):
-		if asset_selected.get("control"):
-			%KeysControlContainer.visible = true
-			%KeysControlCheck.set_pressed_no_signal(asset_selected.control.manual)
-		else:
-			%KeysControlContainer.visible = false
 		%PythonBridgeContainer.visible = true
 		%PythonRemoteButton.set_pressed_no_signal(asset_selected.control.python.activate)
 		%UDPPortNumber.value = asset_selected.control.python.port
 	else:
-		%KeysControlContainer.visible = false
 		%PythonBridgeContainer.visible = false
 
 func hide_asset_parameters():

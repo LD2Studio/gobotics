@@ -390,18 +390,6 @@ mouse_force_pass_scroll_events = false
 min_value = -180.0
 max_value = 180.0
 
-[node name="KeysControlContainer" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="KeysControlCheck" type="CheckBox" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/KeysControlContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/KeysControlContainer"]
-layout_mode = 2
-text = "Keyboard & Joystick Control"
-
 [node name="PythonBridgeContainer" type="PanelContainer" parent="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -619,7 +607,6 @@ offset_bottom = 8.0
 [connection signal="value_changed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/Y_pos" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_y_pos_value_changed"]
 [connection signal="value_changed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/Z_pos" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_z_pos_value_changed"]
 [connection signal="value_changed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/Rotation Container/Z_rot" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_z_rot_value_changed"]
-[connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/KeysControlContainer/KeysControlCheck" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_keys_control_check_toggled"]
 [connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer/PythonRemoteButton" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_python_remote_button_toggled"]
 [connection signal="value_changed" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer/UDPPortNumber" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_udp_port_number_value_changed"]
 [connection signal="toggled" from="SplitContainer/3DViewContainer/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2/BuiltinScriptCheckBox" to="SplitContainer/3DViewContainer/SceneViewport/GameScene" method="_on_builtin_script_check_box_toggled"]
