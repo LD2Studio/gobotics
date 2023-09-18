@@ -8,6 +8,7 @@ var game_area_pointed: bool = false
 var asset_focused : Node3D = null
 
 var _cams : Array
+var _current_cam: int = 0
 var _robots_in_scene = Array()	# List of robots actually into scene
 
 @onready var game = owner
@@ -87,17 +88,18 @@ func update_camera_view_menu():
 	for cam in builtin_cams:
 		_cams.push_back(cam)
 		cam_popup.add_check_item(cam.name)
-	
-	var embed_cams = get_tree().get_nodes_in_group("CAMERA")
-	if not embed_cams.is_empty():
-		cam_popup.add_separator("Embedded Cameras")
-		_cams.push_back("Embedded Cameras")
-	for cam in embed_cams:
-		_cams.push_back(cam)
-		cam_popup.add_check_item(cam.owner.name)
-	_camera_view_selected(0)
+	if not _robots_in_scene.is_empty():
+		var selected_robot = _robots_in_scene.filter(func(robot): return robot.control.manual == true)
+		var first_robot = selected_robot.front()
+		if first_robot:
+			_cams.push_back(first_robot.get_node("PivotCamera/Boom/Camera"))
+			cam_popup.add_check_item("EmbeddedView")
+	if _current_cam > len(_cams):
+		_current_cam = 0
+	_camera_view_selected(_current_cam)
 		
 func _camera_view_selected(idx: int):
+	_current_cam = idx
 	var cam_popup: PopupMenu = camera_view_button.get_popup()
 	for i in cam_popup.item_count:
 		if idx == i:
@@ -131,6 +133,7 @@ func _on_robot_selected(idx: int):
 		else:
 			robot_popup.set_item_checked(item_idx, false)
 			deactivate_robot(_robots_in_scene[item_idx])
+	update_camera_view_menu()
 		
 func activate_robot(robot: Node):
 	robot.control.manual = true
@@ -338,8 +341,8 @@ func load_scene(path):
 
 	connect_pickable()
 	connect_editable()
-	update_camera_view_menu()
 	update_robot_select_menu()
+	update_camera_view_menu()
 	%RunStopButton.button_pressed = false
 	save_scene_as_button.disabled = false
 	save_scene_button.disabled = false
