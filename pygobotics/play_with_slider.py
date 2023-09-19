@@ -12,6 +12,6 @@ my_servo.set_slider_translation("arm_servo", 0)
 time.sleep(2)
 
 my_servo.set_slider_translation("arm servo", 0.1)
-time.sleep(1)
+time.sleep(2)
 
 app.stop()

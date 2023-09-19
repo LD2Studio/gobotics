@@ -12,3 +12,6 @@ __pycache__/
 /examples/
 temp/
 notebook/
+
+# Exportations
+exports/

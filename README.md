@@ -9,11 +9,11 @@ This repository contains only the application code. Examples of physical models 
 ## Features
 
 - Simulates all rigid physical objects.
-- The design of the robots is implemented in Gobotics based on a description that follows the [URDF standard](http://wiki.ros.org/urdf/XML). Only *fixed*, *continuous* and *revolute* joints are supported at the moment.
+- The design of the robots is implemented in Gobotics based on a description that follows the [URDF standard](http://wiki.ros.org/urdf/XML). Only *fixed*, *continuous*, *revolute* and *prismatic* joints are supported at the moment.
 - The robots can be controlled manually from the keyboard or a gamepad.
 - The robots are accessible from a Python script to control them remotely (still limited use).
 
-Features still missing are sensors, prismatic actuators, ... To be continued.
+Features still missing are sensors, cameras, ... To be continued.
 
 ## Usage
 
