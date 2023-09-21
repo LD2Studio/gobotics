@@ -72,12 +72,14 @@ func _on_joypad_changed(device: int, connected: bool):
 
 func set_revolute(jname: String, value: float):
 	var joint_name = jname.replace(" ", "_")
-#	print("Revolute joint name: %s = %f " % [joint_name, value])
+	print("Revolute joint name: %s = %f " % [joint_name, value])
 #	print("Revolute joints: ", revolute_joints)
 	if joint_name in revolute_joints:
 		var joint_node = get_parent().get_node("%%%s" % [joint_name])
 		if joint_node:
-			joint_node.target_angle = value
+			print("target angle: ", value)
+			joint_node.position_control = true
+			joint_node.target_angle = deg_to_rad(value)
 
 func set_prismatic(jname: String, value: float):
 	var joint_name = jname.replace(" ", "_")
@@ -86,4 +88,5 @@ func set_prismatic(jname: String, value: float):
 	if joint_name in prismatic_joints:
 		var joint_node = get_parent().get_node("%%%s" % [joint_name])
 		if joint_node:
+			joint_node.position_control = true
 			joint_node.target_dist = value * 10.0

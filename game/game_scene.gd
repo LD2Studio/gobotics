@@ -228,8 +228,8 @@ func show_asset_parameters(asset: Node3D):
 		
 	if asset_selected.is_in_group("ROBOTS"):
 		%PythonBridgeContainer.visible = true
-		%PythonRemoteButton.set_pressed_no_signal(asset_selected.robot.python.activate)
-		%UDPPortNumber.value = asset_selected.robot.python.port
+		%PythonRemoteButton.set_pressed_no_signal(asset_selected.python.activate)
+		%UDPPortNumber.value = asset_selected.python.port
 	else:
 		%PythonBridgeContainer.visible = false
 
@@ -487,13 +487,13 @@ func _on_z_rot_value_changed(value: float) -> void:
 func _on_python_remote_button_toggled(button_pressed: bool) -> void:
 	if asset_selected == null: return
 	if asset_selected.is_in_group("ROBOTS"):
-		asset_selected.control.python.activate = button_pressed
-		asset_selected.control.python.port = int(udp_port_number.value)
+		asset_selected.python.activate = button_pressed
+		asset_selected.python.port = int(udp_port_number.value)
 
 func _on_udp_port_number_value_changed(value: float) -> void:
 	if asset_selected == null: return
 	if asset_selected.is_in_group("ROBOTS"):
-		asset_selected.control.python.port = int(value)
+		asset_selected.python.port = int(value)
 		
 func _on_open_script_button_pressed() -> void:
 	if asset_selected == null: return
@@ -501,10 +501,10 @@ func _on_open_script_button_pressed() -> void:
 		%SourceCodeEdit.text = asset_selected.source_code
 		%ScriptDialog.popup_centered()
 
-func _on_keys_control_check_toggled(button_pressed: bool) -> void:
-	if asset_selected == null: return
-	if asset_selected.is_in_group("ROBOTS"):
-		asset_selected.control.manual = button_pressed
+#func _on_keys_control_check_toggled(button_pressed: bool) -> void:
+#	if asset_selected == null: return
+#	if asset_selected.is_in_group("ROBOTS"):
+#		asset_selected.control.manual = button_pressed
 
 func _on_confirm_delete_dialog_confirmed() -> void:
 	if scene:

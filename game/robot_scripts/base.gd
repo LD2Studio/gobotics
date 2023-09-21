@@ -11,8 +11,6 @@ var focused_joint
 var _joints := Array()
 var _joint_idx : int = 0
 
-@onready var python = PythonBridge.new(self, 4243)
-
 func _init():
 	Input.joy_connection_changed.connect(_on_joypad_changed)
 	joypads_connected = Input.get_connected_joypads()
@@ -23,8 +21,7 @@ func _init():
 		joypad_connected = false
 		
 func _ready():
-	name = &"RobotExt"
-	add_child(python)
+	name = &"RobotBase"
 	group_joints()
 #	print("group joints: ", joints)
 	if not _joints.is_empty():
@@ -32,7 +29,7 @@ func _ready():
 	
 func _physics_process(delta):
 #	print("loop robotext")
-	if get_parent().activated and not python.activate:
+	if get_parent().activated and not get_parent().python.activate:
 		if focused_joint:
 			if Input.is_action_pressed("JOINT_POS"):
 				focused_joint.target_velocity = -1
@@ -77,7 +74,8 @@ func set_revolute(jname: String, value: float):
 	if joint_name in revolute_joints:
 		var joint_node = get_parent().get_node("%%%s" % [joint_name])
 		if joint_node:
-			joint_node.target_angle = value
+			joint_node.position_control = true
+			joint_node.target_angle = deg_to_rad(value)
 
 func set_prismatic(jname: String, value: float):
 	var joint_name = jname.replace(" ", "_")

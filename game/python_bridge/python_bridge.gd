@@ -21,11 +21,21 @@ signal python_client_connected
 
 var server := UDPServer.new()
 var client_peer: PacketPeerUDP
-var caller: Object
+#var caller: Object
+var _script_nodes = Array()
 
 func _init(new_caller: Object, new_port: int):
-	caller = new_caller
+#	caller = new_caller
 	port = new_port
+	
+func _ready():
+	name = &"PythonBridge"
+	_script_nodes.append(get_parent())
+	for child in get_parent().get_children():
+		if child.is_in_group("ROBOT_SCRIPT"):
+			_script_nodes.append(child)
+#			print("%s is in group ROBOT_SCRIPT" % [child])
+#	print("script nodes: ", _script_nodes)
 
 func _process(_delta):
 	if not server.is_listening(): return
@@ -43,6 +53,11 @@ func _process(_delta):
 #			print(data.get_string_from_utf8())
 			parse_message(client_peer, data.get_string_from_utf8())
 
+func get_script_node(method: String) -> Node:
+	for node in _script_nodes:
+		if node.has_method(method):
+			return node
+	return null
 
 func parse_message(peer: PacketPeerUDP, json_message: String):
 #	print("Message <%s> sending from client %s" %[json_message, peer])
@@ -53,7 +68,9 @@ func parse_message(peer: PacketPeerUDP, json_message: String):
 		return
 	var message = json.data
 	if "namefunc" in message:
-		if caller.has_method(message.namefunc):
+		var caller = get_script_node(message.namefunc)
+		
+		if caller:
 #			print("method %s exits" % [message.namefunc])
 			var params: Array = message.params
 #			print(params)

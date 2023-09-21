@@ -1191,30 +1191,36 @@ var activated : bool = false
 	# Control Tag
 	if root_node.is_in_group("ROBOTS"):
 		_script.source_code += """
-var robot : RobotBase
+@onready var robot = RobotBase.new()
+@onready var python = PythonBridge.new(self, 4243)
 """
 		ready_script += """
-	robot = RobotBase.new()
 	robot.revolute_joints = revolute_joints
 	robot.prismatic_joints = prismatic_joints
+	robot.add_to_group("ROBOT_SCRIPT", true)
 	add_child(robot)
 """
-	if "control" in _gobotics and "type" in _gobotics.control:
-		match _gobotics.control.type:
-				"diff_drive":
-					_script.source_code += """
+		if "control" in _gobotics and "type" in _gobotics.control:
+			match _gobotics.control.type:
+					"diff_drive":
+						_script.source_code += """
 var control : DiffDrive
-"""
-					ready_script += """
+	"""
+						ready_script += """
 	control = DiffDrive.new($%s, %%%s, %%%s, %f)""" % [
-			base_link.name,
-			_gobotics.control.right_wheel_joint,
-			_gobotics.control.left_wheel_joint,
-			float(_gobotics.control.max_speed),
-			]
-					ready_script += """
+				base_link.name,
+				_gobotics.control.right_wheel_joint,
+				_gobotics.control.left_wheel_joint,
+				float(_gobotics.control.max_speed),
+				]
+						ready_script += """
+	control.add_to_group("ROBOT_SCRIPT", true)
 	add_child(control)
+	"""
+		ready_script += """
+	add_child(python)
 """
+
 	_script.source_code += ready_script
 	_script.source_code += process_script
 	root_node.set_script(_script)
