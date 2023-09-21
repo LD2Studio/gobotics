@@ -1,5 +1,5 @@
 extends Node
-class_name RobotExt
+class_name RobotBase
 
 var joypads_connected: Array[int]
 var joypad_connected: bool = false

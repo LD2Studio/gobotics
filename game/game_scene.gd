@@ -88,7 +88,7 @@ func update_camera_view_menu():
 		_cams.push_back(cam)
 		cam_popup.add_check_item(cam.name)
 	if not _robots_in_scene.is_empty():
-		var selected_robot = _robots_in_scene.filter(func(robot): return robot.control.manual == true)
+		var selected_robot = _robots_in_scene.filter(func(robot): return robot.activated == true)
 		var first_robot = selected_robot.front()
 		if first_robot:
 			_cams.push_back(first_robot.get_node("PivotCamera/Boom/Camera"))
@@ -135,10 +135,10 @@ func _on_robot_selected(idx: int):
 	update_camera_view_menu()
 		
 func activate_robot(robot: Node):
-	robot.control.manual = true
+	robot.activated = true
 	
 func deactivate_robot(robot: Node):
-	robot.control.manual = false
+	robot.activated = false
 		
 func show_asset_parameters(asset: Node3D):
 	asset_selected = asset
@@ -228,8 +228,8 @@ func show_asset_parameters(asset: Node3D):
 		
 	if asset_selected.is_in_group("ROBOTS"):
 		%PythonBridgeContainer.visible = true
-		%PythonRemoteButton.set_pressed_no_signal(asset_selected.control.python.activate)
-		%UDPPortNumber.value = asset_selected.control.python.port
+		%PythonRemoteButton.set_pressed_no_signal(asset_selected.robot.python.activate)
+		%UDPPortNumber.value = asset_selected.robot.python.port
 	else:
 		%PythonBridgeContainer.visible = false
 

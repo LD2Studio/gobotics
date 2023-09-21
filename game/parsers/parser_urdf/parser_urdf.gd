@@ -1150,7 +1150,7 @@ func add_script_to(root_node: Node3D):
 			base_link = child
 			break
 	if base_link == null: return null
-#	var base_link = root_node.get_child(0)
+
 	var ready_script = """
 func _ready():
 	pass"""
@@ -1160,6 +1160,7 @@ func _process(_delta: float):
 	pass"""
 	
 	_script.source_code = """extends Node3D
+var activated : bool = false
 """
 	# Add revolute joints in script
 	var revolute_joints := Array()
@@ -1189,25 +1190,23 @@ func _process(_delta: float):
 	
 	# Control Tag
 	if root_node.is_in_group("ROBOTS"):
-		if not "control" in _gobotics:
-			_script.source_code += """
-var control : RobotExt
+		_script.source_code += """
+var robot : RobotBase
 """
-			ready_script += """
-	control = RobotExt.new()
-	control.revolute_joints = revolute_joints
-	control.prismatic_joints = prismatic_joints
-	add_child(control)
+		ready_script += """
+	robot = RobotBase.new()
+	robot.revolute_joints = revolute_joints
+	robot.prismatic_joints = prismatic_joints
+	add_child(robot)
 """
-		
-		elif "control" in _gobotics and "type" in _gobotics.control:
-			match _gobotics.control.type:
+	if "control" in _gobotics and "type" in _gobotics.control:
+		match _gobotics.control.type:
 				"diff_drive":
 					_script.source_code += """
-var control : RobotDiffDriveExt
+var control : DiffDrive
 """
 					ready_script += """
-	control = RobotDiffDriveExt.new($%s, %%%s, %%%s, %f)""" % [
+	control = DiffDrive.new($%s, %%%s, %%%s, %f)""" % [
 			base_link.name,
 			_gobotics.control.right_wheel_joint,
 			_gobotics.control.left_wheel_joint,
@@ -1242,11 +1241,34 @@ func get_revolute_joint_script(child_node: Node3D, basis_node: Node3D, limit_vel
 	var source_code = """extends JoltHingeJoint3D
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
-@export var target_angle: float = 0.0
+var target_angle: float = 0
+var target_velocity: float = 0:
+	set(value):
+		var child_basis: Basis = child_link.transform.basis
+		var angle = (child_basis * basis_inv.transform.basis).get_euler().z
+		if value == 0:
+			if not position_control:
+				position_control = true
+				target_angle = angle
+			target_velocity = value
+			return
+		else:
+			position_control = false
+			
+		if angle <= -limit_upper and value > 0:
+			target_velocity = 0
+			motor_target_velocity = 0
+		elif angle >= -limit_lower and value < 0:
+			target_velocity = 0
+			motor_target_velocity = 0
+		else:
+			target_velocity = value
+			motor_target_velocity = value
 
 var angle_step: float
 var rest_angle: float
 var LIMIT_VELOCITY: float = %d
+var position_control : bool = false
 
 func _ready():
 	child_link.can_sleep = false
@@ -1254,18 +1276,21 @@ func _ready():
 	angle_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
 
 func _physics_process(_delta):
-	var child_basis: Basis = child_link.transform.basis
-	var angle = (child_basis * basis_inv.transform.basis).get_euler().z
-	var err = deg_to_rad(target_angle) - angle
-	var speed: float
-	if abs(err) > angle_step:
-		speed = LIMIT_VELOCITY * sign(err)
-	else:
-		speed = 0
-	motor_target_velocity = -speed
+	if position_control:
+		var child_basis: Basis = child_link.transform.basis
+		var angle = (child_basis * basis_inv.transform.basis).get_euler().z
+		var err = target_angle - angle
+		var speed: float
+		if abs(err) > angle_step:
+			speed = LIMIT_VELOCITY * sign(err)
+		else:
+			speed = 0
+		motor_target_velocity = -speed
+		
 
 func _target_angle_changed(value: float):
 	target_angle = value
+	print("target angle changed: ", target_angle)
 """ % [child_node.name, basis_node.name, limit_velocity]
 	return source_code
 	
@@ -1273,11 +1298,34 @@ func get_prismatic_joint_script(child_node: Node3D, basis_node: Node3D, limit_ve
 	var source_code = """extends JoltSliderJoint3D
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
-@export var target_dist: float = 0.0
-
+var target_dist: float = 0.0
+var target_velocity: float = 0:
+	set(value):
+		var child_tr: Transform3D = child_link.transform
+		var dist = (child_tr * basis_inv.transform).origin.x
+		if value == 0:
+			if not position_control:
+				position_control = true
+				target_dist = dist
+			target_velocity = value
+			return
+		else:
+			position_control = false
+			
+		if dist >= limit_upper and value > 0:
+			target_velocity = 0
+			motor_target_velocity = 0
+		elif dist <= limit_lower and value < 0:
+			target_velocity = 0
+			motor_target_velocity = 0
+		else:
+			target_velocity = value
+			motor_target_velocity = value
+			
 var dist_step: float
 var rest_angle: float
 var LIMIT_VELOCITY: float = %d
+var position_control : bool = false
 
 func _ready():
 	child_link.can_sleep = false
@@ -1285,15 +1333,16 @@ func _ready():
 	dist_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
 
 func _physics_process(_delta):
-	var child_tr: Transform3D = child_link.transform
-	var dist = (child_tr * basis_inv.transform).origin.x
-	var err = target_dist - dist
-	var speed: float
-	if abs(err) > dist_step:
-		speed = LIMIT_VELOCITY * sign(err)
-	else:
-		speed = 0
-	motor_target_velocity = speed
+	if position_control:
+		var child_tr: Transform3D = child_link.transform
+		var dist = (child_tr * basis_inv.transform).origin.x
+		var err = target_dist - dist
+		var speed: float
+		if abs(err) > dist_step:
+			speed = LIMIT_VELOCITY * sign(err)
+		else:
+			speed = 0
+		motor_target_velocity = speed
 
 func _target_dist_changed(value: float):
 	target_dist = value * 10.0
