@@ -28,24 +28,19 @@ func _ready():
 		focused_joint = _joints[_joint_idx]
 	
 func _physics_process(delta):
-#	print("loop robotext")
 	if get_parent().activated and not get_parent().python.activate:
 		if focused_joint:
 			if Input.is_action_pressed("JOINT_POS"):
-				focused_joint.target_velocity = -1
+				focused_joint.shift_target(delta)
 			elif Input.is_action_pressed("JOINT_NEG"):
-				focused_joint.target_velocity = 1
-			else:
-				focused_joint.target_velocity = 0
+				focused_joint.shift_target(-delta)
 				
 			if Input.is_action_just_pressed("JOINT_UP"):
-				focused_joint.target_velocity = 0
 				_joint_idx += 1
 				if _joint_idx >= len(_joints):
 					_joint_idx = 0
 				focused_joint = _joints[_joint_idx]
 			if Input.is_action_just_pressed("JOINT_DOWN"):
-				focused_joint.target_velocity = 0
 				_joint_idx -= 1
 				if _joint_idx == -1:
 					_joint_idx = len(_joints) - 1

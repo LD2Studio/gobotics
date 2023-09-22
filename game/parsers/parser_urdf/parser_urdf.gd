@@ -1248,55 +1248,37 @@ func get_revolute_joint_script(child_node: Node3D, basis_node: Node3D, limit_vel
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
 var target_angle: float = 0
-var target_velocity: float = 0:
-	set(value):
-		var child_basis: Basis = child_link.transform.basis
-		var angle = (child_basis * basis_inv.transform.basis).get_euler().z
-		if value == 0:
-			if not position_control:
-				position_control = true
-				target_angle = angle
-			target_velocity = value
-			return
-		else:
-			position_control = false
-			
-		if angle <= -limit_upper and value > 0:
-			target_velocity = 0
-			motor_target_velocity = 0
-		elif angle >= -limit_lower and value < 0:
-			target_velocity = 0
-			motor_target_velocity = 0
-		else:
-			target_velocity = value
-			motor_target_velocity = value
-
 var angle_step: float
 var rest_angle: float
 var LIMIT_VELOCITY: float = %d
-var position_control : bool = false
+
+func shift_target(step):
+	if step > 0 and target_angle <= -limit_lower:
+		target_angle += step
+	if step < 0 and target_angle >= -limit_upper:
+		target_angle += step
 
 func _ready():
 	child_link.can_sleep = false
 	motor_enabled = true
 	angle_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
+	limit_spring_enabled = true
+	limit_spring_frequency = 1
+	limit_spring_damping = 1
 
 func _physics_process(_delta):
-	if position_control:
-		var child_basis: Basis = child_link.transform.basis
-		var angle = (child_basis * basis_inv.transform.basis).get_euler().z
-		var err = target_angle - angle
-		var speed: float
-		if abs(err) > angle_step:
-			speed = LIMIT_VELOCITY * sign(err)
-		else:
-			speed = 0
-		motor_target_velocity = -speed
-		
+	var child_basis: Basis = child_link.transform.basis
+	var angle = (child_basis * basis_inv.transform.basis).get_euler().z
+	var err = target_angle - angle
+	var speed: float
+	if abs(err) > angle_step:
+		speed = LIMIT_VELOCITY * sign(err)
+	else:
+		speed = 0
+	motor_target_velocity = -speed
 
 func _target_angle_changed(value: float):
-	target_angle = value
-	print("target angle changed: ", target_angle)
+	target_angle = deg_to_rad(value)
 """ % [child_node.name, basis_node.name, limit_velocity]
 	return source_code
 	
@@ -1305,50 +1287,34 @@ func get_prismatic_joint_script(child_node: Node3D, basis_node: Node3D, limit_ve
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
 var target_dist: float = 0.0
-var target_velocity: float = 0:
-	set(value):
-		var child_tr: Transform3D = child_link.transform
-		var dist = (child_tr * basis_inv.transform).origin.x
-		if value == 0:
-			if not position_control:
-				position_control = true
-				target_dist = dist
-			target_velocity = value
-			return
-		else:
-			position_control = false
-			
-		if dist >= limit_upper and value > 0:
-			target_velocity = 0
-			motor_target_velocity = 0
-		elif dist <= limit_lower and value < 0:
-			target_velocity = 0
-			motor_target_velocity = 0
-		else:
-			target_velocity = value
-			motor_target_velocity = value
-			
 var dist_step: float
 var rest_angle: float
 var LIMIT_VELOCITY: float = %d
-var position_control : bool = false
+
+func shift_target(step):
+	if step > 0 and target_dist <= limit_upper:
+		target_dist += step
+	if step < 0 and target_dist >= limit_lower:
+		target_dist += step
 
 func _ready():
 	child_link.can_sleep = false
 	motor_enabled = true
 	dist_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
+	limit_spring_enabled = true
+	limit_spring_frequency = 5
+	limit_spring_damping = 4
 
 func _physics_process(_delta):
-	if position_control:
-		var child_tr: Transform3D = child_link.transform
-		var dist = (child_tr * basis_inv.transform).origin.x
-		var err = target_dist - dist
-		var speed: float
-		if abs(err) > dist_step:
-			speed = LIMIT_VELOCITY * sign(err)
-		else:
-			speed = 0
-		motor_target_velocity = speed
+	var child_tr: Transform3D = child_link.transform
+	var dist = (child_tr * basis_inv.transform).origin.x
+	var err = target_dist - dist
+	var speed: float
+	if abs(err) > dist_step:
+		speed = LIMIT_VELOCITY * sign(err)
+	else:
+		speed = 0
+	motor_target_velocity = speed
 
 func _target_dist_changed(value: float):
 	target_dist = value * 10.0
