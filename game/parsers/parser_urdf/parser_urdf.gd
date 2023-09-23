@@ -13,7 +13,6 @@ var _materials: Array
 var links: Array
 var _joints: Array
 var _gobotics: Dictionary
-var _script := GDScript.new()
 var _filename : String
 var _frame_mesh : ArrayMesh = load("res://game/gizmos/frame_arrows.res")
 
@@ -1144,6 +1143,7 @@ func add_owner(owner_node, nodes: Array):
 			add_owner(owner_node, node.get_children())
 
 func add_script_to(root_node: Node3D):
+	var script := GDScript.new()
 	var base_link: RigidBody3D
 	for child in root_node.get_children():
 		if child is RigidBody3D:
@@ -1159,7 +1159,7 @@ func _ready():
 func _process(_delta: float):
 	pass"""
 	
-	_script.source_code = """extends Node3D
+	script.source_code = """extends Node3D
 var activated : bool = false
 """
 	# Add revolute joints in script
@@ -1173,7 +1173,7 @@ var activated : bool = false
 	for revolute in revolute_joints:
 		revolute_script += "\"%s\"," % [revolute]
 	revolute_script += "]\n"
-	_script.source_code += revolute_script
+	script.source_code += revolute_script
 	
 	# Add prismatic joints in script
 	var prismatic_joints := Array()
@@ -1186,11 +1186,11 @@ var activated : bool = false
 	for prismatic in prismatic_joints:
 		prismatic_script += "\"%s\"," % [prismatic]
 	prismatic_script += "]\n"
-	_script.source_code += prismatic_script
+	script.source_code += prismatic_script
 	
 	# Control Tag
 	if root_node.is_in_group("ROBOTS"):
-		_script.source_code += """
+		script.source_code += """
 @onready var robot = RobotBase.new()
 @onready var python = PythonBridge.new(self, 4243)
 """
@@ -1203,7 +1203,7 @@ var activated : bool = false
 		if "control" in _gobotics and "type" in _gobotics.control:
 			match _gobotics.control.type:
 					"diff_drive":
-						_script.source_code += """
+						script.source_code += """
 var control : DiffDrive
 	"""
 						ready_script += """
@@ -1221,9 +1221,9 @@ var control : DiffDrive
 	add_child(python)
 """
 
-	_script.source_code += ready_script
-	_script.source_code += process_script
-	root_node.set_script(_script)
+	script.source_code += ready_script
+	script.source_code += process_script
+	root_node.set_script(script)
 
 func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends JoltHingeJoint3D
