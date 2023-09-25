@@ -247,10 +247,6 @@ const urdf_robot_template = """<robot name="noname">
 	<link name="base_link">
 	
 	</link>
-	
-	<gobotics>
-	
-	</gobotics>
 </robot>
 """
 

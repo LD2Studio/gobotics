@@ -12,7 +12,7 @@ var _materials: Array
 ## Links of robot
 var links: Array
 var _joints: Array
-var _gobotics: Dictionary
+var _gobotics: Array
 var _filename : String
 var _frame_mesh : ArrayMesh = load("res://game/gizmos/frame_arrows.res")
 
@@ -122,12 +122,12 @@ func load_gobotics_params(urdf_data):
 		err = parser.open(urdf_data)
 	elif urdf_data is PackedByteArray:
 		err = parser.open_buffer(urdf_data)
-		
 	if err:
 		printerr("Error opening URDF file: ", err)
 		return
 
-	var root_tag = Tag.NONE
+	var root_tag: int = Tag.NONE
+	var gobotics_attrib = {}
 	while true:
 		if parser.read() != OK: # Ending parse XML file
 			break
@@ -139,62 +139,86 @@ func load_gobotics_params(urdf_data):
 				"gobotics":
 					if root_tag != Tag.NONE: continue
 					root_tag = Tag.GOBOTICS
-					var attrib = {}
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
-						attrib[name] = value
-						
+						gobotics_attrib[name] = value
+					if "name" in gobotics_attrib:
+						gobotics_attrib.name = gobotics_attrib.name.replace(" ", "_")
+					if not "type" in gobotics_attrib:
+						printerr("no type in gobotics tag")
+						root_tag = Tag.NONE
+						continue
+					if "type" in gobotics_attrib:
+						if gobotics_attrib.type != "diff_drive" and \
+							gobotics_attrib.type != "group_joints":
+								printerr("wrong type in gobotics tag")
+								root_tag = Tag.NONE
+								continue
 				"link":
 					if not root_tag == Tag.NONE: continue
 					root_tag = Tag.LINK
 				"joint":
 					if not root_tag == Tag.NONE: continue
 					root_tag = Tag.JOINT
-				"control":
-					if not root_tag == Tag.GOBOTICS: continue
-					var attrib: Dictionary = {}
-					for idx in parser.get_attribute_count():
-						var name = parser.get_attribute_name(idx)
-						var value = parser.get_attribute_value(idx)
-						attrib[name] = value
-					_gobotics.control = {}
-					if "name" in attrib:
-						_gobotics.control.name = attrib.name
-					if "type" in attrib:
-						_gobotics.control.type = attrib.type
-					_gobotics.control.max_speed = "1.0"
 					
 				"right_wheel":
 					if not root_tag == Tag.GOBOTICS: continue
-					var attrib: Dictionary = {}
-					for idx in parser.get_attribute_count():
-						var name = parser.get_attribute_name(idx)
-						var value = parser.get_attribute_value(idx)
-						attrib[name] = value
-					if "joint" in attrib:
-						_gobotics.control.right_wheel_joint = attrib.joint
+					if "type" in gobotics_attrib and gobotics_attrib.type == "diff_drive":
+						var attrib: Dictionary = {}
+						for idx in parser.get_attribute_count():
+							var name = parser.get_attribute_name(idx)
+							var value = parser.get_attribute_value(idx)
+							attrib[name] = value
+						if "joint" in attrib:
+							gobotics_attrib.right_wheel_joint = attrib.joint
 					
 				"left_wheel":
 					if not root_tag == Tag.GOBOTICS: continue
-					var attrib: Dictionary = {}
-					for idx in parser.get_attribute_count():
-						var name = parser.get_attribute_name(idx)
-						var value = parser.get_attribute_value(idx)
-						attrib[name] = value
-					if "joint" in attrib:
-						_gobotics.control.left_wheel_joint = attrib.joint
+					if "type" in gobotics_attrib and gobotics_attrib.type == "diff_drive":
+						var attrib: Dictionary = {}
+						for idx in parser.get_attribute_count():
+							var name = parser.get_attribute_name(idx)
+							var value = parser.get_attribute_value(idx)
+							attrib[name] = value
+						if "joint" in attrib:
+							gobotics_attrib.left_wheel_joint = attrib.joint
 						
 				"max_speed":
 					if not root_tag == Tag.GOBOTICS: continue
-					var attrib: Dictionary = {}
-					for idx in parser.get_attribute_count():
-						var name = parser.get_attribute_name(idx)
-						var value = parser.get_attribute_value(idx)
-						attrib[name] = value
-					if "value" in attrib:
-						_gobotics.control.max_speed = attrib.value
-						
+					if "type" in gobotics_attrib and gobotics_attrib.type == "diff_drive":
+						var attrib: Dictionary = {}
+						for idx in parser.get_attribute_count():
+							var name = parser.get_attribute_name(idx)
+							var value = parser.get_attribute_value(idx)
+							attrib[name] = value
+						if "value" in attrib:
+							gobotics_attrib.max_speed = attrib.value
+					
+				"input":
+					if not root_tag == Tag.GOBOTICS: continue
+					if "type" in gobotics_attrib and gobotics_attrib.type == "group_joints":
+						var attrib: Dictionary = {}
+						for idx in parser.get_attribute_count():
+							var name = parser.get_attribute_name(idx)
+							var value = parser.get_attribute_value(idx)
+							attrib[name] = value
+						if "name" in attrib:
+							gobotics_attrib.input = attrib.name
+					
+				"output":
+					if not root_tag == Tag.GOBOTICS: continue
+					if "type" in gobotics_attrib and gobotics_attrib.type == "group_joints":
+						var attrib: Dictionary = {}
+						for idx in parser.get_attribute_count():
+							var name = parser.get_attribute_name(idx)
+							var value = parser.get_attribute_value(idx)
+							attrib[name] = value
+						if "joint" in attrib:
+							if not "outputs" in gobotics_attrib:
+								gobotics_attrib.outputs = []
+							gobotics_attrib.outputs.append(attrib)
+								
 					
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
@@ -202,6 +226,8 @@ func load_gobotics_params(urdf_data):
 			match node_name:
 				"gobotics":
 					if root_tag == Tag.GOBOTICS:
+						_gobotics.append(gobotics_attrib.duplicate(true))
+						gobotics_attrib.clear()
 						root_tag = Tag.NONE
 				"link":
 					if root_tag == Tag.LINK:
@@ -1141,89 +1167,78 @@ func add_owner(owner_node, nodes: Array):
 		node.owner = owner_node
 		if node.get_child_count():
 			add_owner(owner_node, node.get_children())
+			
+var _global_script: String
+var _ready_script: String
+var _process_script: String
 
 func add_script_to(root_node: Node3D):
-	var script := GDScript.new()
 	var base_link: RigidBody3D
 	for child in root_node.get_children():
 		if child is RigidBody3D:
 			base_link = child
 			break
 	if base_link == null: return null
-
-	var ready_script = """
+	
+	add_base_code()
+	if root_node.is_in_group("ROBOTS"):
+		add_robot_code()
+		for config in _gobotics:
+			if "type" in config:
+				match config.type:
+					"diff_drive":
+						add_diff_drive_code(base_link, config)
+					"group_joints":
+						add_group_joints_script()
+		
+	var script := GDScript.new()
+	script.source_code = _global_script
+	script.source_code += _ready_script
+	script.source_code += _process_script
+	root_node.set_script(script)
+	
+func add_base_code():
+	_ready_script = """
 func _ready():
 	pass"""
 
-	var process_script = """
+	_process_script = """
 func _process(_delta: float):
 	pass"""
 	
-	script.source_code = """extends Node3D
+	_global_script = """extends Node3D
 var activated : bool = false
 """
-	# Add revolute joints in script
-	var revolute_joints := Array()
-	for joint in _joints:
-		if "type" in joint and joint.type == "revolute":
-			revolute_joints.append(joint.name)
-			
-#	print("revolute joints: ", revolute_joints)
-	var revolute_script: String = "var revolute_joints = ["
-	for revolute in revolute_joints:
-		revolute_script += "\"%s\"," % [revolute]
-	revolute_script += "]\n"
-	script.source_code += revolute_script
-	
-	# Add prismatic joints in script
-	var prismatic_joints := Array()
-	for joint in _joints:
-		if "type" in joint and joint.type == "prismatic":
-			prismatic_joints.append(joint.name)
-			
-#	print("prismatic joints: ", prismatic_joints)
-	var prismatic_script: String = "var prismatic_joints = ["
-	for prismatic in prismatic_joints:
-		prismatic_script += "\"%s\"," % [prismatic]
-	prismatic_script += "]\n"
-	script.source_code += prismatic_script
-	
-	# Control Tag
-	if root_node.is_in_group("ROBOTS"):
-		script.source_code += """
+
+func add_robot_code():
+	_global_script += """
 @onready var robot = RobotBase.new()
 @onready var python = PythonBridge.new(self, 4243)
 """
-		ready_script += """
-	robot.revolute_joints = revolute_joints
-	robot.prismatic_joints = prismatic_joints
+	_ready_script += """
 	robot.add_to_group("ROBOT_SCRIPT", true)
 	add_child(robot)
-"""
-		if "control" in _gobotics and "type" in _gobotics.control:
-			match _gobotics.control.type:
-					"diff_drive":
-						script.source_code += """
-var control : DiffDrive
-	"""
-						ready_script += """
-	control = DiffDrive.new($%s, %%%s, %%%s, %f)""" % [
-				base_link.name,
-				_gobotics.control.right_wheel_joint,
-				_gobotics.control.left_wheel_joint,
-				float(_gobotics.control.max_speed),
-				]
-						ready_script += """
-	control.add_to_group("ROBOT_SCRIPT", true)
-	add_child(control)
-	"""
-		ready_script += """
 	add_child(python)
 """
 
-	script.source_code += ready_script
-	script.source_code += process_script
-	root_node.set_script(script)
+func add_diff_drive_code(base_link, config):
+	_global_script += """
+var control : DiffDrive
+	"""
+	_ready_script += """
+	control = DiffDrive.new($%s, %%%s, %%%s, %f)""" % [
+				base_link.name,
+				config.right_wheel_joint,
+				config.left_wheel_joint,
+				float(config.max_speed),
+				]
+	_ready_script += """
+	control.add_to_group("ROBOT_SCRIPT", true)
+	add_child(control)
+	"""
+	
+func add_group_joints_script():
+	pass
 
 func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends JoltHingeJoint3D

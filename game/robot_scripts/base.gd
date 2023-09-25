@@ -4,8 +4,6 @@ class_name RobotBase
 var joypads_connected: Array[int]
 var joypad_connected: bool = false
 var joypad_selected: int = 0
-var revolute_joints := Array()
-var prismatic_joints := Array()
 var focused_joint
 
 var _joints := Array()
@@ -47,10 +45,14 @@ func _physics_process(delta):
 				focused_joint = _joints[_joint_idx]
 				
 func group_joints():
-	for joint_name in revolute_joints:
-		_joints.append(get_parent().get_node("%%%s" % [joint_name]))
-	for joint_name in prismatic_joints:
-		_joints.append(get_parent().get_node("%%%s" % [joint_name]))
+	for node in get_tree().get_nodes_in_group("REVOLUTE"):
+#		print("owner %s -> node %s" %  [node.owner, node])
+		if node.owner == get_parent():
+			_joints.append(node)
+	for node in get_tree().get_nodes_in_group("PRISMATIC"):
+#		print("owner %s -> node %s" %  [node.owner, node])
+		if node.owner == get_parent():
+			_joints.append(node)
 
 func _on_joypad_changed(device: int, connected: bool):
 	print("device %d connected: %s" % [device, connected])
@@ -65,18 +67,15 @@ func _on_joypad_changed(device: int, connected: bool):
 func set_revolute(jname: String, value: float):
 	var joint_name = jname.replace(" ", "_")
 #	print("Revolute joint name: %s = %f " % [joint_name, value])
-#	print("Revolute joints: ", revolute_joints)
-	if joint_name in revolute_joints:
-		var joint_node = get_parent().get_node("%%%s" % [joint_name])
-		if joint_node:
-			joint_node.position_control = true
-			joint_node.target_angle = deg_to_rad(value)
+	for joint in _joints:
+		if joint.is_in_group("REVOLUTE") and joint.name == joint_name:
+			joint.target_angle = deg_to_rad(value)
+			return
 
 func set_prismatic(jname: String, value: float):
 	var joint_name = jname.replace(" ", "_")
 #	print("Prismatic joint name: %s = %f " % [joint_name, value])
-#	print("Prismatic joints: ", revolute_joints)
-	if joint_name in prismatic_joints:
-		var joint_node = get_parent().get_node("%%%s" % [joint_name])
-		if joint_node:
-			joint_node.target_dist = value * 10.0
+	for joint in _joints:
+		if joint.is_in_group("PRISMATIC") and joint.name == joint_name:
+			joint.target_dist = value * 10.0
+			return

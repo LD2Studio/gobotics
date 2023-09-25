@@ -82,15 +82,13 @@ const MESH_GEOMETRY_TAG = """<mesh filename="package://" object="" />"""
 const INLINE_COLOR_TAG = """<color rgba="0 0 0 1"/>"""
 
 const GOBOTICS_CONTROL_TAG = """
-	<control name="control_robot" type="diff_drive">
+	<gobotics name="control_robot" type="diff_drive">
 		<right_wheel joint=""/>
 		<left_wheel joint=""/>
 		<max_speed value="6.0"/>
-	</control>
+	</gobotics>
 """
-const GOBOTICS_CAMERA_TAG = """
-	<camera xyz="0 -0.5 0.2" rpy="0 0 0"/>
-"""
+
 enum Tag {
 	LINK = MENU_MAX + 1,
 	MATERIAL,
@@ -107,7 +105,6 @@ enum Tag {
 	JOINT_PRISMATIC,
 	JOINT_PIN,
 	GOBOTICS_CONTROL,
-	GOBOTICS_CAMERA,
 }
 
 func _ready():
@@ -150,7 +147,6 @@ func _ready():
 	var submenu_gobotics = PopupMenu.new()
 	submenu_gobotics.name = "SubmenuGobotics"
 	submenu_gobotics.add_item("Insert Robot Control", Tag.GOBOTICS_CONTROL)
-	submenu_gobotics.add_item("Insert Follow Camera", Tag.GOBOTICS_CAMERA)
 	submenu_gobotics.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_gobotics)
 	menu.add_submenu_item("Gobotics", "SubmenuGobotics")
@@ -190,5 +186,3 @@ func _on_item_pressed(id):
 			insert_text_at_caret(INLINE_COLOR_TAG)
 		Tag.GOBOTICS_CONTROL:
 			insert_text_at_caret(GOBOTICS_CONTROL_TAG)
-		Tag.GOBOTICS_CAMERA:
-			insert_text_at_caret(GOBOTICS_CAMERA_TAG)
