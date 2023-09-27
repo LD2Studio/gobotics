@@ -494,7 +494,6 @@ switch_on_hover = true
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-text = "Robots"
 flat = false
 switch_on_hover = true
 
@@ -541,6 +540,7 @@ layout_mode = 2
 text = "Joint"
 
 [node name="InfosContainer" type="MarginContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
+unique_name_in_owner = true
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0

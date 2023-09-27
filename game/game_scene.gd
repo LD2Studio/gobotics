@@ -25,6 +25,7 @@ var _robots_in_scene = Array()	# List of robots actually into scene
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
+	%InfosContainer.visible = false
 	update_camera_view_menu()
 	python.name = &"AppPython"
 	python.activate = true
@@ -113,6 +114,7 @@ func update_robot_select_menu():
 		robot_selected_button.visible = false
 		return
 	robot_selected_button.visible = true
+	# Get robots menu
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
 	if not robot_popup.index_pressed.is_connected(_on_robot_selected):
 		robot_popup.index_pressed.connect(_on_robot_selected)
@@ -131,11 +133,13 @@ func _on_robot_selected(idx: int):
 			robot_popup.set_item_checked(item_idx, true)
 			activate_robot(_robots_in_scene[item_idx])
 			asset_selected = _robots_in_scene[item_idx]
+			robot_selected_button.text = asset_selected.name
 		else:
 			robot_popup.set_item_checked(item_idx, false)
 			deactivate_robot(_robots_in_scene[item_idx])
 	update_camera_view_menu()
-		
+	show_joint_infos()
+	
 func activate_robot(robot: Node):
 	robot.activated = true
 	
@@ -422,6 +426,18 @@ func is_robots_inside_scene() -> bool:
 func print_on_terminal(text: String):
 	terminal_output.text += "%s\n" % text
 	
+func show_joint_infos():
+#	print("selected asset: ", asset_selected)
+	if asset_selected and asset_selected.has_node("RobotBase") and asset_selected.get_node("RobotBase").focused_joint:
+		%InfosContainer.visible = true
+		var focused_joint = asset_selected.get_node("RobotBase").focused_joint.name
+	#			print(focused_joint)
+		_joint_focus_changed(focused_joint)
+		if not asset_selected.get_node("RobotBase").is_connected("joint_changed", _joint_focus_changed):
+			asset_selected.get_node("RobotBase").joint_changed.connect(_joint_focus_changed)
+	else:
+		%InfosContainer.visible = false
+		
 ## Slot functions
 
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
@@ -437,17 +453,12 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 			freeze_asset(asset, false)
 			if asset.is_in_group("PYTHON"):
 				asset.run()
-#		print("selected asset: ", asset_selected)
-		if asset_selected and asset_selected.has_node("RobotBase") and asset_selected.get_node("RobotBase").focused_joint:
-			var focused_joint = asset_selected.get_node("RobotBase").focused_joint.name
-#			print(focused_joint)
-			_joint_focus_changed(focused_joint)
-			if not asset_selected.get_node("RobotBase").is_connected("joint_changed", _joint_focus_changed):
-				asset_selected.get_node("RobotBase").joint_changed.connect(_joint_focus_changed)
+		show_joint_infos()
 	else:
 		running = false
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
+		%InfosContainer.visible = false
 		hide_asset_parameters()
 		for item in scene.get_children():
 			freeze_asset(item, true)

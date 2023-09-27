@@ -3,7 +3,7 @@ class_name Item
 
 signal python_script_finished(text: String)
 
-@onready var python = PythonBridge.new(self, 4243)
+@onready var python = PythonBridge.new(4243)
 @export_multiline var source_code: String
 
 var python_thread: Thread = Thread.new()
