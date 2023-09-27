@@ -1,6 +1,8 @@
 extends Node
 class_name RobotBase
 
+signal joint_changed(joint_name: String)
+
 var joypads_connected: Array[int]
 var joypad_connected: bool = false
 var joypad_selected: int = 0
@@ -19,11 +21,13 @@ func _init():
 		joypad_connected = false
 		
 func _ready():
+#	print("Base ready!")
 	name = &"RobotBase"
-	group_joints()
+	update_all_joints()
 #	print("group joints: ", joints)
 	if not _joints.is_empty():
 		focused_joint = _joints[_joint_idx]
+		joint_changed.emit(focused_joint.name)
 	
 func _physics_process(delta):
 	if get_parent().activated and not get_parent().python.activate:
@@ -38,19 +42,29 @@ func _physics_process(delta):
 				if _joint_idx >= len(_joints):
 					_joint_idx = 0
 				focused_joint = _joints[_joint_idx]
+				joint_changed.emit(focused_joint.name)
+#				print("focused joint: ", focused_joint)
+				
 			if Input.is_action_just_pressed("JOINT_DOWN"):
 				_joint_idx -= 1
 				if _joint_idx == -1:
 					_joint_idx = len(_joints) - 1
 				focused_joint = _joints[_joint_idx]
+				joint_changed.emit(focused_joint.name)
+#				print("focused joint: ", focused_joint)
 				
-func group_joints():
+func update_all_joints():
+	_joints.clear()
 	for node in get_tree().get_nodes_in_group("REVOLUTE"):
 #		print("owner %s -> node %s" %  [node.owner, node])
 		if node.owner == get_parent():
 			_joints.append(node)
 	for node in get_tree().get_nodes_in_group("PRISMATIC"):
 #		print("owner %s -> node %s" %  [node.owner, node])
+		if node.owner == get_parent():
+			_joints.append(node)
+	for node in get_tree().get_nodes_in_group("GROUPED_JOINTS"):
+#		print("GROUPED_JOINTS: owner %s -> node %s" %  [node.owner, node])
 		if node.owner == get_parent():
 			_joints.append(node)
 
@@ -78,4 +92,12 @@ func set_prismatic(jname: String, value: float):
 	for joint in _joints:
 		if joint.is_in_group("PRISMATIC") and joint.name == joint_name:
 			joint.target_dist = value * 10.0
+			return
+
+func set_grouped_joints(jname: String, value: float):
+	var grouped_joint_name = jname.replace(" ", "_")
+#	print("Grouped joint name: %s = %f " % [grouped_joint_name, value])
+	for joint in _joints:
+		if joint.is_in_group("GROUPED_JOINTS") and joint.name == grouped_joint_name:
+			joint.target_value = value
 			return

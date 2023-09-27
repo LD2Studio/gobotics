@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://dcedg06r2n4f1" path="res://game/icons/ViewportSpeed.svg" id="6_6ryau"]
 [ext_resource type="Script" path="res://game/TopCamera2D.gd" id="7_eidv5"]
 [ext_resource type="Texture2D" uid="uid://jyx0ifv4wnkt" path="res://game/icons/Camera3D.svg" id="8_hvuby"]
+[ext_resource type="StyleBox" uid="uid://die6ekhbco4pr" path="res://game/styles/HUD.tres" id="10_q2yc6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxght"]
 bg_color = Color(0.25098, 0.411765, 0.768627, 1)
@@ -57,9 +58,6 @@ corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sjw4w"]
 bg_color = Color(0.6, 0.6, 0.6, 0.34902)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nll5m"]
-bg_color = Color(0.6, 0.6, 0.6, 0.458824)
 
 [sub_resource type="Environment" id="Environment_5axc7"]
 background_energy_multiplier = 0.89
@@ -503,7 +501,7 @@ switch_on_hover = true
 [node name="StatisticsPanel" type="PanelContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
 offset_right = 40.0
 offset_bottom = 40.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_nll5m")
+theme_override_styles/panel = ExtResource("10_q2yc6")
 
 [node name="MarginContainer" type="MarginContainer" parent="SplitContainer/3DViewContainer/SceneViewport/StatisticsPanel"]
 layout_mode = 2
@@ -541,6 +539,30 @@ text = "Frame"
 [node name="JointCheckBox" type="CheckBox" parent="SplitContainer/3DViewContainer/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer"]
 layout_mode = 2
 text = "Joint"
+
+[node name="InfosContainer" type="MarginContainer" parent="SplitContainer/3DViewContainer/SceneViewport"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="PanelContainer" type="PanelContainer" parent="SplitContainer/3DViewContainer/SceneViewport/InfosContainer"]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("10_q2yc6")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/3DViewContainer/SceneViewport/InfosContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="FocusedJointLabel" type="Label" parent="SplitContainer/3DViewContainer/SceneViewport/InfosContainer/PanelContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="GameScene" type="Node3D" parent="SplitContainer/3DViewContainer/SceneViewport"]
 unique_name_in_owner = true

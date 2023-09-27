@@ -151,7 +151,7 @@ func load_gobotics_params(urdf_data):
 						continue
 					if "type" in gobotics_attrib:
 						if gobotics_attrib.type != "diff_drive" and \
-							gobotics_attrib.type != "group_joints":
+							gobotics_attrib.type != "grouped_joints":
 								printerr("wrong type in gobotics tag")
 								root_tag = Tag.NONE
 								continue
@@ -197,7 +197,7 @@ func load_gobotics_params(urdf_data):
 					
 				"input":
 					if not root_tag == Tag.GOBOTICS: continue
-					if "type" in gobotics_attrib and gobotics_attrib.type == "group_joints":
+					if "type" in gobotics_attrib and gobotics_attrib.type == "grouped_joints":
 						var attrib: Dictionary = {}
 						for idx in parser.get_attribute_count():
 							var name = parser.get_attribute_name(idx)
@@ -205,10 +205,18 @@ func load_gobotics_params(urdf_data):
 							attrib[name] = value
 						if "name" in attrib:
 							gobotics_attrib.input = attrib.name
+						if "lower" in attrib:
+							gobotics_attrib.lower = attrib.lower
+						else:
+							gobotics_attrib.lower = -1.0
+						if "upper" in attrib:
+							gobotics_attrib.upper = attrib.upper
+						else:
+							gobotics_attrib.upper = 1.0
 					
 				"output":
 					if not root_tag == Tag.GOBOTICS: continue
-					if "type" in gobotics_attrib and gobotics_attrib.type == "group_joints":
+					if "type" in gobotics_attrib and gobotics_attrib.type == "grouped_joints":
 						var attrib: Dictionary = {}
 						for idx in parser.get_attribute_count():
 							var name = parser.get_attribute_name(idx)
@@ -1182,14 +1190,14 @@ func add_script_to(root_node: Node3D):
 	
 	add_base_code()
 	if root_node.is_in_group("ROBOTS"):
-		add_robot_code()
 		for config in _gobotics:
 			if "type" in config:
 				match config.type:
 					"diff_drive":
 						add_diff_drive_code(base_link, config)
-					"group_joints":
-						add_group_joints_script()
+					"grouped_joints":
+						add_group_joints_script("robot", config)
+		add_robot_code()
 		
 	var script := GDScript.new()
 	script.source_code = _global_script
@@ -1213,7 +1221,7 @@ var activated : bool = false
 func add_robot_code():
 	_global_script += """
 @onready var robot = RobotBase.new()
-@onready var python = PythonBridge.new(self, 4243)
+@onready var python = PythonBridge.new(4243)
 """
 	_ready_script += """
 	robot.add_to_group("ROBOT_SCRIPT", true)
@@ -1237,8 +1245,33 @@ var control : DiffDrive
 	add_child(control)
 	"""
 	
-func add_group_joints_script():
-	pass
+func add_group_joints_script(robot: String, config):
+	_global_script += """
+var %s : GroupedJoints
+""" % [config.name]
+	
+	var outputs_var : String = "var %s_outputs = [\n" % [config.name]
+	for output in config.outputs:
+		pass
+		outputs_var += "		{\n"
+		if "joint" in output:
+			outputs_var += "			joint = \"%s\",\n" % [output.joint]
+		if "factor" in output:
+			outputs_var += "			factor = %f,\n" % [output.factor.to_float()]
+		outputs_var += "		},\n"
+		
+	outputs_var += "	]\n"
+	_global_script += outputs_var
+	
+	_ready_script += """
+	%s = GroupedJoints.new(\"%s\", %s, %f, %f)
+	%s.name = &"%s"
+	add_child(%s)
+	%s.owner = self
+	""" % [config.name, config.input, config.name + "_outputs", config.lower.to_float(), config.upper.to_float(),
+		config.name, config.name,
+		config.name,
+		config.name]
 
 func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends JoltHingeJoint3D
@@ -1263,6 +1296,10 @@ func get_revolute_joint_script(child_node: Node3D, basis_node: Node3D, limit_vel
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
 var target_angle: float = 0
+var input: float:
+	set(value):
+		input = value
+		target_angle = value
 var angle_step: float
 var rest_angle: float
 var LIMIT_VELOCITY: float = %d
@@ -1277,9 +1314,6 @@ func _ready():
 	child_link.can_sleep = false
 	motor_enabled = true
 	angle_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
-	limit_spring_enabled = true
-	limit_spring_frequency = 1
-	limit_spring_damping = 1
 
 func _physics_process(_delta):
 	var child_basis: Basis = child_link.transform.basis
@@ -1302,6 +1336,10 @@ func get_prismatic_joint_script(child_node: Node3D, basis_node: Node3D, limit_ve
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
 var target_dist: float = 0.0
+var input: float:
+	set(value):
+		input = value
+		target_dist = value
 var dist_step: float
 var rest_angle: float
 var LIMIT_VELOCITY: float = %d
@@ -1316,9 +1354,6 @@ func _ready():
 	child_link.can_sleep = false
 	motor_enabled = true
 	dist_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
-	limit_spring_enabled = true
-	limit_spring_frequency = 5
-	limit_spring_damping = 4
 
 func _physics_process(_delta):
 	var child_tr: Transform3D = child_link.transform

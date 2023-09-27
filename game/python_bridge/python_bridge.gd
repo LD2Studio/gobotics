@@ -21,11 +21,9 @@ signal python_client_connected
 
 var server := UDPServer.new()
 var client_peer: PacketPeerUDP
-#var caller: Object
 var _script_nodes = Array()
 
-func _init(new_caller: Object, new_port: int):
-#	caller = new_caller
+func _init(new_port: int):
 	port = new_port
 	
 func _ready():

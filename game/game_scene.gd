@@ -14,12 +14,13 @@ var _robots_in_scene = Array()	# List of robots actually into scene
 @onready var game = owner
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
 @onready var save_scene_button: Button = %SaveSceneButton
-@onready var python = PythonBridge.new(self, 4242)
+@onready var python = PythonBridge.new(4242)
 @onready var terminal_output = %TerminalOutput
 @onready var object_inspector: PanelContainer = %ObjectInspector
 @onready var udp_port_number: SpinBox = %UDPPortNumber
 @onready var camera_view_button = %CameraViewButton
 @onready var robot_selected_button = %RobotSelectedButton
+@onready var focused_joint_label = %FocusedJointLabel
 
 
 func _ready() -> void:
@@ -129,6 +130,7 @@ func _on_robot_selected(idx: int):
 		if idx == item_idx:
 			robot_popup.set_item_checked(item_idx, true)
 			activate_robot(_robots_in_scene[item_idx])
+			asset_selected = _robots_in_scene[item_idx]
 		else:
 			robot_popup.set_item_checked(item_idx, false)
 			deactivate_robot(_robots_in_scene[item_idx])
@@ -175,56 +177,69 @@ func show_asset_parameters(asset: Node3D):
 	var all_continuous_joints = get_tree().get_nodes_in_group("CONTINUOUS")
 	var continuous_joints = all_continuous_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
 #	print("Continuous joints: ", continuous_joints)
-	if not continuous_joints.is_empty():
-		for joint in continuous_joints:
-			var velocity_label = Label.new()
-			velocity_label.text = joint.name
-			velocity_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			%JointsContainer.add_child(velocity_label)
-			var velocity_edit = PropertySlider.new()
-			%JointsContainer.add_child(velocity_edit)
-			velocity_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			velocity_edit.min_value = -joint.LIMIT_VELOCITY
-			velocity_edit.max_value = joint.LIMIT_VELOCITY
-			velocity_edit.step = joint.LIMIT_VELOCITY / 10.0
+	for joint in continuous_joints:
+		var velocity_label = Label.new()
+		velocity_label.text = joint.name
+		velocity_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		%JointsContainer.add_child(velocity_label)
+		var velocity_edit = PropertySlider.new()
+		%JointsContainer.add_child(velocity_edit)
+		velocity_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		velocity_edit.min_value = -joint.LIMIT_VELOCITY
+		velocity_edit.max_value = joint.LIMIT_VELOCITY
+		velocity_edit.step = joint.LIMIT_VELOCITY / 10.0
 #			velocity_edit.tick_count = 3
-			velocity_edit.value = joint.target_velocity
-			velocity_edit.value_changed.connect(joint._target_velocity_changed)
+		velocity_edit.value = joint.target_velocity
+		velocity_edit.value_changed.connect(joint._target_velocity_changed)
 			
 	var all_revolute_joints = get_tree().get_nodes_in_group("REVOLUTE")
 	var revolute_joints = all_revolute_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
 #	print("Revolute joints: ", revolute_joints)
-	if not revolute_joints.is_empty():
-		for joint in revolute_joints:
-			var angle_label = Label.new()
-			angle_label.text = joint.name
-			angle_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			%JointsContainer.add_child(angle_label)
-			var angle_edit = PropertySlider.new()
-			%JointsContainer.add_child(angle_edit)
-			angle_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			angle_edit.min_value = rad_to_deg(-joint.limit_upper)
-			angle_edit.max_value = rad_to_deg(-joint.limit_lower)
-			angle_edit.value = joint.target_angle
-			angle_edit.value_changed.connect(joint._target_angle_changed)
+	for joint in revolute_joints:
+		var angle_label = Label.new()
+		angle_label.text = joint.name
+		angle_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		%JointsContainer.add_child(angle_label)
+		var angle_edit = PropertySlider.new()
+		%JointsContainer.add_child(angle_edit)
+		angle_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		angle_edit.min_value = rad_to_deg(-joint.limit_upper)
+		angle_edit.max_value = rad_to_deg(-joint.limit_lower)
+		angle_edit.value = joint.target_angle
+		angle_edit.value_changed.connect(joint._target_angle_changed)
 			
 	var all_prismatic_joints = get_tree().get_nodes_in_group("PRISMATIC")
 	var primatic_joints = all_prismatic_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
 #	print("Prismatic joints: ", primatic_joints)
-	if not primatic_joints.is_empty():
-		for joint in primatic_joints:
-			var dist_label = Label.new()
-			dist_label.text = joint.name
-			dist_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			%JointsContainer.add_child(dist_label)
-			var dist_edit = PropertySlider.new()
-			%JointsContainer.add_child(dist_edit)
-			dist_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			dist_edit.min_value = joint.limit_lower / 10.0
-			dist_edit.max_value = joint.limit_upper / 10.0
-			dist_edit.step = 0.01
-			dist_edit.value = joint.target_dist / 10.0
-			dist_edit.value_changed.connect(joint._target_dist_changed)
+	for joint in primatic_joints:
+		var dist_label = Label.new()
+		dist_label.text = joint.name
+		dist_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		%JointsContainer.add_child(dist_label)
+		var dist_edit = PropertySlider.new()
+		%JointsContainer.add_child(dist_edit)
+		dist_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		dist_edit.min_value = joint.limit_lower / 10.0
+		dist_edit.max_value = joint.limit_upper / 10.0
+		dist_edit.step = 0.01
+		dist_edit.value = joint.target_dist / 10.0
+		dist_edit.value_changed.connect(joint._target_dist_changed)
+			
+	var all_grouped_joints = get_tree().get_nodes_in_group("GROUPED_JOINTS")
+	var grouped_joints = all_grouped_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
+	for joint in grouped_joints:
+		var input_label = Label.new()
+		input_label.text = joint.input
+		input_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		%JointsContainer.add_child(input_label)
+		var input_edit = PropertySlider.new()
+		%JointsContainer.add_child(input_edit)
+		input_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		input_edit.min_value = joint.limit_lower
+		input_edit.max_value = joint.limit_upper
+		input_edit.step = 0.01
+#		input_edit.value = joint.input_value
+		input_edit.value_changed.connect(joint._input_value_changed)
 		
 	if asset_selected.is_in_group("ROBOTS"):
 		%PythonBridgeContainer.visible = true
@@ -422,6 +437,13 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 			freeze_asset(asset, false)
 			if asset.is_in_group("PYTHON"):
 				asset.run()
+#		print("selected asset: ", asset_selected)
+		if asset_selected and asset_selected.has_node("RobotBase"):
+			var focused_joint = asset_selected.get_node("RobotBase").focused_joint.name
+#			print(focused_joint)
+			_joint_focus_changed(focused_joint)
+			if not asset_selected.get_node("RobotBase").is_connected("joint_changed", _joint_focus_changed):
+				asset_selected.get_node("RobotBase").joint_changed.connect(_joint_focus_changed)
 	else:
 		running = false
 		%RunStopButton.text = "RUN"
@@ -532,3 +554,6 @@ func _on_frame_check_box_toggled(button_pressed):
 func _on_joint_check_box_toggled(button_pressed):
 	for node in get_tree().get_nodes_in_group("JOINT_GIZMO"):
 		node.visible = button_pressed
+
+func _joint_focus_changed(value: String):
+	focused_joint_label.text = value
