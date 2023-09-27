@@ -6,7 +6,7 @@ signal joint_changed(joint_name: String)
 var joypads_connected: Array[int]
 var joypad_connected: bool = false
 var joypad_selected: int = 0
-var focused_joint
+var focused_joint = null
 
 var _joints := Array()
 var _joint_idx : int = 0

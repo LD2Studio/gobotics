@@ -438,7 +438,7 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 			if asset.is_in_group("PYTHON"):
 				asset.run()
 #		print("selected asset: ", asset_selected)
-		if asset_selected and asset_selected.has_node("RobotBase"):
+		if asset_selected and asset_selected.has_node("RobotBase") and asset_selected.get_node("RobotBase").focused_joint:
 			var focused_joint = asset_selected.get_node("RobotBase").focused_joint.name
 #			print(focused_joint)
 			_joint_focus_changed(focused_joint)

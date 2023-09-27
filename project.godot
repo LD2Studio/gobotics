@@ -233,8 +233,6 @@ common/physics_ticks_per_second=240
 3d/sleep_threshold_angular=0.5
 jolt_3d/collisions/use_shape_margins=false
 jolt_3d/solver/velocity_iterations=20
-jolt_3d/solver/position_iterations=30
-jolt_3d/solver/position_correction=100.0
 jolt_3d/solver/contact_allowed_penetration=0.001
 
 [rendering]
