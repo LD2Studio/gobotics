@@ -543,8 +543,8 @@ func _on_confirm_delete_dialog_confirmed() -> void:
 	if scene:
 		scene.remove_child(asset_selected)
 		asset_selected.queue_free()
-		update_camera_view_menu()
 		update_robot_select_menu()
+		update_camera_view_menu()
 
 func _on_script_dialog_confirmed() -> void:
 	if asset_selected == null: return
