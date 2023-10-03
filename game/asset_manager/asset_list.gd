@@ -81,7 +81,8 @@ func edit_asset(fullname: String):
 	asset_editor.asset_base_dir = game.asset_base_dir
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
-	asset_editor.asset_filename = database.get_asset_filename(fullname)
+	asset_editor.database = database
+	asset_editor.asset_fullname = fullname
 	asset_editor_dialog.add_child(asset_editor)
 	asset_editor_dialog.popup_centered(Vector2i(700, 500))
 	

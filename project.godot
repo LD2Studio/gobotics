@@ -19,7 +19,7 @@ run/low_processor_mode_sleep_usec=16667
 config/icon="res://gobotics_logo.svg"
 config/windows_native_icon="res://gobotics_logo.ico"
 config/version="0.5.0"
-config/create_binary_scene=true
+config/create_binary_scene=false
 
 [display]
 

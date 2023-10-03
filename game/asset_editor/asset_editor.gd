@@ -1,10 +1,12 @@
 class_name AssetEditor extends PanelContainer
 
-@export var asset_filename: String = ""
 var asset_name: String = ""
 var meshes_list: Array
 var is_new_asset = false
 var asset_type : int
+
+var database : GoboticsDB
+var asset_fullname: String
 
 signal asset_updated(name: StringName)
 signal fullscreen_toggled(button_pressed: bool)
@@ -40,7 +42,7 @@ func _ready():
 	urdf_parser.scale = 10
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	
-	if is_new_asset:
+	if not asset_fullname:
 		%SaveAssetButton.disabled = true
 		match asset_type:
 			NewAsset.STANDALONE:
@@ -52,111 +54,38 @@ func _ready():
 			NewAsset.ENVIRONMENT:
 				urdf_code_edit.text = urdf_environment_template
 	else:
-		var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
-		%AssetFilenameEdit.text = fullname.get_basename()
-		asset_filename = ProjectSettings.globalize_path(asset_filename)
-		var assets_path = DirAccess.open(asset_base_dir)
-		if assets_path.file_exists(asset_filename):
-			var reader := ZIPReader.new()
-			var err := reader.open(asset_filename)
-			if err != OK:
-				print("[Asset Editor]: Error %d" % err )
-				return
-			var files = reader.get_files()
-			if ("urdf.xml") in files:
-				var res := reader.read_file("urdf.xml")
-				urdf_code_edit.text = res.get_string_from_ascii()
-			for file in files:
-				if file.get_extension() == "glb":
-					var res := reader.read_file(file)
-					meshes_list.append(
-						{
-							name = file,
-							data = res,
-						}
-					)
-			reader.close()
-			urdf_parser.meshes_list = meshes_list
-			urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
-			generate_scene(urdf_code_edit.text, fullname)
-			
+		%AssetFilenameEdit.text = asset_fullname.get_basename()
+		var urdf_path = database.get_asset_filename(asset_fullname)
+		
+		var urdf_file = FileAccess.open(urdf_path, FileAccess.READ)
+		urdf_code_edit.text = urdf_file.get_as_text()
+		
+		urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
+		if not generate_scene():
+			printerr("[AE] creating asset failed")
+		
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)
 	show_link_frame(%FrameCheckBox.button_pressed)
 	show_joint_frame(%JointCheckBox.button_pressed)
 	folding_link_tags()
 	
-
-func _on_save_button_pressed():
-	if %AssetFilenameEdit.text == "":
-		return
-	var path = asset_base_dir.path_join(%AssetFilenameEdit.text + ".asset").get_base_dir()
-	if not DirAccess.dir_exists_absolute(path):
-		print("[INFO] %s not exist ()" % path)
-		DirAccess.make_dir_recursive_absolute(path)
-	if asset_node == null: return
-
-	var new_asset_filename = asset_base_dir.path_join(%AssetFilenameEdit.text + ".asset")
-	if FileAccess.file_exists(new_asset_filename):
-		%OverwriteConfirmationDialog.popup_centered()
-	else:
-		asset_filename = new_asset_filename
-		save_scene()
-
-func _on_overwrite_confirmation_dialog_confirmed():
-	save_scene()
+func generate_scene(_asset_metadata: Dictionary = {}) -> bool:
+	var error_output : Array = []
+	var root_node = urdf_parser.parse(urdf_code_edit.text.to_ascii_buffer(), error_output)
+	
+	if root_node == null:
+		printerr("[DB] URDF Parser failed")
+		return false
 		
-func save_scene():
-	var writer := ZIPPacker.new()
-	var err
-	err = writer.open(asset_filename, ZIPPacker.APPEND_CREATE)
-	if err != OK:
-		print("[Asset Editor] Error %d opening %s" % [err, asset_filename])
-		return
-	writer.start_file("urdf.xml")
-	writer.write_file(urdf_code_edit.text.to_ascii_buffer())
-	writer.close_file()
-	
-	for mesh in meshes_list:
-		writer.start_file(mesh.name)
-		writer.write_file(mesh.data)
-		writer.close_file()
-		
-	writer.close()
-
-	var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
-	asset_updated.emit(fullname)
-	
-func add_mesh(mesh_data: PackedByteArray, gltf_name: String):
-	meshes_list.append(
-		{
-			name = gltf_name,
-			data = mesh_data,
-		})
-		
-func replace_mesh(gltf_name: String, new_mesh_data: PackedByteArray):
-	for mesh in meshes_list:
-		if mesh.name == gltf_name:
-			mesh.data = new_mesh_data
-			return
-
-func _on_generate_button_pressed() -> void:
-	var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
-	generate_scene(urdf_code_edit.text, fullname)
-	
-func generate_scene(urdf_code: String, _fullname: String, _asset_metadata: Dictionary = {}):
-	var root_node = urdf_parser.parse_buffer(urdf_code)
-	# If result return error message
-	if root_node is String:
-		%MessageContainer.visible = true
-		%MessageLabel.text = root_node
-		return
-	else:
-		%MessageContainer.visible = false
-	
-	if root_node == null: return
-	if root_node:
-		root_node.set_meta("urdf_code", urdf_code)
+#	if root_node is String:
+#		%MessageContainer.visible = true
+#		%MessageLabel.text = root_node
+#		return
+#	else:
+#		%MessageContainer.visible = false
+#	if root_node:
+#		root_node.set_meta("urdf_code", urdf_code)
 	
 	asset_scene = PackedScene.new()
 	var err = asset_scene.pack(root_node)
@@ -180,6 +109,67 @@ func generate_scene(urdf_code: String, _fullname: String, _asset_metadata: Dicti
 	show_joint_frame(%JointCheckBox.button_pressed)
 	# Freeing orphan nodes
 	root_node.queue_free()
+	return true
+	
+func _on_generate_button_pressed() -> void:
+	generate_scene()
+	
+func _on_save_button_pressed():
+	if %AssetFilenameEdit.text == "":
+		return
+	var new_asset_filename = asset_base_dir.path_join(%AssetFilenameEdit.text + ".urdf")
+	var path = new_asset_filename.get_base_dir()
+	if not DirAccess.dir_exists_absolute(path):
+		printerr("[AE] %s not exist ()" % path)
+		DirAccess.make_dir_recursive_absolute(path)
+	if asset_node == null: return
+
+	if FileAccess.file_exists(new_asset_filename):
+		%OverwriteConfirmationDialog.popup_centered()
+	else:
+		save_asset()
+
+func save_asset():
+	var urdf_filename = asset_base_dir.path_join(%AssetFilenameEdit.text + ".urdf")
+	var urdf_file = FileAccess.open(urdf_filename, FileAccess.WRITE)
+	urdf_file.store_string(urdf_code_edit.text)
+	
+func _on_overwrite_confirmation_dialog_confirmed():
+	save_asset()
+		
+#func save_scene():
+#	var writer := ZIPPacker.new()
+#	var err
+##	err = writer.open(asset_filename, ZIPPacker.APPEND_CREATE)
+#	if err != OK:
+##		print("[Asset Editor] Error %d opening %s" % [err, asset_filename])
+#		return
+#	writer.start_file("urdf.xml")
+#	writer.write_file(urdf_code_edit.text.to_ascii_buffer())
+#	writer.close_file()
+#
+#	for mesh in meshes_list:
+#		writer.start_file(mesh.name)
+#		writer.write_file(mesh.data)
+#		writer.close_file()
+#
+#	writer.close()
+
+#	var fullname = asset_filename.trim_prefix(asset_base_dir+"/")
+#	asset_updated.emit(fullname)
+	
+func add_mesh(mesh_data: PackedByteArray, gltf_name: String):
+	meshes_list.append(
+		{
+			name = gltf_name,
+			data = mesh_data,
+		})
+		
+func replace_mesh(gltf_name: String, new_mesh_data: PackedByteArray):
+	for mesh in meshes_list:
+		if mesh.name == gltf_name:
+			mesh.data = new_mesh_data
+			return
 	
 func _on_urdf_code_edit_text_changed() -> void:
 	%SaveAssetButton.disabled = true

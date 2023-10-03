@@ -288,8 +288,9 @@ func save_scene(path: String):
 					gl_transform.basis.y.x, gl_transform.basis.y.y, gl_transform.basis.y.z,
 					gl_transform.basis.z.x, gl_transform.basis.z.y, gl_transform.basis.z.z],
 			}
+			var scene_path = ProjectSettings.globalize_path(item.scene_file_path)
 			scene_objects.assets.append({
-					fullname=item.get_meta("fullname"),
+					fullname = game.database.get_fullname(scene_path),
 					string_name=item.name,
 					transform=asset_transform,
 					})

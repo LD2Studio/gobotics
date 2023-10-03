@@ -32,6 +32,7 @@ var current_filename: String:
 		
 func _enter_tree():
 	create_dir()
+	database.asset_base_path = asset_base_dir
 	database.generate(asset_base_dir, builtin_env)
 
 func _ready():

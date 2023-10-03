@@ -37,7 +37,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_hdc4v")
 script = ExtResource("1_j1den")
-asset_filename = "/media/laurent/LD2STUDIO/LD2Studio/Gobotics/Gobotics Game/assets/continuous.asset"
 
 [node name="AssetMargin" type="MarginContainer" parent="."]
 layout_mode = 2

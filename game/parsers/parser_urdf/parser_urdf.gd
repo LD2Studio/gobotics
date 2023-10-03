@@ -1,5 +1,4 @@
-extends RefCounted
-class_name URDFParser
+class_name URDFParser extends RefCounted
 
 var scale: float = 1.0
 var gravity_scale: float = 1.0
@@ -26,7 +25,35 @@ enum Tag {
 		INERTIAL,
 		GOBOTICS,
 	}
-	
+
+
+func parse(urdf_data: PackedByteArray, error_output: Array = []) -> Node3D:
+	clear_buffer()
+	var root_node = get_root_node(urdf_data)
+	if root_node == null:
+		printerr("[PARSER] root node not founded")
+		return null
+	load_gobotics_params(urdf_data)
+	load_materials(urdf_data)
+	if load_links(urdf_data, root_node.get_meta("type")) != OK:
+		delete_links()
+		root_node.free()
+		return null
+	load_joints(urdf_data)
+	var base_link = create_scene(root_node)
+	if base_link:
+		if root_node.is_in_group("ROBOTS"):
+			add_camera_on_robot(root_node, base_link)
+		root_node.add_child(base_link)
+		kinematics_scene_owner_of(root_node)
+		add_script_to(root_node)
+		return root_node
+	else:
+		delete_links()
+		root_node.free()
+		return null
+
+
 func parse_buffer(buffer: String, asset={}):
 	clear_buffer()
 	var urdf_pack : PackedByteArray = buffer.to_ascii_buffer()
@@ -35,8 +62,8 @@ func parse_buffer(buffer: String, asset={}):
 	if root_node == null: return
 	asset.name = root_node.name
 	asset.type = root_node.get_meta("type")
-	load_gobotics_params(urdf_pack)
-	load_materials(urdf_pack)
+#	load_gobotics_params(urdf_pack)
+#	load_materials(urdf_pack)
 	if load_links(urdf_pack, root_node.get_meta("type")) != OK:
 		delete_links()
 		root_node.free()
@@ -57,20 +84,10 @@ func parse_buffer(buffer: String, asset={}):
 		return parse_error_message
 	
 ## Return the root node of URDF tree
-func get_root_node(urdf_data) -> Node3D:
-	var err
-	if urdf_data is PackedByteArray:
-		err = parser.open_buffer(urdf_data)
-	elif urdf_data is String:
-		err = parser.open(urdf_data)
-	else:
-		printerr("URDF format error")
-		return null
-	if err:
-		if err == ERR_INVALID_DATA:
-			printerr("XML no valid")
-			return null
-		printerr("Error opening URDF file: ", err)
+func get_root_node(urdf_data: PackedByteArray) -> Node3D:
+	var parse_err = parser.open_buffer(urdf_data)
+	if parse_err:
+		printerr("[PARSER] parse error ", parse_err)
 		return null
 		
 	var root_node := Node3D.new()
@@ -116,15 +133,11 @@ func get_root_node(urdf_data) -> Node3D:
 				
 	return root_node
 	
-func load_gobotics_params(urdf_data):
-	var err
-	if urdf_data is String:
-		err = parser.open(urdf_data)
-	elif urdf_data is PackedByteArray:
-		err = parser.open_buffer(urdf_data)
-	if err:
-		printerr("Error opening URDF file: ", err)
-		return
+func load_gobotics_params(urdf_path: PackedByteArray):
+	var parse_err = parser.open_buffer(urdf_path)
+	if parse_err:
+		printerr("[PARSER] parse error ", parse_err)
+		return null
 
 	var root_tag: int = Tag.NONE
 	var gobotics_attrib = {}
@@ -246,16 +259,11 @@ func load_gobotics_params(urdf_data):
 	
 #	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 
-func load_materials(urdf_data):
-	var err
-	if urdf_data is String:
-		err = parser.open(urdf_data)
-	elif urdf_data is PackedByteArray:
-		err = parser.open_buffer(urdf_data)
-	else: return null
-	if err:
-		printerr("Error opening URDF file: ", err)
-		return
+func load_materials(urdf_path: PackedByteArray):
+	var parse_err = parser.open_buffer(urdf_path)
+	if parse_err:
+		printerr("[PARSER] parse error ", parse_err)
+		return null
 		
 	var mat_dict: Dictionary = {}
 	var current_tag: int = Tag.NONE
@@ -322,16 +330,11 @@ func load_materials(urdf_data):
 
 #	print("materials: ", _materials)
 
-func load_links(urdf_data, asset_type: String) -> int:
-	var err
-	if urdf_data is String:
-		err = parser.open(urdf_data)
-	elif urdf_data is PackedByteArray:
-		err = parser.open_buffer(urdf_data)
-	else: return ERR_DOES_NOT_EXIST
-	if err:
-		printerr("Error opening URDF file: ", err)
-		return ERR_FILE_CANT_OPEN
+func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
+	var parse_err = parser.open_buffer(urdf_data)
+	if parse_err:
+		printerr("[PARSER] parse error ", parse_err)
+		return ERR_PARSE_ERROR
 		
 	var link_attrib = {}
 	var link: RigidBody3D
@@ -832,16 +835,12 @@ func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
 #		idx += 1
 #	return ERR_CANT_RESOLVE
 	
-func load_joints(urdf_data):
-	var err
-	if urdf_data is String:
-		err = parser.open(urdf_data)
-	elif urdf_data is PackedByteArray:
-		err = parser.open_buffer(urdf_data)
-	else: return null
-	if err:
-		printerr("Error opening URDF file: ", err)
-		return
+func load_joints(urdf_data: PackedByteArray):
+	var parse_err = parser.open_buffer(urdf_data)
+	if parse_err:
+		printerr("[PARSER] parse error ", parse_err)
+		return ERR_PARSE_ERROR
+		
 	var root_tag: int = Tag.NONE
 	var joint_attrib = {}
 	while true:

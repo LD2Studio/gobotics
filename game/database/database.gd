@@ -1,7 +1,7 @@
 class_name GoboticsDB extends Resource
 
 @export var assets: Array
-
+var asset_base_path: String
 var temp_abs_path: String
 var urdf_parser = URDFParser.new()
 var reader := ZIPReader.new()
@@ -33,12 +33,16 @@ func add_builtin_env(builtin_env: Array):
 		
 
 func add_assets(search_path: String, asset_base_dir: String):
-#	print("[Database] search path: ", search_path)
+#	print("[DB] search path: ", search_path)
 	var files = Array(DirAccess.get_files_at(search_path))
-#	print("files: ", files)
+#	print("[DB] files: ", files)
 	# Filter asset files
 	var asset_files: Array = files.filter(func(file): return file.get_extension() == "asset")
 #	print("asset files: ", asset_files)
+	# Filtering URDF files
+	var urdf_files: Array = files.filter(func(file): return file.get_extension() == "urdf")
+#	print("[DB] URDF files: ", urdf_files)
+	
 	for file in asset_files:
 		var asset_filename = search_path.path_join(file)
 #		print("asset_filename: ", asset_filename)
@@ -85,6 +89,24 @@ func add_assets(search_path: String, asset_base_dir: String):
 					})
 		reader.close()
 		
+	# Processing each urdf file
+	for file in urdf_files:
+		var urdf_pathname = search_path.path_join(file)
+#		print("[DB] urdf_pathname: ", urdf_pathname)
+		var scene : Array = []
+		if create_scene(urdf_pathname, scene):
+			pass
+			assets.append({
+				name = scene[0], # asset name setting in URDF
+				fullname = urdf_pathname.trim_prefix(asset_base_path+"/"), # relative path
+				filename = urdf_pathname, # absolute path of file
+				scene = scene[1], # absolute path of scene
+				type = scene[2], # 
+				})
+		else:
+			printerr("[DB] creating scene failed")
+		
+		
 	# search sub-folders
 	var dirs = Array(DirAccess.get_directories_at(search_path))
 #	print_debug("dirs: ", dirs)
@@ -97,7 +119,36 @@ func add_assets(search_path: String, asset_base_dir: String):
 	if err:
 		printerr("Database not saving!")
 		
-
+func create_scene(urdf_pathname: String, scene: Array) -> bool:
+	var error_output : Array = []
+	var urdf_data: PackedByteArray = FileAccess.get_file_as_bytes(urdf_pathname)
+	var root_node: Node3D = urdf_parser.parse(urdf_data, error_output)
+	
+	if root_node == null:
+		printerr("[DB] URDF Parser failed")
+		return false
+#	print("root_node.name : ", root_node.name)
+#	print("root node type: ", root_node.get_meta("type"))
+	var scene_pathname: String
+	if ProjectSettings.get_setting("application/config/create_binary_scene"):
+		scene_pathname = temp_abs_path.path_join(urdf_pathname.trim_prefix(asset_base_path).trim_prefix("/").get_basename().validate_node_name() + ".scn")
+	else:
+		scene_pathname = temp_abs_path.path_join(urdf_pathname.trim_prefix(asset_base_path).trim_prefix("/").get_basename().validate_node_name() + ".tscn")
+#	print("[DB] scene pathname: ", scene_pathname)
+	scene.append(root_node.name)
+	scene.append(scene_pathname)
+	scene.append(root_node.get_meta("type"))
+	
+	var asset_scene = PackedScene.new()
+	var err = asset_scene.pack(root_node)
+	if err:
+		printerr("[DB] asset pack failed")
+		return false
+	err = ResourceSaver.save(asset_scene, scene_pathname)
+	if err != OK:
+		printerr("[DB] An error %d occurred while saving the scene to disk." % err)
+		return false
+	return true
 		
 ## Create a scene from URDF description, and return asset filename
 func generate_scene(urdf_code: String, fullname: String, asset: Dictionary = {}):
@@ -115,7 +166,6 @@ func generate_scene(urdf_code: String, fullname: String, asset: Dictionary = {})
 	else:
 		scene_filename = temp_abs_path.path_join(fullname.get_basename().validate_node_name() + ".tscn")
 	
-
 	root_node.set_meta("fullname", fullname)
 	var asset_scene = PackedScene.new()
 	var err = asset_scene.pack(root_node)
@@ -154,3 +204,8 @@ func get_type(fullname: String):
 			return asset.type
 	return null
 	
+func get_fullname(scene_path: String):
+	for asset in assets:
+		if asset.scene == scene_path:
+			return asset.fullname
+	return null
