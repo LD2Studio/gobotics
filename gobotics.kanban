@@ -1,0 +1,58 @@
+{
+	"categories": [
+		{
+			"uuid": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
+			"title": "Task",
+			"color": "70bafa"
+		}
+	],
+	"stages": [
+		{
+			"uuid": "ff7c1e52-c224-4120-b56e-98745222064a",
+			"title": "Todo",
+			"tasks": [
+				"04497972-4f8f-427b-9c50-fc506a2a9d5c",
+				"938a6c3e-3608-4685-b47b-a6d7eb53bfb7"
+			]
+		},
+		{
+			"uuid": "c0a20e1b-6dfe-4755-9c56-399ea415b52d",
+			"title": "Doing",
+			"tasks": []
+		},
+		{
+			"uuid": "7b72a285-37ab-4b20-a19e-626fb3e22438",
+			"title": "Done",
+			"tasks": []
+		}
+	],
+	"tasks": [
+		{
+			"uuid": "04497972-4f8f-427b-9c50-fc506a2a9d5c",
+			"title": "Change grid in asset editor",
+			"description": "",
+			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
+			"steps": []
+		},
+		{
+			"uuid": "938a6c3e-3608-4685-b47b-a6d7eb53bfb7",
+			"title": "New placement on scene floor",
+			"description": "Détecter les zones de collision entre l'objet à déposer et le sol\nUtiliser la forme AABB de l'objet pour déterminer son encombrement.",
+			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
+			"steps": []
+		}
+	],
+	"layout": {
+		"columns": [
+			[
+				"ff7c1e52-c224-4120-b56e-98745222064a"
+			],
+			[
+				"c0a20e1b-6dfe-4755-9c56-399ea415b52d"
+			],
+			[
+				"7b72a285-37ab-4b20-a19e-626fb3e22438"
+			]
+		]
+	}
+}
