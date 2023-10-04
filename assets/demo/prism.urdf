@@ -1,0 +1,19 @@
+<robot name="Prism">
+	<link name="base_link">
+	
+		<visual name="">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+			<mesh filename="./meshes/prism.glb" />
+			</geometry>
+		</visual>
+
+		<collision name="">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+			<mesh filename="./meshes/prism.glb" />
+			</geometry>
+		</collision>
+
+	</link>
+</robot>

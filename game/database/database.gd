@@ -120,6 +120,8 @@ func add_assets(search_path: String, asset_base_dir: String):
 		printerr("Database not saving!")
 		
 func create_scene(urdf_pathname: String, scene: Array) -> bool:
+	var asset_path = urdf_pathname.get_base_dir()+"/"
+	urdf_parser.asset_user_path = asset_path
 	var error_output : Array = []
 	var urdf_data: PackedByteArray = FileAccess.get_file_as_bytes(urdf_pathname)
 	var root_node: Node3D = urdf_parser.parse(urdf_data, error_output)

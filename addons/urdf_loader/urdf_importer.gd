@@ -52,11 +52,11 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 	
 	var urdf_parser = URDFParser.new()
 	urdf_parser.scale = options.scale
-	var root_node = urdf_parser.parse(source_file)
+#	var root_node = urdf_parser.parse(source_file)
 
 	# Save the imported scene as a PackedScene resource
 	var packed_scene = PackedScene.new()
-	packed_scene.pack(root_node)
+#	packed_scene.pack(root_node)
 	var p = save_path + "." + _get_save_extension()
 	
 	return ResourceSaver.save(packed_scene, p)

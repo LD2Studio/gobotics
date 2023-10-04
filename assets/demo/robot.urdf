@@ -1,0 +1,5 @@
+<robot name="Robot">
+   <link name="base_link">
+        
+   </link>
+</robot>

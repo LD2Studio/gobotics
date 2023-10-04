@@ -5,8 +5,8 @@ var meshes_list: Array
 var is_new_asset = false
 var asset_type : int
 
-var database : GoboticsDB
-var asset_fullname: String
+var database : GoboticsDB # Setting by caller
+var asset_fullname: String # Setting by caller
 
 signal asset_updated(name: StringName)
 signal fullscreen_toggled(button_pressed: bool)
@@ -70,7 +70,9 @@ func _ready():
 	show_joint_frame(%JointCheckBox.button_pressed)
 	folding_link_tags()
 	
-func generate_scene(_asset_metadata: Dictionary = {}) -> bool:
+func generate_scene() -> bool:
+	var asset_path = database.get_asset_filename(asset_fullname).get_base_dir()+"/"
+	urdf_parser.asset_user_path = asset_path
 	var error_output : Array = []
 	var root_node = urdf_parser.parse(urdf_code_edit.text.to_ascii_buffer(), error_output)
 	

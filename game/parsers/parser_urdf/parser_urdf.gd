@@ -548,9 +548,6 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 									current_visual.scale = Vector3.ONE * scale
 							
 							"glb":
-								if not "object" in attrib:
-									printerr("Object attribut missing!")
-									continue
 								if current_tag == Tag.VISUAL:
 									var mesh: ArrayMesh = get_mesh_from_gltf(attrib)
 									if mesh == null:
@@ -564,8 +561,6 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 										printerr("Failed to load shape into gltf")
 										continue
 									current_collision.shape = shape
-#								err = load_gltf(current_visual, current_collision, current_col_debug, attrib, current_tag, link.name == "world")
-
 							"dae":
 								pass
 							_:
@@ -662,90 +657,109 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 	return OK
 	
 func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
-	var gltf_name: String
 	if attrib.filename.begins_with("package://"):
-		gltf_name = attrib.filename.trim_prefix("package://")
-	else:
-		printerr("filename not found!")
+		printerr("[PARSER] not available yet")
 		return null
 	
 	var gltf_res := GLTFDocument.new()
 	var gltf_state := GLTFState.new()
-	var gltf_data: PackedByteArray
-	for mesh in meshes_list:
-		if mesh.name == gltf_name:
-			gltf_data = mesh.data
-			break
-	var err = gltf_res.append_from_buffer(gltf_data, "", gltf_state)
+	var gltf_filename : String = asset_user_path + attrib.filename
+	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
 	if err:
 		printerr("gltf from buffer failed")
 		parse_error_message = "GLTF file import failed!"
 		return null
-	
-#	var nodes : Array[GLTFNode] = gltf_state.get_nodes()
+		
 	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
+	
+	if gltf_state.json.nodes.is_empty():
+		printerr("[PARSER] gltf is empty")
+		return null
+		
+	var active_node = gltf_state.json.nodes[0]
+	
+	var imported_mesh : ImporterMesh = meshes[active_node.mesh].mesh
+	var mesh: ArrayMesh = imported_mesh.get_mesh()
+	
+	# To avoid orphan nodes created by append_from_file()
+	var scene_node = gltf_res.generate_scene(gltf_state)
+	scene_node.queue_free()
 
-	for node in gltf_state.json.nodes:
-		if node.name == attrib.object:
-#			print("node.name:%s, id=%d " % [node.name, node.mesh])
-			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
-			var mesh: ArrayMesh = imported_mesh.get_mesh()
-			# To avoid orphan nodes created by append_from_file()
-			var scene_node = gltf_res.generate_scene(gltf_state)
-			scene_node.queue_free()
-			return mesh
-	return null
+	return mesh
 	
 func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
-	var gltf_filename: String
 	if attrib.filename.begins_with("package://"):
-		gltf_filename = attrib.filename.trim_prefix("package://")
-	else:
-		printerr("filename not found!")
+		printerr("[PARSER] not available yet")
 		return null
 		
 	var gltf_res := GLTFDocument.new()
 	var gltf_state := GLTFState.new()
-	var gltf_data: PackedByteArray
-	for mesh in meshes_list:
-		if mesh.name == gltf_filename:
-			gltf_data = mesh.data
-			break
-	
-	var err = gltf_res.append_from_buffer(gltf_data, "", gltf_state)
+	var gltf_filename : String = asset_user_path + attrib.filename
+	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
 	if err:
 		printerr("gltf from buffer failed")
 		parse_error_message = "GLTF file import failed!"
 		return null
 	
 	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
+	if gltf_state.json.nodes.is_empty():
+		printerr("[PARSER] gltf is empty")
+		return null
+		
+	var active_node = gltf_state.json.nodes[0]
 	
-	for node in gltf_state.json.nodes:
-		if node.name == attrib.object:
-			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
-			var mesh = imported_mesh.get_mesh()
-			var mdt = MeshDataTool.new()
-			mdt.create_from_surface(mesh, 0)
-			for i in range(mdt.get_vertex_count()):
-				var vertex = mdt.get_vertex(i)
-				vertex *= scale
-				# Save your change.
-				mdt.set_vertex(i, vertex)
-			mesh.clear_surfaces()
-			mdt.commit_to_surface(mesh)
-			var shape: Shape3D
-			if trimesh:
-				shape = mesh.create_trimesh_shape()
-			else:
-				shape = mesh.create_convex_shape()
-			if debug_col:
-				var debug_mesh = shape.get_debug_mesh()
-				debug_col.mesh = debug_mesh
-			# To avoid orphan nodes created by append_from_file()
-			var scene_node = gltf_res.generate_scene(gltf_state)
-			scene_node.queue_free()
-			return shape
-	return null
+	var imported_mesh : ImporterMesh = meshes[active_node.mesh].mesh
+	var mesh: ArrayMesh = imported_mesh.get_mesh()
+	# 
+	var mdt = MeshDataTool.new()
+	mdt.create_from_surface(mesh, 0)
+	for i in range(mdt.get_vertex_count()):
+		var vertex = mdt.get_vertex(i)
+		vertex *= scale
+		# Save your change.
+		mdt.set_vertex(i, vertex)
+	mesh.clear_surfaces()
+	mdt.commit_to_surface(mesh)
+	#
+	var shape: Shape3D
+	if trimesh:
+		shape = mesh.create_trimesh_shape()
+	else:
+		shape = mesh.create_convex_shape()
+	if debug_col:
+		var debug_mesh = shape.get_debug_mesh()
+		debug_col.mesh = debug_mesh
+	# To avoid orphan nodes created by append_from_file()
+	var scene_node = gltf_res.generate_scene(gltf_state)
+	scene_node.queue_free()
+	
+	return shape
+	
+#	for node in gltf_state.json.nodes:
+#		if node.name == attrib.object:
+#			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
+#			var mesh = imported_mesh.get_mesh()
+#			var mdt = MeshDataTool.new()
+#			mdt.create_from_surface(mesh, 0)
+#			for i in range(mdt.get_vertex_count()):
+#				var vertex = mdt.get_vertex(i)
+#				vertex *= scale
+#				# Save your change.
+#				mdt.set_vertex(i, vertex)
+#			mesh.clear_surfaces()
+#			mdt.commit_to_surface(mesh)
+#			var shape: Shape3D
+#			if trimesh:
+#				shape = mesh.create_trimesh_shape()
+#			else:
+#				shape = mesh.create_convex_shape()
+#			if debug_col:
+#				var debug_mesh = shape.get_debug_mesh()
+#				debug_col.mesh = debug_mesh
+#			# To avoid orphan nodes created by append_from_file()
+#			var scene_node = gltf_res.generate_scene(gltf_state)
+#			scene_node.queue_free()
+#			return shape
 
 
 #func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag, trimesh=false):
