@@ -4,6 +4,11 @@
 			"uuid": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
 			"title": "Task",
 			"color": "70bafa"
+		},
+		{
+			"uuid": "518c525d-a76f-484b-a0a6-fea2c5cface3",
+			"title": "Bug",
+			"color": "bb0b02"
 		}
 	],
 	"stages": [
@@ -23,13 +28,15 @@
 		{
 			"uuid": "7b72a285-37ab-4b20-a19e-626fb3e22438",
 			"title": "Done",
-			"tasks": []
+			"tasks": [
+				"5fc1ac50-673e-4d96-a999-3af31935a146"
+			]
 		}
 	],
 	"tasks": [
 		{
 			"uuid": "04497972-4f8f-427b-9c50-fc506a2a9d5c",
-			"title": "Change grid in asset editor",
+			"title": "Add grid in asset editor",
 			"description": "",
 			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
 			"steps": []
@@ -38,6 +45,13 @@
 			"uuid": "938a6c3e-3608-4685-b47b-a6d7eb53bfb7",
 			"title": "New placement on scene floor",
 			"description": "Détecter les zones de collision entre l'objet à déposer et le sol\nUtiliser la forme AABB de l'objet pour déterminer son encombrement.",
+			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
+			"steps": []
+		},
+		{
+			"uuid": "5fc1ac50-673e-4d96-a999-3af31935a146",
+			"title": "Removed dark floor in asset editor",
+			"description": "",
 			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
 			"steps": []
 		}

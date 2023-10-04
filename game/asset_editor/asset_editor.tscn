@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bcv1hfrfva2qb"]
+[gd_scene load_steps=15 format=3 uid="uid://bcv1hfrfva2qb"]
 
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_d4jh8"]
 [ext_resource type="Script" path="res://game/asset_editor/asset_editor.gd" id="1_j1den"]
@@ -9,7 +9,6 @@
 [ext_resource type="Script" path="res://game/asset_editor/URDFCodeEdit.gd" id="5_gmqxa"]
 [ext_resource type="Script" path="res://game/asset_editor/replace_mesh_dialog.gd" id="5_s0y0b"]
 [ext_resource type="Script" path="res://game/asset_editor/delete_mesh_dialog.gd" id="6_k4k17"]
-[ext_resource type="PackedScene" uid="uid://b1l2mlf7hsuwm" path="res://game/environments/dark_environment.tscn" id="8_1dki6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hdc4v"]
 bg_color = Color(0.466667, 0.580392, 0.341176, 1)
@@ -205,8 +204,6 @@ environment = SubResource("Environment_nftkf")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene"]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -10, 0, 0)
 
-[node name="DarkEnvironment" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene" instance=ExtResource("8_1dki6")]
-
 [node name="OptionsContainer" type="PanelContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
 offset_right = 40.0
 offset_bottom = 40.0
@@ -242,6 +239,7 @@ text = "Joint"
 
 [node name="MessageContainer" type="PanelContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
