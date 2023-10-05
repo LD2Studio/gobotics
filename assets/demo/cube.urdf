@@ -1,4 +1,4 @@
-<robot name="Cube">
+<standalone name="Cube">
 	<link name="base_link">
 	
 		<visual name="">
@@ -7,7 +7,7 @@
 			<box size="0.1 0.1 0.1"/>
 			</geometry>
 			<material name="">
-			
+			<color rgba="1 1 0 1"/>
 			</material>
 		</visual>
 
@@ -19,4 +19,4 @@
 		</collision>
 
 	</link>
-</robot>
+</standalone>

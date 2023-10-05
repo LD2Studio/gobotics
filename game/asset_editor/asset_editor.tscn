@@ -95,6 +95,7 @@ mouse_filter = 0
 mouse_force_pass_scroll_events = false
 
 [node name="MeshButtonContainer" type="HBoxContainer" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="ShowMeshesButton" type="Button" parent="AssetMargin/VBoxContainer/HSplitContainer/VBoxContainer/MeshButtonContainer"]

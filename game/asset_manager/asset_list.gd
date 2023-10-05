@@ -33,7 +33,7 @@ func _get_drag_data(at_position: Vector2):
 	var asset = database.get_scene_from_fullname(fullname)
 	var type = database.get_type(fullname)
 	if asset and type and type == "standalone" or type == "robot":
-		var node = load(asset).instantiate()
+		var node: Node3D = load(asset).instantiate()
 		if node.get_node_or_null("./Preview"):
 #			print("Preview exist")
 			node.get_node("./Preview").preview = false

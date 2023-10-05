@@ -1,4 +1,4 @@
-<robot name="Prism">
+<standalone name="Prism">
 	<link name="base_link">
 	
 		<visual name="">
@@ -16,4 +16,4 @@
 		</collision>
 
 	</link>
-</robot>
+</standalone>

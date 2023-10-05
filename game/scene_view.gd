@@ -1,18 +1,35 @@
 extends SubViewportContainer
 @onready var game_scene = %GameScene as Node3D
 
-#func _input(event):
-#	print("[scene viewport]: ", event.as_text())
-	
-func _can_drop_data(_at_position: Vector2, _data) -> bool:
+var _offset_pos : Vector3
+
+func _can_drop_data(_at_position: Vector2, node) -> bool:
 	if game_scene.game_area_pointed:
+		if game_scene.asset_dragged == null:
+			game_scene.asset_dragged = node.duplicate()
+			game_scene.freeze_asset(game_scene.asset_dragged, true)
+			game_scene.enable_pickable(game_scene.asset_dragged, false)
+			game_scene.get_node("Scene").add_child(game_scene.asset_dragged)
+			_offset_pos = game_scene.calculate_position_on_floor(game_scene.asset_dragged)
+			
+#		print("can drop in ", game_scene.mouse_pos_on_area)
 		return true
 	else:
+#		print("no drop")
+		if game_scene.asset_dragged:
+			game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
+			game_scene.asset_dragged.queue_free()
+			game_scene.asset_dragged = null
 		return false
 
 func _drop_data(_at_position: Vector2, data) -> void:
+	# Remove ghost asset
+	game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
+	game_scene.asset_dragged.queue_free()
+	game_scene.asset_dragged = null
+	
 	data.name = get_new_name(data.name)
-	data.position = game_scene.mouse_pos_on_area
+	data.position = game_scene.mouse_pos_on_area + _offset_pos
 	if data.is_in_group("PYTHON"):
 		data.python_script_finished.connect(game_scene._on_python_script_finished)
 	game_scene.freeze_asset(data, true)
@@ -24,6 +41,7 @@ func _drop_data(_at_position: Vector2, data) -> void:
 	var part_name = data.get_node_or_null("%PartName")
 	if part_name:
 		part_name.text = data.name
+	
 
 func get_new_name(current_name: StringName) -> StringName:
 #	print(current_name)

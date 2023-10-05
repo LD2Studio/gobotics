@@ -1,0 +1,111 @@
+<robot name="Servos">
+	<link name="base_link">
+		<visual name="">
+			<origin xyz="0 0 0.05" rpy="0 0 0"/>
+			<geometry>
+				<cylinder radius="0.1" length="0.1"/>
+			</geometry>
+			<material>
+			<color rgba="1 0 0 1"/>
+			</material>
+		</visual>
+
+		<collision name="">
+			<origin xyz="0 0 0.05" rpy="0 0 0"/>
+			<geometry>
+				<cylinder radius="0.1" length="0.1"/>
+			</geometry>
+		</collision>
+
+		<inertial>
+			<mass value="5"/>
+		</inertial>
+	</link>
+	
+	<link name="arm_link">
+	
+		<visual name="arm">
+			<origin xyz="0.1 0.025 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.3 0.05 0.1"/>
+			</geometry>
+			<material>
+			<color rgba="0 0 0.5 1"/>
+			</material>
+		</visual>
+		
+		<visual name="shaft">
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.01" length="0.15"/>
+			</geometry>
+			<material name="">
+			
+			</material>
+		</visual>
+
+
+		<collision name="">
+			<origin xyz="0.1 0.025 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.3 0.05 0.1"/>
+			</geometry>
+		</collision>
+
+		<inertial>
+			<mass value="0.1"/>
+		</inertial>
+	</link>
+
+	<joint name="arm servo" type="revolute">
+		<origin xyz="0 0 0.1" rpy="1.57 0 0"/>
+		<parent link="base_link"/>
+		<child link="arm_link"/>
+		<axis xyz="0.0 1.0 0.0"/>
+		<limit lower="-1.57" upper="1.57" effort="10.0" velocity="5.0"/>
+	</joint>
+	
+	<link name="arm2_link">
+	
+		<visual name="arm">
+			<origin xyz="0.1 0.025 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.3 0.05 0.1"/>
+			</geometry>
+			<material>
+			<color rgba="0 0 0.5 1"/>
+			</material>
+		</visual>
+		
+		<visual name="shaft">
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.01" length="0.15"/>
+			</geometry>
+			<material name="">
+			
+			</material>
+		</visual>
+
+
+		<collision name="">
+			<origin xyz="0.1 0.025 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.3 0.05 0.1"/>
+			</geometry>
+		</collision>
+
+		<inertial>
+			<mass value="0.01"/>
+		</inertial>
+
+	</link>
+	
+	<joint name="arm2 servo" type="revolute">
+		<origin xyz="0.2 0.05 0" rpy="0 0 0"/>
+		<parent link="arm_link"/>
+		<child link="arm2_link"/>
+		<axis xyz="0.0 1.0 0.0"/>
+		<limit lower="-1.57" upper="1.57" effort="10.0" velocity="5.0"/>
+	</joint>
+</robot>

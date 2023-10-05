@@ -3,6 +3,7 @@ extends Node3D
 var scene : Node3D
 var running: bool = false
 var asset_selected: Node3D
+var asset_dragged: Node3D
 var mouse_pos_on_area: Vector3
 var game_area_pointed: bool = false
 var asset_focused : Node3D = null
@@ -21,6 +22,7 @@ var _robots_in_scene = Array()	# List of robots actually into scene
 @onready var camera_view_button = %CameraViewButton
 @onready var robot_selected_button = %RobotSelectedButton
 @onready var focused_joint_label = %FocusedJointLabel
+@onready var scene_view = %SceneView
 
 
 func _ready() -> void:
@@ -396,6 +398,13 @@ func freeze_children(node, frozen):
 	for child in node.get_children():
 		freeze_children(child, frozen)
 		
+func enable_pickable(asset: Node3D, enable: bool):
+	for child in asset.get_children():
+		if child.is_in_group("SELECT"):
+			child.input_ray_pickable = enable
+		if child.get_child_count() > 0:
+			enable_pickable(child, enable)
+
 ## Helper functions
 
 func get_base_link(asset: Node) -> RigidBody3D:
@@ -404,6 +413,37 @@ func get_base_link(asset: Node) -> RigidBody3D:
 			return child
 	return null
 
+##
+
+var _asset_aabb: AABB
+
+func calculate_position_on_floor(root_node: Node3D) -> Vector3:
+#	root_node.print_tree_pretty()
+	var offset_pos := Vector3(0,1,0)
+	_asset_aabb = AABB()
+	iterate_root_node(root_node)
+	var height = _asset_aabb.position.y * (-1)
+	offset_pos.y = height
+#	print("offset pos: ", offset_pos)
+	return offset_pos
+
+func iterate_root_node(parent: Node):
+#	print("parent: ", parent)
+	for child in parent.get_children():
+		if child.is_in_group("VISUAL"):
+			var child_aabb : AABB = child.mesh.get_aabb()
+			child_aabb.position += child.global_position
+			if child.mesh is ArrayMesh:
+				child_aabb.size *= 10.0
+				child_aabb.position *= 10.0
+#			print("\tchild %s -> AABB = %s " % [child.name, child_aabb])
+			_asset_aabb = _asset_aabb.merge(child_aabb)
+#			print("\tmerge AABB = %s" % [_asset_aabb])
+		if child.get_child_count() > 0:
+			iterate_root_node(child)
+			
+#	print("asset %s -> AABB=%s" % [parent.name, _asset_aabb])
+	
 ## Python functions
 
 func run():
@@ -475,11 +515,16 @@ func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal,
 	if event.is_action_pressed("EDIT"):
 		asset_focused = null
 		hide_asset_parameters()
+	if asset_dragged:
+#		print("mouse position: ", mouse_position)
+		asset_dragged.position = mouse_position + scene_view._offset_pos
 
 func _on_ground_mouse_entered():
+#	print("[GS] mouse entered")
 	game_area_pointed = true
 
 func _on_ground_mouse_exited():
+#	print("[GS] mouse exited")
 	game_area_pointed = false
 
 func _on_editable_block_input_event(_camera, event: InputEvent, _mouse_position, _normal, _shape_idx, node):

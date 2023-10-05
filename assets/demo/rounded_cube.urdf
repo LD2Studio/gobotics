@@ -1,4 +1,4 @@
-<robot name="Rounded cube">
+<standalone name="Rounded cube">
 	<link name="base_link">
 	
 		<visual name="">
@@ -16,4 +16,4 @@
 		</collision>
 
 	</link>
-</robot>
+</standalone>

@@ -9,6 +9,11 @@
 			"uuid": "518c525d-a76f-484b-a0a6-fea2c5cface3",
 			"title": "Bug",
 			"color": "bb0b02"
+		},
+		{
+			"uuid": "806afb5c-66ae-4a7d-adc4-23582f18f1cd",
+			"title": "Rendering",
+			"color": "45cb1b"
 		}
 	],
 	"stages": [
@@ -17,7 +22,7 @@
 			"title": "Todo",
 			"tasks": [
 				"04497972-4f8f-427b-9c50-fc506a2a9d5c",
-				"938a6c3e-3608-4685-b47b-a6d7eb53bfb7"
+				"790d238f-fd76-4ded-b5fe-24694283c5bb"
 			]
 		},
 		{
@@ -29,22 +34,29 @@
 			"uuid": "7b72a285-37ab-4b20-a19e-626fb3e22438",
 			"title": "Done",
 			"tasks": [
-				"5fc1ac50-673e-4d96-a999-3af31935a146"
+				"938a6c3e-3608-4685-b47b-a6d7eb53bfb7"
+			]
+		},
+		{
+			"uuid": "7daaf52a-71e4-4756-aaf3-76b318028cd9",
+			"title": "Ideas",
+			"tasks": [
+				"7d2b7e7f-d6fd-4abd-911b-9824aecd5c1c"
 			]
 		}
 	],
 	"tasks": [
 		{
 			"uuid": "04497972-4f8f-427b-9c50-fc506a2a9d5c",
-			"title": "Add grid in asset editor",
+			"title": "Ajouter une grille dans l'aperçu de l'éditeur d'assets",
 			"description": "",
 			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
 			"steps": []
 		},
 		{
 			"uuid": "938a6c3e-3608-4685-b47b-a6d7eb53bfb7",
-			"title": "New placement on scene floor",
-			"description": "Détecter les zones de collision entre l'objet à déposer et le sol\nUtiliser la forme AABB de l'objet pour déterminer son encombrement.",
+			"title": "Placement des assets dans la scène par détection du sol",
+			"description": "Détecter les zones de collision entre l'objet à déposer et le sol",
 			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
 			"steps": []
 		},
@@ -54,12 +66,27 @@
 			"description": "",
 			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
 			"steps": []
+		},
+		{
+			"uuid": "790d238f-fd76-4ded-b5fe-24694283c5bb",
+			"title": "Détecter les objets sur la scène lors du placement d'asset",
+			"description": "",
+			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
+			"steps": []
+		},
+		{
+			"uuid": "7d2b7e7f-d6fd-4abd-911b-9824aecd5c1c",
+			"title": "Ajouter la transparence aux objets",
+			"description": "",
+			"category": "806afb5c-66ae-4a7d-adc4-23582f18f1cd",
+			"steps": []
 		}
 	],
 	"layout": {
 		"columns": [
 			[
-				"ff7c1e52-c224-4120-b56e-98745222064a"
+				"ff7c1e52-c224-4120-b56e-98745222064a",
+				"7daaf52a-71e4-4756-aaf3-76b318028cd9"
 			],
 			[
 				"c0a20e1b-6dfe-4755-9c56-399ea415b52d"

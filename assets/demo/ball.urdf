@@ -1,4 +1,4 @@
-<robot name="Ball">
+<standalone name="Ball">
    <link name="link_name">
      <visual>
       <origin xyz="0.0 0.0 0" rpy="0.0 0.0 0.0"/>
@@ -20,4 +20,4 @@
 		</collision>
 
    </link>
-</robot>
+</<standalone

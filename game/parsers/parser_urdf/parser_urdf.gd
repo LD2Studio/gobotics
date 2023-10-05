@@ -29,7 +29,7 @@ enum Tag {
 
 func parse(urdf_data: PackedByteArray, error_output: Array = []) -> Node3D:
 	clear_buffer()
-	var root_node = get_root_node(urdf_data)
+	var root_node : Node3D = get_root_node(urdf_data)
 	if root_node == null:
 		printerr("[PARSER] root node not founded")
 		return null
@@ -45,6 +45,7 @@ func parse(urdf_data: PackedByteArray, error_output: Array = []) -> Node3D:
 		if root_node.is_in_group("ROBOTS"):
 			add_camera_on_robot(root_node, base_link)
 		root_node.add_child(base_link)
+		root_node.set_meta("offset_pos", Vector3.ZERO)
 		kinematics_scene_owner_of(root_node)
 		add_script_to(root_node)
 		return root_node
@@ -1158,7 +1159,6 @@ func create_scene(root_node: Node3D):
 	clean_links()
 
 	return base_link
-	
 	
 func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 	var pivot := Node3D.new()
