@@ -2,37 +2,35 @@ import os
 import shutil
 import subprocess
 
-version = "0.5.0"
+version = "0.6.0"
 py_version = "0.2.0"
+
+executable = {
+    "linux": "gobotics.x86_64",
+    "windows": "gobotics.exe",
+}
 
 if os.path.exists("exports"):
     shutil.rmtree('exports')
-
 os.mkdir("exports")
-os.mkdir("exports/gobotics-"+ version +"-linux-x86_64")
-os.mkdir("exports/gobotics-"+ version +"-linux-x86_64/assets")
-os.mkdir("exports/gobotics-"+ version +"-linux-x86_64/pygobotics")
-shutil.copy("assets/demo/red_ball.asset", "exports/gobotics-"+ version +"-linux-x86_64/assets/")
-shutil.copy("assets/demo/green_cube.asset", "exports/gobotics-"+ version +"-linux-x86_64/assets/")
-shutil.copy("assets/demo/robot_2_wheels.asset", "exports/gobotics-"+ version +"-linux-x86_64/assets/")
-shutil.copy("assets/demo/servo.asset", "exports/gobotics-"+ version +"-linux-x86_64/assets/")
-shutil.copy("assets/demo/servo2.asset", "exports/gobotics-"+ version +"-linux-x86_64/assets/")
-shutil.copy("pygobotics/dist/pygobotics-"+ py_version +"-py3-none-any.whl", "exports/gobotics-"+ version +"-linux-x86_64/pygobotics/")
-shutil.copy("pygobotics/play_with_robot.py", "exports/gobotics-"+ version +"-linux-x86_64/pygobotics/")
 
-os.mkdir("exports/gobotics-"+ version +"-windows-x86_64")
-os.mkdir("exports/gobotics-"+ version +"-windows-x86_64/assets")
-os.mkdir("exports/gobotics-"+ version +"-windows-x86_64/pygobotics")
-shutil.copy("assets/demo/red_ball.asset", "exports/gobotics-"+ version +"-windows-x86_64/assets/")
-shutil.copy("assets/demo/green_cube.asset", "exports/gobotics-"+ version +"-windows-x86_64/assets/")
-shutil.copy("assets/demo/robot_2_wheels.asset", "exports/gobotics-"+ version +"-windows-x86_64/assets/")
-shutil.copy("assets/demo/servo.asset", "exports/gobotics-"+ version +"-windows-x86_64/assets/")
-shutil.copy("assets/demo/servo2.asset", "exports/gobotics-"+ version +"-windows-x86_64/assets/")
-shutil.copy("pygobotics/dist/pygobotics-"+ py_version +"-py3-none-any.whl", "exports/gobotics-"+ version +"-windows-x86_64/pygobotics/")
-shutil.copy("pygobotics/play_with_robot.py", "exports/gobotics-"+ version +"-windows-x86_64/pygobotics/")
+for platform in ["linux", "windows"]:
 
-subprocess.run(["godot4" , "--export-debug", "Gobotics-v"+ version +"-linux", "exports/gobotics-"+ version +"-linux-x86_64/gobotics.x86_64", "--headless"])
-subprocess.run(["godot4" , "--export-debug", "Gobotics-v"+ version +"-windows", "exports/gobotics-"+ version +"-windows-x86_64/gobotics.exe", "--headless"])
+    os.mkdir("exports/gobotics-"+ version +"-"+ platform+"-x86_64")
+    os.mkdir("exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets")
+    os.mkdir("exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
+    os.mkdir("exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo/meshes")
+    os.mkdir("exports/gobotics-"+ version +"-"+ platform+"-x86_64/pygobotics")
+    shutil.copy("assets/demo/ball.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
+    shutil.copy("assets/demo/cube.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
+    shutil.copy("assets/demo/prism.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
+    shutil.copy("assets/demo/meshes/prism.glb", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo/meshes")
+    shutil.copy("assets/demo/robot.urdf", "exports/gobotics-"+ version +"-"+platform+"-x86_64/assets/demo")
+    shutil.copy("assets/demo/robot_wrench.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
+    shutil.copy("assets/demo/servos.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
+    shutil.copy("pygobotics/dist/pygobotics-"+ py_version +"-py3-none-any.whl", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/pygobotics/")
+    shutil.copy("pygobotics/play_with_robot.py", "exports/gobotics-"+ version +"-"+ platform +"-x86_64/pygobotics/")
 
-shutil.make_archive("exports/gobotics-"+ version +"-linux-x86_64", 'zip', "exports/gobotics-"+ version +"-linux-x86_64")
-shutil.make_archive("exports/gobotics-"+ version +"-windows-x86_64", 'zip', "exports/gobotics-"+ version +"-windows-x86_64")
+    subprocess.run(["godot4" , "--export-debug", "Gobotics-v"+ version +"-"+ platform , "exports/gobotics-"+ version +"-"+ platform + "-x86_64/" + executable[platform], "--headless"])
+
+    shutil.make_archive("exports/gobotics-"+ version +"-"+ platform +"-x86_64", 'zip', "exports/gobotics-"+ version +"-" + platform + "-x86_64")

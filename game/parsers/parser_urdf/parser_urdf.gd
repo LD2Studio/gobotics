@@ -53,36 +53,6 @@ func parse(urdf_data: PackedByteArray, error_output: Array = []) -> Node3D:
 		delete_links()
 		root_node.free()
 		return null
-
-
-func parse_buffer(buffer: String, asset={}):
-	clear_buffer()
-	var urdf_pack : PackedByteArray = buffer.to_ascii_buffer()
-#	print("urdf pack: ", urdf_pack)
-	var root_node = get_root_node(urdf_pack)
-	if root_node == null: return
-	asset.name = root_node.name
-	asset.type = root_node.get_meta("type")
-#	load_gobotics_params(urdf_pack)
-#	load_materials(urdf_pack)
-	if load_links(urdf_pack, root_node.get_meta("type")) != OK:
-		delete_links()
-		root_node.free()
-		return parse_error_message
-		
-	load_joints(urdf_pack)
-	var base_link = create_scene(root_node)
-	if base_link:
-		if root_node.is_in_group("ROBOTS"):
-			add_camera_on_robot(root_node, base_link)
-		root_node.add_child(base_link)
-		kinematics_scene_owner_of(root_node)
-		add_script_to(root_node)
-		return root_node
-	else:
-		delete_links()
-		root_node.free()
-		return parse_error_message
 	
 ## Return the root node of URDF tree
 func get_root_node(urdf_data: PackedByteArray) -> Node3D:
@@ -735,33 +705,6 @@ func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
 	scene_node.queue_free()
 	
 	return shape
-	
-#	for node in gltf_state.json.nodes:
-#		if node.name == attrib.object:
-#			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
-#			var mesh = imported_mesh.get_mesh()
-#			var mdt = MeshDataTool.new()
-#			mdt.create_from_surface(mesh, 0)
-#			for i in range(mdt.get_vertex_count()):
-#				var vertex = mdt.get_vertex(i)
-#				vertex *= scale
-#				# Save your change.
-#				mdt.set_vertex(i, vertex)
-#			mesh.clear_surfaces()
-#			mdt.commit_to_surface(mesh)
-#			var shape: Shape3D
-#			if trimesh:
-#				shape = mesh.create_trimesh_shape()
-#			else:
-#				shape = mesh.create_convex_shape()
-#			if debug_col:
-#				var debug_mesh = shape.get_debug_mesh()
-#				debug_col.mesh = debug_mesh
-#			# To avoid orphan nodes created by append_from_file()
-#			var scene_node = gltf_res.generate_scene(gltf_state)
-#			scene_node.queue_free()
-#			return shape
-
 
 #func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag, trimesh=false):
 	
