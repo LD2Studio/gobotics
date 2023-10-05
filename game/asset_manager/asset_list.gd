@@ -92,7 +92,7 @@ func create_new_asset(asset_type: int):
 	asset_editor.asset_base_dir = game.asset_base_dir
 	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
-	asset_editor.is_new_asset = true
+	asset_editor.database = database
 	asset_editor.asset_type = asset_type
 	asset_editor_dialog.add_child(asset_editor)
 	asset_editor_dialog.popup_centered(Vector2i(700, 500))
@@ -102,7 +102,7 @@ func _on_asset_editor_dialog_confirmed():
 	if asset_editor:
 		asset_editor_dialog.remove_child(asset_editor)
 		asset_editor.queue_free()
-		update_assets_database()
+		update_assets_list()
 		## Comment fix bug
 #		if game_scene.scene != null:
 #			update_assets_in_scene()
@@ -132,6 +132,9 @@ func update_assets_database():
 	show_collision_shape(false)
 	show_link_frame(false)
 	show_joint_frame(false)
+	
+func update_assets_list():
+	game.fill_assets_list()
 	
 func update_assets_in_scene():
 	var assets = get_tree().get_nodes_in_group("ASSETS")

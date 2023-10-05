@@ -69,11 +69,61 @@ func add_assets(search_path: String, asset_base_dir: String):
 	if err:
 		printerr("Database not saving!")
 		
+func update_asset(asset_fullname: String):
+#	print("[DB] fullname: " , asset_fullname)
+	if is_asset_exists(asset_fullname):
+#		print("update asset")
+		_update_asset(asset_fullname)
+	else:
+#		print("add new asset")
+		add_new_asset(asset_fullname)
+		
+func _update_asset(fullname: String):
+	for idx in len(assets):
+		var asset = assets[idx]
+		if asset.fullname == fullname:
+			var urdf_pathname = asset_base_path.path_join(fullname)
+			var scene : Array = []
+			if create_scene(urdf_pathname, scene):
+				assets[idx] = {
+					name = scene[0], # asset name setting in URDF
+					fullname = urdf_pathname.trim_prefix(asset_base_path+"/"), # relative path
+					filename = urdf_pathname, # absolute path of file
+					scene = scene[1], # absolute path of scene
+					type = scene[2], # 
+				}
+				var err = ResourceSaver.save(self, "res://temp/database.tres")
+				if err:
+					printerr("Database not saving!")
+			else:
+				printerr("[DB] creating scene failed")
+			return
+		
+func add_new_asset(asset_fullname: String):
+	var urdf_pathname = asset_base_path.path_join(asset_fullname)
+#	print("urdf pathname: ", urdf_pathname)
+	var scene : Array = []
+	if create_scene(urdf_pathname, scene):
+		assets.append({
+			name = scene[0], # asset name setting in URDF
+			fullname = urdf_pathname.trim_prefix(asset_base_path+"/"), # relative path
+			filename = urdf_pathname, # absolute path of file
+			scene = scene[1], # absolute path of scene
+			type = scene[2], # 
+			})
+		var err = ResourceSaver.save(self, "res://temp/database.tres")
+		if err:
+			printerr("Database not saving!")
+	else:
+		printerr("[DB] creating scene failed")
+	
 func create_scene(urdf_pathname: String, scene: Array) -> bool:
 	var asset_path = urdf_pathname.get_base_dir()+"/"
+#	print("asset path: ", asset_path)
 	urdf_parser.asset_user_path = asset_path
 	var error_output : Array = []
 	var urdf_data: PackedByteArray = FileAccess.get_file_as_bytes(urdf_pathname)
+#	print("urdf data: ", urdf_data)
 	var root_node: Node3D = urdf_parser.parse(urdf_data, error_output)
 	
 	if root_node == null:
@@ -104,11 +154,17 @@ func create_scene(urdf_pathname: String, scene: Array) -> bool:
 	root_node.free()	# Delete orphan nodes
 	return true
 	
+func is_asset_exists(fullname: String) -> bool:
+	for asset in assets:
+		if asset.fullname == fullname:
+			return true
+	return false
 	
 func get_asset_filename(fullname: String):
 	for asset in assets:
 		if asset.fullname == fullname:
 			return asset.filename
+	return null
 	
 func get_scene_from_fullname(fullname: String):
 	for asset in assets:
