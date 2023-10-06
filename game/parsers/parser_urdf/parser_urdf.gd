@@ -607,8 +607,9 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 							color.b = rgba_arr[2]
 							color.a = rgba_arr[3]
 						var res = current_visual.get_surface_override_material(0)
-						res.albedo_color = color
-						current_visual.set_surface_override_material(0, res)
+						if res:
+							res.albedo_color = color
+							current_visual.set_surface_override_material(0, res)
 					
 		if type == XMLParser.NODE_ELEMENT_END:
 			var node_name = parser.get_node_name()

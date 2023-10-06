@@ -25,6 +25,7 @@ var asset_base_dir: String = ProjectSettings.globalize_path("res://assets")
 @onready var mesh_view_container = %MeshViewContainer
 @onready var mesh_item_list = %MeshesList
 @onready var delete_mesh_dialog = %DeleteMeshDialog
+@onready var asset_filename_edit = %AssetFilenameEdit
 
 enum NewAsset {
 	STANDALONE,
@@ -49,9 +50,8 @@ func _ready():
 			NewAsset.ENVIRONMENT:
 				urdf_code_edit.text = urdf_environment_template
 	else:
-		%AssetFilenameEdit.text = asset_fullname.get_basename()
+		asset_filename_edit.text = asset_fullname
 		var urdf_path = database.get_asset_filename(asset_fullname)
-		
 		var urdf_file = FileAccess.open(urdf_path, FileAccess.READ)
 		urdf_code_edit.text = urdf_file.get_as_text()
 		
@@ -66,10 +66,12 @@ func _ready():
 	folding_link_tags()
 	
 func generate_scene() -> bool:
-	if database.get_asset_filename(asset_fullname) == null:
+	var asset_filename = database.get_asset_filename(asset_filename_edit.text)
+	if asset_filename == null:
+#		print("asset_fullname: ", asset_filename_edit.text)
+		printerr("[AE] asset unknow !")
 		return false
-	var asset_path = database.get_asset_filename(asset_fullname).get_base_dir()+"/"
-	urdf_parser.asset_user_path = asset_path
+	urdf_parser.asset_user_path = asset_filename.get_base_dir()+"/"
 	var error_output : Array = []
 	var root_node = urdf_parser.parse(urdf_code_edit.text.to_ascii_buffer(), error_output)
 	
@@ -100,9 +102,11 @@ func _on_generate_button_pressed() -> void:
 	generate_scene()
 	
 func _on_save_button_pressed():
-	if %AssetFilenameEdit.text == "":
+	if asset_filename_edit.text == "":
 		return
-	var new_asset_filename = asset_base_dir.path_join(%AssetFilenameEdit.text + ".urdf")
+	if not asset_filename_edit.text.ends_with(".urdf"):
+		asset_filename_edit.text = asset_filename_edit.text + ".urdf"
+	var new_asset_filename = asset_base_dir.path_join(asset_filename_edit.text)
 #	print("new asset filename: ", new_asset_filename)
 	var path = new_asset_filename.get_base_dir()
 	if not DirAccess.dir_exists_absolute(path):
@@ -115,7 +119,7 @@ func _on_save_button_pressed():
 		save_asset()
 
 func save_asset():
-	var urdf_filename = asset_base_dir.path_join(%AssetFilenameEdit.text + ".urdf")
+	var urdf_filename = asset_base_dir.path_join(asset_filename_edit.text)
 	var urdf_file = FileAccess.open(urdf_filename, FileAccess.WRITE)
 	urdf_file.store_string(urdf_code_edit.text)
 	urdf_file.flush()
@@ -197,7 +201,8 @@ func _on_full_screen_button_toggled(button_pressed):
 	fullscreen_toggled.emit(button_pressed)
 
 func _on_asset_filename_edit_text_changed(new_text):
-	if new_text == "" or asset_node:
+	asset_fullname = new_text
+	if new_text == "":
 		%SaveAssetButton.disabled = true
 	else:
 		%SaveAssetButton.disabled = false
