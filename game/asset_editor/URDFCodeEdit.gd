@@ -89,6 +89,16 @@ const GOBOTICS_CONTROL_TAG = """
 	</gobotics>
 """
 
+const GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL_TAG = """
+	<link name="" builtin="right_mecanum_wheel" />
+	</link>
+"""
+
+const GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL_TAG = """
+	<link name="" builtin="left_mecanum_wheel" />
+	</link>
+"""
+
 enum Tag {
 	LINK = MENU_MAX + 1,
 	MATERIAL,
@@ -105,6 +115,8 @@ enum Tag {
 	JOINT_PRISMATIC,
 	JOINT_PIN,
 	GOBOTICS_CONTROL,
+	GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL,
+	GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL,
 }
 
 func _ready():
@@ -143,13 +155,21 @@ func _ready():
 	menu.add_submenu_item("Geometry", "SubmenuGeometry")
 	menu.add_item("Insert Inline Color", Tag.INLINE_COLOR)
 	
-	menu.add_separator()
-	var submenu_gobotics = PopupMenu.new()
-	submenu_gobotics.name = "SubmenuGobotics"
-	submenu_gobotics.add_item("Insert Robot Control", Tag.GOBOTICS_CONTROL)
-	submenu_gobotics.id_pressed.connect(_on_item_pressed)
-	menu.add_child(submenu_gobotics)
-	menu.add_submenu_item("Gobotics", "SubmenuGobotics")
+	menu.add_separator("Gobotics")
+	var submenu_gobotics_control = PopupMenu.new()
+	submenu_gobotics_control.name = "SubmenuControl"
+	submenu_gobotics_control.add_item("Insert Robot Control", Tag.GOBOTICS_CONTROL)
+	submenu_gobotics_control.id_pressed.connect(_on_item_pressed)
+	menu.add_child(submenu_gobotics_control)
+	menu.add_submenu_item("Control", "SubmenuControl")
+	
+	var submenu_gobotics_builtin = PopupMenu.new()
+	submenu_gobotics_builtin.name = "GoboticsBuiltin"
+	submenu_gobotics_builtin.add_item("Insert Right Mecanum Wheel", Tag.GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL)
+	submenu_gobotics_builtin.add_item("Insert Left Mecanum Wheel", Tag.GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL)
+	submenu_gobotics_builtin.id_pressed.connect(_on_item_pressed)
+	menu.add_child(submenu_gobotics_builtin)
+	menu.add_submenu_item("Builtin", "GoboticsBuiltin")
 
 func _on_item_pressed(id):
 	match id:
@@ -186,3 +206,7 @@ func _on_item_pressed(id):
 			insert_text_at_caret(INLINE_COLOR_TAG)
 		Tag.GOBOTICS_CONTROL:
 			insert_text_at_caret(GOBOTICS_CONTROL_TAG)
+		Tag.GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL:
+			insert_text_at_caret(GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL_TAG)
+		Tag.GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL:
+			insert_text_at_caret(GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL_TAG)

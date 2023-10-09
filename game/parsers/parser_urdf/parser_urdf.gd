@@ -109,7 +109,11 @@ func load_gobotics_params(urdf_path: PackedByteArray):
 	if parse_err:
 		printerr("[PARSER] parse error ", parse_err)
 		return null
-
+	var gobotics_types = [
+		"diff_drive",
+		"4_mecanum_drive",
+		"grouped_joints",
+	]
 	var root_tag: int = Tag.NONE
 	var gobotics_attrib = {}
 	while true:
@@ -134,11 +138,10 @@ func load_gobotics_params(urdf_path: PackedByteArray):
 						root_tag = Tag.NONE
 						continue
 					if "type" in gobotics_attrib:
-						if gobotics_attrib.type != "diff_drive" and \
-							gobotics_attrib.type != "grouped_joints":
-								printerr("wrong type in gobotics tag")
-								root_tag = Tag.NONE
-								continue
+						if not gobotics_attrib.type in gobotics_types:
+							printerr("%s not recognized!" % [gobotics_attrib.type])
+							root_tag = Tag.NONE
+							continue
 				"link":
 					if not root_tag == Tag.NONE: continue
 					root_tag = Tag.LINK
@@ -167,17 +170,56 @@ func load_gobotics_params(urdf_path: PackedByteArray):
 							attrib[name] = value
 						if "joint" in attrib:
 							gobotics_attrib.left_wheel_joint = attrib.joint
+							
+				"front_right_wheel":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.front_right_wheel_joint = attrib.joint
+				
+				"front_left_wheel":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.front_left_wheel_joint = attrib.joint
+							
+				"back_right_wheel":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.back_right_wheel_joint = attrib.joint
+				
+				"back_left_wheel":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.back_left_wheel_joint = attrib.joint
 						
 				"max_speed":
 					if not root_tag == Tag.GOBOTICS: continue
-					if "type" in gobotics_attrib and gobotics_attrib.type == "diff_drive":
-						var attrib: Dictionary = {}
-						for idx in parser.get_attribute_count():
-							var name = parser.get_attribute_name(idx)
-							var value = parser.get_attribute_value(idx)
-							attrib[name] = value
-						if "value" in attrib:
-							gobotics_attrib.max_speed = attrib.value
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "value" in attrib:
+						gobotics_attrib.max_speed = attrib.value
 					
 				"input":
 					if not root_tag == Tag.GOBOTICS: continue
@@ -332,7 +374,20 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						var value = parser.get_attribute_value(idx)
 						link_attrib[name] = value
 						
-					link = RigidBody3D.new()
+					if "builtin" in link_attrib:
+						match link_attrib.builtin:
+							"right_mecanum_wheel":
+#								print("Right Mecanum Wheel")
+								link = load("res://game/builtins/right_mecanum_wheel.tscn").instantiate()
+							"left_mecanum_wheel":
+#								print("Left Mecanum Wheel")
+								link = load("res://game/builtins/left_mecanum_wheel.tscn").instantiate()
+							_:
+								printerr("Unrecognized builtin link")
+								return ERR_PARSE_ERROR
+					
+					else:
+						link = RigidBody3D.new()
 					var physics_material = PhysicsMaterial.new()
 					link.physics_material_override = physics_material
 					link.set_meta("orphan", true)
@@ -610,7 +665,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						if res:
 							res.albedo_color = color
 							current_visual.set_surface_override_material(0, res)
-					
+						
 		if type == XMLParser.NODE_ELEMENT_END:
 			var node_name = parser.get_node_name()
 			match node_name:
@@ -1152,6 +1207,8 @@ func add_script_to(root_node: Node3D):
 				match config.type:
 					"diff_drive":
 						add_diff_drive_code(base_link, config)
+					"4_mecanum_drive":
+						add_4_mecanum_drive_code(base_link, config)
 					"grouped_joints":
 						add_group_joints_script("robot", config)
 		add_robot_code()
@@ -1195,6 +1252,24 @@ var control : DiffDrive
 				base_link.name,
 				config.right_wheel_joint,
 				config.left_wheel_joint,
+				float(config.max_speed),
+				]
+	_ready_script += """
+	control.add_to_group("ROBOT_SCRIPT", true)
+	add_child(control)
+	"""
+	
+func add_4_mecanum_drive_code(base_link, config):
+	_global_script += """
+var control : FourMecanumDrive
+	"""
+	_ready_script += """
+	control = FourMecanumDrive.new($%s, %%%s, %%%s, %%%s, %%%s, %f)""" % [
+				base_link.name,
+				config.front_right_wheel_joint,
+				config.front_left_wheel_joint,
+				config.back_right_wheel_joint,
+				config.back_left_wheel_joint,
 				float(config.max_speed),
 				]
 	_ready_script += """

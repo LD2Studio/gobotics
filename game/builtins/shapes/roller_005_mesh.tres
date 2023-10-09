@@ -1,0 +1,18 @@
+[gd_resource type="SphereMesh" load_steps=4 format=3 uid="uid://cqtqp4yomi231"]
+
+[sub_resource type="Gradient" id="Gradient_m5qut"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.534722)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_21p8v"]
+gradient = SubResource("Gradient_m5qut")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3klq8"]
+albedo_texture = SubResource("GradientTexture2D_21p8v")
+
+[resource]
+material = SubResource("StandardMaterial3D_3klq8")
+radius = 0.05
+height = 0.3
+radial_segments = 16
+rings = 8
