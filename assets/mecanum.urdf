@@ -1,6 +1,6 @@
 <standalone name="Mecanum 1">
 	
-	<link name="Wheel" builtin="right_mecanum_wheel" />
+	<link name="Wheel" extends="right_mecanum_wheel" />
 	</link>
 
 </standalone>

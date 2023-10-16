@@ -36,5 +36,9 @@
 		</collision>
 
 
+		<inertial>
+			<mass value="0.01"/>
+		</inertial>
+
    </link>
 </<standalone

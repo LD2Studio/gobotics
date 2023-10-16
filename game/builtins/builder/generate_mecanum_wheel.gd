@@ -6,7 +6,8 @@ var rim_radius = 0.25
 var rim_thickness = 0.1
 var roller_count : int = 12
 
-var roller_1_shape: SphereShape3D = load("res://game/builtins/shapes/roller_006_shape.tres")
+var roller_1_shape: SphereShape3D = load("res://game/builtins/shapes/roller_005_shape.tres")
+var roller_2_shape: SphereShape3D = load("res://game/builtins/shapes/roller_004_shape.tres")
 var roller_mesh: SphereMesh = load("res://game/builtins/shapes/roller_005_mesh.tres")
 
 enum Order {
@@ -91,8 +92,9 @@ func generate_mecanum_wheel(name: String, order: int):
 		
 		var roller_link := RigidBody3D.new()
 		roller_link.name = "RollerLink%d" % [roller_idx]
-		roller_link.mass = 0.1
+		roller_link.mass = 0.05
 		roller_joint.node_b = "RollerLink%d" % [roller_idx]
+		roller_link.physics_material_override = load("res://game/builtins/physics/roller_physics.tres")
 		roller_joint.add_child(roller_link)
 		roller_link.owner = mecanum_wheel
 		
@@ -101,6 +103,20 @@ func generate_mecanum_wheel(name: String, order: int):
 		roller_col.shape = roller_1_shape
 		roller_link.add_child(roller_col)
 		roller_col.owner = mecanum_wheel
+		
+		var rollerR_col := CollisionShape3D.new()
+		rollerR_col.name = "RollerColR"
+		rollerR_col.shape = roller_2_shape
+		rollerR_col.position.z = 0.074
+		roller_link.add_child(rollerR_col)
+		rollerR_col.owner = mecanum_wheel
+		
+		var rollerL_col := CollisionShape3D.new()
+		rollerL_col.name = "RollerColL"
+		rollerL_col.shape = roller_2_shape
+		rollerL_col.position.z = -0.074
+		roller_link.add_child(rollerL_col)
+		rollerL_col.owner = mecanum_wheel
 		
 		var roller_mesh_obj := MeshInstance3D.new()
 		roller_mesh_obj.name = "RollerMesh"

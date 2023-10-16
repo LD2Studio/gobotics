@@ -374,8 +374,8 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						var value = parser.get_attribute_value(idx)
 						link_attrib[name] = value
 						
-					if "builtin" in link_attrib:
-						match link_attrib.builtin:
+					if "extends" in link_attrib:
+						match link_attrib.extends:
 							"right_mecanum_wheel":
 #								print("Right Mecanum Wheel")
 								link = load("res://game/builtins/right_mecanum_wheel.tscn").instantiate()
@@ -383,7 +383,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 #								print("Left Mecanum Wheel")
 								link = load("res://game/builtins/left_mecanum_wheel.tscn").instantiate()
 							_:
-								printerr("Unrecognized builtin link")
+								printerr("Unrecognized extends link!")
 								return ERR_PARSE_ERROR
 					
 					else:
@@ -1385,6 +1385,9 @@ func shift_target(step):
 func _ready():
 	child_link.can_sleep = false
 	motor_enabled = true
+#	limit_spring_enabled = true
+#	limit_spring_damping = 1
+#	limit_spring_frequency = 50
 	dist_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
 
 func _physics_process(_delta):
