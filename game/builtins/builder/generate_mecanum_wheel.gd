@@ -6,9 +6,13 @@ var rim_radius = 0.25
 var rim_thickness = 0.1
 var roller_count : int = 12
 
+const SCALE = 10.0
+
 var roller_1_shape: SphereShape3D = load("res://game/builtins/shapes/roller_005_shape.tres")
 var roller_2_shape: SphereShape3D = load("res://game/builtins/shapes/roller_004_shape.tres")
 var roller_mesh: SphereMesh = load("res://game/builtins/shapes/roller_005_mesh.tres")
+
+var roller_node3d = load("res://game/builtins/shapes/roller.glb")
 
 enum Order {
 	RIGHT,
@@ -118,12 +122,19 @@ func generate_mecanum_wheel(name: String, order: int):
 		roller_link.add_child(rollerL_col)
 		rollerL_col.owner = mecanum_wheel
 		
-		var roller_mesh_obj := MeshInstance3D.new()
-		roller_mesh_obj.name = "RollerMesh"
-		roller_mesh_obj.mesh = roller_mesh
-		roller_mesh_obj.rotation.x = deg_to_rad(90)
-		roller_link.add_child(roller_mesh_obj)
-		roller_mesh_obj.owner = mecanum_wheel
+#		var roller_mesh_obj := MeshInstance3D.new()
+#		roller_mesh_obj.name = "RollerMesh"
+#		roller_mesh_obj.mesh = roller_mesh
+#		roller_mesh_obj.rotation.x = deg_to_rad(90)
+#		roller_link.add_child(roller_mesh_obj)
+#		roller_mesh_obj.owner = mecanum_wheel
+
+		var roller_instance : Node3D = roller_node3d.instantiate()
+		roller_instance.name = "RollerMesh"
+		roller_instance.rotation.x = deg_to_rad(90)
+		roller_instance.scale *= SCALE
+		roller_link.add_child(roller_instance)
+		roller_instance.owner = mecanum_wheel
 		
 #	mecanum_wheel.print_tree_pretty()
 	
