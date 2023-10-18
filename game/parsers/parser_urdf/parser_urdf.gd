@@ -1367,7 +1367,11 @@ func get_prismatic_joint_script(child_node: Node3D, basis_node: Node3D, limit_ve
 	var source_code = """extends JoltSliderJoint3D
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
-var target_dist: float = 0.0
+var target_dist: float = 0.0:
+	set(value):
+		target_dist = value
+		_target_reached = false
+		motor_enabled = true
 var input: float:
 	set(value):
 		input = value
@@ -1375,6 +1379,8 @@ var input: float:
 var dist_step: float
 var rest_angle: float
 var LIMIT_VELOCITY: float = %d
+var _target_reached: bool = false
+
 
 func shift_target(step):
 	if step > 0 and target_dist <= limit_upper:
@@ -1385,20 +1391,24 @@ func shift_target(step):
 func _ready():
 	child_link.can_sleep = false
 	motor_enabled = true
-#	limit_spring_enabled = true
-#	limit_spring_damping = 1
-#	limit_spring_frequency = 50
 	dist_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
 
 func _physics_process(_delta):
+	
 	var child_tr: Transform3D = child_link.transform
 	var dist = (child_tr * basis_inv.transform).origin.x
+#	print("dist=", dist)
 	var err = target_dist - dist
 	var speed: float
-	if abs(err) > dist_step:
-		speed = LIMIT_VELOCITY * sign(err)
+	if not _target_reached:
+		if abs(err) > dist_step:
+			speed = LIMIT_VELOCITY * sign(err)
+		else:
+			speed = 0
+			_target_reached = true
 	else:
-		speed = 0
+		speed = LIMIT_VELOCITY * err
+	
 	motor_target_velocity = speed
 
 func _target_dist_changed(value: float):
