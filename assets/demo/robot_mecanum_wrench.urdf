@@ -155,7 +155,7 @@
 		<parent link="base_link"/>
 		<child link="elevator_link"/>
 		<axis xyz="0.0 0.0 1.0"/>
-		<limit lower="0.0" upper="0.1" effort="10000.0" velocity="5.0"/>
+		<limit lower="0.0" upper="0.1" effort="100" velocity="0.3"/>
 	</joint>
 
 	<!-- LEFT WRENCH LINK -->

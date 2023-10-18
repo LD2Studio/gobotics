@@ -65,7 +65,7 @@
 		<parent link="base_link"/>
 		<child link="arm"/>
 		<axis xyz="1.0 0.0 0.0"/>
-		<limit lower="-0.1" upper="0.2" velocity="1.0"/>
+		<limit lower="-0.1" upper="0.2" velocity="0.2"/>
 	</joint>
 
 </robot>

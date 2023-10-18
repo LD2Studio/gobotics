@@ -1093,7 +1093,7 @@ func create_scene(root_node: Node3D):
 					if "effort" in joint.limit:
 						joint_node.motor_max_force = float(joint.limit.effort)
 					if "velocity" in joint.limit:
-						limit_velocity = float(joint.limit.velocity)
+						limit_velocity = float(joint.limit.velocity) * scale
 					if "lower" in joint.limit:
 						joint_node.limit_lower = joint.limit.lower * scale
 					else:
