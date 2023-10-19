@@ -52,7 +52,7 @@ func _physics_process(_delta):
 			robot.right_wheel.target_velocity = 0
 			robot.left_wheel.target_velocity = 0
 
-## Functions calling by Python
+## Functions exposed to Python
 func get_pose() -> PackedFloat32Array:
 	var pose = PackedFloat32Array(
 		[

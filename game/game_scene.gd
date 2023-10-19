@@ -38,7 +38,7 @@ func _input(event: InputEvent) -> void:
 		if asset_selected == null: return
 		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [asset_selected.name]
 		%ConfirmDeleteDialog.popup_centered()
-		
+
 #	if asset_focused and event is InputEventMouseMotion:
 #		get_viewport().set_input_as_handled()
 #		print("asset position: ", asset_focused.get_child(0).global_position)
@@ -517,7 +517,7 @@ func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal,
 		hide_asset_parameters()
 	if asset_dragged:
 #		print("mouse position: ", mouse_position)
-		asset_dragged.position = mouse_position + scene_view._offset_pos
+		asset_dragged.position = mouse_position + scene_view.offset_pos
 
 func _on_ground_mouse_entered():
 #	print("[GS] mouse entered")

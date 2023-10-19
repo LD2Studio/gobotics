@@ -391,6 +391,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 					var physics_material = PhysicsMaterial.new()
 					link.physics_material_override = physics_material
 					link.set_meta("orphan", true)
+					link.set_meta("owner", true)
 					if "name" in link_attrib and link_attrib.name != "":
 						link.name = link_attrib.name.replace(" ", "_")
 					else:
@@ -414,6 +415,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 					frame_visual.mesh = _frame_mesh
 					frame_visual.scale = Vector3.ONE * scale
 					frame_visual.visible = false
+					frame_visual.set_meta("owner", true)
 					link.add_child(frame_visual)
 				
 				"inertial":
@@ -460,6 +462,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						current_visual.name = attrib.name + "_mesh"
 					else:
 						current_visual.name = link_attrib.name + "_mesh"
+					current_visual.set_meta("owner", true)
 					link.add_child(current_visual)
 
 				"collision":
@@ -476,6 +479,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						current_collision.name = attrib.name + "_col"
 					else:
 						current_collision.name = link_attrib.name + "_col"
+					current_collision.set_meta("owner", true)
 					link.add_child(current_collision)
 					
 					current_col_debug = MeshInstance3D.new()
@@ -485,6 +489,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						current_col_debug.name = attrib.name + "_debug"
 					else:
 						current_col_debug.name = link_attrib.name + "_debug"
+					current_col_debug.set_meta("owner", true)
 					link.add_child(current_col_debug)
 	
 				"geometry":
@@ -1071,6 +1076,7 @@ func create_scene(root_node: Node3D):
 					joint_node.transform.basis *= new_joint_basis
 					
 				var basis_node = Node3D.new()
+				basis_node.set_meta("owner", true)
 				basis_node.name = joint_node.name + "_basis_inv"
 				basis_node.unique_name_in_owner = true
 				basis_node.transform.basis = new_joint_basis
@@ -1113,6 +1119,7 @@ func create_scene(root_node: Node3D):
 					joint_node.transform.basis *= new_joint_basis
 					
 				var basis_node = Node3D.new()
+				basis_node.set_meta("owner", true)
 				basis_node.name = joint_node.name + "_basis_inv"
 				basis_node.unique_name_in_owner = true
 				basis_node.transform.basis = new_joint_basis
@@ -1128,8 +1135,10 @@ func create_scene(root_node: Node3D):
 		joint_node.node_a = ^"../"
 		joint_node.node_b = NodePath("%s" % [child_node.name])
 		joint_node.unique_name_in_owner = true
+		joint_node.set_meta("owner", true)
 		# Add frame gizmo
 		var frame_visual := MeshInstance3D.new()
+		frame_visual.set_meta("owner", true)
 		frame_visual.name = joint_node.name + "_frame"
 		frame_visual.add_to_group("JOINT_GIZMO", true)
 		frame_visual.mesh = _frame_mesh
@@ -1161,11 +1170,14 @@ func create_scene(root_node: Node3D):
 	
 func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 	var pivot := Node3D.new()
+	pivot.set_meta("owner", true)
 	pivot.name = &"PivotCamera"
 	var boom := Node3D.new()
+	boom.set_meta("owner", true)
 	boom.name = &"Boom"
 	boom.rotation_degrees.x = -30
 	var camera := Camera3D.new()
+	camera.set_meta("owner", true)
 	camera.name = &"Camera"
 	camera.add_to_group("CAMERA", true)
 	camera.position = Vector3(0, 0 , 6.0)
@@ -1184,6 +1196,8 @@ func kinematics_scene_owner_of(root_node: Node3D):
 		
 func add_owner(owner_node, nodes: Array):
 	for node in nodes:
+		if not node.get_meta("owner", false):
+			continue
 		node.owner = owner_node
 		if node.get_child_count():
 			add_owner(owner_node, node.get_children())

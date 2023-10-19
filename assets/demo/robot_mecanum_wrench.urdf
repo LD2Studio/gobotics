@@ -42,7 +42,15 @@
 		<inertial>
 			<mass value="0.1"/>
 		</inertial>
-
+		<visual name="">
+			<origin xyz="0 0.05 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.005" length="0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.2 0.2 0 1"/>
+			</material>
+		</visual>
 	</link>
 	
 	<joint name="front_right_joint" type="continuous">
@@ -58,6 +66,15 @@
 		<inertial>
 			<mass value="0.1"/>
 		</inertial>
+		<visual name="">
+			<origin xyz="0 -0.05 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.005" length="0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.2 0.2 0 1"/>
+			</material>
+		</visual>
 	</link>
 	
 	<joint name="front_left_joint" type="continuous">
@@ -73,6 +90,15 @@
 		<inertial>
 			<mass value="0.1"/>
 		</inertial>
+		<visual name="">
+			<origin xyz="0 0.05 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.005" length="0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.2 0.2 0 1"/>
+			</material>
+		</visual>
 	</link>
 	
 	<joint name="back_right_joint" type="continuous">
@@ -88,6 +114,15 @@
 		<inertial>
 			<mass value="0.1"/>
 		</inertial>
+		<visual name="">
+			<origin xyz="0 -0.05 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.005" length="0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.2 0.2 0 1"/>
+			</material>
+		</visual>
 	</link>
 	
 	<joint name="back_left_joint" type="continuous">

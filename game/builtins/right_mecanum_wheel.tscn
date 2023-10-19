@@ -6,15 +6,15 @@
 [ext_resource type="Shape3D" uid="uid://cn4jxe3if6hy8" path="res://game/builtins/shapes/roller_004_shape.tres" id="4_kgrd5"]
 [ext_resource type="PackedScene" uid="uid://cnitkuo1irjcy" path="res://game/builtins/shapes/roller.glb" id="5_i5wbj"]
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_rcq8c"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_h6la7"]
 top_radius = 0.25
 bottom_radius = 0.25
 height = 0.1
 
-[sub_resource type="BoxMesh" id="BoxMesh_on1me"]
+[sub_resource type="BoxMesh" id="BoxMesh_swciw"]
 size = Vector3(0.1, 0.1, 0.2)
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_g0dgi"]
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_2uwt1"]
 height = 0.1
 radius = 0.25
 
@@ -23,15 +23,15 @@ mass = 0.2
 
 [node name="RimVisual" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-mesh = SubResource("CylinderMesh_rcq8c")
+mesh = SubResource("CylinderMesh_h6la7")
 
 [node name="ShaftVisual" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_on1me")
+mesh = SubResource("BoxMesh_swciw")
 surface_material_override/0 = ExtResource("1_icd42")
 
 [node name="RimCollision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-shape = SubResource("CylinderShape3D_g0dgi")
+shape = SubResource("CylinderShape3D_2uwt1")
 
 [node name="RollerJoint0" type="JoltHingeJoint3D" parent="."]
 motor_enabled = true

@@ -70,7 +70,7 @@ func _physics_process(_delta):
 			robot.back_left_wheel.target_velocity = 0
 			robot.back_right_wheel.target_velocity = 0
 
-## Functions calling by Python
+## Functions exposed to Python
 func get_pose() -> PackedFloat32Array:
 	var pose = PackedFloat32Array(
 		[
@@ -87,7 +87,8 @@ func set_pose(x: float, y: float, a: float):
 	robot.base_link.global_position.z = -y * 10.0
 	robot.base_link.rotation.y = a
 
-#func move(right_vel: float, left_vel: float):
-#	robot.right_wheel.target_velocity = right_vel
-#	robot.left_wheel.target_velocity = left_vel
-	
+func move(front_right_vel: float, front_left_vel: float, back_right_vel: float, back_left_vel: float):
+	robot.front_right_wheel.target_velocity = front_right_vel
+	robot.front_left_wheel.target_velocity = front_left_vel
+	robot.back_right_wheel.target_velocity = back_right_vel
+	robot.back_left_wheel.target_velocity = back_left_vel

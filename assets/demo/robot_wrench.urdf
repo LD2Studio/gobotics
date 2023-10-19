@@ -219,7 +219,7 @@
 		<parent link="base_link"/>
 		<child link="elevator_link"/>
 		<axis xyz="0.0 0.0 1.0"/>
-		<limit lower="0.0" upper="0.1" effort="10.0" velocity="5.0"/>
+		<limit lower="0.0" upper="0.1" effort="10.0" velocity="0.5"/>
 	</joint>
 
 	<!-- LEFT WRENCH LINK -->
@@ -293,7 +293,7 @@
 	<gobotics name="control_robot" type="diff_drive">
         <right_wheel joint="right_joint"/>
         <left_wheel joint="left_joint"/>
-		<max_speed value="8.0"/>
+		<max_speed value="6.0"/>
     </gobotics>
 	
 	<gobotics name="control_wrench" type="grouped_joints">

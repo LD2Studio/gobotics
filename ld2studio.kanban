@@ -28,13 +28,15 @@
 		{
 			"uuid": "c0a20e1b-6dfe-4755-9c56-399ea415b52d",
 			"title": "Doing",
-			"tasks": []
+			"tasks": [
+				"77c6019b-3d3b-4b8d-962e-d6d90d781c7f"
+			]
 		},
 		{
 			"uuid": "7b72a285-37ab-4b20-a19e-626fb3e22438",
 			"title": "Done",
 			"tasks": [
-				"938a6c3e-3608-4685-b47b-a6d7eb53bfb7"
+				"fa0790f0-11e1-4de6-bd2c-ef9e82cd9280"
 			]
 		},
 		{
@@ -50,13 +52,6 @@
 			"uuid": "04497972-4f8f-427b-9c50-fc506a2a9d5c",
 			"title": "Ajouter une grille dans l'aperçu de l'éditeur d'assets",
 			"description": "",
-			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
-			"steps": []
-		},
-		{
-			"uuid": "938a6c3e-3608-4685-b47b-a6d7eb53bfb7",
-			"title": "Placement des assets dans la scène par détection du sol",
-			"description": "Détecter les zones de collision entre l'objet à déposer et le sol",
 			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
 			"steps": []
 		},
@@ -79,6 +74,20 @@
 			"title": "Ajouter la transparence aux objets",
 			"description": "",
 			"category": "806afb5c-66ae-4a7d-adc4-23582f18f1cd",
+			"steps": []
+		},
+		{
+			"uuid": "77c6019b-3d3b-4b8d-962e-d6d90d781c7f",
+			"title": "Ajouter les méthodes pour contrôler le robot Mecanum depuis un script Python à distance",
+			"description": "",
+			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
+			"steps": []
+		},
+		{
+			"uuid": "fa0790f0-11e1-4de6-bd2c-ef9e82cd9280",
+			"title": "Noeuds orphelins avec l'instanciation des \"link\" de type \"extends\"",
+			"description": "",
+			"category": "518c525d-a76f-484b-a0a6-fea2c5cface3",
 			"steps": []
 		}
 	],
