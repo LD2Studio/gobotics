@@ -303,8 +303,9 @@ func save_scene(path: String):
 					fullname="%s.builtin" % item.name,
 					}
 			else:
+				var scene_path = ProjectSettings.globalize_path(item.scene_file_path)
 				scene_objects.environment = {
-					fullname=item.get_meta("fullname"),
+					fullname = game.database.get_fullname(scene_path),
 					}
 	var scene_json = JSON.stringify(scene_objects, "\t", false)
 #		print("scene JSON: ", scene_json)
