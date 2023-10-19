@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 
-version = "0.7.0"
+version = "0.7.1"
 py_version = "0.2.0"
 
 executable = {
@@ -13,6 +13,7 @@ executable = {
 if os.path.exists("exports"):
     shutil.rmtree('exports')
 os.mkdir("exports")
+subprocess.call(["touch", "exports/.gdignore"])
 
 for platform in ["linux", "windows"]:
 
@@ -29,7 +30,9 @@ for platform in ["linux", "windows"]:
     shutil.copy("assets/demo/robot.urdf", "exports/gobotics-"+ version +"-"+platform+"-x86_64/assets/demo")
     shutil.copy("assets/demo/robot_wrench.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
     shutil.copy("assets/demo/robot_mecanum.urdf", "exports/gobotics-"+ version +"-"+platform+"-x86_64/assets/demo")
+    shutil.copy("assets/demo/robot_mecanum_wrench.urdf", "exports/gobotics-"+ version +"-"+platform+"-x86_64/assets/demo")
     shutil.copy("assets/demo/servos.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
+    shutil.copy("assets/demo/slider.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
 
     shutil.copy("pygobotics/dist/pygobotics-"+ py_version +"-py3-none-any.whl", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/pygobotics/")
     shutil.copy("pygobotics/play_with_robot.py", "exports/gobotics-"+ version +"-"+ platform +"-x86_64/pygobotics/")

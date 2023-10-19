@@ -89,6 +89,16 @@ const GOBOTICS_CONTROL_TAG = """
 	</gobotics>
 """
 
+const GOBOTICS_4_MECANUM_DRIVE_TAG = """
+	<gobotics name="control_robot" type="4_mecanum_drive">
+		<front_right_wheel joint=""/>
+		<front_left_wheel joint=""/>
+		<back_right_wheel joint=""/>
+		<back_left_wheel joint=""/>
+		<max_speed value="8.0"/>
+	</gobotics>
+"""
+
 const GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL_TAG = """
 	<link name="" builtin="right_mecanum_wheel" />
 	</link>
@@ -115,6 +125,7 @@ enum Tag {
 	JOINT_PRISMATIC,
 	JOINT_PIN,
 	GOBOTICS_CONTROL,
+	GOBOTICS_4_MECANUM_DRIVE,
 	GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL,
 	GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL,
 }
@@ -159,6 +170,7 @@ func _ready():
 	var submenu_gobotics_control = PopupMenu.new()
 	submenu_gobotics_control.name = "SubmenuControl"
 	submenu_gobotics_control.add_item("Insert Robot Control", Tag.GOBOTICS_CONTROL)
+	submenu_gobotics_control.add_item("Insert 4 Mecanum Drive", Tag.GOBOTICS_4_MECANUM_DRIVE)
 	submenu_gobotics_control.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_gobotics_control)
 	menu.add_submenu_item("Control", "SubmenuControl")
@@ -206,6 +218,8 @@ func _on_item_pressed(id):
 			insert_text_at_caret(INLINE_COLOR_TAG)
 		Tag.GOBOTICS_CONTROL:
 			insert_text_at_caret(GOBOTICS_CONTROL_TAG)
+		Tag.GOBOTICS_4_MECANUM_DRIVE:
+			insert_text_at_caret(GOBOTICS_4_MECANUM_DRIVE_TAG)
 		Tag.GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL:
 			insert_text_at_caret(GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL_TAG)
 		Tag.GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL:
