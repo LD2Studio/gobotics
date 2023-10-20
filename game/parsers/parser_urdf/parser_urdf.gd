@@ -1243,7 +1243,7 @@ func _process(_delta: float):
 	pass"""
 	
 	_global_script = """extends Node3D
-var activated : bool = false
+@export var activated : bool = false
 """
 
 func add_robot_code():
