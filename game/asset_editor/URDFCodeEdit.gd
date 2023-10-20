@@ -77,7 +77,7 @@ const JOINT_PIN_TAG = """
 const BOX_GEOMETRY_TAG = """<box size="0.1 0.1 0.1"/>"""
 const SPHERE_GEOMETRY_TAG = """<sphere radius="0.1"/>"""
 const CYLINDER_GEOMETRY_TAG = """<cylinder radius="0.1" length="0.2"/>"""
-const MESH_GEOMETRY_TAG = """<mesh filename="package://" object="" />"""
+const MESH_GEOMETRY_TAG = """<mesh filename="" />"""
 
 const INLINE_COLOR_TAG = """<color rgba="0 0 0 1"/>"""
 

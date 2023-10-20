@@ -1,6 +1,0 @@
-<standalone name="Mecanum 1">
-	
-	<link name="Wheel" extends="right_mecanum_wheel" />
-	</link>
-
-</standalone>

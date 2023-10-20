@@ -198,6 +198,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.960241, 0.279173, 0, -0.279173, 0.960241, 0, 1.45366, 5)
 script = ExtResource("1_d4jh8")
 action_mouse_button = "LEFT_BUTTON"
+zoom_out = 20.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/PreviewScene"]
 environment = SubResource("Environment_nftkf")
