@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 
-version = "0.7.1"
+version = "0.7.2"
 py_version = "0.2.0"
 
 executable = {

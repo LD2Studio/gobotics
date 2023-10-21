@@ -14,6 +14,11 @@
 			"uuid": "806afb5c-66ae-4a7d-adc4-23582f18f1cd",
 			"title": "Rendering",
 			"color": "45cb1b"
+		},
+		{
+			"uuid": "353353a5-9ab5-4584-9785-8690842e3311",
+			"title": "Features",
+			"color": "f1ef17"
 		}
 	],
 	"stages": [
@@ -45,7 +50,8 @@
 			"title": "Ideas",
 			"tasks": [
 				"7d2b7e7f-d6fd-4abd-911b-9824aecd5c1c",
-				"6a251c22-fd01-4555-b634-592274c73237"
+				"6a251c22-fd01-4555-b634-592274c73237",
+				"adb0d772-5a08-4ecc-b4b5-67883701490e"
 			]
 		}
 	],
@@ -111,6 +117,13 @@
 			"title": "Add dialog confirmation when we leave asset editor without saving current asset",
 			"description": "",
 			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
+			"steps": []
+		},
+		{
+			"uuid": "adb0d772-5a08-4ecc-b4b5-67883701490e",
+			"title": "pygobotics: add asset from python script",
+			"description": "",
+			"category": "353353a5-9ab5-4584-9785-8690842e3311",
 			"steps": []
 		}
 	],
