@@ -28,7 +28,6 @@
 			"tasks": [
 				"04497972-4f8f-427b-9c50-fc506a2a9d5c",
 				"790d238f-fd76-4ded-b5fe-24694283c5bb",
-				"f1497717-7c1c-4f49-b517-d597b6ed2663",
 				"3aa17095-5bd6-4c8f-b1c2-1f0a3ca5d52d"
 			]
 		},
@@ -42,7 +41,8 @@
 			"title": "Done",
 			"tasks": [
 				"fa0790f0-11e1-4de6-bd2c-ef9e82cd9280",
-				"77c6019b-3d3b-4b8d-962e-d6d90d781c7f"
+				"77c6019b-3d3b-4b8d-962e-d6d90d781c7f",
+				"f1497717-7c1c-4f49-b517-d597b6ed2663"
 			]
 		},
 		{
@@ -100,7 +100,7 @@
 		},
 		{
 			"uuid": "f1497717-7c1c-4f49-b517-d597b6ed2663",
-			"title": "Asset Editor Rafraichissement",
+			"title": "Refresh not correctly in asset editor",
 			"description": "",
 			"category": "518c525d-a76f-484b-a0a6-fea2c5cface3",
 			"steps": []

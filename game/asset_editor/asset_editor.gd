@@ -83,7 +83,7 @@ func generate_scene() -> bool:
 	var err = asset_scene.pack(root_node)
 	
 	for child in preview_scene.get_children():
-		if child.is_in_group("ASSETS"):
+		if child.is_in_group("ASSETS") or child.is_in_group("ENVIRONMENT"):
 			preview_scene.remove_child(child)
 			child.queue_free()
 	asset_node = asset_scene.instantiate()
