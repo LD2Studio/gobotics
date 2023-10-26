@@ -19,7 +19,7 @@ signal python_client_connected
 
 var server := UDPServer.new()
 var client_peer: PacketPeerUDP
-var _script_nodes = Array()
+#var _script_nodes = Array()
 
 func _ready():
 	set_activate(activate)
@@ -91,7 +91,6 @@ func parse_call_from_python(peer: PacketPeerUDP, json_message: String):
 #			print("c: %s , args: %s" % [c, args])
 			## Call function and wait a response
 			var ret = await c.callv(args)
-#			print("ret: ", ret)
 			if ret is float:
 				var ret_message = {
 					"type": "float",
@@ -149,14 +148,11 @@ func parse_call_from_python(peer: PacketPeerUDP, json_message: String):
 #					print("packed data: ", packed_data)
 					if err:
 						printerr("Error %d" % err)
-					
 			else:
-				
 				var ret_message = {
 					"type": "null"
 					}
 				peer.put_packet(JSON.stringify(ret_message).to_utf8_buffer())
-
 		else:
 			var ret_message = {
 					"error": "Unrecognized function name!"

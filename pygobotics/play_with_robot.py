@@ -1,7 +1,9 @@
-from gobotics import app, DifferentialRobot
+from gobotics import app, Robot
 from time import sleep
 
-my_robot = DifferentialRobot(4243)
+my_robot = Robot(4243)
+
+print("Pose: ", my_robot.get_pose())
 
 app.run()
 my_robot.set_pose(0,0,0)
@@ -14,5 +16,5 @@ while True:
         break
     sleep(0.1)
 
-sleep(1)
-app.stop()
+# sleep(1)
+# app.stop()

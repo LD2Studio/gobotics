@@ -5,6 +5,8 @@ class_name RobotBase extends Node
 		activated = value
 		if activated:
 			update_all_joints()
+			
+@export var base_link: RigidBody3D
 
 signal joint_changed(joint_name: String)
 
@@ -27,11 +29,14 @@ func _init():
 		
 func _ready():
 	set_name.call_deferred(&"RobotBase")
-	update_all_joints()
-#	print("group joints: ", joints)
 	if not joints.is_empty():
 		focused_joint = joints[_joint_idx]
 		joint_changed.emit(focused_joint.name)
+		
+func setup():
+	for node in get_parent().get_children():
+		if node is RigidBody3D:
+			base_link = node
 
 func _physics_process(delta):
 	if activated and focused_joint:
@@ -60,11 +65,11 @@ func update_all_joints():
 	joints.clear()
 	for node in get_tree().get_nodes_in_group("REVOLUTE"):
 #		print("owner %s -> node %s" %  [node.owner, node])
-		if node.owner == get_parent() and not node.grouped:
+		if node.owner == get_parent():
 			joints.append(node)
 	for node in get_tree().get_nodes_in_group("PRISMATIC"):
 #		print("owner %s -> node %s" %  [node.owner, node])
-		if node.owner == get_parent() and not node.grouped:
+		if node.owner == get_parent():
 			joints.append(node)
 	for node in get_tree().get_nodes_in_group("GROUPED_JOINTS"):
 #		print("GROUPED_JOINTS: owner %s -> node %s" %  [node.owner, node])
@@ -83,6 +88,22 @@ func _on_joypad_changed(device: int, connected: bool):
 		joypad_connected = false
 
 ## Functions exposed to PythonBridge
+
+func get_pose() -> PackedFloat32Array:
+	var pose = PackedFloat32Array(
+		[
+			base_link.global_position.x / 10.0,
+			-base_link.global_position.z / 10.0,
+#			base_link.global_position.y / 10.0,
+			base_link.rotation.y
+		]
+	)
+	return pose
+	
+func set_pose(x: float, y: float, a: float):
+	base_link.global_position.x = x * 10.0
+	base_link.global_position.z = -y * 10.0
+	base_link.rotation.y = a
 
 func set_revolute(jname: String, value: float):
 	var joint_name = jname.replace(" ", "_")

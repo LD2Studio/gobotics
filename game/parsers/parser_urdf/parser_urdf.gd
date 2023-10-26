@@ -1198,14 +1198,12 @@ func add_gobotics_control(root_node: Node3D):
 	for control in _gobotics:
 		if "type" in control:
 			match control.type:
-				"diff_drive":
-					pass
-#					add_diff_drive_code(base_link, config)
-				"4_mecanum_drive":
-					pass
-#					add_4_mecanum_drive_code(base_link, config)
 				"grouped_joints":
 					add_grouped_joints(root_node, control)
+				"diff_drive":
+					add_diff_drive(root_node, control)
+				"4_mecanum_drive":
+					add_4_mecanum_drive(root_node, control)
 	
 func add_grouped_joints(root_node: Node3D, control):
 	var grouped_joints : Node = GroupedJoints.new()
@@ -1216,6 +1214,36 @@ func add_grouped_joints(root_node: Node3D, control):
 	grouped_joints.limit_lower = control.lower.to_float() * scale
 	grouped_joints.limit_upper = control.upper.to_float() * scale
 	grouped_joints.outputs = control.outputs
+	
+func add_diff_drive(root_node: Node3D, control):
+	var diff_drive : Node = DiffDrive.new()
+	diff_drive.name = StringName(control.name.to_pascal_case())
+	diff_drive.set_meta("owner", true)
+	diff_drive.right_wheel = control.right_wheel_joint
+	diff_drive.left_wheel = control.left_wheel_joint
+	diff_drive.max_speed = control.max_speed
+	root_node.add_child(diff_drive)
+	
+	if root_node.get_node_or_null("PythonBridge"):
+		root_node.get_node("PythonBridge").nodes.append(diff_drive)
+	if root_node.get("behavior_nodes") != null:
+		root_node.behavior_nodes.append(diff_drive)
+		
+func add_4_mecanum_drive(root_node: Node3D, control):
+	var mecanum_drive : Node = FourMecanumDrive.new()
+	mecanum_drive.name = StringName(control.name.to_pascal_case())
+	mecanum_drive.set_meta("owner", true)
+	mecanum_drive.front_right_wheel = control.front_right_wheel_joint
+	mecanum_drive.front_left_wheel = control.front_left_wheel_joint
+	mecanum_drive.back_right_wheel = control.back_right_wheel_joint
+	mecanum_drive.back_left_wheel = control.back_left_wheel_joint
+	mecanum_drive.max_speed = control.max_speed
+	root_node.add_child(mecanum_drive)
+	
+	if root_node.get_node_or_null("PythonBridge"):
+		root_node.get_node("PythonBridge").nodes.append(mecanum_drive)
+	if root_node.get("behavior_nodes") != null:
+		root_node.behavior_nodes.append(mecanum_drive)
 	
 func add_dummy_node(root_node: Node3D):
 	var dummy_node : Node = DummyNode.new()
