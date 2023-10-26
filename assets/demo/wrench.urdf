@@ -1,0 +1,92 @@
+<robot name="Wrench">
+	<link name="base_link">
+	
+		<visual name="">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.2 0.1 0.1"/>
+			</geometry>
+			<material name="">
+				<color rgba="0.6 0.6 0 1"/>
+			</material>
+		</visual>
+
+		<collision name="">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.2 0.1 0.1"/>
+			</geometry>
+		</collision>
+		
+		
+		<inertial>
+			<mass value="5.0"/>
+		</inertial>
+
+	</link>
+	
+	<link name="right_jaw">
+	
+		<visual name="">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.04 0.1 0.06"/>
+			</geometry>
+			<material name="">
+			
+			</material>
+		</visual>
+
+		<collision name="">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.04 0.1 0.06"/>
+			</geometry>
+		</collision>
+
+	</link>
+	
+	<joint name="base_right_jaw_joint" type="prismatic">
+		<origin xyz="0.08 -0.11 0" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="right_jaw"/>
+		<axis xyz="-1.0 0.0 0.0"/>
+		<limit lower="0.0" upper="0.05" effort="10.0" velocity="0.2"/>
+	</joint>
+
+	<link name="left_jaw">
+	
+		<visual name="">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.04 0.1 0.06"/>
+			</geometry>
+			<material name="">
+			
+			</material>
+		</visual>
+
+		<collision name="">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.04 0.1 0.06"/>
+			</geometry>
+		</collision>
+
+	</link>
+	
+	<joint name="base_left_jaw_joint" type="prismatic">
+		<origin xyz="-0.08 -0.11 0" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="left_jaw"/>
+		<axis xyz="1.0 0.0 0.0"/>
+		<limit lower="0.0" upper="0.05" effort="10.0" velocity="0.2"/>
+	</joint>
+	
+	<gobotics name="wrench_control" type="grouped_joints">
+		<input name="wrench_in" lower="0.0" upper="0.05"/>
+		<output joint="base_right_jaw_joint" factor="1.0"/>
+		<output joint="base_left_jaw_joint" factor="1.0"/>
+	</gobotics>
+
+</robot>

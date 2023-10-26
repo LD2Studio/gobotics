@@ -40,14 +40,18 @@ func parse(urdf_data: PackedByteArray, error_output: Array = []) -> Node3D:
 		root_node.free()
 		return null
 	load_joints(urdf_data)
-	var base_link = create_scene(root_node)
+	var base_link = create_asset_scene(root_node)
 	if base_link:
 		if root_node.is_in_group("ROBOTS"):
+			add_root_script_to(root_node)
+			add_python_bridge(root_node)
+			add_robot_base(root_node)
+			add_gobotics_control(root_node)
 			add_camera_on_robot(root_node, base_link)
 		root_node.add_child(base_link)
 		root_node.set_meta("offset_pos", Vector3.ZERO)
 		kinematics_scene_owner_of(root_node)
-		add_script_to(root_node)
+#		add_script_to(root_node)
 		return root_node
 	else:
 		delete_links()
@@ -969,7 +973,7 @@ func load_joints(urdf_data: PackedByteArray):
 
 #	print("joints: ", JSON.stringify(_joints, "\t", false))
 
-func create_scene(root_node: Node3D):
+func create_asset_scene(root_node: Node3D):
 	for joint in _joints:
 		# search for the link that matches the parent link of joint
 		var parent_name: String = joint.parent.link
@@ -1168,6 +1172,57 @@ func create_scene(root_node: Node3D):
 
 	return base_link
 	
+func add_root_script_to(root_node: Node3D):
+	var root_script: GDScript = load("res://game/robot_scripts/root.gd")
+	root_node.set_script(root_script)
+	
+func add_python_bridge(root_node: Node3D):
+	var python_bridge : Node = load("res://game/python_bridge/python_bridge.tscn").instantiate()
+	python_bridge.name = &"PythonBridge"
+	python_bridge.set_meta("owner", true)
+	root_node.add_child(python_bridge)
+	
+func add_robot_base(root_node: Node3D):
+	var robot_base : Node = RobotBase.new()
+	robot_base.name = &"RobotBase"
+	robot_base.set_meta("owner", true)
+	root_node.add_child(robot_base)
+	if root_node.get_node_or_null("PythonBridge"):
+		root_node.get_node("PythonBridge").nodes.append(robot_base)
+	if root_node.get("behavior_nodes") != null:
+		root_node.behavior_nodes.append(robot_base)
+		
+func add_gobotics_control(root_node: Node3D):
+#	print("_gobotics: ", _gobotics)
+	
+	for control in _gobotics:
+		if "type" in control:
+			match control.type:
+				"diff_drive":
+					pass
+#					add_diff_drive_code(base_link, config)
+				"4_mecanum_drive":
+					pass
+#					add_4_mecanum_drive_code(base_link, config)
+				"grouped_joints":
+					add_grouped_joints(root_node, control)
+	
+func add_grouped_joints(root_node: Node3D, control):
+	var grouped_joints : Node = GroupedJoints.new()
+	grouped_joints.name = StringName(control.name.to_pascal_case())
+	grouped_joints.set_meta("owner", true)
+	root_node.add_child(grouped_joints)
+	grouped_joints.input = control.input
+	grouped_joints.limit_lower = control.lower.to_float() * scale
+	grouped_joints.limit_upper = control.upper.to_float() * scale
+	grouped_joints.outputs = control.outputs
+	
+func add_dummy_node(root_node: Node3D):
+	var dummy_node : Node = DummyNode.new()
+	dummy_node.name = &"Dummy"
+	dummy_node.set_meta("owner", true)
+	root_node.add_child(dummy_node)
+	
 func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 	var pivot := Node3D.new()
 	pivot.set_meta("owner", true)
@@ -1225,7 +1280,6 @@ func add_script_to(root_node: Node3D):
 						add_4_mecanum_drive_code(base_link, config)
 					"grouped_joints":
 						add_group_joints_script("robot", config)
-		add_robot_code()
 		
 	var script := GDScript.new()
 	script.source_code = _global_script
@@ -1244,17 +1298,6 @@ func _process(_delta: float):
 	
 	_global_script = """extends Node3D
 @export var activated : bool = false
-"""
-
-func add_robot_code():
-	_global_script += """
-@onready var robot = RobotBase.new()
-@onready var python = PythonBridge.new(4243)
-"""
-	_ready_script += """
-	robot.add_to_group("ROBOT_SCRIPT", true)
-	add_child(robot)
-	add_child(python)
 """
 
 func add_diff_drive_code(base_link, config):
@@ -1321,6 +1364,7 @@ var %s : GroupedJoints
 
 func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends JoltHingeJoint3D
+@export var grouped: bool = false
 @onready var child_link: RigidBody3D = $%s
 var target_velocity: float = 0.0:
 	set = _target_velocity_changed
@@ -1339,6 +1383,7 @@ func _target_velocity_changed(value: float):
 	
 func get_revolute_joint_script(child_node: Node3D, basis_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends JoltHingeJoint3D
+@export var grouped: bool = false
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
 var target_angle: float = 0
@@ -1379,6 +1424,7 @@ func _target_angle_changed(value: float):
 	
 func get_prismatic_joint_script(child_node: Node3D, basis_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends JoltSliderJoint3D
+@export var grouped: bool = false
 @onready var child_link: RigidBody3D = $%s
 @onready var basis_inv: Node3D = %%%s
 var target_dist: float = 0.0:

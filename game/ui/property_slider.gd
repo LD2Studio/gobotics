@@ -34,8 +34,8 @@ func _ready():
 	value_label = Label.new()
 	add_child(value_label)
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	value_label.text = "%.1f" % [h_slider.value]
+	value_label.text = "%.2f" % [h_slider.value]
 
 func _on_slider_value_changed(new_value: float):
-	value_label.text = "%.1f" % [new_value]
+	value_label.text = "%.2f" % [new_value]
 	value_changed.emit(new_value)

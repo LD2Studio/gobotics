@@ -15,7 +15,6 @@ var _robots_in_scene = Array()	# List of robots actually into scene
 @onready var game = owner
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
 @onready var save_scene_button: Button = %SaveSceneButton
-@onready var python = PythonBridge.new(4242)
 @onready var terminal_output = %TerminalOutput
 @onready var object_inspector: PanelContainer = %ObjectInspector
 @onready var udp_port_number: SpinBox = %UDPPortNumber
@@ -24,24 +23,24 @@ var _robots_in_scene = Array()	# List of robots actually into scene
 @onready var focused_joint_label = %FocusedJointLabel
 @onready var scene_view = %SceneView
 
+var python_bridge_scene : PackedScene = preload("res://game/python_bridge/python_bridge.tscn")
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
 	%InfosContainer.visible = false
 	update_camera_view_menu()
-	python.name = &"AppPython"
-	python.activate = true
-	add_child(python)
+	
+	var python_bridge : Node = python_bridge_scene.instantiate()
+	add_child(python_bridge)
+	python_bridge.port = 4242
+	python_bridge.set_activate(true)
+	python_bridge.nodes.append(self)
 	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("DELETE"):
 		if asset_selected == null: return
 		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [asset_selected.name]
 		%ConfirmDeleteDialog.popup_centered()
-
-#	if asset_focused and event is InputEventMouseMotion:
-#		get_viewport().set_input_as_handled()
-#		print("asset position: ", asset_focused.get_child(0).global_position)
 		
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
@@ -215,7 +214,7 @@ func show_asset_parameters(asset: Node3D):
 		angle_edit.value_changed.connect(joint._target_angle_changed)
 			
 	var all_prismatic_joints = get_tree().get_nodes_in_group("PRISMATIC")
-	var primatic_joints = all_prismatic_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
+	var primatic_joints = all_prismatic_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint) and not joint.grouped)
 #	print("Prismatic joints: ", primatic_joints)
 	for joint in primatic_joints:
 		var dist_label = Label.new()
@@ -233,7 +232,9 @@ func show_asset_parameters(asset: Node3D):
 			
 	var all_grouped_joints = get_tree().get_nodes_in_group("GROUPED_JOINTS")
 	var grouped_joints = all_grouped_joints.filter(func(joint): return asset_selected.is_ancestor_of(joint))
+#	print("Grouped joints: ", grouped_joints)
 	for joint in grouped_joints:
+#		print("grouped joint: ", joint)
 		var input_label = Label.new()
 		input_label.text = joint.input
 		input_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -244,13 +245,13 @@ func show_asset_parameters(asset: Node3D):
 		input_edit.min_value = joint.limit_lower
 		input_edit.max_value = joint.limit_upper
 		input_edit.step = 0.01
-#		input_edit.value = joint.input_value
+		input_edit.value = joint.input_value
 		input_edit.value_changed.connect(joint._input_value_changed)
 		
 	if asset_selected.is_in_group("ROBOTS"):
 		%PythonBridgeContainer.visible = true
-		%PythonRemoteButton.set_pressed_no_signal(asset_selected.python.activate)
-		%UDPPortNumber.value = asset_selected.python.port
+		%PythonRemoteButton.set_pressed_no_signal(asset_selected.get_node("PythonBridge").activate)
+		%UDPPortNumber.value = asset_selected.get_node("PythonBridge").port
 	else:
 		%PythonBridgeContainer.visible = false
 
@@ -445,7 +446,7 @@ func iterate_root_node(parent: Node):
 			
 #	print("asset %s -> AABB=%s" % [parent.name, _asset_aabb])
 	
-## Python functions
+## Functions exposed to python bridge
 
 func run():
 	_on_run_stop_button_toggled(true)
@@ -567,13 +568,13 @@ func _on_z_rot_value_changed(value: float) -> void:
 func _on_python_remote_button_toggled(button_pressed: bool) -> void:
 	if asset_selected == null: return
 	if asset_selected.is_in_group("ROBOTS"):
-		asset_selected.python.activate = button_pressed
-		asset_selected.python.port = int(udp_port_number.value)
+		asset_selected.get_node("PythonBridge").activate = button_pressed
+		asset_selected.get_node("PythonBridge").port = int(udp_port_number.value)
 
 func _on_udp_port_number_value_changed(value: float) -> void:
 	if asset_selected == null: return
 	if asset_selected.is_in_group("ROBOTS"):
-		asset_selected.python.port = int(value)
+		asset_selected.get_node("PythonBridge").port = int(value)
 		
 func _on_open_script_button_pressed() -> void:
 	if asset_selected == null: return

@@ -3,27 +3,34 @@ import time
 
 class Gobotics(GodotBridge):
     def run(self):
-        self.set("run")
+        self.call("run")
     def stop(self):
-        self.set("stop")
+        self.call("stop")
     def is_running(self) -> bool:
-        return self.get("is_running")
+        return self.call("is_running")
     def reload(self):
-        self.set("reload")
+        self.call("reload")
         time.sleep(0.1)
     
     def print(self, msg: str):
-        self.set("print_on_terminal", msg)
-
-class DifferentialRobot(GodotBridge):
-    
-    def set_pose(self, x, y, a):
-        self.set("set_pose", x, y, a)
-
-    def get_pose(self):
-        return self.get("get_pose")
-    
-    def move(self, right_vel, left_vel):
-        self.set("move", right_vel, left_vel)
+        self.call("print_on_terminal", msg)
 
 app = Gobotics(4242)
+
+class Robot(GodotBridge):
+    def set_revolute_angle(self, name: str, value: float):
+        self.call("set_revolute", name, value)
+    
+    def set_prismatic_dist(self, name: str, value: float):
+        self.call("set_prismatic", name, value)
+
+# class DifferentialRobot(GodotBridge):
+    
+#     def set_pose(self, x, y, a):
+#         self.set("set_pose", x, y, a)
+
+#     def get_pose(self):
+#         return self.get("get_pose")
+    
+#     def move(self, right_vel, left_vel):
+#         self.set("move", right_vel, left_vel)

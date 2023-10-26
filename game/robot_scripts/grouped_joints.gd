@@ -1,27 +1,29 @@
-extends Node
-class_name GroupedJoints
+class_name GroupedJoints extends Node
 
-var input: String
-var _outputs: Array
-var target_value: float = 0.0:
+@export var input: String = ""
+@export var outputs : Array
+var input_value: float = 0.0:
 	set = _input_value_changed
-var limit_lower: float
-var limit_upper: float
+@export var limit_lower: float
+@export var limit_upper: float
 
-func _init(input_name: String, outputs: Array, lower_value: float, upper_value: float):
-	input = input_name
-	_outputs = outputs
-	limit_lower = lower_value; limit_upper = upper_value
-	add_to_group("GROUPED_JOINTS")
+func _init():
+	add_to_group("GROUPED_JOINTS", true)
+
+func _ready():
+	for output in outputs:
+#		print("output: ", output)
+		get_parent().get_node("%%%s" % [output.joint]).grouped = true
 
 func _input_value_changed(value: float):
 #	print("input: ", value)
-	target_value = value
-	for output in _outputs:
-		get_parent().get_node("%%%s" % [output.joint]).input = output.factor * value
-
+	input_value = value
+	for output in outputs:
+		get_parent().get_node("%%%s" % [output.joint]).input = output.factor.to_float() * value
+#
 func shift_target(step):
-	if step > 0 and target_value <= limit_upper:
-		target_value += step
-	if step < 0 and target_value >= limit_lower:
-		target_value += step
+#	print("step: %f , input: %f" % [step, input_value])
+	if step > 0 and input_value <= limit_upper:
+		input_value += step
+	if step < 0 and input_value >= limit_lower:
+		input_value += step

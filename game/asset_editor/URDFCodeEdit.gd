@@ -55,7 +55,7 @@ const JOINT_REVOLUTE_TAG = """
 		<parent link=""/>
 		<child link=""/>
 		<axis xyz="1.0 0.0 0.0"/>
-		<limit lower="0.0" upper="0.0" effort="1.0" velocity="5.0"/>
+		<limit lower="0.0" upper="0.0" effort="10.0" velocity="1.0"/>
 	</joint>
 """
 const JOINT_PRISMATIC_TAG = """
@@ -64,7 +64,7 @@ const JOINT_PRISMATIC_TAG = """
 		<parent link=""/>
 		<child link=""/>
 		<axis xyz="1.0 0.0 0.0"/>
-		<limit lower="0.0" upper="0.0" effort="1.0" velocity="5.0"/>
+		<limit lower="0.0" upper="0.0" effort="10.0" velocity="0.5"/>
 	</joint>
 """
 const JOINT_PIN_TAG = """
@@ -99,6 +99,14 @@ const GOBOTICS_4_MECANUM_DRIVE_TAG = """
 	</gobotics>
 """
 
+const GOBOTICS_GROUPED_JOINTS_TAG = """
+	<gobotics name="control_joints" type="grouped_joints">
+		<input name="" lower="0.0" upper="0.0"/>
+		<output joint="" factor="1.0"/>
+		<output joint="" factor="1.0"/>
+	</gobotics>
+"""
+
 const GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL_TAG = """
 	<link name="" builtin="right_mecanum_wheel" />
 	</link>
@@ -126,6 +134,7 @@ enum Tag {
 	JOINT_PIN,
 	GOBOTICS_CONTROL,
 	GOBOTICS_4_MECANUM_DRIVE,
+	GOBOTICS_GROUPED_JOINTS,
 	GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL,
 	GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL,
 }
@@ -171,6 +180,7 @@ func _ready():
 	submenu_gobotics_control.name = "SubmenuControl"
 	submenu_gobotics_control.add_item("Insert Robot Control", Tag.GOBOTICS_CONTROL)
 	submenu_gobotics_control.add_item("Insert 4 Mecanum Drive", Tag.GOBOTICS_4_MECANUM_DRIVE)
+	submenu_gobotics_control.add_item("Insert Grouped Joints", Tag.GOBOTICS_GROUPED_JOINTS)
 	submenu_gobotics_control.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_gobotics_control)
 	menu.add_submenu_item("Control", "SubmenuControl")
@@ -220,6 +230,8 @@ func _on_item_pressed(id):
 			insert_text_at_caret(GOBOTICS_CONTROL_TAG)
 		Tag.GOBOTICS_4_MECANUM_DRIVE:
 			insert_text_at_caret(GOBOTICS_4_MECANUM_DRIVE_TAG)
+		Tag.GOBOTICS_GROUPED_JOINTS:
+			insert_text_at_caret(GOBOTICS_GROUPED_JOINTS_TAG)
 		Tag.GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL:
 			insert_text_at_caret(GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL_TAG)
 		Tag.GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL:

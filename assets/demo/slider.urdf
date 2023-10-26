@@ -55,7 +55,7 @@
 		</collision>
 
 		<inertial>
-			<mass value="1"/>
+			<mass value="0.1"/>
 		</inertial>
 
 	</link>
