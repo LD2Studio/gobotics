@@ -2,8 +2,8 @@ import os
 import shutil
 import subprocess
 
-version = "0.7.2"
-py_version = "0.2.0"
+version = "0.8.0"
+py_version = "0.3.0"
 
 executable = {
     "linux": "gobotics.x86_64",
@@ -35,7 +35,10 @@ for platform in ["linux", "windows"]:
     shutil.copy("assets/demo/slider.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
 
     shutil.copy("pygobotics/dist/pygobotics-"+ py_version +"-py3-none-any.whl", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/pygobotics/")
+    shutil.copy("pygobotics/hello_gobotics.py", "exports/gobotics-"+ version +"-"+ platform +"-x86_64/pygobotics/")
+    shutil.copy("pygobotics/play_with_servo.py", "exports/gobotics-"+ version +"-"+ platform +"-x86_64/pygobotics/")
     shutil.copy("pygobotics/play_with_robot.py", "exports/gobotics-"+ version +"-"+ platform +"-x86_64/pygobotics/")
+    shutil.copy("pygobotics/play_with_mecanum_robot.py", "exports/gobotics-"+ version +"-"+ platform +"-x86_64/pygobotics/")
 
     subprocess.run(["godot4" , "--export-debug", "Gobotics-"+ platform , "exports/gobotics-"+ version +"-"+ platform + "-x86_64/" + executable[platform], "--headless"])
 

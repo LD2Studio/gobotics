@@ -1,5 +1,5 @@
 Metadata-Version: 2.1
 Name: pygobotics
-Version: 0.2.0
+Version: 0.3.0
 Author-email: Laurent Dethoor <ld2studiogame@gmail.com>
 Requires-Dist: numpy
