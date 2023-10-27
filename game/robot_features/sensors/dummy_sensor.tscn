@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://cun8g14e4lg1o"]
+
+[node name="dummy_sensor" type="Node3D"]

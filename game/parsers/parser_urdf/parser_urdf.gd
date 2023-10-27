@@ -8,9 +8,9 @@ var parser = XMLParser.new()
 var parse_error_message: String
 
 var _materials: Array
-## Links of robot
-var links: Array
+var _links: Array
 var _joints: Array
+var _sensors: Array
 var _gobotics: Array
 var _filename : String
 var _frame_mesh : ArrayMesh = load("res://game/gizmos/frame_arrows.res")
@@ -23,23 +23,25 @@ enum Tag {
 		VISUAL,
 		COLLISION,
 		INERTIAL,
+		SENSOR,
+		RAY,
 		GOBOTICS,
 	}
 
-
-func parse(urdf_data: PackedByteArray, error_output: Array = []) -> Node3D:
+func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 	clear_buffer()
 	var root_node : Node3D = get_root_node(urdf_data)
 	if root_node == null:
 		printerr("[PARSER] root node not founded")
 		return null
-	load_gobotics_params(urdf_data)
-	load_materials(urdf_data)
-	if load_links(urdf_data, root_node.get_meta("type")) != OK:
+	parse_gobotics_params(urdf_data)
+	parse_materials(urdf_data)
+	if parse_links(urdf_data, root_node.get_meta("type")) != OK:
 		delete_links()
 		root_node.free()
 		return null
-	load_joints(urdf_data)
+	parse_joints(urdf_data)
+	parse_sensors(urdf_data)
 	var base_link = create_asset_scene(root_node)
 	if base_link:
 		if root_node.is_in_group("ROBOTS"):
@@ -108,7 +110,7 @@ func get_root_node(urdf_data: PackedByteArray) -> Node3D:
 				
 	return root_node
 	
-func load_gobotics_params(urdf_path: PackedByteArray):
+func parse_gobotics_params(urdf_path: PackedByteArray):
 	var parse_err = parser.open_buffer(urdf_path)
 	if parse_err:
 		printerr("[PARSER] parse error ", parse_err)
@@ -276,7 +278,7 @@ func load_gobotics_params(urdf_path: PackedByteArray):
 	
 #	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 
-func load_materials(urdf_path: PackedByteArray):
+func parse_materials(urdf_path: PackedByteArray):
 	var parse_err = parser.open_buffer(urdf_path)
 	if parse_err:
 		printerr("[PARSER] parse error ", parse_err)
@@ -347,7 +349,7 @@ func load_materials(urdf_path: PackedByteArray):
 
 #	print("materials: ", _materials)
 
-func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
+func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 	var parse_err = parser.open_buffer(urdf_data)
 	if parse_err:
 		printerr("[PARSER] parse error ", parse_err)
@@ -375,7 +377,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 					link_attrib = {}
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
-						var value = parser.get_attribute_value(idx)
+						var value : String = parser.get_attribute_value(idx)
 						link_attrib[name] = value
 						
 					if "extends" in link_attrib:
@@ -679,7 +681,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 			var node_name = parser.get_node_name()
 			match node_name:
 				"link":
-					links.append(link.duplicate())
+					_links.append(link.duplicate())
 					link.queue_free()
 					root_tag = Tag.NONE
 				"intertial":
@@ -689,7 +691,7 @@ func load_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 				"collision":
 					current_tag = Tag.NONE
 				
-#	print("links: ", JSON.stringify(links, "\t", false))
+#	print("links: ", JSON.stringify(_links, "\t", false))
 	return OK
 	
 func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
@@ -858,7 +860,7 @@ func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
 #		idx += 1
 #	return ERR_CANT_RESOLVE
 	
-func load_joints(urdf_data: PackedByteArray):
+func parse_joints(urdf_data: PackedByteArray):
 	var parse_err = parser.open_buffer(urdf_data)
 	if parse_err:
 		printerr("[PARSER] parse error ", parse_err)
@@ -973,12 +975,139 @@ func load_joints(urdf_data: PackedByteArray):
 
 #	print("joints: ", JSON.stringify(_joints, "\t", false))
 
+func parse_sensors(urdf_data: PackedByteArray):
+	var parse_err = parser.open_buffer(urdf_data)
+	if parse_err:
+		printerr("[PARSER] parse error ", parse_err)
+		return ERR_PARSE_ERROR
+	
+	var sensor_attrib = {}
+	var sensor_node: Node3D
+	var root_tag: int = Tag.NONE
+	var internal_tag: int = Tag.RAY
+	while true:
+		if parser.read() != OK: # Ending parse XML file
+			break
+		var type = parser.get_node_type()
+		
+		if type == XMLParser.NODE_ELEMENT:
+			# Get node name
+			var node_name = parser.get_node_name()
+			
+			match node_name:
+				"sensor":
+					if root_tag != Tag.NONE: continue
+					root_tag = Tag.SENSOR
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value : String = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "name" in attrib:
+						sensor_attrib.name = attrib.name.replace(" ", "_")
+					if "type" in attrib:
+						match attrib.type:
+							"ray":
+								sensor_node = load("res://game/robot_features/sensors/dummy_sensor.tscn").instantiate()
+							_:
+								printerr("Unrecognized sensor type name!")
+					else:
+						printerr("type attribute not present in sensor tag!")
+					if sensor_node:
+						sensor_node.set_meta("orphan", true)
+						sensor_node.set_meta("owner", true)
+						sensor_node.add_to_group("RAY", true)
+						sensor_attrib.node = sensor_node
+						
+				"parent":
+					if not root_tag == Tag.SENSOR: continue
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value.replace(" ", "_")
+					sensor_attrib.parent = attrib
+					
+				"origin":
+					if not root_tag == Tag.SENSOR: continue
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					var xyz := Vector3.ZERO
+					if "xyz" in attrib:
+						var xyz_arr = attrib.xyz.split_floats(" ")
+						xyz.x = xyz_arr[0]
+						xyz.y = xyz_arr[2]
+						xyz.z = -xyz_arr[1]
+					var rpy := Vector3.ZERO
+					if "rpy" in attrib:
+						var rpy_arr = attrib.rpy.split_floats(" ")
+						rpy.x = rpy_arr[0]
+						rpy.y = rpy_arr[2]
+						rpy.z = -rpy_arr[1]
+					if sensor_node:
+						sensor_node.position = xyz * scale
+						sensor_node.rotation = rpy
+
+#					if sensor_attrib.node.is_in_group("RAY"):
+#
+#						print("Sensor %s is in RAY group" % sensor_attrib.name)
+					
+				"ray":
+					if root_tag != Tag.SENSOR: continue
+					internal_tag = Tag.RAY
+					if "type" in sensor_attrib and sensor_attrib.type != "ray":
+						printerr("ray tag should not be use here!")
+						
+				"horizontal":
+					if not root_tag == Tag.SENSOR : continue
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					sensor_attrib.horizontal = {}
+					if internal_tag == Tag.RAY:
+						if "samples" in attrib:
+							sensor_attrib.horizontal.samples = int(attrib.samples)
+						else:
+							sensor_attrib.horizontal.samples = 1
+						if "resolution" in attrib:
+							sensor_attrib.horizontal.resolution = float(attrib.resolution)
+						else:
+							sensor_attrib.horizontal.resolution = 1.0
+						if "min_angle" in attrib:
+							sensor_attrib.horizontal.min_angle = float(attrib.min_angle)
+						else:
+							sensor_attrib.horizontal.min_angle = 0.0
+						if "max_angle" in attrib:
+							sensor_attrib.horizontal.max_angle = float(attrib.max_angle)
+						else:
+							sensor_attrib.horizontal.max_angle = 0.0
+			
+		if type == XMLParser.NODE_ELEMENT_END:
+			# Get node name
+			var node_name = parser.get_node_name()
+			if node_name == "sensor":
+				if sensor_node:
+					_sensors.append(sensor_attrib.duplicate(true))
+					sensor_attrib.clear()
+				root_tag = Tag.NONE
+				
+			elif node_name == "ray":
+				internal_tag = Tag.NONE
+				
+#	print("sensors: ", JSON.stringify(_sensors, "\t", false))
+
 func create_asset_scene(root_node: Node3D):
+	# Attach links to joints
 	for joint in _joints:
 		# search for the link that matches the parent link of joint
 		var parent_name: String = joint.parent.link
 		var parent_node: Node3D
-		for link in links:
+		for link in _links:
 			if link.name == parent_name:
 				parent_node = link
 				link.set_meta("orphan", false) # Marked as used
@@ -988,7 +1117,7 @@ func create_asset_scene(root_node: Node3D):
 		# search for the link that matches the child link of joint
 		var child_name: String = joint.child.link
 		var child_node: Node3D
-		for link in links:
+		for link in _links:
 			if link.name == child_name:
 				child_node = link
 				link.set_meta("orphan", false)
@@ -1156,8 +1285,22 @@ func create_asset_scene(root_node: Node3D):
 			child_node.transform.basis = new_joint_basis.inverse()
 		parent_node.add_child(joint_node)
 		
+	# Attach sensors to links
+	for sensor in _sensors:
+		var parent_name: String = sensor.parent.link
+		var parent_node: Node3D
+		for link in _links:
+			if link.name == parent_name:
+				parent_node = link
+				break
+		if parent_node == null:
+			printerr("Sensor <%s> has no parent link!" % [sensor.name])
+		else:
+			parent_node.add_child(sensor.node)
+			
+		
 	var base_link: RigidBody3D
-	for link in links:
+	for link in _links:
 		if link and link.get_parent() == null:
 			base_link = link
 			link.set_meta("orphan", false)
@@ -1168,12 +1311,11 @@ func create_asset_scene(root_node: Node3D):
 				base_link.freeze = true
 			break
 			
-	clean_links()
-
+	freeing_nodes()
 	return base_link
 	
 func add_root_script_to(root_node: Node3D):
-	var root_script: GDScript = load("res://game/robot_scripts/root.gd")
+	var root_script: GDScript = load("res://game/robot_features/root.gd")
 	root_node.set_script(root_script)
 	
 func add_python_bridge(root_node: Node3D):
@@ -1284,111 +1426,6 @@ func add_owner(owner_node, nodes: Array):
 		node.owner = owner_node
 		if node.get_child_count():
 			add_owner(owner_node, node.get_children())
-			
-var _global_script: String
-var _ready_script: String
-var _process_script: String
-
-func add_script_to(root_node: Node3D):
-	var base_link: RigidBody3D
-	for child in root_node.get_children():
-		if child is RigidBody3D:
-			base_link = child
-			break
-	if base_link == null: return null
-	
-	add_base_code()
-	if root_node.is_in_group("ROBOTS"):
-		for config in _gobotics:
-			if "type" in config:
-				match config.type:
-					"diff_drive":
-						add_diff_drive_code(base_link, config)
-					"4_mecanum_drive":
-						add_4_mecanum_drive_code(base_link, config)
-					"grouped_joints":
-						add_group_joints_script("robot", config)
-		
-	var script := GDScript.new()
-	script.source_code = _global_script
-	script.source_code += _ready_script
-	script.source_code += _process_script
-	root_node.set_script(script)
-	
-func add_base_code():
-	_ready_script = """
-func _ready():
-	pass"""
-
-	_process_script = """
-func _process(_delta: float):
-	pass"""
-	
-	_global_script = """extends Node3D
-@export var activated : bool = false
-"""
-
-func add_diff_drive_code(base_link, config):
-	_global_script += """
-var control : DiffDrive
-	"""
-	_ready_script += """
-	control = DiffDrive.new($%s, %%%s, %%%s, %f)""" % [
-				base_link.name,
-				config.right_wheel_joint,
-				config.left_wheel_joint,
-				float(config.max_speed),
-				]
-	_ready_script += """
-	control.add_to_group("ROBOT_SCRIPT", true)
-	add_child(control)
-	"""
-	
-func add_4_mecanum_drive_code(base_link, config):
-	_global_script += """
-var control : FourMecanumDrive
-	"""
-	_ready_script += """
-	control = FourMecanumDrive.new($%s, %%%s, %%%s, %%%s, %%%s, %f)""" % [
-				base_link.name,
-				config.front_right_wheel_joint,
-				config.front_left_wheel_joint,
-				config.back_right_wheel_joint,
-				config.back_left_wheel_joint,
-				float(config.max_speed),
-				]
-	_ready_script += """
-	control.add_to_group("ROBOT_SCRIPT", true)
-	add_child(control)
-	"""
-	
-func add_group_joints_script(robot: String, config):
-	_global_script += """
-var %s : GroupedJoints
-""" % [config.name]
-	
-	var outputs_var : String = "var %s_outputs = [\n" % [config.name]
-	for output in config.outputs:
-		pass
-		outputs_var += "		{\n"
-		if "joint" in output:
-			outputs_var += "			joint = \"%s\",\n" % [output.joint]
-		if "factor" in output:
-			outputs_var += "			factor = %f,\n" % [output.factor.to_float()]
-		outputs_var += "		},\n"
-		
-	outputs_var += "	]\n"
-	_global_script += outputs_var
-	
-	_ready_script += """
-	%s = GroupedJoints.new(\"%s\", %s, %f, %f)
-	%s.name = &"%s"
-	add_child(%s)
-	%s.owner = self
-	""" % [config.name, config.input, config.name + "_outputs", config.lower.to_float(), config.upper.to_float(),
-		config.name, config.name,
-		config.name,
-		config.name]
 
 func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
 	var source_code = """extends JoltHingeJoint3D
@@ -1534,17 +1571,21 @@ func _ready():
 	
 func clear_buffer():
 	_materials.clear()
-	links.clear()
+	_links.clear()
 	_joints.clear()
+	_sensors.clear()
 	_gobotics.clear()
 	parse_error_message = ""
 
 func delete_links():
-	for link in links:
+	for link in _links:
 		link.queue_free()
 
-func clean_links():
-	for link in links:
+func freeing_nodes():
+	for link in _links:
 		if link.get_meta("orphan"):
 #			print("freeing %s" % link)
 			link.queue_free()
+	for sensor in _sensors:
+		if sensor.node.get_meta("orphan"):
+			sensor.node.queue_free()

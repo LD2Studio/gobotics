@@ -81,7 +81,8 @@ func generate_scene() -> bool:
 	
 	asset_scene = PackedScene.new()
 	var err = asset_scene.pack(root_node)
-	
+	if err:
+		printerr("error packed %s!" % root_node)
 	for child in preview_scene.get_children():
 		if child.is_in_group("ASSETS") or child.is_in_group("ENVIRONMENT"):
 			preview_scene.remove_child(child)

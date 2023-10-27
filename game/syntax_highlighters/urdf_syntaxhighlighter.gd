@@ -13,12 +13,15 @@ func _init():
 	number_color = Color.LIGHT_YELLOW
 
 	keyword_colors = {
+		# Header Tags
 		robot = Color.GREEN_YELLOW,
 		standalone = Color.GREEN_YELLOW,
 		env = Color.GREEN_YELLOW,
+		# Standard Tags
 		link = Color.ROYAL_BLUE,
 		joint = Color.ROYAL_BLUE,
 		material = Color.ROYAL_BLUE,
+		sensor = Color.ROYAL_BLUE,
 		gobotics = Color.ROYAL_BLUE,
 		inertial = Color.ROYAL_BLUE,
 		visual = Color.ROYAL_BLUE,
