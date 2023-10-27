@@ -67,7 +67,6 @@ func parse_call_from_python(peer: PacketPeerUDP, json_message: String):
 #	print("Message: ", message)
 	if "namefunc" in message:
 		var caller = get_script_node(message.namefunc)
-
 		if caller:
 #			print("method %s exits" % [message.namefunc])
 			var params: Array = message.params

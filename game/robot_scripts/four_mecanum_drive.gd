@@ -66,7 +66,7 @@ func _input(event):
 
 ## Functions exposed to Python
 
-func move(front_right_vel: float, front_left_vel: float, back_right_vel: float, back_left_vel: float):
+func move_mecanum_drive(front_right_vel: float, front_left_vel: float, back_right_vel: float, back_left_vel: float):
 	front_left_wheel_joint.target_velocity = front_left_vel
 	front_right_wheel_joint.target_velocity = front_right_vel
 	back_left_wheel_joint.target_velocity = back_left_vel

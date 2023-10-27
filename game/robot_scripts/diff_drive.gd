@@ -47,7 +47,7 @@ func _input(event):
 
 ## Functions exposed to Python
 
-func move(right_vel: float, left_vel: float):
+func move_diff_drive(right_vel: float, left_vel: float):
 	right_wheel_joint.target_velocity = right_vel
 	left_wheel_joint.target_velocity = left_vel
 	

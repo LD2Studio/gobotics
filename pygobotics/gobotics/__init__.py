@@ -18,11 +18,13 @@ class Gobotics(GodotBridge):
 app = Gobotics(4242)
 
 class Robot(GodotBridge):
+
     def get_pose(self) -> tuple:
         return self.call("get_pose")
     
     def set_pose(self, x: float, y: float, a: float):
         self.call("set_pose", x, y, a)
+
     def set_revolute_angle(self, name: str, value: float):
         self.call("set_revolute", name, value)
     
@@ -30,11 +32,13 @@ class Robot(GodotBridge):
         self.call("set_prismatic", name, value)
 
     # Diff Drive
+class DiffRobot(Robot):
     
     def move(self, right_vel: float, left_vel: float):
-        self.call("move", right_vel, left_vel)
+        self.call("move_diff_drive", right_vel, left_vel)
 
     # 4 Mecanum Drive
+class MecanumRobot(Robot):
 
     def move(self, front_right_vel: float, front_left_vel: float, back_right_vel: float, back_left_vel: float):
-        self.call("move", front_right_vel, front_left_vel, back_right_vel, back_left_vel)
+        self.call("move_mecanum_drive", front_right_vel, front_left_vel, back_right_vel, back_left_vel)

@@ -1,8 +1,8 @@
-from gobotics import app, Robot
+from gobotics import app, MecanumRobot
 from time import sleep
 from math import radians
 
-my_robot = Robot(4243)
+my_robot = MecanumRobot(4244)
 
 app.run()
 
