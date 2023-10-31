@@ -1,6 +1,6 @@
 class_name AssetEditor extends PanelContainer
 
-var asset_name: String = ""
+@export var asset_fullname: String # Setting by caller
 var meshes_list: Array
 
 enum TypeAsset {
@@ -9,9 +9,9 @@ enum TypeAsset {
 	ENVIRONMENT,
 }
 var asset_type : TypeAsset = TypeAsset.ROBOT
-var asset_fullname: String # Setting by caller
 
 signal asset_updated(fullname: String)
+signal asset_editor_exited()
 signal fullscreen_toggled(button_pressed: bool)
 
 var urdf_parser = URDFParser.new()
@@ -30,13 +30,13 @@ var asset_base_dir: String = ProjectSettings.globalize_path("res://assets")
 @onready var mesh_item_list = %MeshesList
 @onready var delete_mesh_dialog = %DeleteMeshDialog
 @onready var asset_filename_edit = %AssetFilenameEdit
+@onready var save_asset_button = %SaveAssetButton
 
 func _ready():
 	mesh_view_container.visible = false
 	urdf_parser.scale = 10
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	if not asset_fullname:
-		%SaveAssetButton.disabled = true
 		match asset_type:
 			TypeAsset.STANDALONE:
 				urdf_code_edit.text = urdf_standalone_template
@@ -52,10 +52,13 @@ func _ready():
 		var asset_path = asset_base_dir.path_join(asset_fullname)
 #		print("asset path: ", asset_path)
 		var urdf_file = FileAccess.open(asset_path, FileAccess.READ)
+		if urdf_file == null:
+			printerr("urdf file failed to loading")
+			return
 		urdf_code_edit.text = urdf_file.get_as_text()
 		urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
+		save_asset_button.disabled = true
 		
-#	print("asset fullname: ", asset_fullname)
 	asset_filename_edit.text = asset_fullname
 	show_visual_mesh(%VisualCheckBox.button_pressed)
 	show_collision_shape(%CollisionCheckBox.button_pressed)
@@ -120,9 +123,13 @@ func _on_save_button_pressed():
 func save_asset():
 	var asset_path = asset_base_dir.path_join(asset_filename_edit.text)
 	var urdf_file = FileAccess.open(asset_path, FileAccess.WRITE)
+	if urdf_file == null:
+		printerr("urdf file failed to saving!")
+		return
 	urdf_file.store_string(urdf_code_edit.text)
 	urdf_file.flush()
 	asset_updated.emit(asset_filename_edit.text)
+	save_asset_button.disabled = true
 	
 func _on_overwrite_confirmation_dialog_confirmed():
 	save_asset()
@@ -141,8 +148,7 @@ func replace_mesh(gltf_name: String, new_mesh_data: PackedByteArray):
 			return
 	
 func _on_urdf_code_edit_text_changed() -> void:
-	pass
-#	%SaveAssetButton.disabled = true
+	save_asset_button.disabled = false
 	
 func freeze_asset(root_node, frozen):
 	root_node.set_physics_process(not frozen)
@@ -155,20 +161,29 @@ func freeze_children(node, frozen):
 		freeze_children(child, frozen)
 
 func show_visual_mesh(enable: bool):
-	var scene_tree : SceneTree = preview_viewport.get_tree()
+	var scene_tree : SceneTree = get_tree()
 	for node in scene_tree.get_nodes_in_group("VISUAL"):
-		node.visible = enable
+		if preview_scene.is_ancestor_of(node):
+			node.visible = enable
 		
 func show_collision_shape(enable: bool):
-	var scene_tree : SceneTree = preview_viewport.get_tree()
+	var scene_tree : SceneTree = get_tree()
 	for node in scene_tree.get_nodes_in_group("COLLISION"):
-		node.visible = enable
+		if preview_scene.is_ancestor_of(node):
+			node.visible = enable
 		
 func show_link_frame(enable: bool):
-	var scene_tree : SceneTree = preview_viewport.get_tree()
+	var scene_tree : SceneTree = get_tree()
 	for node in scene_tree.get_nodes_in_group("FRAME"):
-		node.visible = enable
-		
+		if preview_scene.is_ancestor_of(node):
+			node.visible = enable
+			
+func show_joint_frame(enable: bool):
+	for node in get_tree().get_nodes_in_group("JOINT_GIZMO"):
+		if preview_scene.is_ancestor_of(node):
+			node.visible = enable
+
+
 func folding_link_tags():
 	for line_num in urdf_code_edit.get_line_count():
 		if urdf_code_edit.can_fold_line(line_num):
@@ -177,11 +192,8 @@ func folding_link_tags():
 				not urdf_code_edit.get_line(line_num).begins_with("<env") :
 #				print("Fold line %d" % [line_num])
 				urdf_code_edit.fold_line(line_num)
-		
-func show_joint_frame(enable: bool):
-	for node in preview_viewport.get_tree().get_nodes_in_group("JOINT_GIZMO"):
-		node.visible = enable
-	
+
+
 func _on_visual_check_box_toggled(button_pressed):
 	show_visual_mesh(button_pressed)
 
@@ -280,4 +292,17 @@ func _on_meshes_list_item_selected(index):
 #	print("item: ", mesh_item_list.get_item_text(index))
 	delete_mesh_dialog.mesh_name = mesh_item_list.get_item_text(index)
 
+func _on_quit_button_pressed():
+	if save_asset_button.disabled == false:
+		%SavingConfirmationDialog.popup_centered()
+	else:
+		asset_editor_exited.emit()
 
+
+func _on_saving_confirmation_dialog_confirmed():
+	save_asset()
+	asset_editor_exited.emit()
+
+
+func _on_saving_confirmation_dialog_canceled():
+	asset_editor_exited.emit()

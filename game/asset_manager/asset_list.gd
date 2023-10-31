@@ -19,6 +19,7 @@ var asset_updated: String = "":
 		asset_updated = value
 #		print("asset updated: ", asset_updated)
 		database.update_asset(asset_updated)
+		update_assets_list()
 		
 var _at_position: Vector2i
 var _asset_editor_rect: Rect2i
@@ -85,6 +86,7 @@ func edit_asset(fullname: String):
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_base_dir = game.asset_base_dir
 	asset_editor.asset_updated.connect(func(value): asset_updated = value)
+	asset_editor.asset_editor_exited.connect(_on_asset_editor_exited)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_fullname = fullname
 	asset_editor_dialog.add_child(asset_editor)
@@ -95,25 +97,21 @@ func create_new_asset(asset_type: int):
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_base_dir = game.asset_base_dir
 	asset_editor.asset_updated.connect(func(value): asset_updated = value)
+	asset_editor.asset_editor_exited.connect(_on_asset_editor_exited)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_type = asset_type
 	asset_editor_dialog.add_child(asset_editor)
 	asset_editor_dialog.popup_centered(Vector2i(700, 500))
-
-func _on_asset_editor_dialog_confirmed():
+	
+func _on_asset_editor_exited():
 	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")
 	if asset_editor:
 		asset_editor_dialog.remove_child(asset_editor)
 		asset_editor.queue_free()
+		%AssetEditorDialog.visible = false
 		update_scene()
 
-func _on_asset_editor_dialog_canceled():
-	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")
-	if asset_editor:
-		asset_editor_dialog.remove_child(asset_editor)
-		asset_editor.queue_free()
-		update_assets_database()
-		
+
 func delete_asset(fullname: String):
 	selected_asset_filename = database.get_asset_filename(fullname)
 	%DeleteConfirmationDialog.dialog_text = "Do you want to delete the asset file \"%s\"" % [fullname]
@@ -132,10 +130,12 @@ func update_assets_database():
 	show_collision_shape(false)
 	show_link_frame(false)
 	show_joint_frame(false)
-	
+
+
 func update_assets_list():
 	game.fill_assets_list()
-	
+
+
 func update_scene():
 	var scene_node = game_scene.get_node_or_null("Scene")
 	if not scene_node: return
@@ -153,12 +153,13 @@ func update_scene():
 					asset_tr = node.global_transform
 					break
 			if not asset_tr: continue
-			
+			var asset_name : StringName = asset.name
 #			print("update asset %s" % [asset.get_meta("fullname")])
 			scene_node.remove_child(asset)
 			asset.queue_free()
 			var new_asset_scene : String = database.get_scene_from_fullname(fullname)
 			var new_asset : Node3D = load(new_asset_scene).instantiate()
+			new_asset.name = asset_name
 			new_asset.global_transform = asset_tr
 			game_scene.freeze_asset(new_asset, true)
 			scene_node.add_child(new_asset)
