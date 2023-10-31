@@ -471,7 +471,8 @@ func print_on_terminal(text: String):
 	
 func show_joint_infos():
 #	print("selected asset: ", asset_selected)
-	if asset_selected and asset_selected.has_node("RobotBase") and asset_selected.get_node("RobotBase").focused_joint:
+	if asset_selected == null: return
+	if asset_selected.has_node("RobotBase") and asset_selected.get_node("RobotBase").focused_joint:
 		%InfosContainer.visible = true
 		var focused_joint = asset_selected.get_node("RobotBase").focused_joint.name
 	#			print(focused_joint)

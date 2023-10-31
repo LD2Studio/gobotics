@@ -19,7 +19,6 @@ func generate(asset_base_dir: String, builtin_env: Array):
 	assets.clear()
 	add_builtin_env(builtin_env)
 	add_assets(asset_base_dir, asset_base_dir)
-	
 
 func add_builtin_env(builtin_env: Array):
 	for env in builtin_env:
@@ -46,7 +45,7 @@ func add_assets(search_path: String, asset_base_dir: String):
 #		print("[DB] urdf_pathname: ", urdf_pathname)
 		var scene : Array = []
 		if create_scene(urdf_pathname, scene):
-			pass
+			
 			assets.append({
 				name = scene[0], # asset name setting in URDF
 				fullname = urdf_pathname.trim_prefix(asset_base_path+"/"), # relative path
@@ -118,6 +117,7 @@ func add_new_asset(asset_fullname: String):
 		printerr("[DB] creating scene failed")
 	
 func create_scene(urdf_pathname: String, scene: Array) -> bool:
+#	print("[DB] urdf path: ", urdf_pathname)
 	var asset_path = urdf_pathname.get_base_dir()+"/"
 #	print("asset path: ", asset_path)
 	urdf_parser.asset_user_path = asset_path
@@ -129,6 +129,10 @@ func create_scene(urdf_pathname: String, scene: Array) -> bool:
 	if root_node == null:
 		printerr("[DB] URDF Parser failed")
 		return false
+		
+	var fullname = urdf_pathname.trim_prefix(asset_base_path+"/")
+#	print("[DB] fullname: ", fullname)
+	root_node.set_meta("fullname", fullname) # Save fullname in asset scene for updating
 #	print("root_node.name : ", root_node.name)
 #	print("root node type: ", root_node.get_meta("type"))
 	var scene_pathname: String

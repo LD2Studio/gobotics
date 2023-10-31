@@ -34,7 +34,7 @@
 			"uuid": "c0a20e1b-6dfe-4755-9c56-399ea415b52d",
 			"title": "Doing",
 			"tasks": [
-				"3aa17095-5bd6-4c8f-b1c2-1f0a3ca5d52d"
+				"6a251c22-fd01-4555-b634-592274c73237"
 			]
 		},
 		{
@@ -43,7 +43,9 @@
 			"tasks": [
 				"fa0790f0-11e1-4de6-bd2c-ef9e82cd9280",
 				"77c6019b-3d3b-4b8d-962e-d6d90d781c7f",
-				"f1497717-7c1c-4f49-b517-d597b6ed2663"
+				"f1497717-7c1c-4f49-b517-d597b6ed2663",
+				"3aa17095-5bd6-4c8f-b1c2-1f0a3ca5d52d",
+				"b30843d2-f499-4149-af59-a55004564e0b"
 			]
 		},
 		{
@@ -51,7 +53,6 @@
 			"title": "Ideas",
 			"tasks": [
 				"7d2b7e7f-d6fd-4abd-911b-9824aecd5c1c",
-				"6a251c22-fd01-4555-b634-592274c73237",
 				"adb0d772-5a08-4ecc-b4b5-67883701490e"
 			]
 		}
@@ -125,6 +126,13 @@
 			"title": "pygobotics: add asset from python script",
 			"description": "",
 			"category": "353353a5-9ab5-4584-9785-8690842e3311",
+			"steps": []
+		},
+		{
+			"uuid": "b30843d2-f499-4149-af59-a55004564e0b",
+			"title": "Add function to update asset in database (only one)",
+			"description": "",
+			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
 			"steps": []
 		}
 	],

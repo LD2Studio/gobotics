@@ -14,8 +14,13 @@ enum AssetId {
 	DELETE,
 }
 
+var asset_updated: String = "":
+	set(value):
+		asset_updated = value
+#		print("asset updated: ", asset_updated)
+		database.update_asset(asset_updated)
+		
 var _at_position: Vector2i
-var _asset_updated: StringName = ""
 var _asset_editor_rect: Rect2i
 var selected_asset_filename: String
 
@@ -79,9 +84,8 @@ func edit_asset(fullname: String):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_base_dir = game.asset_base_dir
-	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
+	asset_editor.asset_updated.connect(func(value): asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
-	asset_editor.database = database
 	asset_editor.asset_fullname = fullname
 	asset_editor_dialog.add_child(asset_editor)
 	asset_editor_dialog.popup_centered(Vector2i(700, 500))
@@ -90,9 +94,8 @@ func create_new_asset(asset_type: int):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_base_dir = game.asset_base_dir
-	asset_editor.asset_updated.connect(func(value): _asset_updated = value)
+	asset_editor.asset_updated.connect(func(value): asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
-	asset_editor.database = database
 	asset_editor.asset_type = asset_type
 	asset_editor_dialog.add_child(asset_editor)
 	asset_editor_dialog.popup_centered(Vector2i(700, 500))
@@ -102,10 +105,7 @@ func _on_asset_editor_dialog_confirmed():
 	if asset_editor:
 		asset_editor_dialog.remove_child(asset_editor)
 		asset_editor.queue_free()
-		update_assets_list()
-		## Comment fix bug
-#		if game_scene.scene != null:
-#			update_assets_in_scene()
+		update_scene()
 
 func _on_asset_editor_dialog_canceled():
 	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")
@@ -136,18 +136,50 @@ func update_assets_database():
 func update_assets_list():
 	game.fill_assets_list()
 	
+func update_scene():
+	var scene_node = game_scene.get_node_or_null("Scene")
+	if not scene_node: return
+	var assets = get_tree().get_nodes_in_group("ASSETS")
+#	print("[AL] assets: ", assets)
+	for asset in assets:
+		var fullname = asset.get_meta("fullname")
+		if fullname == null: continue
+		game_scene.asset_selected = null
+		if fullname != asset_updated: continue
+		if database.is_asset_exists(fullname):
+			var asset_tr: Transform3D
+			for node in asset.get_children():
+				if node is RigidBody3D:
+					asset_tr = node.global_transform
+					break
+			if not asset_tr: continue
+			
+#			print("update asset %s" % [asset.get_meta("fullname")])
+			scene_node.remove_child(asset)
+			asset.queue_free()
+			var new_asset_scene : String = database.get_scene_from_fullname(fullname)
+			var new_asset : Node3D = load(new_asset_scene).instantiate()
+			new_asset.global_transform = asset_tr
+			game_scene.freeze_asset(new_asset, true)
+			scene_node.add_child(new_asset)
+			
+	game_scene.connect_editable()
+	game_scene.update_robot_select_menu()
+	game_scene.update_camera_view_menu()
+	
+	
 func update_assets_in_scene():
 	var assets = get_tree().get_nodes_in_group("ASSETS")
-	if _asset_updated == "": return
+	if asset_updated == "": return
 	for asset in assets:
-		if asset.get_meta("fullname") == _asset_updated:
+		if asset.get_meta("fullname") == asset_updated:
 			var asset_position = asset.get_child(0).global_position
 			var asset_rotation = asset.get_child(0).global_rotation
 			var asset_name = asset.name
 			game_scene.scene.remove_child(asset)
 			asset.free()
 			
-			var asset_res = database.get_asset_scene(_asset_updated)
+			var asset_res = database.get_asset_scene(asset_updated)
 			var new_asset = load(asset_res).instantiate()
 			new_asset.name = asset_name
 			
@@ -158,7 +190,7 @@ func update_assets_in_scene():
 			game_scene.connect_pickable()
 			game_scene.freeze_asset(new_asset, true)
 	game_scene.update_camera_view_menu()
-	_asset_updated = ""
+	asset_updated = ""
 
 func show_visual_mesh(enable: bool):
 	for node in get_tree().get_nodes_in_group("VISUAL"):
