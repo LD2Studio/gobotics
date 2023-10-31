@@ -1,7 +1,6 @@
 class_name AssetEditor extends PanelContainer
 
 @export var asset_fullname: String # Setting by caller
-var meshes_list: Array
 
 enum TypeAsset {
 	STANDALONE,
@@ -25,15 +24,10 @@ var asset_base_dir: String = ProjectSettings.globalize_path("res://assets")
 @onready var urdf_code_edit: CodeEdit = %URDFCodeEdit
 @onready var preview_viewport = %PreviewViewport
 @onready var preview_scene = %PreviewScene
-@onready var replace_mesh_dialog = %ReplaceMeshDialog
-@onready var mesh_view_container = %MeshViewContainer
-@onready var mesh_item_list = %MeshesList
-@onready var delete_mesh_dialog = %DeleteMeshDialog
 @onready var asset_filename_edit = %AssetFilenameEdit
 @onready var save_asset_button = %SaveAssetButton
 
 func _ready():
-	mesh_view_container.visible = false
 	urdf_parser.scale = 10
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	if not asset_fullname:
@@ -133,20 +127,8 @@ func save_asset():
 	
 func _on_overwrite_confirmation_dialog_confirmed():
 	save_asset()
-	
-func add_mesh(mesh_data: PackedByteArray, gltf_name: String):
-	meshes_list.append(
-		{
-			name = gltf_name,
-			data = mesh_data,
-		})
-		
-func replace_mesh(gltf_name: String, new_mesh_data: PackedByteArray):
-	for mesh in meshes_list:
-		if mesh.name == gltf_name:
-			mesh.data = new_mesh_data
-			return
-	
+
+
 func _on_urdf_code_edit_text_changed() -> void:
 	save_asset_button.disabled = false
 	
@@ -237,60 +219,6 @@ const urdf_environment_template = """<env name="noname">
 </env>
 """
 
-func _on_import_mesh_button_pressed():
-	%ImportMeshFileDialog.popup_centered(Vector2i(300,400))
-
-func _on_import_mesh_file_dialog_file_selected(path: String):
-#	print("mesh file: ", path)
-	if path.get_extension() == "glb":
-		var gltf_res := GLTFDocument.new()
-		var gltf_state = GLTFState.new()
-		var err = gltf_res.append_from_file(path, gltf_state)
-		if err:
-			return
-		var gltf_data = gltf_res.generate_buffer(gltf_state)
-		var gltf_name = path.get_file()
-		for mesh in meshes_list:
-			if mesh.name == gltf_name:
-				%ReplaceMeshDialog.mesh_name = gltf_name
-				%ReplaceMeshDialog.mesh_data = gltf_data
-				%ReplaceMeshDialog.popup_centered()
-				return
-		add_mesh(gltf_data, gltf_name)
-		update_mesh_item_list()
-
-func _on_replace_mesh_dialog_confirmed():
-	replace_mesh(replace_mesh_dialog.mesh_name, replace_mesh_dialog.mesh_data)
-	update_mesh_item_list()
-
-func _on_show_meshes_button_toggled(button_pressed):
-	%ShowMeshesButton.text = "Hide Meshes" if button_pressed else "Show Meshes"
-	update_mesh_item_list()
-	mesh_view_container.visible = button_pressed
-
-func update_mesh_item_list():
-	mesh_item_list.clear()
-	for mesh_item in meshes_list:
-		mesh_item_list.add_item(mesh_item.name)
-		
-func _on_delete_mesh_button_pressed():
-	if delete_mesh_dialog.mesh_name != "":
-		delete_mesh_dialog.dialog_text = "Do you want to delete %s ?" % delete_mesh_dialog.mesh_name
-		delete_mesh_dialog.popup_centered()
-
-func _on_delete_mesh_dialog_confirmed():
-	var list_idx = 0
-	for mesh_item in meshes_list:
-		if mesh_item.name == delete_mesh_dialog.mesh_name:
-			meshes_list.remove_at(list_idx)
-			break
-		list_idx += 1
-		
-	update_mesh_item_list()
-
-func _on_meshes_list_item_selected(index):
-#	print("item: ", mesh_item_list.get_item_text(index))
-	delete_mesh_dialog.mesh_name = mesh_item_list.get_item_text(index)
 
 func _on_quit_button_pressed():
 	if save_asset_button.disabled == false:
