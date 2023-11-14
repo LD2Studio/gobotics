@@ -1,22 +1,21 @@
-from gobotics import engine
-from gobotics.robots import Alpha
+from gobotics import app, DiffRobot
 from gobotics.helper import Timer, StateMachine
 
-alpha = Alpha(4243)
+my_robot = DiffRobot(4243)
 
 # State functions
 def pose(once):
     if once:
-        # print("init")
-        alpha.set_pose(0.1,0,0)
-        engine.run()
+        print("init")
+        my_robot.set_pose(0,0,0)
+        app.run()
     else:
         sm.to("forward")
 
 def forward(once):
     if once:
-        # print("forward")
-        alpha.move(5, 5)
+        print("forward")
+        my_robot.move(5, 5)
         timer.start(1)
     else:
         if timer.is_elapsed():
@@ -24,14 +23,14 @@ def forward(once):
 
 def turn_left(once):
     if once:
-        # print("turn left")
-        alpha.move(4,-4)
+        print("turn left")
+        my_robot.move(4,-4)
         timer.start(1)
     if timer.is_elapsed():
         sm.to("forward")
 
-
 timer = Timer()
+
 sm = StateMachine({
     "init": pose,
     "forward": forward,
@@ -40,10 +39,10 @@ sm = StateMachine({
 
 sm.start("init")
 
-while sm.running:
-    try:
+try:
+    while sm.running:
         sm.update()
-    except KeyboardInterrupt:
-        alpha.move(0, 0)
-        sm.running = False
-        engine.stop()
+except KeyboardInterrupt:
+    print("stop")
+    my_robot.move(0, 0)
+    app.stop()

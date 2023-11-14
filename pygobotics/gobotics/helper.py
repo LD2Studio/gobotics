@@ -32,3 +32,6 @@ class StateMachine:
     def to(self, name) -> None:
         self.state = name
         self.new_once = True
+
+def clamp(num, min_value, max_value):
+   return max(min(num, max_value), min_value)
