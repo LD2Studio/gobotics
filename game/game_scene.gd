@@ -485,7 +485,6 @@ func show_joint_infos():
 ## Slot functions
 
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
-#	print_debug(button_pressed)
 	if scene == null:
 		return
 	%ObjectInspector.visible = not button_pressed
@@ -493,10 +492,6 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 		running = true
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
-		for asset in scene.get_children():
-			freeze_asset(asset, false)
-			if asset.is_in_group("PYTHON"):
-				asset.run()
 		show_joint_infos()
 	else:
 		running = false
@@ -504,11 +499,11 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 		%RunStopButton.modulate = Color.GREEN
 		%InfosContainer.visible = false
 		hide_asset_parameters()
-		for item in scene.get_children():
-			freeze_asset(item, true)
-			if item.is_in_group("PYTHON"):
-				item.stop()
-				
+
+	# activate/desactivate physics behavior
+	for asset in scene.get_children():
+		freeze_asset(asset, !running)
+
 func _on_reload_button_pressed():
 	if owner.current_filename != "":
 		load_scene(owner.current_filename)
