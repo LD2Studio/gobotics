@@ -33,7 +33,9 @@
 		{
 			"uuid": "c0a20e1b-6dfe-4755-9c56-399ea415b52d",
 			"title": "Doing",
-			"tasks": []
+			"tasks": [
+				"adb0d772-5a08-4ecc-b4b5-67883701490e"
+			]
 		},
 		{
 			"uuid": "7b72a285-37ab-4b20-a19e-626fb3e22438",
@@ -51,8 +53,7 @@
 			"uuid": "7daaf52a-71e4-4756-aaf3-76b318028cd9",
 			"title": "Ideas",
 			"tasks": [
-				"7d2b7e7f-d6fd-4abd-911b-9824aecd5c1c",
-				"adb0d772-5a08-4ecc-b4b5-67883701490e"
+				"7d2b7e7f-d6fd-4abd-911b-9824aecd5c1c"
 			]
 		}
 	],

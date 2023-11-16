@@ -52,10 +52,10 @@ func get_new_name(current_name: StringName) -> StringName:
 	if not current_name in block_names_used:
 		return current_name
 	else:
-		var idx=2
-		while (&"%s_%d" % [current_name, idx]) in block_names_used:
+		var idx=1
+		while (&"%s_%03d" % [current_name, idx]) in block_names_used:
 			idx += 1
-		return &"%s_%d" % [current_name, idx]
+		return &"%s_%03d" % [current_name, idx]
 
 
 func _on_gui_input(event):

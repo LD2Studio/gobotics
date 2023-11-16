@@ -602,6 +602,24 @@ environment = SubResource("Environment_h33mq")
 [node name="ConfirmDeleteDialog" type="ConfirmationDialog" parent="SplitContainer/SceneView/SceneViewport/GameScene"]
 unique_name_in_owner = true
 gui_embed_subwindows = true
+title = ""
+ok_button_text = "Delete"
+
+[node name="RenameDialog" type="ConfirmationDialog" parent="SplitContainer/SceneView/SceneViewport/GameScene"]
+unique_name_in_owner = true
+gui_embed_subwindows = true
+title = "Rename Object"
+size = Vector2i(250, 90)
+wrap_controls = false
+unresizable = true
+ok_button_text = "Rename"
+
+[node name="NameEdit" type="LineEdit" parent="SplitContainer/SceneView/SceneViewport/GameScene/RenameDialog"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="ScriptDialog" type="ConfirmationDialog" parent="SplitContainer/SceneView/SceneViewport/GameScene"]
 unique_name_in_owner = true
@@ -609,8 +627,10 @@ size = Vector2i(400, 400)
 
 [node name="SourceCodeEdit" type="CodeEdit" parent="SplitContainer/SceneView/SceneViewport/GameScene/ScriptDialog"]
 unique_name_in_owner = true
-offset_right = 8.0
-offset_bottom = 8.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 392.0
+offset_bottom = 351.0
 
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton" to="." method="_on_setup_scene_button_pressed"]
 [connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton/SetupDialog" to="." method="_on_setup_dialog_confirmed"]
@@ -640,4 +660,5 @@ offset_bottom = 8.0
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/FrameCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_frame_check_box_toggled"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/JointCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_joint_check_box_toggled"]
 [connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_confirm_delete_dialog_confirmed"]
+[connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/RenameDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_rename_dialog_confirmed"]
 [connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/ScriptDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_script_dialog_confirmed"]

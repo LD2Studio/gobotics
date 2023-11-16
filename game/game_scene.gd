@@ -21,6 +21,8 @@ var _current_cam: int = 0
 @onready var robot_selected_button = %RobotSelectedButton
 @onready var focused_joint_label = %FocusedJointLabel
 @onready var scene_view = %SceneView
+@onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
+@onready var rename_dialog: ConfirmationDialog = %RenameDialog
 
 var python_bridge_scene : PackedScene = preload("res://game/python_bridge/python_bridge.tscn")
 
@@ -35,11 +37,15 @@ func _ready() -> void:
 	python_bridge.set_activate(true)
 	python_bridge.nodes.append(self)
 	
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("DELETE"):
-		if asset_selected == null: return
-		%ConfirmDeleteDialog.dialog_text = "Delete %s object ?" % [asset_selected.name]
-		%ConfirmDeleteDialog.popup_centered()
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("DELETE") and asset_selected:
+		confirm_delete_dialog.dialog_text = "Delete %s object ?" % [asset_selected.name]
+		confirm_delete_dialog.popup_centered()
+		
+	if event.is_action_pressed("rename") and asset_selected:
+#		print("Asset Name: ", asset_selected.name)
+		rename_dialog.get_node("NameEdit").text = asset_selected.name
+		rename_dialog.popup_centered()
 		
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
@@ -584,13 +590,20 @@ func _on_confirm_delete_dialog_confirmed() -> void:
 		asset_selected.queue_free()
 		update_robot_select_menu()
 		update_camera_view_menu()
+		
+func _on_rename_dialog_confirmed() -> void:
+	object_inspector.visible = false
+	if scene:
+		var new_name : String = rename_dialog.get_node("NameEdit").text
+		new_name = new_name.validate_node_name()
+		if asset_selected:
+			asset_selected.name = new_name
 
 func _on_script_dialog_confirmed() -> void:
 	if asset_selected == null: return
 	asset_selected.source_code = %SourceCodeEdit.text
 	
 func _on_python_script_finished(new_text: String):
-#	print(new_text)
 	%TerminalOutput.text += new_text
 
 func _on_builtin_script_check_box_toggled(button_pressed: bool) -> void:
