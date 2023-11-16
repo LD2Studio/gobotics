@@ -10,7 +10,6 @@ var asset_focused : Node3D = null
 
 var _cams : Array
 var _current_cam: int = 0
-var _robots_in_scene = Array()	# List of robots actually into scene
 
 @onready var game = owner
 @onready var save_scene_as_button: Button = %SaveSceneAsButton
@@ -90,8 +89,9 @@ func update_camera_view_menu():
 	for cam in builtin_cams:
 		_cams.push_back(cam)
 		cam_popup.add_check_item(cam.name)
-	if not _robots_in_scene.is_empty():
-		var selected_robot = _robots_in_scene.filter(func(robot): return robot.activated == true)
+	var robots = get_tree().get_nodes_in_group("ROBOTS")
+	if not robots.is_empty():
+		var selected_robot = robots.filter(func(robot): return robot.activated == true)
 		var first_robot = selected_robot.front()
 		if first_robot:
 			_cams.push_back(first_robot.get_node("PivotCamera/Boom/Camera"))
@@ -120,32 +120,27 @@ func update_robot_select_menu():
 	if not robot_popup.index_pressed.is_connected(_on_robot_selected):
 		robot_popup.index_pressed.connect(_on_robot_selected)
 	robot_popup.clear()
-	_robots_in_scene.clear()
 	var robots = get_tree().get_nodes_in_group("ROBOTS")
 	for robot in robots:
-		_robots_in_scene.push_back(robot)
 		robot_popup.add_check_item(robot.name)
 	_on_robot_selected(0)
 	
 func _on_robot_selected(idx: int):
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
-	for item_idx in robot_popup.item_count:
-		if idx == item_idx:
-			robot_popup.set_item_checked(item_idx, true)
-			activate_robot(_robots_in_scene[item_idx])
-			asset_selected = _robots_in_scene[item_idx]
+	for i in robot_popup.item_count:
+		robot_popup.set_item_checked(i, false)
+		
+	var robots = get_tree().get_nodes_in_group("ROBOTS")
+	for robot in robots:
+		if robot.name == robot_popup.get_item_text(idx):
+			robot_popup.set_item_checked(idx, true)
+			robot.activated = true
+			asset_selected = robot
 			robot_selected_button.text = asset_selected.name
 		else:
-			robot_popup.set_item_checked(item_idx, false)
-			deactivate_robot(_robots_in_scene[item_idx])
+			robot.activated = false
 	update_camera_view_menu()
 	show_joint_infos()
-	
-func activate_robot(robot: Node):
-	robot.activated = true
-	
-func deactivate_robot(robot: Node):
-	robot.activated = false
 		
 func show_asset_parameters(asset: Node3D):
 	asset_selected = asset
