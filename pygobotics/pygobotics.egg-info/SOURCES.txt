@@ -1,3 +1,5 @@
+LICENSE.md
+README.md
 pyproject.toml
 gobotics/__init__.py
 gobotics/godotbridge.py

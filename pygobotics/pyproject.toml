@@ -4,13 +4,26 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygobotics"
-version = "0.3.0"
+version = "0.4.0"
 authors = [
     {name = "Laurent Dethoor", email = "ld2studiogame@gmail.com"}
 ]
+description = "Python API allowing remote control of simulated robots in the Gobotics application"
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
     "numpy",
 ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/LD2Studio/gobotics"
+"Bug Tracker" = "https://github.com/LD2Studio/gobotics/issues"
+
 [tool.setuptools]
 packages = ["gobotics"]
 

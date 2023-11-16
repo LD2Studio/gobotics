@@ -1,5 +1,22 @@
 Metadata-Version: 2.1
 Name: pygobotics
-Version: 0.3.0
+Version: 0.4.0
+Summary: Python API allowing remote control of simulated robots in the Gobotics application
 Author-email: Laurent Dethoor <ld2studiogame@gmail.com>
+Project-URL: Homepage, https://github.com/LD2Studio/gobotics
+Project-URL: Bug Tracker, https://github.com/LD2Studio/gobotics/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
 Requires-Dist: numpy
+
+# pygobotics
+
+Python API allowing remote control of simulated robots in the [Gobotics](https://github.com/LD2Studio/gobotics) application.
+
+# LICENSE
+
+This software is distributed under the MIT License.
