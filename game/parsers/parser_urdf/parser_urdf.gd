@@ -701,10 +701,11 @@ func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
 	
 	var gltf_res := GLTFDocument.new()
 	var gltf_state := GLTFState.new()
-	var gltf_filename : String = asset_user_path + attrib.filename
+	var gltf_filename : String = asset_user_path.path_join(attrib.filename)
+#	print("[PU] gltf filename: ", gltf_filename)
 	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
 	if err:
-		printerr("gltf from buffer failed")
+		printerr("gltf from buffer failed!")
 		parse_error_message = "GLTF file import failed!"
 		return null
 		

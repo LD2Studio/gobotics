@@ -123,13 +123,23 @@ func update_robot_select_menu():
 	robot_selected_button.visible = true
 	# Get robots menu
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
+	
+	var robot_checked_idx : int = -1
+	for idx in robot_popup.item_count:
+		if robot_popup.is_item_checked(idx):
+			robot_checked_idx = idx
+			break
+
 	if not robot_popup.index_pressed.is_connected(_on_robot_selected):
 		robot_popup.index_pressed.connect(_on_robot_selected)
 	robot_popup.clear()
 	var robots = get_tree().get_nodes_in_group("ROBOTS")
 	for robot in robots:
 		robot_popup.add_check_item(robot.name)
-	_on_robot_selected(0)
+	if robot_checked_idx != -1:
+		_on_robot_selected(robot_checked_idx)
+	else:
+		_on_robot_selected(0)
 	
 func _on_robot_selected(idx: int):
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
@@ -598,6 +608,8 @@ func _on_rename_dialog_confirmed() -> void:
 		new_name = new_name.validate_node_name()
 		if asset_selected:
 			asset_selected.name = new_name
+			update_robot_select_menu()
+#			print("[GS] Asset selected: ", asset_selected)
 
 func _on_script_dialog_confirmed() -> void:
 	if asset_selected == null: return

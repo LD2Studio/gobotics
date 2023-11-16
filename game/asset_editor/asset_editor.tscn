@@ -72,7 +72,6 @@ icon = ExtResource("2_ave4i")
 [node name="OverwriteConfirmationDialog" type="ConfirmationDialog" parent="VBoxContainer/AssetMargin/VBoxContainer/HBoxContainer/SaveAssetButton"]
 unique_name_in_owner = true
 size = Vector2i(457, 100)
-always_on_top = true
 dialog_text = "The file already exists. Do you want to overwrite the file? "
 
 [node name="GenerateButton" type="Button" parent="VBoxContainer/AssetMargin/VBoxContainer/HBoxContainer"]

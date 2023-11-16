@@ -44,7 +44,7 @@ func _ready():
 		asset_fullname = "noname.urdf"
 	else:
 		var asset_path = asset_base_dir.path_join(asset_fullname)
-#		print("asset path: ", asset_path)
+#		print("[AE] asset path: ", asset_path)
 		var urdf_file = FileAccess.open(asset_path, FileAccess.READ)
 		if urdf_file == null:
 			printerr("urdf file failed to loading")
