@@ -90,7 +90,7 @@ func edit_asset(fullname: String):
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_fullname = fullname
 	asset_editor_dialog.add_child(asset_editor)
-	asset_editor_dialog.popup_centered(Vector2i(700, 500))
+	asset_editor_dialog.popup_centered_ratio(0.8)
 	
 func create_new_asset(asset_type: int):
 	var asset_editor = asset_editor_packed_scene.instantiate()
@@ -101,7 +101,7 @@ func create_new_asset(asset_type: int):
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_type = asset_type
 	asset_editor_dialog.add_child(asset_editor)
-	asset_editor_dialog.popup_centered(Vector2i(700, 500))
+	asset_editor_dialog.popup_centered_ratio(0.8)
 	
 func _on_asset_editor_exited():
 	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")

@@ -26,9 +26,7 @@
 			"uuid": "ff7c1e52-c224-4120-b56e-98745222064a",
 			"title": "Todo",
 			"tasks": [
-				"04497972-4f8f-427b-9c50-fc506a2a9d5c",
-				"790d238f-fd76-4ded-b5fe-24694283c5bb",
-				"7f6c3ebd-0ad9-4d68-9414-498c94cbc53f"
+				"04497972-4f8f-427b-9c50-fc506a2a9d5c"
 			]
 		},
 		{
@@ -123,7 +121,7 @@
 		},
 		{
 			"uuid": "adb0d772-5a08-4ecc-b4b5-67883701490e",
-			"title": "pygobotics: add asset from python script",
+			"title": "pygobotics: add asset to scene from python script",
 			"description": "",
 			"category": "353353a5-9ab5-4584-9785-8690842e3311",
 			"steps": []
