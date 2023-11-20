@@ -1,122 +1,5 @@
 extends CodeEdit
 
-const LINK_FULL_TAG = """
-	<link name="link_name">
-	
-	</link>
-"""
-const VISUAL_FULL_TAG = """
-		<visual name="">
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-			
-			</geometry>
-			<material name="">
-			
-			</material>
-		</visual>
-"""
-const COLLISION_FULL_TAG = """
-		<collision name="">
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<geometry>
-			
-			</geometry>
-		</collision>
-"""
-const INERTIAL_FULL_TAG = """
-		<inertial>
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<mass value="0.1"/>
-		</inertial>
-"""
-const INERTIAL_MINIMAL_TAG = """
-		<inertial>
-			<mass value="0.1"/>
-		</inertial>
-"""
-const MATERIAL_MINIMAL_TAG = """
-	<material name="white">
-		<color rgba="1 1 1 1"/>
-	</material>
-"""
-const JOINT_CONTINUOUS_TAG = """
-	<joint name="joint_name" type="continuous">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link=""/>
-		<child link=""/>
-		<axis xyz="1.0 0.0 0.0"/>
-		<limit effort="1.0" velocity="5.0"/>
-	</joint>
-"""
-const JOINT_REVOLUTE_TAG = """
-	<joint name="joint_name" type="revolute">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link=""/>
-		<child link=""/>
-		<axis xyz="1.0 0.0 0.0"/>
-		<limit lower="0.0" upper="0.0" effort="10.0" velocity="1.0"/>
-	</joint>
-"""
-const JOINT_PRISMATIC_TAG = """
-	<joint name="joint_name" type="prismatic">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link=""/>
-		<child link=""/>
-		<axis xyz="1.0 0.0 0.0"/>
-		<limit lower="0.0" upper="0.0" effort="10.0" velocity="0.5"/>
-	</joint>
-"""
-const JOINT_PIN_TAG = """
-	<joint name="joint_name" type="pin">
-		<origin xyz="0 0 0" rpy="0 0 0"/>
-		<parent link=""/>
-		<child link=""/>
-	</joint>
-"""
-const BOX_GEOMETRY_TAG = """<box size="0.1 0.1 0.1"/>"""
-const SPHERE_GEOMETRY_TAG = """<sphere radius="0.1"/>"""
-const CYLINDER_GEOMETRY_TAG = """<cylinder radius="0.1" length="0.2"/>"""
-const MESH_GEOMETRY_TAG = """<mesh filename="" />"""
-
-const INLINE_COLOR_TAG = """<color rgba="0 0 0 1"/>"""
-
-const GOBOTICS_CONTROL_TAG = """
-	<gobotics name="control_robot" type="diff_drive">
-		<right_wheel joint=""/>
-		<left_wheel joint=""/>
-		<max_speed value="6.0"/>
-	</gobotics>
-"""
-
-const GOBOTICS_4_MECANUM_DRIVE_TAG = """
-	<gobotics name="control_robot" type="4_mecanum_drive">
-		<front_right_wheel joint=""/>
-		<front_left_wheel joint=""/>
-		<back_right_wheel joint=""/>
-		<back_left_wheel joint=""/>
-		<max_speed value="8.0"/>
-	</gobotics>
-"""
-
-const GOBOTICS_GROUPED_JOINTS_TAG = """
-	<gobotics name="control_joints" type="grouped_joints">
-		<input name="" lower="0.0" upper="0.0"/>
-		<output joint="" factor="1.0"/>
-		<output joint="" factor="1.0"/>
-	</gobotics>
-"""
-
-const GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL_TAG = """
-	<link name="" builtin="right_mecanum_wheel" />
-	</link>
-"""
-
-const GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL_TAG = """
-	<link name="" builtin="left_mecanum_wheel" />
-	</link>
-"""
-
 enum Tag {
 	LINK = MENU_MAX + 1,
 	MATERIAL,
@@ -132,6 +15,7 @@ enum Tag {
 	JOINT_REVOLUTE,
 	JOINT_PRISMATIC,
 	JOINT_PIN,
+	SENSOR_RAY,
 	GOBOTICS_CONTROL,
 	GOBOTICS_4_MECANUM_DRIVE,
 	GOBOTICS_GROUPED_JOINTS,
@@ -162,6 +46,13 @@ func _ready():
 	submenu_joint.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_joint)
 	menu.add_submenu_item("Joints", "SubmenuJoint")
+	
+	var submenu_sensors = PopupMenu.new()
+	submenu_sensors.name = "SubmenuSensors"
+	submenu_sensors.add_item("Insert Ray Sensor", Tag.SENSOR_RAY)
+	submenu_sensors.id_pressed.connect(_on_item_pressed)
+	menu.add_child(submenu_sensors)
+	menu.add_submenu_item("Sensors", "SubmenuSensors")
 	
 	menu.add_separator()
 	var submenu_geometry = PopupMenu.new()
@@ -196,43 +87,45 @@ func _ready():
 func _on_item_pressed(id):
 	match id:
 		Tag.LINK:
-			insert_text_at_caret(LINK_FULL_TAG)
+			insert_text_at_caret(URDFTemplate.LINK_FULL_TAG)
 			set_caret_line(get_caret_line() - 2)
 		Tag.VISUAL:
-			insert_text_at_caret(VISUAL_FULL_TAG)
+			insert_text_at_caret(URDFTemplate.VISUAL_FULL_TAG)
 			set_caret_line(get_caret_line() - 6)
 		Tag.COLLISION:
-			insert_text_at_caret(COLLISION_FULL_TAG)
+			insert_text_at_caret(URDFTemplate.COLLISION_FULL_TAG)
 			set_caret_line(get_caret_line() - 3)
 		Tag.INERTIAL:
-			insert_text_at_caret(INERTIAL_MINIMAL_TAG)
+			insert_text_at_caret(URDFTemplate.INERTIAL_MINIMAL_TAG)
 		Tag.MATERIAL:
-			insert_text_at_caret(MATERIAL_MINIMAL_TAG)
+			insert_text_at_caret(URDFTemplate.MATERIAL_MINIMAL_TAG)
 		Tag.JOINT_PRISMATIC:
-			insert_text_at_caret(JOINT_PRISMATIC_TAG)
+			insert_text_at_caret(URDFTemplate.JOINT_PRISMATIC_TAG)
 		Tag.JOINT_CONTINUOUS:
-			insert_text_at_caret(JOINT_CONTINUOUS_TAG)
+			insert_text_at_caret(URDFTemplate.JOINT_CONTINUOUS_TAG)
 		Tag.JOINT_REVOLUTE:
-			insert_text_at_caret(JOINT_REVOLUTE_TAG)
+			insert_text_at_caret(URDFTemplate.JOINT_REVOLUTE_TAG)
 		Tag.JOINT_PIN:
-			insert_text_at_caret(JOINT_PIN_TAG)
+			insert_text_at_caret(URDFTemplate.JOINT_PIN_TAG)
+		Tag.SENSOR_RAY:
+			insert_text_at_caret(URDFTemplate.SENSOR_RAY_TAG)
 		Tag.BOX:
-			insert_text_at_caret(BOX_GEOMETRY_TAG)
+			insert_text_at_caret(URDFTemplate.BOX_GEOMETRY_TAG)
 		Tag.SPHERE:
-			insert_text_at_caret(SPHERE_GEOMETRY_TAG)
+			insert_text_at_caret(URDFTemplate.SPHERE_GEOMETRY_TAG)
 		Tag.CYLINDER:
-			insert_text_at_caret(CYLINDER_GEOMETRY_TAG)
+			insert_text_at_caret(URDFTemplate.CYLINDER_GEOMETRY_TAG)
 		Tag.MESH:
-			insert_text_at_caret(MESH_GEOMETRY_TAG)
+			insert_text_at_caret(URDFTemplate.MESH_GEOMETRY_TAG)
 		Tag.INLINE_COLOR:
-			insert_text_at_caret(INLINE_COLOR_TAG)
+			insert_text_at_caret(URDFTemplate.INLINE_COLOR_TAG)
 		Tag.GOBOTICS_CONTROL:
-			insert_text_at_caret(GOBOTICS_CONTROL_TAG)
+			insert_text_at_caret(URDFTemplate.GOBOTICS_CONTROL_TAG)
 		Tag.GOBOTICS_4_MECANUM_DRIVE:
-			insert_text_at_caret(GOBOTICS_4_MECANUM_DRIVE_TAG)
+			insert_text_at_caret(URDFTemplate.GOBOTICS_4_MECANUM_DRIVE_TAG)
 		Tag.GOBOTICS_GROUPED_JOINTS:
-			insert_text_at_caret(GOBOTICS_GROUPED_JOINTS_TAG)
+			insert_text_at_caret(URDFTemplate.GOBOTICS_GROUPED_JOINTS_TAG)
 		Tag.GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL:
-			insert_text_at_caret(GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL_TAG)
+			insert_text_at_caret(URDFTemplate.GOBOTICS_BUILTIN_RIGHT_MECANUM_WHEEL_TAG)
 		Tag.GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL:
-			insert_text_at_caret(GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL_TAG)
+			insert_text_at_caret(URDFTemplate.GOBOTICS_BUILTIN_LEFT_MECANUM_WHEEL_TAG)

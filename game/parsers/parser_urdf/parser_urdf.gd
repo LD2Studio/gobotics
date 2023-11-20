@@ -977,6 +977,8 @@ func parse_joints(urdf_data: PackedByteArray):
 #	print("joints: ", JSON.stringify(_joints, "\t", false))
 
 func parse_sensors(urdf_data: PackedByteArray):
+	# http://wiki.ros.org/urdf/XML/sensor/proposals
+	# http://wiki.ros.org/urdf/XML/sensor
 	var parse_err = parser.open_buffer(urdf_data)
 	if parse_err:
 		printerr("[PARSER] parse error ", parse_err)

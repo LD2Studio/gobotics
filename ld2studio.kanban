@@ -27,15 +27,14 @@
 			"title": "Todo",
 			"tasks": [
 				"04497972-4f8f-427b-9c50-fc506a2a9d5c",
-				"790d238f-fd76-4ded-b5fe-24694283c5bb"
+				"790d238f-fd76-4ded-b5fe-24694283c5bb",
+				"7f6c3ebd-0ad9-4d68-9414-498c94cbc53f"
 			]
 		},
 		{
 			"uuid": "c0a20e1b-6dfe-4755-9c56-399ea415b52d",
 			"title": "Doing",
-			"tasks": [
-				"adb0d772-5a08-4ecc-b4b5-67883701490e"
-			]
+			"tasks": []
 		},
 		{
 			"uuid": "7b72a285-37ab-4b20-a19e-626fb3e22438",
@@ -53,7 +52,8 @@
 			"uuid": "7daaf52a-71e4-4756-aaf3-76b318028cd9",
 			"title": "Ideas",
 			"tasks": [
-				"7d2b7e7f-d6fd-4abd-911b-9824aecd5c1c"
+				"7d2b7e7f-d6fd-4abd-911b-9824aecd5c1c",
+				"adb0d772-5a08-4ecc-b4b5-67883701490e"
 			]
 		}
 	],
@@ -109,7 +109,7 @@
 		},
 		{
 			"uuid": "3aa17095-5bd6-4c8f-b1c2-1f0a3ca5d52d",
-			"title": "Ajouter la fonctionnalité <sensors> au parseur URDF",
+			"title": "Add tag <sensors> to URDF parser",
 			"description": "http://wiki.ros.org/urdf/XML/sensor/proposals",
 			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
 			"steps": []
@@ -133,6 +133,13 @@
 			"title": "Add function to update asset in database (only one)",
 			"description": "",
 			"category": "00b0354a-b1c9-402f-af08-5f0f3fd716d2",
+			"steps": []
+		},
+		{
+			"uuid": "7f6c3ebd-0ad9-4d68-9414-498c94cbc53f",
+			"title": "Context Menu Assetlist placed uncorrectly",
+			"description": "",
+			"category": "518c525d-a76f-484b-a0a6-fea2c5cface3",
 			"steps": []
 		}
 	],
