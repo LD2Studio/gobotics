@@ -53,7 +53,6 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 		root_node.add_child(base_link)
 		root_node.set_meta("offset_pos", Vector3.ZERO)
 		kinematics_scene_owner_of(root_node)
-#		add_script_to(root_node)
 		return root_node
 	else:
 		delete_links()
@@ -1011,11 +1010,11 @@ func parse_sensors(urdf_data: PackedByteArray):
 					if "type" in attrib:
 						match attrib.type:
 							"ray":
-								sensor_node = load("res://game/robot_features/sensors/dummy_sensor.tscn").instantiate()
+								sensor_node = load("res://game/robot_features/sensors/ray_sensor.tscn").instantiate()
 							_:
 								printerr("Unrecognized sensor type name!")
 					else:
-						printerr("type attribute not present in sensor tag!")
+						printerr("<type> attribute not present in <sensor> tag!")
 					if sensor_node:
 						sensor_node.set_meta("orphan", true)
 						sensor_node.set_meta("owner", true)
@@ -1089,7 +1088,30 @@ func parse_sensors(urdf_data: PackedByteArray):
 							sensor_attrib.horizontal.max_angle = float(attrib.max_angle)
 						else:
 							sensor_attrib.horizontal.max_angle = 0.0
-			
+							
+				"vertical":
+					if not root_tag == Tag.SENSOR : continue
+					
+				"range":
+					if not root_tag == Tag.SENSOR : continue
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					sensor_attrib.range = {}
+					if internal_tag == Tag.RAY:
+						if "min" in attrib:
+							sensor_attrib.range.min = float(attrib.min) * scale
+						else:
+							sensor_attrib.range.min = 0.0
+						if "max" in attrib:
+							sensor_attrib.range.max = float(attrib.max) * scale
+						else:
+							sensor_attrib.range.max = 1.0 * scale
+						sensor_node.ray_min = sensor_attrib.range.min
+						sensor_node.ray_max = sensor_attrib.range.max
+					
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
 			var node_name = parser.get_node_name()
@@ -1298,9 +1320,18 @@ func create_asset_scene(root_node: Node3D):
 				break
 		if parent_node == null:
 			printerr("Sensor <%s> has no parent link!" % [sensor.name])
+			continue
 		else:
+			# Add frame gizmo
+			var frame_visual := MeshInstance3D.new()
+			frame_visual.set_meta("owner", true)
+			frame_visual.name = sensor.name + "_frame"
+			frame_visual.add_to_group("SENSOR_GIZMO", true)
+			frame_visual.mesh = _frame_mesh
+			frame_visual.scale = Vector3.ONE * scale
+			frame_visual.visible = false
+			sensor.node.add_child(frame_visual)
 			parent_node.add_child(sensor.node)
-			
 		
 	var base_link: RigidBody3D
 	for link in _links:

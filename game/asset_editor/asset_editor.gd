@@ -164,7 +164,11 @@ func show_joint_frame(enable: bool):
 	for node in get_tree().get_nodes_in_group("JOINT_GIZMO"):
 		if preview_scene.is_ancestor_of(node):
 			node.visible = enable
-
+			
+func show_sensor_frame(enable: bool):
+	for node in get_tree().get_nodes_in_group("SENSOR_GIZMO"):
+		if preview_scene.is_ancestor_of(node):
+			node.visible = enable
 
 func folding_link_tags():
 	for line_num in urdf_code_edit.get_line_count():
@@ -187,6 +191,9 @@ func _on_link_check_box_toggled(button_pressed):
 
 func _on_joint_check_box_toggled(button_pressed):
 	show_joint_frame(button_pressed)
+	
+func _on_sensor_check_box_toggled(button_pressed):
+	show_sensor_frame(button_pressed)
 
 func _on_full_screen_button_toggled(button_pressed):
 	fullscreen_toggled.emit(button_pressed)

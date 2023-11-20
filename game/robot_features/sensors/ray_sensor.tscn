@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://ddp6fhnhf2wie"]
+
+[ext_resource type="Script" path="res://game/robot_features/sensors/ray_sensor.gd" id="1_v7r08"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_b00t6"]
+size = Vector2(1, 0.01)
+center_offset = Vector3(0.5, 0, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0gyhc"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0, 0.690196, 0.54902, 1)
+shadow_to_opacity = true
+
+[node name="RaySensor" type="Node3D"]
+script = ExtResource("1_v7r08")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+target_position = Vector3(1, 0, 0)
+
+[node name="RayDebug" type="MeshInstance3D" parent="RayCast3D"]
+mesh = SubResource("QuadMesh_b00t6")
+surface_material_override/0 = SubResource("StandardMaterial3D_0gyhc")

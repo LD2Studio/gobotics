@@ -173,13 +173,19 @@ text = "Collision"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Frame"
+text = "Frames"
 
 [node name="JointCheckBox" type="CheckBox" parent="VBoxContainer/AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Joint"
+text = "Joints"
+
+[node name="SensorCheckBox" type="CheckBox" parent="VBoxContainer/AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Sensors"
 
 [node name="MessageContainer" type="PanelContainer" parent="VBoxContainer/AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
 unique_name_in_owner = true
@@ -228,6 +234,7 @@ cancel_button_text = "No"
 [connection signal="toggled" from="VBoxContainer/AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/CollisionCheckBox" to="." method="_on_collision_check_box_toggled"]
 [connection signal="toggled" from="VBoxContainer/AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/FrameCheckBox" to="." method="_on_link_check_box_toggled"]
 [connection signal="toggled" from="VBoxContainer/AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/JointCheckBox" to="." method="_on_joint_check_box_toggled"]
+[connection signal="toggled" from="VBoxContainer/AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/OptionsContainer/HBoxContainer/SensorCheckBox" to="." method="_on_sensor_check_box_toggled"]
 [connection signal="pressed" from="VBoxContainer/QuitMargin/QuitButton" to="." method="_on_quit_button_pressed"]
 [connection signal="canceled" from="VBoxContainer/QuitMargin/QuitButton/SavingConfirmationDialog" to="." method="_on_saving_confirmation_dialog_canceled"]
 [connection signal="confirmed" from="VBoxContainer/QuitMargin/QuitButton/SavingConfirmationDialog" to="." method="_on_saving_confirmation_dialog_confirmed"]

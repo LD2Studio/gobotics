@@ -407,7 +407,8 @@ func freeze_children(node, frozen):
 		node.freeze = true
 	elif node is RigidBody3D:
 		node.freeze = frozen
-#		set_physics_process(not frozen)
+	elif node.is_in_group("RAY"):
+		node.frozen = frozen
 	for child in node.get_children():
 		freeze_children(child, frozen)
 		

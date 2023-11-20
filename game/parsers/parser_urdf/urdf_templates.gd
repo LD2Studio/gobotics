@@ -83,6 +83,7 @@ const SENSOR_RAY_TAG = """
 		<ray>
 			<horizontal samples="1" resolution="1.0" min_angle="0" max_angle="0"/>
 			<vertical samples="1" resolution="1.0" min_angle="0" max_angle="0"/>
+			<range min="0" max="1"/>
 		</ray>
 	</sensor>
 """
