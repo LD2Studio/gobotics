@@ -1019,6 +1019,8 @@ func parse_sensors(urdf_data: PackedByteArray):
 						sensor_node.set_meta("orphan", true)
 						sensor_node.set_meta("owner", true)
 						sensor_node.add_to_group("RAY", true)
+						if sensor_attrib.name:
+							sensor_node.name = sensor_attrib.name
 						sensor_attrib.node = sensor_node
 						
 				"parent":
@@ -1371,7 +1373,6 @@ func add_robot_base(root_node: Node3D):
 		
 func add_gobotics_control(root_node: Node3D):
 #	print("_gobotics: ", _gobotics)
-	
 	for control in _gobotics:
 		if "type" in control:
 			match control.type:
