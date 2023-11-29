@@ -44,8 +44,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 	if event.is_action_pressed("rename") and asset_selected:
 #		print("Asset Name: ", asset_selected.name)
-		rename_dialog.get_node("NameEdit").text = asset_selected.name
-		rename_dialog.popup_centered()
+		rename_asset()
 		
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
@@ -412,6 +411,10 @@ func freeze_children(node, frozen):
 	for child in node.get_children():
 		freeze_children(child, frozen)
 		
+func rename_asset():
+	rename_dialog.get_node("NameEdit").text = asset_selected.name
+	rename_dialog.popup_centered()
+		
 func enable_pickable(asset: Node3D, enable: bool):
 	for child in asset.get_children():
 		if child.is_in_group("SELECT"):
@@ -607,7 +610,12 @@ func _on_rename_dialog_confirmed() -> void:
 	if scene:
 		var new_name : String = rename_dialog.get_node("NameEdit").text
 		new_name = new_name.validate_node_name()
+		
 		if asset_selected:
+			for asset in get_tree().get_nodes_in_group("ASSETS"):
+				if asset.name == new_name and not asset_selected.name == new_name:
+					rename_asset()
+					return
 			asset_selected.name = new_name
 			update_robot_select_menu()
 #			print("[GS] Asset selected: ", asset_selected)
