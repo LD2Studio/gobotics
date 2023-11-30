@@ -51,7 +51,7 @@ func _physics_process(delta):
 				_joint_idx = 0
 			focused_joint = joints[_joint_idx]
 			joint_changed.emit(focused_joint.name)
-#				print("focused joint: ", focused_joint)
+#			print("focused joint: ", focused_joint)
 			
 		if Input.is_action_just_pressed("JOINT_DOWN"):
 			_joint_idx -= 1
@@ -59,7 +59,7 @@ func _physics_process(delta):
 				_joint_idx = len(joints) - 1
 			focused_joint = joints[_joint_idx]
 			joint_changed.emit(focused_joint.name)
-#				print("focused joint: ", focused_joint)
+#			print("focused joint: ", focused_joint)
 				
 func update_all_joints():
 	joints.clear()

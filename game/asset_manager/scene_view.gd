@@ -23,24 +23,28 @@ func _can_drop_data(_at_position: Vector2, node) -> bool:
 		return false
 
 func _drop_data(_at_position: Vector2, data) -> void:
+	
+	var asset = data as Node
 	# Remove ghost asset
 	game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
 	game_scene.asset_dragged.queue_free()
 	game_scene.asset_dragged = null
 	
-	data.name = get_new_name(data.name)
-	data.position = game_scene.mouse_pos_on_area + offset_pos
-	if data.is_in_group("PYTHON"):
-		data.python_script_finished.connect(game_scene._on_python_script_finished)
-	game_scene.freeze_asset(data, true)
-	game_scene.get_node("Scene").add_child(data)
+	asset.name = get_new_name(asset.name)
+	asset.position = game_scene.mouse_pos_on_area + offset_pos
+	if asset.is_in_group("ROBOTS"):
+		asset.set_meta("udp_port", game_scene.get_available_udp_port())
+	else:
+		asset.set_meta("udp_port", null)
+	game_scene.freeze_asset(asset, true)
+	game_scene.get_node("Scene").add_child(asset)
 	game_scene.connect_editable()
 	game_scene.update_robot_select_menu()
 	game_scene.update_camera_view_menu()
 	
-	var part_name = data.get_node_or_null("%PartName")
+	var part_name = asset.get_node_or_null("%PartName")
 	if part_name:
-		part_name.text = data.name
+		part_name.text = asset.name
 		
 
 func get_new_name(current_name: StringName) -> StringName:
@@ -56,7 +60,6 @@ func get_new_name(current_name: StringName) -> StringName:
 		while (&"%s_%03d" % [current_name, idx]) in block_names_used:
 			idx += 1
 		return &"%s_%03d" % [current_name, idx]
-
 
 func _on_gui_input(event):
 	if event is InputEventMouseButton and event.pressed:

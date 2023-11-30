@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=26 format=3 uid="uid://b4s6pohitqafc"]
 
 [ext_resource type="Script" path="res://game/game.gd" id="1_85jys"]
 [ext_resource type="Texture2D" uid="uid://cws42r7tqpygr" path="res://game/icons/Tools.svg" id="2_hpbft"]
@@ -58,6 +58,9 @@ corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sjw4w"]
 bg_color = Color(0.6, 0.6, 0.6, 0.34902)
+
+[sub_resource type="LabelSettings" id="LabelSettings_f7ski"]
+font_color = Color(0.894118, 0.0862745, 0.0901961, 1)
 
 [sub_resource type="Environment" id="Environment_5axc7"]
 background_energy_multiplier = 0.89
@@ -431,6 +434,12 @@ layout_mode = 2
 min_value = 4243.0
 max_value = 65535.0
 value = 4243.0
+
+[node name="UDPPortWarning" type="Label" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+label_settings = SubResource("LabelSettings_f7ski")
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
 visible = false

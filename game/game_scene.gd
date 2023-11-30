@@ -140,6 +140,8 @@ func update_robot_select_menu():
 	else:
 		_on_robot_selected(0)
 	
+	
+## Callback on menu item selected
 func _on_robot_selected(idx: int):
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
 	for i in robot_popup.item_count:
@@ -261,7 +263,10 @@ func show_asset_parameters(asset: Node3D):
 	if asset_selected.is_in_group("ROBOTS"):
 		%PythonBridgeContainer.visible = true
 		%PythonRemoteButton.set_pressed_no_signal(asset_selected.get_node("PythonBridge").activate)
-		%UDPPortNumber.value = asset_selected.get_node("PythonBridge").port
+#		%UDPPortNumber.value = asset_selected.get_node("PythonBridge").port
+		var udp_port = asset_selected.get_meta("udp_port")
+		if udp_port:
+			%UDPPortNumber.set_value_no_signal(int(udp_port))
 	else:
 		%PythonBridgeContainer.visible = false
 
@@ -301,11 +306,16 @@ func save_scene(path: String):
 					gl_transform.basis.y.x, gl_transform.basis.y.y, gl_transform.basis.y.z,
 					gl_transform.basis.z.x, gl_transform.basis.z.y, gl_transform.basis.z.z],
 			}
+			var udp_port = null
+			if item.is_in_group("ROBOTS"):
+				udp_port =  item.get_meta("udp_port", null)
+			
 			var scene_path = ProjectSettings.globalize_path(item.scene_file_path)
 			scene_objects.assets.append({
 					fullname = game.database.get_fullname(scene_path),
 					string_name=item.name,
 					transform=asset_transform,
+					udp_port=udp_port,
 					})
 		if item.is_in_group("ENVIRONMENT"):
 #			print("environment : ", item.name)
@@ -370,6 +380,8 @@ func load_scene(path):
 				base_link.global_transform = new_transform
 			if "string_name" in asset:
 				asset_node.name = asset.string_name
+			if "udp_port" in asset and asset.udp_port:
+				asset_node.set_meta("udp_port", asset.udp_port)
 			freeze_asset(asset_node, true)
 			scene.add_child(asset_node)
 
@@ -585,7 +597,44 @@ func _on_python_remote_button_toggled(button_pressed: bool) -> void:
 func _on_udp_port_number_value_changed(value: float) -> void:
 	if asset_selected == null: return
 	if asset_selected.is_in_group("ROBOTS"):
-		asset_selected.get_node("PythonBridge").port = int(value)
+		if not is_udp_port_available(int(value)):
+#			printerr("udp port not availabled")
+			%UDPPortNumber.value = asset_selected.get_meta("udp_port")
+			%UDPPortWarning.visible = true
+			%UDPPortWarning.text = "%d is already used" % [value]
+			var warning_message := get_tree().create_tween()
+			warning_message.tween_property(%UDPPortWarning, "visible", false, 2)
+			return
+		asset_selected.set_meta("udp_port", int(value))
+#		asset_selected.get_node("PythonBridge").port = int(value)
+		
+func get_available_udp_port():
+	var robots_udp_port = Array()
+	for asset in get_node("Scene").get_children():
+		if asset.is_in_group("ROBOTS"):
+			robots_udp_port.push_back(asset.get_meta("udp_port"))
+	
+	if robots_udp_port.is_empty():
+		return 4243
+#	print("udp ports: ", robots_udp_port)
+	var higher_udp_port: int = robots_udp_port.max()
+#	print("udp port higher: ", higher_udp_port)
+	if higher_udp_port < 65533:
+		return higher_udp_port + 1
+	else:
+		printerr("UDP port not assigned!")
+		return null
+		
+func is_udp_port_available(udp_port: int) -> bool:
+	var robots_udp_port : Array[int]= []
+	for asset in get_node("Scene").get_children():
+		if asset.is_in_group("ROBOTS") and asset.name != asset_selected.name:
+			robots_udp_port.push_back(int(asset.get_meta("udp_port")))
+#	print("%d in %s: " % [udp_port, robots_udp_port])
+	if udp_port in robots_udp_port:
+		return false
+	else:
+		return true
 		
 func _on_open_script_button_pressed() -> void:
 	if asset_selected == null: return
@@ -623,9 +672,6 @@ func _on_rename_dialog_confirmed() -> void:
 func _on_script_dialog_confirmed() -> void:
 	if asset_selected == null: return
 	asset_selected.source_code = %SourceCodeEdit.text
-	
-func _on_python_script_finished(new_text: String):
-	%TerminalOutput.text += new_text
 
 func _on_builtin_script_check_box_toggled(button_pressed: bool) -> void:
 	if asset_selected == null: return
