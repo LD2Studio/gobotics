@@ -530,6 +530,8 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	# activate/desactivate physics behavior
 	for asset in scene.get_children():
 		freeze_asset(asset, !running)
+		if asset.is_in_group("ROBOTS"):
+			asset.activate_python(running, asset.get_meta("udp_port"))
 
 func _on_reload_button_pressed():
 	if owner.current_filename != "":
@@ -629,7 +631,8 @@ func is_udp_port_available(udp_port: int) -> bool:
 	var robots_udp_port : Array[int]= []
 	for asset in get_node("Scene").get_children():
 		if asset.is_in_group("ROBOTS") and asset.name != asset_selected.name:
-			robots_udp_port.push_back(int(asset.get_meta("udp_port")))
+			if asset.get_meta("udp_port"):
+				robots_udp_port.push_back(int(asset.get_meta("udp_port")))
 #	print("%d in %s: " % [udp_port, robots_udp_port])
 	if udp_port in robots_udp_port:
 		return false

@@ -1,11 +1,13 @@
 class_name RobotBase extends Node
 
+## Manual control
 @export var activated: bool = false:
 	set(value):
 		activated = value
+#		print("update activated flag : %s" % activated)
 		if activated:
 			update_all_joints()
-			
+		
 @export var base_link: RigidBody3D
 
 signal joint_changed(joint_name: String)

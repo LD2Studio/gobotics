@@ -52,7 +52,7 @@ func set_activate(enable):
 			server.stop()
 #				print("Stop listening")
 		server.listen(port)
-		print("Listen on new port %d" % port)
+#		print("Listen on new port %d" % port)
 	else:
 		server.stop()
 #		print("Stop listening")
