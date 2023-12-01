@@ -85,7 +85,7 @@ func edit_asset(fullname: String):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_base_dir = game.asset_base_dir
-	asset_editor.asset_updated.connect(func(value): asset_updated = value)
+	asset_editor.asset_updated_in_editor.connect(func(value): asset_updated = value)
 	asset_editor.asset_editor_exited.connect(_on_asset_editor_exited)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_fullname = fullname
@@ -96,7 +96,7 @@ func create_new_asset(asset_type: int):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_base_dir = game.asset_base_dir
-	asset_editor.asset_updated.connect(func(value): asset_updated = value)
+	asset_editor.asset_updated_in_editor.connect(func(value): asset_updated = value)
 	asset_editor.asset_editor_exited.connect(_on_asset_editor_exited)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_type = asset_type
@@ -144,8 +144,10 @@ func update_scene():
 	for asset in assets:
 		var fullname = asset.get_meta("fullname")
 		if fullname == null: continue
+		
 		game_scene.asset_selected = null
 		if fullname != asset_updated: continue
+		
 		if database.is_asset_exists(fullname):
 			var asset_tr: Transform3D
 			for node in asset.get_children():
@@ -155,12 +157,14 @@ func update_scene():
 			if not asset_tr: continue
 			var asset_name : StringName = asset.name
 #			print("update asset %s" % [asset.get_meta("fullname")])
+			var udp_port : int = asset.get_meta("udp_port")
 			scene_node.remove_child(asset)
 			asset.queue_free()
 			var new_asset_scene : String = database.get_scene_from_fullname(fullname)
 			var new_asset : Node3D = load(new_asset_scene).instantiate()
 			new_asset.name = asset_name
 			new_asset.global_transform = asset_tr
+			new_asset.set_meta("udp_port", udp_port)
 			game_scene.freeze_asset(new_asset, true)
 			scene_node.add_child(new_asset)
 			

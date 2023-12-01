@@ -9,7 +9,9 @@ enum TypeAsset {
 }
 var asset_type : TypeAsset = TypeAsset.ROBOT
 
-signal asset_updated(fullname: String)
+## OUTPUTS
+
+signal asset_updated_in_editor(fullname: String)
 signal asset_editor_exited()
 signal fullscreen_toggled(button_pressed: bool)
 
@@ -122,7 +124,7 @@ func save_asset():
 		return
 	urdf_file.store_string(urdf_code_edit.text)
 	urdf_file.flush()
-	asset_updated.emit(asset_filename_edit.text)
+	asset_updated_in_editor.emit(asset_filename_edit.text)
 	save_asset_button.disabled = true
 	
 func _on_overwrite_confirmation_dialog_confirmed():

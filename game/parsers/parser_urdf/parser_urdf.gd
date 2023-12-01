@@ -1357,6 +1357,7 @@ func add_python_bridge(root_node: Node3D):
 	python_bridge.name = &"PythonBridge"
 	python_bridge.set_meta("owner", true)
 	root_node.add_child(python_bridge)
+	root_node.set_meta("udp_port", 0)
 	
 func add_robot_base(root_node: Node3D):
 	var robot_base : Node = RobotBase.new()
