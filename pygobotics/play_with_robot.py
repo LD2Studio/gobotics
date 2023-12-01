@@ -1,6 +1,7 @@
 from gobotics import app, DiffRobot
 from time import sleep
 
+app.run()
 my_robot = DiffRobot(4243)
 
 print("Pose: ", my_robot.get_pose())
@@ -14,3 +15,5 @@ while True:
         my_robot.move(0,0)
         break
     sleep(0.1)
+
+app.stop()

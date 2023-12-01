@@ -410,6 +410,7 @@ theme_override_constants/margin_bottom = 5
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="PythonRemoteButton" type="CheckBox" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer"]

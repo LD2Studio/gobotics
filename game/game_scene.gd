@@ -531,7 +531,9 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	for asset in scene.get_children():
 		freeze_asset(asset, !running)
 		if asset.is_in_group("ROBOTS"):
-			asset.activate_python(running, asset.get_meta("udp_port"))
+			var udp_port = asset.get_meta("udp_port")
+			if udp_port:
+				asset.activate_python(running, asset.get_meta("udp_port"))
 
 func _on_reload_button_pressed():
 	if owner.current_filename != "":
@@ -590,11 +592,11 @@ func _on_z_rot_value_changed(value: float) -> void:
 	var base_link = get_base_link(asset_selected)
 	base_link.rotation_degrees.y = value
 
-func _on_python_remote_button_toggled(button_pressed: bool) -> void:
-	if asset_selected == null: return
-	if asset_selected.is_in_group("ROBOTS"):
-		asset_selected.get_node("PythonBridge").activate = button_pressed
-		asset_selected.get_node("PythonBridge").port = int(udp_port_number.value)
+#func _on_python_remote_button_toggled(button_pressed: bool) -> void:
+#	if asset_selected == null: return
+#	if asset_selected.is_in_group("ROBOTS"):
+#		asset_selected.get_node("PythonBridge").activate = button_pressed
+#		asset_selected.get_node("PythonBridge").port = int(udp_port_number.value)
 
 func _on_udp_port_number_value_changed(value: float) -> void:
 	if asset_selected == null: return
