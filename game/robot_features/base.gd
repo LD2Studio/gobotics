@@ -64,7 +64,10 @@ func _physics_process(delta):
 #			print("focused joint: ", focused_joint)
 				
 func update_all_joints():
+#	print("update all joints")
 	joints.clear()
+	for node in get_tree().get_nodes_in_group("CONTINUOUS"):
+		if node.owner == get_parent(): joints.append(node)
 	for node in get_tree().get_nodes_in_group("REVOLUTE"):
 #		print("owner %s -> node %s" %  [node.owner, node])
 		if node.owner == get_parent():
@@ -106,6 +109,15 @@ func set_pose(x: float, y: float, a: float):
 	base_link.global_position.x = x * 10.0
 	base_link.global_position.z = -y * 10.0
 	base_link.rotation.y = a
+	
+func set_continuous_velocity(jname: String, value: float):
+	var joint_name = jname.replace(" ", "_")
+#	print("%s : %f " % [joint_name, value])
+	for joint in joints:
+		if joint.is_in_group("CONTINUOUS") and joint.name == joint_name:
+#			print("%s : %f" % [joint_name, value])
+			joint.target_velocity = value
+			return
 
 func set_revolute(jname: String, value: float):
 	var joint_name = jname.replace(" ", "_")

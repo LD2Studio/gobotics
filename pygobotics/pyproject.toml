@@ -28,3 +28,4 @@ classifiers = [
 packages = ["gobotics"]
 
 # Build with : $ python -m build
+# Dev mode : $ pip install --editable .
