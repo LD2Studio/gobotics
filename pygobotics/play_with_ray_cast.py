@@ -1,12 +1,8 @@
 from gobotics import app, DiffRobot
 from time import sleep
-from gobotics import GodotBridge
-
-my_robot = DiffRobot(4243)
-
-print("Pose: ", my_robot.get_pose())
 
 app.run()
+my_robot = DiffRobot(4243)
 my_robot.set_pose(0,0,0)
 my_robot.move(5,5)
 
