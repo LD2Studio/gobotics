@@ -7,7 +7,8 @@ class_name RobotBase extends Node
 #		print("update activated flag : %s" % activated)
 		if activated:
 			update_all_joints()
-		
+			update_all_sensors()
+			
 @export var base_link: RigidBody3D
 
 signal joint_changed(joint_name: String)
@@ -18,6 +19,8 @@ var joypad_selected: int = 0
 var focused_joint = null
 
 var joints := Array()
+var ray_sensors := Array()
+
 var _joint_idx : int = 0
 
 func _init():
@@ -83,6 +86,12 @@ func update_all_joints():
 	if not joints.is_empty():
 		focused_joint = joints[0]
 		joint_changed.emit(focused_joint.name)
+		
+func update_all_sensors():
+	ray_sensors.clear()
+	for node in get_tree().get_nodes_in_group("RAY"):
+		if node.owner == get_parent():
+			ray_sensors.append(node)
 
 func _on_joypad_changed(device: int, connected: bool):
 	print("device %d connected: %s" % [device, connected])
@@ -142,3 +151,17 @@ func set_grouped_joints(jname: String, value: float):
 		if joint.is_in_group("GROUPED_JOINTS") and joint.name == grouped_joint_name:
 			joint.target_value = value
 			return
+
+func is_ray_colliding(sname: String) -> bool:
+	var sensor_name = sname.replace(" ", "_")
+	for ray in ray_sensors:
+		if ray.is_in_group("RAY") and ray.name == sensor_name:
+			return ray.colliding
+	return false
+	
+func get_ray_length(sname: String) -> float:
+	var sensor_name = sname.replace(" ", "_")
+	for ray in ray_sensors:
+		if ray.name == sensor_name:
+			return ray.length
+	return 0.0

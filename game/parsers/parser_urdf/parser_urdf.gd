@@ -1010,7 +1010,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 					if "type" in attrib:
 						match attrib.type:
 							"ray":
-								sensor_node = load("res://game/robot_features/sensors/ray_sensor.tscn").instantiate()
+								sensor_node = load("res://game/robot_features/sensors/ray_scanner.tscn").instantiate()
 							_:
 								printerr("Unrecognized sensor type name!")
 					else:
@@ -1019,6 +1019,8 @@ func parse_sensors(urdf_data: PackedByteArray):
 						sensor_node.set_meta("orphan", true)
 						sensor_node.set_meta("owner", true)
 						sensor_node.add_to_group("RAY", true)
+						if sensor_attrib.name:
+							sensor_node.name = sensor_attrib.name
 						sensor_attrib.node = sensor_node
 						
 				"parent":
@@ -1088,6 +1090,10 @@ func parse_sensors(urdf_data: PackedByteArray):
 							sensor_attrib.horizontal.max_angle = float(attrib.max_angle)
 						else:
 							sensor_attrib.horizontal.max_angle = 0.0
+							
+						sensor_node.samples = sensor_attrib.horizontal.samples
+						sensor_node.hor_max_angle = sensor_attrib.horizontal.max_angle
+						sensor_node.hor_min_angle = sensor_attrib.horizontal.min_angle
 							
 				"vertical":
 					if not root_tag == Tag.SENSOR : continue
@@ -1371,7 +1377,6 @@ func add_robot_base(root_node: Node3D):
 		
 func add_gobotics_control(root_node: Node3D):
 #	print("_gobotics: ", _gobotics)
-	
 	for control in _gobotics:
 		if "type" in control:
 			match control.type:

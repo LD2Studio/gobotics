@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://1nvrdh7kgdwu"]
+
+[ext_resource type="Script" path="res://game/robot_features/sensors/visual_ray_cast.gd" id="1_yn2bp"]
+
+[node name="VisualRayCast" type="RayCast3D"]
+target_position = Vector3(1, 0, 0)
+script = ExtResource("1_yn2bp")

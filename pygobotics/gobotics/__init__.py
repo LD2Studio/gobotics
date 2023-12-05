@@ -35,7 +35,13 @@ class Robot(GodotBridge):
     def set_prismatic_dist(self, name: str, value: float):
         self.call("set_prismatic", name, value)
 
-# Diff Drive
+    def is_ray_colliding(self, name: str) -> bool:
+        return self.call("is_ray_colliding", name)
+    
+    def get_ray_length(self, name: str) -> float:
+        return self.call("get_ray_length", name)
+
+    # Diff Drive
 class DiffRobot(Robot):
     
     def move(self, right_vel: float, left_vel: float):
