@@ -11,6 +11,8 @@ extends Node3D
 			set_physics_process(true)
 
 var ray_cast_array: Array
+
+## Outputs
 var colliding: bool = false
 var length: float
 
