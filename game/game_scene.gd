@@ -67,6 +67,7 @@ func connect_pickable():
 #	print(nodes)
 	for node in nodes:
 		if not node.is_connected("mouse_entered", _on_ground_mouse_entered):
+			#print("[GS] set node %s pickable" % [node])
 			node.mouse_entered.connect(_on_ground_mouse_entered)
 		if not node.is_connected("mouse_exited", _on_ground_mouse_exited):
 			node.mouse_exited.connect(_on_ground_mouse_exited)
@@ -428,6 +429,7 @@ func rename_asset():
 	rename_dialog.popup_centered()
 		
 func enable_pickable(asset: Node3D, enable: bool):
+	#print("[GS] pick %s: %s" % [asset, enable])
 	for child in asset.get_children():
 		if child.is_in_group("SELECT"):
 			child.input_ray_pickable = enable
@@ -564,8 +566,10 @@ func _on_editable_block_input_event(_camera, event: InputEvent, _mouse_position,
 
 func _on_editable_mouse_entered():
 	owner.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	#print("[GS] mouse entered on %s" % [owner.mouse_default_cursor_shape])
 	
 func _on_editable_mouse_exited():
+	#print("[GS] mouse exited on %s" % [owner.mouse_default_cursor_shape])
 	owner.mouse_default_cursor_shape = Control.CURSOR_ARROW
 
 func _on_x_pos_value_changed(value: float) -> void:

@@ -66,7 +66,7 @@ func _physics_process(delta):
 			focused_joint = joints[_joint_idx]
 			joint_changed.emit(focused_joint.name)
 #			print("focused joint: ", focused_joint)
-				
+			
 func update_all_joints():
 #	print("update all joints")
 	joints.clear()

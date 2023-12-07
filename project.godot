@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="Gobotics"
+config/version="0.10.0"
 config/tags=PackedStringArray("project")
 run/main_scene="res://game/game.tscn"
-config/features=PackedStringArray("4.1", "Forward Plus")
+config/features=PackedStringArray("4.2", "Forward Plus")
 run/low_processor_mode=true
 run/low_processor_mode_sleep_usec=16667
 config/icon="res://gobotics_logo.svg"
 config/windows_native_icon="res://gobotics_logo.ico"
-config/version="0.10.0"
 config/create_binary_scene=true
 
 [autoload]
@@ -32,7 +32,7 @@ window/size/viewport_height=720
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/control_camera3d/plugin.cfg", "res://addons/kanban_tasks/plugin.cfg")
+enabled=PackedStringArray("res://addons/control_camera3d/plugin.cfg")
 
 [importer_defaults]
 
