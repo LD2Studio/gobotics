@@ -38,8 +38,9 @@ class Robot(GodotBridge):
     def is_ray_colliding(self, name: str) -> bool:
         return self.call("is_ray_colliding", name)
     
-    def get_ray_length(self, name: str) -> float:
-        return self.call("get_ray_length", name)
+    
+    def get_ray_scanner(self, name: str) -> tuple:
+        return self.call("get_ray_scanner", name)
 
     # Diff Drive
 class DiffRobot(Robot):
