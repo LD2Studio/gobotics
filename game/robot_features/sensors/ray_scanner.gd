@@ -1,6 +1,7 @@
-extends Node3D
+class_name RayScanner extends Node3D
 
-## INPUTS
+#region INPUTS
+
 @export var samples: int = 1
 @export var hor_min_angle: float = 0.0
 @export var hor_max_angle: float = 0.0
@@ -15,14 +16,20 @@ extends Node3D
 		else:
 			set_physics_process(true)
 			visible = true
+#endregion
 
-## OUTPUTS
-var colliding: bool = false
-var length: float
+#region OUTPUTS
 
-## INTERNALS
+var any_colliding: bool = false
+var ray_lengths: PackedFloat32Array 
+#endregion
+
+#region INTERNALS
+
 var _ray_cast_array: Array
+#endregion
 
+#region INIT
 func _ready():
 	set_physics_process(not frozen)
 	_init_ray_cast()
@@ -52,25 +59,30 @@ func _init_ray_cast():
 			ray_cast.position.x = ray_min
 			ray_cast.target_position = Vector3(ray_max - ray_min, 0, 0)
 			
-			var ray_cast_obj = {
+			var ray_cast_state = {
 				node=ray_cast,
 				colliding=false,
 				length=0.0,
 			}
-			_ray_cast_array.append(ray_cast_obj)
-			
-func _physics_process(delta: float) -> void:
-	for ray_cast in _ray_cast_array:
-		if ray_cast.node.is_colliding():
-			colliding = true
-			ray_cast.colliding = true
-			var collider_point : Vector3 = ray_cast.node.get_collision_point()
-			ray_cast.length = ray_cast.node.global_position.distance_to(collider_point) / GParam.SCALE
-			ray_cast.node.activate(true, ray_cast.length)
-#			print("length: ", ray_cast.length)
-			length = ray_cast.length
+			_ray_cast_array.append(ray_cast_state)
+#endregion
+
+#region PROCESS
+func _physics_process(_delta: float) -> void:
+	any_colliding = false
+	ray_lengths.clear()
+	for ray_cast_state: Dictionary in _ray_cast_array:
+		if ray_cast_state.node.is_colliding():
+			any_colliding = true
+			ray_cast_state.colliding = true
+			var collider_point : Vector3 = ray_cast_state.node.get_collision_point()
+			var length: float = ray_cast_state.node.global_position.distance_to(collider_point) / GParam.SCALE
+			ray_cast_state.node.activate(true, length)
+			#ray_cast_state.length = ray_cast_state.node.global_position.distance_to(collider_point) / GParam.SCALE
+			ray_lengths.append(length)
 		else:
-			colliding = false
-			ray_cast.colliding = false
-			ray_cast.node.activate(false)
+			ray_cast_state.colliding = false
+			ray_cast_state.node.activate(false)
+			ray_lengths.append(0)
 			
+#endregion
