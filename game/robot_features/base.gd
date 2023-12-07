@@ -16,7 +16,7 @@ signal joint_changed(joint_name: String)
 var joypads_connected: Array[int]
 var joypad_connected: bool = false
 var joypad_selected: int = 0
-var focused_joint = null
+var focused_joint: Node = null
 
 var joints := Array()
 var ray_sensors := Array()
@@ -45,10 +45,11 @@ func setup():
 
 func _physics_process(delta):
 	if activated and focused_joint:
-		if Input.is_action_pressed("JOINT_POS"):
-			focused_joint.shift_target(delta)
-		elif Input.is_action_pressed("JOINT_NEG"):
-			focused_joint.shift_target(-delta)
+		if focused_joint.has_method("shift_target"):
+			if Input.is_action_pressed("JOINT_POS"):
+				focused_joint.shift_target(delta)
+			elif Input.is_action_pressed("JOINT_NEG"):
+				focused_joint.shift_target(-delta)
 			
 		if Input.is_action_just_pressed("JOINT_UP"):
 			_joint_idx += 1
