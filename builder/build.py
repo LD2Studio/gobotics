@@ -2,8 +2,8 @@ import os
 import shutil
 import subprocess
 
-version = "0.10.0"
-py_version = "0.5.0"
+version = "0.11.0"
+py_version = "0.6.0"
 
 executable = {
     "linux": "gobotics.x86_64",
@@ -35,6 +35,7 @@ for platform in ["linux", "windows"]:
     shutil.copy("assets/demo/slider.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
     shutil.copy("assets/demo/rotations.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/demo")
     shutil.copy("assets/robots/robot_diff.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/robots")
+    shutil.copy("assets/robots/robot_diff_raycast.urdf", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/robots")
     shutil.copy("assets/robots/meshes/PioneerCaster.glb", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/robots/meshes")
     shutil.copy("assets/robots/meshes/PioneerChassis.glb", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/robots/meshes")
     shutil.copy("assets/robots/meshes/PioneerWheel.glb", "exports/gobotics-"+ version +"-"+ platform+"-x86_64/assets/robots/meshes")
@@ -48,6 +49,6 @@ for platform in ["linux", "windows"]:
     shutil.copy("pygobotics/play_with_state_machine.py", "exports/gobotics-"+ version +"-"+ platform +"-x86_64/pygobotics/")
     shutil.copy("pygobotics/play_with_rotations.py", "exports/gobotics-"+ version +"-"+ platform +"-x86_64/pygobotics/")
 
-    subprocess.run(["godot4" , "--export-debug", "Gobotics-"+ platform , "exports/gobotics-"+ version +"-"+ platform + "-x86_64/" + executable[platform], "--headless"])
+    subprocess.run(["godot4_2" , "--export-debug", "Gobotics-"+ platform , "exports/gobotics-"+ version +"-"+ platform + "-x86_64/" + executable[platform], "--headless"])
 
     shutil.make_archive("exports/gobotics-"+ version +"-"+ platform +"-x86_64", 'zip', "exports/gobotics-"+ version +"-" + platform + "-x86_64")
