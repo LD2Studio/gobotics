@@ -38,7 +38,6 @@ class Robot(GodotBridge):
     def is_ray_colliding(self, name: str) -> bool:
         return self.call("is_ray_colliding", name)
     
-    
     def get_ray_scanner(self, name: str) -> tuple:
         return self.call("get_ray_scanner", name)
 

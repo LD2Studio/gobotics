@@ -78,7 +78,6 @@ func _physics_process(_delta: float) -> void:
 			var collider_point : Vector3 = ray_cast_state.node.get_collision_point()
 			var length: float = ray_cast_state.node.global_position.distance_to(collider_point) / GParam.SCALE
 			ray_cast_state.node.activate(true, length)
-			#ray_cast_state.length = ray_cast_state.node.global_position.distance_to(collider_point) / GParam.SCALE
 			ray_lengths.append(length)
 		else:
 			ray_cast_state.colliding = false

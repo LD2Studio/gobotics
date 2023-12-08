@@ -171,7 +171,7 @@ func set_grouped_joints(jname: String, value: float):
 func is_ray_colliding(sname: String) -> bool:
 	var sensor_name = sname.replace(" ", "_")
 	for ray: Node3D in _ray_sensors:
-		print("ray: ", ray)
+		#print("ray: ", ray)
 		if ray.is_in_group("RAY") and ray.name == sensor_name:
 			return ray.any_colliding
 	return false
