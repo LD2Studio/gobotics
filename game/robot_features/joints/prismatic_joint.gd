@@ -10,6 +10,13 @@ var target_dist: float = 0.0:
 		target_dist = value
 		_target_reached = false
 		motor_enabled = true
+		
+var target_speed: float = 0.0
+
+var custom_control: bool = false:
+	set(value):
+		custom_control = value
+		#print("custom control: ", custom_control)
 #endregion
 
 #region OUTPUTS
@@ -42,17 +49,21 @@ func _physics_process(_delta):
 	var child_tr: Transform3D = child_link.transform
 	dist = (child_tr * _basis_inv_node.transform).origin.x
 	#print("dist=", dist)
+	var speed: float
+	
 	var err = target_dist - dist
 	#print("err: ", err)
-	var speed: float
-	if not _target_reached:
-		if abs(err) > dist_step:
-			speed = limit_velocity * sign(err)
+	if not custom_control:
+		if not _target_reached:
+			if abs(err) > dist_step:
+				speed = limit_velocity * sign(err)
+			else:
+				speed = 0
+				_target_reached = true
 		else:
-			speed = 0
-			_target_reached = true
+			speed = limit_velocity * err
 	else:
-		speed = limit_velocity * err
+		speed = target_speed
 	
 	motor_target_velocity = speed
 

@@ -151,14 +151,33 @@ func set_revolute(jname: String, value: float):
 		if joint.is_in_group("REVOLUTE") and joint.name == joint_name:
 			joint.target_angle = deg_to_rad(value)
 			return
-
-func set_prismatic(jname: String, value: float):
+			
+func set_prismatic_config(jname: String, custom: bool = false):
 	var joint_name = jname.replace(" ", "_")
-	#print("Prismatic joint name: %s = %f " % [joint_name, value])
+	#print("Prismatic config: %s = %s " % [joint_name, custom])
+	for joint: Node3D in _joints:
+		if joint.is_in_group("PRISMATIC") and joint.name == joint_name:
+			joint.custom_control = custom
+			return
+			
+func set_prismatic(jname: String, value: float, velocity: bool = false):
+	var joint_name = jname.replace(" ", "_")
+	#print("Prismatic: %s = %f " % [joint_name, value])
 	for joint in _joints:
 		if joint.is_in_group("PRISMATIC") and joint.name == joint_name:
-			joint.target_dist = value * 10.0
+			if velocity:
+				joint.target_speed = value * GParam.SCALE
+			else:
+				joint.target_dist = value * GParam.SCALE
 			return
+			
+func get_prismatic(jname: String) -> float:
+	var joint_name = jname.replace(" ", "_")
+	var dist: float
+	for joint: Node3D in _joints:
+		if joint.is_in_group("PRISMATIC") and joint.name == joint_name:
+			dist = joint.dist / GParam.SCALE
+	return dist
 
 func set_grouped_joints(jname: String, value: float):
 	var grouped_joint_name = jname.replace(" ", "_")

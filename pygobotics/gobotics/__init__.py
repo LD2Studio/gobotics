@@ -31,9 +31,18 @@ class Robot(GodotBridge):
 
     def set_revolute_angle(self, name: str, value: float):
         self.call("set_revolute", name, value)
+
+    def set_prismatic_config(self, name: str, custom: bool):
+        self.call("set_prismatic_config", name, custom)
     
     def set_prismatic_dist(self, name: str, value: float):
         self.call("set_prismatic", name, value)
+
+    def set_prismatic_vel(self, name: str, value: float):
+        self.call("set_prismatic", name, value, True)
+
+    def get_prismatic_dist(self, name: str) -> float:
+        return self.call("get_prismatic", name)
 
     def is_ray_colliding(self, name: str) -> bool:
         return self.call("is_ray_colliding", name)
