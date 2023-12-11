@@ -1156,7 +1156,7 @@ func create_asset_scene(root_node: Node3D):
 			parse_error_message += "Joint <%s> has no child link!" % [joint.name]
 			return null
 			
-		var joint_node
+		var joint_node : Node3D
 		var new_joint_basis : Basis
 		if not "type" in joint:
 			printerr("joint %s has no type" % joint.name)
@@ -1251,8 +1251,10 @@ func create_asset_scene(root_node: Node3D):
 				joint_node.set_script(joint_script)
 				
 			"prismatic":
-				joint_node = JoltSliderJoint3D.new()
+				joint_node = PrismaticJoint.new()
 				joint_node.name = joint.name
+				joint_node.child_link = child_node
+				joint_node.set_meta("owner", true)
 				joint_node.limit_enabled = true
 				joint_node.add_to_group("PRISMATIC", true)
 				if "origin" in joint:
@@ -1263,7 +1265,7 @@ func create_asset_scene(root_node: Node3D):
 					if "effort" in joint.limit:
 						joint_node.motor_max_force = float(joint.limit.effort)
 					if "velocity" in joint.limit:
-						limit_velocity = float(joint.limit.velocity) * scale
+						joint_node.limit_velocity = float(joint.limit.velocity) * scale
 					if "lower" in joint.limit:
 						joint_node.limit_lower = joint.limit.lower * scale
 					else:
@@ -1285,14 +1287,9 @@ func create_asset_scene(root_node: Node3D):
 				var basis_node = Node3D.new()
 				basis_node.set_meta("owner", true)
 				basis_node.name = joint_node.name + "_basis_inv"
-				basis_node.unique_name_in_owner = true
 				basis_node.transform.basis = new_joint_basis
 				child_node.add_child(basis_node)
 				
-				var joint_script := GDScript.new()
-				joint_script.source_code = get_prismatic_joint_script(child_node, basis_node, limit_velocity)
-				joint_node.set_script(joint_script)
-
 			_:
 				return null
 				
@@ -1386,7 +1383,7 @@ func add_gobotics_control(root_node: Node3D):
 					add_diff_drive(root_node, control)
 				"4_mecanum_drive":
 					add_4_mecanum_drive(root_node, control)
-	
+
 func add_grouped_joints(root_node: Node3D, control):
 	var grouped_joints : Node = GroupedJoints.new()
 	grouped_joints.name = StringName(control.name.to_pascal_case())
