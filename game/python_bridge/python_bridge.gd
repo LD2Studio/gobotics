@@ -68,7 +68,7 @@ func parse_call_from_python(peer: PacketPeerUDP, json_message: String):
 	if "namefunc" in message:
 		var caller = get_script_node(message.namefunc)
 		if caller:
-#			print("method %s exits" % [message.namefunc])
+			#print("method %s exits" % [message.namefunc])
 			var params: Array = message.params
 #			print(params)
 			var args = Array()
@@ -79,7 +79,8 @@ func parse_call_from_python(peer: PacketPeerUDP, json_message: String):
 					args.append(p.value.to_int())
 				elif p.type == "bool":
 					var value = true if p.value == "True" else false
-					args.append(p.value)
+					#print("value:" , value)
+					args.append(value)
 				elif p.type == "string":
 					args.append(p.value)
 				elif p.type == "vec3":
@@ -87,7 +88,7 @@ func parse_call_from_python(peer: PacketPeerUDP, json_message: String):
 					args.append(vec3)
 
 			var c = Callable(caller, message.namefunc)
-#			print("c: %s , args: %s" % [c, args])
+			#print("c: %s , args: %s" % [c, args])
 			## Call function and wait a response
 			var ret = await c.callv(args)
 			if ret is float:
