@@ -20,7 +20,7 @@ func setup():
 
 func _input(event):
 	if event is InputEventKey and activated:
-		var speed = max_speed if Input.is_action_pressed("BOOST") else max_speed/2.0
+		var speed : float = max_speed if Input.is_action_pressed("BOOST") else max_speed/2.0
 		
 		if Input.is_action_pressed("FORWARD"):
 			front_left_wheel_joint.target_velocity = speed
@@ -59,10 +59,10 @@ func _input(event):
 			back_right_wheel_joint.target_velocity = -speed
 			
 		else:
-			front_left_wheel_joint.target_velocity = 0
-			front_right_wheel_joint.target_velocity = 0
-			back_left_wheel_joint.target_velocity = 0
-			back_right_wheel_joint.target_velocity = 0
+			front_left_wheel_joint.target_velocity = 0.0
+			front_right_wheel_joint.target_velocity = 0.0
+			back_left_wheel_joint.target_velocity = 0.0
+			back_right_wheel_joint.target_velocity = 0.0
 
 ## Functions exposed to Python
 

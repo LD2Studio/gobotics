@@ -154,7 +154,7 @@ func set_revolute(jname: String, value: float):
 
 func set_prismatic(jname: String, value: float):
 	var joint_name = jname.replace(" ", "_")
-#	print("Prismatic joint name: %s = %f " % [joint_name, value])
+	#print("Prismatic joint name: %s = %f " % [joint_name, value])
 	for joint in _joints:
 		if joint.is_in_group("PRISMATIC") and joint.name == joint_name:
 			joint.target_dist = value * 10.0

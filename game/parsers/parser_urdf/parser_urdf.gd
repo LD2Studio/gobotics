@@ -1473,7 +1473,7 @@ func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> S
 @onready var child_link: RigidBody3D = $%s
 var target_velocity: float = 0.0:
 	set = _target_velocity_changed
-const LIMIT_VELOCITY = %d
+const LIMIT_VELOCITY = %f
 
 func _ready():
 	child_link.can_sleep = false
@@ -1498,7 +1498,7 @@ var input: float:
 		target_angle = value
 var angle_step: float
 var rest_angle: float
-var LIMIT_VELOCITY: float = %d
+var LIMIT_VELOCITY: float = %f
 
 func shift_target(step):
 	if step > 0 and target_angle <= -limit_lower:
@@ -1543,7 +1543,7 @@ var input: float:
 		target_dist = value
 var dist_step: float
 var rest_angle: float
-var LIMIT_VELOCITY: float = %d
+var LIMIT_VELOCITY: float = %f
 var _target_reached: bool = false
 
 
