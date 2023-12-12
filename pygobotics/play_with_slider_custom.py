@@ -25,17 +25,19 @@ times = []
 dist_array = []
 
 target_dist = 0.1
-K = 10
+K = 20
 t = 0.0
+dist, tick_start = my_servo.get_prismatic("arm servo")
+print("tick start: ", tick_start)
 try:
     while True:
-        dist = my_servo.get_prismatic_dist("arm servo")
+        dist, tick = my_servo.get_prismatic("arm servo")
         dist_array.append(dist)
         times.append(t)
         err = target_dist - dist
         command = K * err
         my_servo.set_prismatic_vel("arm servo", command)
-        t += 1/60.0
+        t = (tick - tick_start)/120.0
 
 except KeyboardInterrupt:
     my_servo.set_prismatic_config("arm_servo", False)

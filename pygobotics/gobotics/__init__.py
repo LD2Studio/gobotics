@@ -41,7 +41,7 @@ class Robot(GodotBridge):
     def set_prismatic_vel(self, name: str, value: float):
         self.call("set_prismatic", name, value, True)
 
-    def get_prismatic_dist(self, name: str) -> float:
+    def get_prismatic(self, name: str) -> tuple:
         return self.call("get_prismatic", name)
 
     def is_ray_colliding(self, name: str) -> bool:

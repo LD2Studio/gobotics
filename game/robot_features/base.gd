@@ -171,13 +171,16 @@ func set_prismatic(jname: String, value: float, velocity: bool = false):
 				joint.target_dist = value * GParam.SCALE
 			return
 			
-func get_prismatic(jname: String) -> float:
+func get_prismatic(jname: String) -> PackedFloat32Array:
 	var joint_name = jname.replace(" ", "_")
 	var dist: float
 	for joint: Node3D in _joints:
 		if joint.is_in_group("PRISMATIC") and joint.name == joint_name:
 			dist = joint.dist / GParam.SCALE
-	return dist
+	var data = PackedFloat32Array(
+		[dist, GParam.physics_tick]
+	)
+	return data
 
 func set_grouped_joints(jname: String, value: float):
 	var grouped_joint_name = jname.replace(" ", "_")

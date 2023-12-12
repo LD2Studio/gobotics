@@ -30,13 +30,15 @@ func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
 	%InfosContainer.visible = false
 	update_camera_view_menu()
-	
+	set_physics_process(false)
 	var python_bridge : Node = python_bridge_scene.instantiate()
 	add_child(python_bridge)
 	python_bridge.port = 4242
 	python_bridge.set_activate(true)
 	python_bridge.nodes.append(self)
 	
+	
+#region PROCESS
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("DELETE") and asset_selected:
 		confirm_delete_dialog.dialog_text = "Delete %s object ?" % [asset_selected.name]
@@ -48,7 +50,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
+	#%PhysicsFrameLabel.text = "Frame: %d" % [Engine.get_physics_frames()]
 #	Node.print_orphan_nodes()
+
+func _physics_process(delta: float) -> void:
+	%PhysicsFrameLabel.text = "Frame: %d" % [GParam.physics_tick]
+	GParam.physics_tick += 1
+
+#endregion
 	
 func new_scene(environment_path: String) -> void:
 #	print("Env path: ", environment_path)
@@ -114,7 +123,8 @@ func _camera_view_selected(idx: int):
 			cam_popup.set_item_checked(i, true)
 		else:
 			cam_popup.set_item_checked(i, false)
-	_cams[idx].current = true
+	if not _cams.is_empty():
+		_cams[idx].current = true
 			
 func update_robot_select_menu():
 	if not is_robots_inside_scene():
@@ -519,11 +529,13 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	%ObjectInspector.visible = not button_pressed
 	if button_pressed:
 		running = true
+		set_physics_process(true)
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
 		show_joint_infos()
 	else:
 		running = false
+		set_physics_process(false)
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
 		%InfosContainer.visible = false
@@ -540,6 +552,8 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 func _on_reload_button_pressed():
 	if owner.current_filename != "":
 		load_scene(owner.current_filename)
+		GParam.physics_tick = 0
+		%PhysicsFrameLabel.text = "Frame: %d" % [GParam.physics_tick]
 
 func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
 	mouse_pos_on_area = mouse_position
