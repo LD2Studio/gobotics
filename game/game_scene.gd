@@ -50,10 +50,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
-	#%PhysicsFrameLabel.text = "Frame: %d" % [Engine.get_physics_frames()]
-#	Node.print_orphan_nodes()
+	#Node.print_orphan_nodes()
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	%PhysicsFrameLabel.text = "Frame: %d" % [GParam.physics_tick]
 	GParam.physics_tick += 1
 
