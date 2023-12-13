@@ -302,7 +302,7 @@ handle_input_locally = false
 msaa_3d = 2
 screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(1218, 900)
+size = Vector2i(1058, 720)
 render_target_update_mode = 4
 
 [node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView/SceneViewport"]
@@ -510,24 +510,6 @@ layout_mode = 2
 flat = false
 switch_on_hover = true
 
-[node name="StatisticsPanel" type="PanelContainer" parent="SplitContainer/SceneView/SceneViewport"]
-offset_right = 40.0
-offset_bottom = 40.0
-theme_override_styles/panel = ExtResource("10_q2yc6")
-
-[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/SceneView/SceneViewport/StatisticsPanel"]
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/SceneView/SceneViewport/StatisticsPanel/MarginContainer"]
-layout_mode = 2
-
-[node name="FPSContainer" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport/StatisticsPanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="FPSLabel" type="Label" parent="SplitContainer/SceneView/SceneViewport/StatisticsPanel/MarginContainer/VBoxContainer/FPSContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
 [node name="OptionsContainer" type="MarginContainer" parent="SplitContainer/SceneView/SceneViewport"]
 anchors_preset = 2
 anchor_top = 1.0
@@ -551,6 +533,29 @@ text = "Frame"
 [node name="JointCheckBox" type="CheckBox" parent="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer"]
 layout_mode = 2
 text = "Joint"
+
+[node name="StatisticsContainer" type="MarginContainer" parent="SplitContainer/SceneView/SceneViewport"]
+offset_right = 67.0
+offset_bottom = 50.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+
+[node name="StatisticsPanel" type="PanelContainer" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer"]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("10_q2yc6")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel"]
+layout_mode = 2
+
+[node name="FPSLabel" type="Label" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "FPS: 60"
+
+[node name="PhysicsFrameLabel" type="Label" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Frame: 0"
 
 [node name="InfosContainer" type="MarginContainer" parent="SplitContainer/SceneView/SceneViewport"]
 unique_name_in_owner = true
