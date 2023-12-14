@@ -20,7 +20,7 @@ func _input_value_changed(value: float):
 #	print("input: ", value)
 	input_value = value
 	for output in outputs:
-		get_parent().get_node("%%%s" % [output.joint]).input = output.factor.to_float() * value
+		get_parent().get_node("%%%s" % [output.joint]).target_input = output.factor.to_float() * value
 #
 func shift_target(step):
 #	print("step: %f , input: %f" % [step, input_value])

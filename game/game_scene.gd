@@ -214,7 +214,7 @@ func show_asset_parameters(asset: Node3D):
 		velocity_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		velocity_edit.min_value = -joint.LIMIT_VELOCITY
 		velocity_edit.max_value = joint.LIMIT_VELOCITY
-		velocity_edit.step = joint.LIMIT_VELOCITY / 10.0
+		velocity_edit.step = joint.LIMIT_VELOCITY / GParam.SCALE
 #			velocity_edit.tick_count = 3
 		velocity_edit.value = joint.target_velocity
 		velocity_edit.value_changed.connect(joint._target_velocity_changed)
@@ -232,7 +232,7 @@ func show_asset_parameters(asset: Node3D):
 		angle_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		angle_edit.min_value = rad_to_deg(-joint.limit_upper)
 		angle_edit.max_value = rad_to_deg(-joint.limit_lower)
-		angle_edit.value = joint.target_angle
+		angle_edit.value = joint.target_input
 		angle_edit.value_changed.connect(joint._target_angle_changed)
 			
 	var all_prismatic_joints = get_tree().get_nodes_in_group("PRISMATIC")
@@ -246,10 +246,10 @@ func show_asset_parameters(asset: Node3D):
 		var dist_edit = PropertySlider.new()
 		%JointsContainer.add_child(dist_edit)
 		dist_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		dist_edit.min_value = joint.limit_lower / 10.0
-		dist_edit.max_value = joint.limit_upper / 10.0
+		dist_edit.min_value = joint.limit_lower / GParam.SCALE
+		dist_edit.max_value = joint.limit_upper / GParam.SCALE
 		dist_edit.step = 0.01
-		dist_edit.value = joint.target_dist / 10.0
+		dist_edit.value = joint.target_input / GParam.SCALE
 		dist_edit.value_changed.connect(joint._target_dist_changed)
 			
 	var all_grouped_joints = get_tree().get_nodes_in_group("GROUPED_JOINTS")

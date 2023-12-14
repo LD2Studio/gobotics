@@ -1207,10 +1207,11 @@ func create_asset_scene(root_node: Node3D):
 				joint_node.set_script(joint_script)
 				
 			"revolute":
-				joint_node = JoltHingeJoint3D.new()
+				joint_node = RevoluteJoint.new()
 				joint_node.name = joint.name
+				joint_node.child_link = child_node
 				joint_node.limit_enabled = true
-				joint_node.add_to_group("REVOLUTE", true)
+				joint_node.set_meta("owner", true)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
@@ -1219,7 +1220,7 @@ func create_asset_scene(root_node: Node3D):
 					if "effort" in joint.limit:
 						joint_node.motor_max_torque = float(joint.limit.effort)
 					if "velocity" in joint.limit:
-						limit_velocity = float(joint.limit.velocity)
+						joint_node.limit_velocity = float(joint.limit.velocity)
 					if "lower" in joint.limit:
 						joint_node.limit_upper = -joint.limit.lower
 					else:
@@ -1242,21 +1243,15 @@ func create_asset_scene(root_node: Node3D):
 				var basis_node = Node3D.new()
 				basis_node.set_meta("owner", true)
 				basis_node.name = joint_node.name + "_basis_inv"
-				basis_node.unique_name_in_owner = true
 				basis_node.transform.basis = new_joint_basis
 				child_node.add_child(basis_node)
-					
-				var joint_script := GDScript.new()
-				joint_script.source_code = get_revolute_joint_script(child_node, basis_node, limit_velocity)
-				joint_node.set_script(joint_script)
 				
 			"prismatic":
 				joint_node = PrismaticJoint.new()
 				joint_node.name = joint.name
 				joint_node.child_link = child_node
-				joint_node.set_meta("owner", true)
 				joint_node.limit_enabled = true
-				joint_node.add_to_group("PRISMATIC", true)
+				joint_node.set_meta("owner", true)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
@@ -1481,101 +1476,6 @@ func _target_velocity_changed(value: float):
 	target_velocity = value
 	motor_target_velocity = -target_velocity
 """ % [child_node.name, limit_velocity]
-	return source_code
-	
-func get_revolute_joint_script(child_node: Node3D, basis_node: Node3D, limit_velocity: float) -> String:
-	var source_code = """extends JoltHingeJoint3D
-@export var grouped: bool = false
-@onready var child_link: RigidBody3D = $%s
-@onready var basis_inv: Node3D = %%%s
-var target_angle: float = 0
-var input: float:
-	set(value):
-		input = value
-		target_angle = value
-var angle_step: float
-var rest_angle: float
-var LIMIT_VELOCITY: float = %f
-
-func shift_target(step):
-	if step > 0 and target_angle <= -limit_lower:
-		target_angle += step
-	if step < 0 and target_angle >= -limit_upper:
-		target_angle += step
-
-func _ready():
-	child_link.can_sleep = false
-	motor_enabled = true
-	angle_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
-
-func _physics_process(_delta):
-	var child_basis: Basis = child_link.transform.basis
-	var angle = (child_basis * basis_inv.transform.basis).get_euler().z
-	var err = target_angle - angle
-	var speed: float
-	if abs(err) > angle_step:
-		speed = LIMIT_VELOCITY * sign(err)
-	else:
-		speed = 0
-	motor_target_velocity = -speed
-
-func _target_angle_changed(value: float):
-	target_angle = deg_to_rad(value)
-""" % [child_node.name, basis_node.name, limit_velocity]
-	return source_code
-	
-func get_prismatic_joint_script(child_node: Node3D, basis_node: Node3D, limit_velocity: float) -> String:
-	var source_code = """extends JoltSliderJoint3D
-@export var grouped: bool = false
-@onready var child_link: RigidBody3D = $%s
-@onready var basis_inv: Node3D = %%%s
-var target_dist: float = 0.0:
-	set(value):
-		target_dist = value
-		_target_reached = false
-		motor_enabled = true
-var input: float:
-	set(value):
-		input = value
-		target_dist = value
-var dist_step: float
-var rest_angle: float
-var LIMIT_VELOCITY: float = %f
-var _target_reached: bool = false
-
-
-func shift_target(step):
-	if step > 0 and target_dist <= limit_upper:
-		target_dist += step
-	if step < 0 and target_dist >= limit_lower:
-		target_dist += step
-
-func _ready():
-	child_link.can_sleep = false
-	motor_enabled = true
-	dist_step = LIMIT_VELOCITY / Engine.physics_ticks_per_second
-
-func _physics_process(_delta):
-	
-	var child_tr: Transform3D = child_link.transform
-	var dist = (child_tr * basis_inv.transform).origin.x
-#	print("dist=", dist)
-	var err = target_dist - dist
-	var speed: float
-	if not _target_reached:
-		if abs(err) > dist_step:
-			speed = LIMIT_VELOCITY * sign(err)
-		else:
-			speed = 0
-			_target_reached = true
-	else:
-		speed = LIMIT_VELOCITY * err
-	
-	motor_target_velocity = speed
-
-func _target_dist_changed(value: float):
-	target_dist = value * 10.0
-""" % [child_node.name, basis_node.name, limit_velocity]
 	return source_code
 	
 func follow_camera_script(position: Vector3):
