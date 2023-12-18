@@ -143,14 +143,36 @@ func set_continuous_velocity(jname: String, value: float):
 #			print("%s : %f" % [joint_name, value])
 			joint.target_velocity = value
 			return
+			
+func set_revolute_config(jname: String, custom: bool = false):
+	var joint_name = jname.replace(" ", "_")
+	#print("Revolute config: %s = %s " % [joint_name, custom])
+	for joint: Node3D in _joints:
+		if joint.is_in_group("REVOLUTE") and joint.name == joint_name:
+			joint.custom_control = custom
+			return
 
-func set_revolute(jname: String, value: float):
+func set_revolute(jname: String, value: float, velocity: bool = false):
 	var joint_name = jname.replace(" ", "_")
 #	print("Revolute joint name: %s = %f " % [joint_name, value])
 	for joint in _joints:
 		if joint.is_in_group("REVOLUTE") and joint.name == joint_name:
-			joint.target_angle = deg_to_rad(value)
+			if velocity:
+				joint.target_speed = value
+			else:
+				joint.target_input = deg_to_rad(value)
 			return
+			
+func get_revolute(jname: String) -> PackedFloat32Array:
+	var joint_name = jname.replace(" ", "_")
+	var angle: float
+	for joint: Node3D in _joints:
+		if joint.is_in_group("REVOLUTE") and joint.name == joint_name:
+			angle = joint.angle
+	var data = PackedFloat32Array(
+		[angle, GParam.physics_tick]
+	)
+	return data
 			
 func set_prismatic_config(jname: String, custom: bool = false):
 	var joint_name = jname.replace(" ", "_")
@@ -168,7 +190,7 @@ func set_prismatic(jname: String, value: float, velocity: bool = false):
 			if velocity:
 				joint.target_speed = value * GParam.SCALE
 			else:
-				joint.target_dist = value * GParam.SCALE
+				joint.target_input = value * GParam.SCALE
 			return
 			
 func get_prismatic(jname: String) -> PackedFloat32Array:

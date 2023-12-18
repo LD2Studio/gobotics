@@ -10,13 +10,8 @@ var target_input: float = 0.0:
 		target_input = value
 		_target_reached = false
 		motor_enabled = true
-		
 var target_speed: float = 0.0
-
-var custom_control: bool = false:
-	set(value):
-		custom_control = value
-		#print("custom control: ", custom_control)
+var custom_control: bool = false
 #endregion
 
 #region OUTPUTS
@@ -24,7 +19,6 @@ var dist: float
 #endregion
 
 #region INTERNALS
-
 var _dist_step: float
 var _target_reached: bool = false
 var _basis_inv_node: Node3D

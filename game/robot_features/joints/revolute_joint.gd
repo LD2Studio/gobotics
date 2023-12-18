@@ -6,16 +6,21 @@ class_name RevoluteJoint extends JoltHingeJoint3D
 @export var grouped: bool = false
 
 var target_input: float = 0.0
+var target_speed: float = 0.0
+var custom_control: bool = false
+#endregion
+
+#region OUTPUTS
+## Rotation angle in radians
+var angle: float
 #endregion
 
 #region INTERNALS
-
 var _angle_step: float
 var _basis_inv_node: Node3D
 #endregion
 
 #region INIT
-
 func _ready():
 	add_to_group("REVOLUTE", true)
 	child_link.can_sleep = false
@@ -25,21 +30,22 @@ func _ready():
 #endregion
 
 #region PROCESS
-
 func _physics_process(_delta):
 	var child_basis: Basis = child_link.transform.basis
-	var angle = (child_basis * _basis_inv_node.transform.basis).get_euler().z
-	var err = target_input - angle
+	angle = (child_basis * _basis_inv_node.transform.basis).get_euler().z
 	var speed: float
-	if abs(err) > _angle_step:
-		speed = limit_velocity * sign(err)
+	if custom_control:
+		speed = target_speed
 	else:
-		speed = 0
+		var err = target_input - angle
+		if abs(err) > _angle_step:
+			speed = limit_velocity * sign(err)
+		else:
+			speed = 0
 	motor_target_velocity = -speed
 #endregion
 
 #region METHODS
-
 func _target_angle_changed(value: float):
 	target_input = deg_to_rad(value)
 	

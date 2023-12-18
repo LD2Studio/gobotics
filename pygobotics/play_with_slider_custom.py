@@ -8,15 +8,6 @@ my_servo.set_prismatic_dist("arm_servo", 0)
 time.sleep(2)
 
 my_servo.set_prismatic_config("arm_servo", True)
-# print("dist: ", my_servo.get_prismatic_dist("arm_servo"))
-# my_servo.set_prismatic_dist("arm servo", 0.1)
-# my_servo.set_prismatic_vel("arm servo", 0.2)
-# time.sleep(1)
-
-# print("dist: ", my_servo.get_prismatic_dist("arm_servo"))
-# my_servo.set_prismatic_dist("arm_servo", 0)
-# my_servo.set_prismatic_vel("arm servo", 0)
-# time.sleep(2)
 
 import numpy as np
 import matplotlib.pyplot as plt

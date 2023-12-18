@@ -29,8 +29,17 @@ class Robot(GodotBridge):
     def set_continuous_velocity(self, name: str, value: float):
         self.call("set_continuous_velocity", name, value)
 
+    def set_revolute_config(self, name: str, custom: bool):
+        self.call("set_revolute_config", name, custom)
+
     def set_revolute_angle(self, name: str, value: float):
         self.call("set_revolute", name, value)
+
+    def set_revolute_vel(self, name: str, value: float):
+        self.call("set_revolute", name, value, True)
+    
+    def get_revolute(self, name: str) -> tuple:
+        return self.call("get_revolute", name)
 
     def set_prismatic_config(self, name: str, custom: bool):
         self.call("set_prismatic_config", name, custom)
