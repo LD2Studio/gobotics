@@ -2,8 +2,20 @@ import os
 import shutil
 import subprocess
 
-version = "0.11.0"
-py_version = "0.6.0"
+
+version = ""
+
+try:
+    with open("project.godot", "r", encoding='utf-8') as project:
+        for line in project:
+            if line.startswith("config/version"):
+                version = line.split("=")[1]
+                version = version[1:-2]
+                print(version)
+except FileNotFoundError:
+    print("project.godot doesn't found")
+
+py_version = "0.7.0"
 
 executable = {
     "linux": "gobotics.x86_64",
@@ -52,3 +64,4 @@ for platform in ["linux", "windows"]:
     subprocess.run(["godot4_2" , "--export-debug", "Gobotics-"+ platform , "exports/gobotics-"+ version +"-"+ platform + "-x86_64/" + executable[platform], "--headless"])
 
     shutil.make_archive("exports/gobotics-"+ version +"-"+ platform +"-x86_64", 'zip', "exports/gobotics-"+ version +"-" + platform + "-x86_64")
+
