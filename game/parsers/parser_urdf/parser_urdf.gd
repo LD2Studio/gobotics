@@ -392,7 +392,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 								return ERR_PARSE_ERROR
 					
 					else:
-						link = RigidBody3D.new()
+						link = RigidLink.new()
 					var physics_material = PhysicsMaterial.new()
 					link.physics_material_override = physics_material
 					link.set_meta("orphan", true)
