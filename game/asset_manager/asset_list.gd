@@ -157,7 +157,7 @@ func update_scene():
 			if not asset_tr: continue
 			var asset_name : StringName = asset.name
 #			print("update asset %s" % [asset.get_meta("fullname")])
-			var udp_port : int = asset.get_meta("udp_port")
+			var udp_port = asset.get_meta("udp_port")
 			scene_node.remove_child(asset)
 			asset.queue_free()
 			var new_asset_scene : String = database.get_scene_from_fullname(fullname)
