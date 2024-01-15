@@ -437,7 +437,7 @@ func rename_asset():
 	rename_dialog.get_node("NameEdit").text = asset_selected.name
 	rename_dialog.popup_centered()
 		
-func enable_pickable(asset: Node3D, enable: bool):
+func enable_pickable(asset: Node, enable: bool):
 	#print("[GS] pick %s: %s" % [asset, enable])
 	for child in asset.get_children():
 		if child.is_in_group("SELECT"):
