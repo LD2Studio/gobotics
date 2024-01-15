@@ -1011,6 +1011,10 @@ func parse_sensors(urdf_data: PackedByteArray):
 						match attrib.type:
 							"ray":
 								sensor_node = load("res://game/robot_features/sensors/ray_scanner.tscn").instantiate()
+								sensor_node.add_to_group("RAY", true)
+							"camera":
+								sensor_node = load("res://game/robot_features/sensors/camera_sensor.tscn").instantiate()
+								sensor_node.add_to_group("CAM", true)
 							_:
 								printerr("Unrecognized sensor type name!")
 					else:
@@ -1018,7 +1022,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 					if sensor_node:
 						sensor_node.set_meta("orphan", true)
 						sensor_node.set_meta("owner", true)
-						sensor_node.add_to_group("RAY", true)
+						sensor_node.add_to_group("SENSORS", true)
 						if sensor_attrib.name:
 							sensor_node.name = sensor_attrib.name
 						sensor_attrib.node = sensor_node

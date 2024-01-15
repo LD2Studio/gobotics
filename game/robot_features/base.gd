@@ -58,7 +58,7 @@ func update_all_joints():
 
 func update_all_sensors():
 	_ray_sensors.clear()
-	for node in get_tree().get_nodes_in_group("RAY"):
+	for node in get_tree().get_nodes_in_group("SENSORS"):
 		if node.owner == get_parent():
 			_ray_sensors.append(node)
 	#print("ray sensors: ", _ray_sensors)
@@ -229,4 +229,14 @@ func get_ray_scanner(sname: String) -> PackedFloat32Array:
 			ray_lengths = ray_scanner.ray_lengths.duplicate()
 			break
 	return ray_lengths
+	
+func get_image(sname: String) -> PackedByteArray:
+	var sensor_name = sname.replace(" ", "_")
+	var png = PackedByteArray()
+	for cam: Node3D in _ray_sensors:
+		#print("ray: ", ray)
+		if cam.is_in_group("CAM") and cam.name == sensor_name:
+			var img: Image = cam.img
+			png = img.save_jpg_to_buffer()
+	return png
 #endregion

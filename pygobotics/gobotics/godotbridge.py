@@ -116,7 +116,7 @@ class GodotBridge:
             elif ret_message['type'] == 'array':
                 return ret_message['value']
             elif ret_message['type'] == 'byte_array':
-                print("value: ", int(ret_message['value']))
+                # print("value: ", int(ret_message['value']))
                 packed_data = bytearray()
                 for num in range(int(ret_message['value'])):
                     recv_data = self.sock.recv(65507)

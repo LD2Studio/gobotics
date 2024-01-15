@@ -58,6 +58,9 @@ class Robot(GodotBridge):
     
     def get_ray_scanner(self, name: str) -> tuple:
         return self.call("get_ray_scanner", name)
+    
+    def get_image(self, name: str) -> bytearray:
+        return self.call("get_image", name)
 
     # Diff Drive
 class DiffRobot(Robot):
