@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dsm47w5bpvyqx"]
+[gd_scene load_steps=4 format=3 uid="uid://dsm47w5bpvyqx"]
 
+[ext_resource type="Script" path="res://game/home_page.gd" id="1_5u053"]
 [ext_resource type="Texture2D" uid="uid://b2d0gmn22lric" path="res://game/assets/gobotics_mascot.png" id="1_vdwxq"]
+[ext_resource type="Script" path="res://game/game_list.gd" id="3_s3cpg"]
 
 [node name="HomePage" type="Control"]
 layout_mode = 3
@@ -9,6 +11,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_5u053")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -74,6 +77,15 @@ text = "Settings"
 layout_mode = 2
 text = "Exit"
 
-[node name="RightPanel" type="Control" parent="HBoxContainer"]
+[node name="RightPanel" type="MarginContainer" parent="HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 100
+
+[node name="GameList" type="ItemList" parent="HBoxContainer/RightPanel"]
+layout_mode = 2
+script = ExtResource("3_s3cpg")
+
+[connection signal="item_activated" from="HBoxContainer/RightPanel/GameList" to="HBoxContainer/RightPanel/GameList" method="_on_item_activated"]

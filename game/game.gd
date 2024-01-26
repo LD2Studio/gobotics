@@ -44,7 +44,15 @@ func _ready():
 	%SaveSceneButton.disabled = true
 	%SaveSceneAsButton.disabled = true
 	object_inspector.visible = false
-	current_filename = ""
+	
+	current_filename = GSettings.projects_global_path.path_join(GParam.project_file)
+	#print("current filename: ", current_filename)
+	game_scene.load_scene(current_filename)
+	
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event.keycode == KEY_ESCAPE and event.pressed:
+		var err = get_tree().change_scene_to_file("res://game/home_page.tscn")
 
 func _on_new_scene_button_pressed() -> void:
 	environment_list.update_list()
