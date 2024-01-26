@@ -1,0 +1,79 @@
+[gd_scene load_steps=2 format=3 uid="uid://dsm47w5bpvyqx"]
+
+[ext_resource type="Texture2D" uid="uid://b2d0gmn22lric" path="res://game/assets/gobotics_mascot.png" id="1_vdwxq"]
+
+[node name="HomePage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0196078, 0.0901961, 0.376471, 1)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftPanel" type="Control" parent="HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="Logo" type="TextureRect" parent="HBoxContainer/LeftPanel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 106.0
+offset_right = 302.0
+offset_bottom = 390.0
+texture = ExtResource("1_vdwxq")
+expand_mode = 3
+
+[node name="Title" type="RichTextLabel" parent="HBoxContainer/LeftPanel"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 30.0
+offset_right = 297.0
+offset_bottom = 127.0
+theme_override_font_sizes/normal_font_size = 64
+bbcode_enabled = true
+text = "[center]Gobotics[/center]"
+
+[node name="ButtonContainer" type="VBoxContainer" parent="HBoxContainer/LeftPanel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 58.0
+offset_top = 81.0
+offset_right = 264.0
+offset_bottom = 221.0
+grow_vertical = 2
+metadata/_edit_group_ = true
+
+[node name="NewGameButton" type="Button" parent="HBoxContainer/LeftPanel/ButtonContainer"]
+layout_mode = 2
+text = "New Game"
+
+[node name="SettingsButton" type="Button" parent="HBoxContainer/LeftPanel/ButtonContainer"]
+layout_mode = 2
+text = "Settings"
+
+[node name="ExitButton" type="Button" parent="HBoxContainer/LeftPanel/ButtonContainer"]
+layout_mode = 2
+text = "Exit"
+
+[node name="RightPanel" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
