@@ -322,7 +322,7 @@ func save_scene(path: String):
 			
 			var scene_path = ProjectSettings.globalize_path(item.scene_file_path)
 			scene_objects.assets.append({
-					fullname = game.database.get_fullname(scene_path),
+					fullname = GSettings.database.get_fullname(scene_path),
 					string_name=item.name,
 					transform=asset_transform,
 					udp_port=udp_port,
@@ -336,7 +336,7 @@ func save_scene(path: String):
 			else:
 				var scene_path = ProjectSettings.globalize_path(item.scene_file_path)
 				scene_objects.environment = {
-					fullname = game.database.get_fullname(scene_path),
+					fullname = GSettings.database.get_fullname(scene_path),
 					}
 	var scene_json = JSON.stringify(scene_objects, "\t", false)
 #		print("scene JSON: ", scene_json)
@@ -362,14 +362,14 @@ func load_scene(path):
 	var scene_objects = json.data
 	var env_filename: String = ""
 	if "fullname" in scene_objects.environment:
-		env_filename = game.database.get_scene_from_fullname(scene_objects.environment.fullname)
+		env_filename = GSettings.database.get_scene_from_fullname(scene_objects.environment.fullname)
 	if env_filename:
 		var environment = ResourceLoader.load(env_filename).instantiate()
 		scene.add_child(environment)
 	
 	for asset in scene_objects.assets:
 		if "fullname" in asset:
-			var asset_filename = game.database.get_asset_scene(asset.fullname)
+			var asset_filename = GSettings.database.get_asset_scene(asset.fullname)
 			if asset_filename == null:
 				printerr("Asset %s not available!" % [asset.fullname])
 				continue

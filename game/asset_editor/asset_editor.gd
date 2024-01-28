@@ -21,7 +21,7 @@ var asset_scene : PackedScene = null
 var asset_node : Node3D = null:
 	set(value):
 		asset_node = value
-var asset_base_dir: String = ProjectSettings.globalize_path("res://assets")
+var asset_base_dir: String
 
 @onready var urdf_code_edit: CodeEdit = %URDFCodeEdit
 @onready var preview_viewport = %PreviewViewport
@@ -30,6 +30,7 @@ var asset_base_dir: String = ProjectSettings.globalize_path("res://assets")
 @onready var save_asset_button = %SaveAssetButton
 
 func _ready():
+	asset_base_dir  = ProjectSettings.globalize_path("res://assets")
 	urdf_parser.scale = 10
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	if not asset_fullname:
@@ -46,10 +47,10 @@ func _ready():
 		asset_fullname = "noname.urdf"
 	else:
 		var asset_path = asset_base_dir.path_join(asset_fullname)
-#		print("[AE] asset path: ", asset_path)
+		#print("[AE] asset path: ", asset_path)
 		var urdf_file = FileAccess.open(asset_path, FileAccess.READ)
 		if urdf_file == null:
-			printerr("urdf file failed to loading")
+			printerr("urdf file failed to loading. %d" % [FileAccess.get_open_error()])
 			return
 		urdf_code_edit.text = urdf_file.get_as_text()
 		urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8

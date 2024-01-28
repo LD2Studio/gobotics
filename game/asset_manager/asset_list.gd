@@ -2,7 +2,6 @@ extends ItemList
 
 @onready var game: Control = owner
 @onready var game_scene = %GameScene
-@onready var database: GoboticsDB = owner.database
 @onready var asset_popup_menu: PopupMenu = %AssetPopupMenu
 @onready var asset_editor_dialog = %AssetEditorDialog
 @onready var new_asset_button = %NewAssetButton
@@ -18,7 +17,7 @@ var asset_updated: String = "":
 	set(value):
 		asset_updated = value
 #		print("asset updated: ", asset_updated)
-		database.update_asset(asset_updated)
+		GSettings.database.update_asset(asset_updated)
 		update_assets_list()
 		
 var _at_position: Vector2i
@@ -36,8 +35,8 @@ func _get_drag_data(at_position: Vector2):
 		return null
 
 	var fullname = get_item_metadata(idx)
-	var asset = database.get_scene_from_fullname(fullname)
-	var type = database.get_type(fullname)
+	var asset = GSettings.database.get_scene_from_fullname(fullname)
+	var type = GSettings.database.get_type(fullname)
 	if asset and type and type == "standalone" or type == "robot":
 		var node: Node3D = load(asset).instantiate()
 		if node.get_node_or_null("./Preview"):
@@ -113,7 +112,7 @@ func _on_asset_editor_exited():
 
 
 func delete_asset(fullname: String):
-	selected_asset_filename = database.get_asset_filename(fullname)
+	selected_asset_filename = GSettings.database.get_asset_filename(fullname)
 	%DeleteConfirmationDialog.dialog_text = "Do you want to delete the asset file \"%s\"" % [fullname]
 	%DeleteConfirmationDialog.popup_centered()
 	
@@ -148,7 +147,7 @@ func update_scene():
 		game_scene.asset_selected = null
 		if fullname != asset_updated: continue
 		
-		if database.is_asset_exists(fullname):
+		if GSettings.database.is_asset_exists(fullname):
 			var asset_tr: Transform3D
 			for node in asset.get_children():
 				if node is RigidBody3D:
@@ -160,7 +159,7 @@ func update_scene():
 			var udp_port: int = asset.get_meta("udp_port", -1)
 			scene_node.remove_child(asset)
 			asset.queue_free()
-			var new_asset_scene : String = database.get_scene_from_fullname(fullname)
+			var new_asset_scene : String = GSettings.database.get_scene_from_fullname(fullname)
 			var new_asset : Node3D = load(new_asset_scene).instantiate()
 			new_asset.name = asset_name
 			new_asset.global_transform = asset_tr
@@ -184,7 +183,7 @@ func update_assets_in_scene():
 			game_scene.scene.remove_child(asset)
 			asset.free()
 			
-			var asset_res = database.get_asset_scene(asset_updated)
+			var asset_res = GSettings.database.get_asset_scene(asset_updated)
 			var new_asset = load(asset_res).instantiate()
 			new_asset.name = asset_name
 			

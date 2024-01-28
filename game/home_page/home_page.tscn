@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://dsm47w5bpvyqx"]
+[gd_scene load_steps=6 format=3 uid="uid://dsm47w5bpvyqx"]
 
-[ext_resource type="Script" path="res://game/home_page.gd" id="1_5u053"]
-[ext_resource type="Texture2D" uid="uid://b2d0gmn22lric" path="res://game/assets/gobotics_mascot.png" id="1_vdwxq"]
-[ext_resource type="Script" path="res://game/game_list.gd" id="3_s3cpg"]
+[ext_resource type="Script" path="res://game/home_page/home_page.gd" id="1_rkbcx"]
+[ext_resource type="Texture2D" uid="uid://b2d0gmn22lric" path="res://game/assets/gobotics_mascot.png" id="2_4e0v7"]
+[ext_resource type="Script" path="res://game/home_page/new_game_button.gd" id="3_47auv"]
+[ext_resource type="Script" path="res://game/home_page/environment_list.gd" id="4_ic4l2"]
+[ext_resource type="Script" path="res://game/home_page/game_list.gd" id="5_sjge8"]
 
 [node name="HomePage" type="Control"]
 layout_mode = 3
@@ -11,7 +13,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_5u053")
+script = ExtResource("1_rkbcx")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -40,7 +42,7 @@ offset_left = 18.0
 offset_top = 106.0
 offset_right = 302.0
 offset_bottom = 390.0
-texture = ExtResource("1_vdwxq")
+texture = ExtResource("2_4e0v7")
 expand_mode = 3
 
 [node name="Title" type="RichTextLabel" parent="HBoxContainer/LeftPanel"]
@@ -68,6 +70,17 @@ metadata/_edit_group_ = true
 [node name="NewGameButton" type="Button" parent="HBoxContainer/LeftPanel/ButtonContainer"]
 layout_mode = 2
 text = "New Game"
+script = ExtResource("3_47auv")
+
+[node name="NewGameDialog" type="ConfirmationDialog" parent="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton"]
+
+[node name="EnvironmentList" type="ItemList" parent="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton/NewGameDialog"]
+unique_name_in_owner = true
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 192.0
+offset_bottom = 51.0
+script = ExtResource("4_ic4l2")
 
 [node name="SettingsButton" type="Button" parent="HBoxContainer/LeftPanel/ButtonContainer"]
 layout_mode = 2
@@ -86,6 +99,7 @@ theme_override_constants/margin_bottom = 100
 
 [node name="GameList" type="ItemList" parent="HBoxContainer/RightPanel"]
 layout_mode = 2
-script = ExtResource("3_s3cpg")
+script = ExtResource("5_sjge8")
 
+[connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton" to="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton" method="_on_pressed"]
 [connection signal="item_activated" from="HBoxContainer/RightPanel/GameList" to="HBoxContainer/RightPanel/GameList" method="_on_item_activated"]

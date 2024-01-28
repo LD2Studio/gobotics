@@ -1,8 +1,5 @@
 class_name Game extends Control
 
-@export var asset_dir : String = "assets"
-@export var temp_dir : String = "temp"
-
 var asset_base_dir: String # Full pathname
 var gravity_enabled: bool = true
 
@@ -20,8 +17,6 @@ var builtin_env = [
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 @onready var environment_list = %EnvironmentList
 
-var database: GoboticsDB = GoboticsDB.new(temp_dir)
-
 var current_filename: String:
 	set(value):
 		current_filename = value
@@ -29,11 +24,7 @@ var current_filename: String:
 			%SceneFileName.text = "No Scene saved"
 		else:
 			%SceneFileName.text = "%s" % [current_filename.get_file().get_basename()]
-		
-func _enter_tree():
-	create_dir()
-	database.asset_base_path = asset_base_dir
-	database.generate(asset_base_dir, builtin_env)
+
 
 func _ready():
 	var app_name: String = ProjectSettings.get_setting("application/config/name")
@@ -52,7 +43,7 @@ func _ready():
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.keycode == KEY_ESCAPE and event.pressed:
-		var err = get_tree().change_scene_to_file("res://game/home_page.tscn")
+		var err = get_tree().change_scene_to_file("res://game/home_page/home_page.tscn")
 
 func _on_new_scene_button_pressed() -> void:
 	environment_list.update_list()
@@ -107,42 +98,15 @@ func _on_clear_button_pressed() -> void:
 #			print("Packed resource not loading")
 	
 func load_assets_in_database():
-	database.generate(asset_base_dir, builtin_env)
+	GSettings.database.generate(asset_base_dir, builtin_env)
 	
 func fill_assets_list():
 	assets_list.clear()
-	for asset in database.assets:
+	for asset in GSettings.database.assets:
 		if asset.type == "builtin_env": continue
 		var idx = assets_list.add_item(asset.name)
 		assets_list.set_item_metadata(idx, asset.fullname)
 		assets_list.set_item_tooltip(idx, asset.fullname)
-
-## Create missing directory in application folder like assets and temp.
-## Must be called first.
-func create_dir():
-	# Creating temp directory
-	var temp_abs_path: String
-	if OS.has_feature("editor"):
-		temp_abs_path = ProjectSettings.globalize_path("res://" + temp_dir)
-	else:
-		temp_abs_path = OS.get_executable_path().get_base_dir().path_join(temp_dir)
-		
-	if DirAccess.dir_exists_absolute(temp_abs_path):
-		# delete all files before remove temp dir
-		var files = DirAccess.get_files_at(temp_abs_path)
-		for file in files:
-			DirAccess.remove_absolute(temp_abs_path.path_join(file))
-		DirAccess.remove_absolute(temp_abs_path)
-	DirAccess.make_dir_absolute(temp_abs_path)
-		
-	# Creating assets directory
-	if OS.has_feature("editor"):
-		asset_base_dir = ProjectSettings.globalize_path("res://" + asset_dir)
-	else:
-		asset_base_dir = OS.get_executable_path().get_base_dir().path_join(asset_dir)
-		
-	if not DirAccess.dir_exists_absolute(asset_base_dir):
-		DirAccess.make_dir_absolute(asset_base_dir)
 
 
 func _on_setup_scene_button_pressed():
@@ -156,4 +120,4 @@ func _on_setup_dialog_confirmed():
 		PhysicsServer3D.area_set_param(get_viewport().find_world_3d().space, PhysicsServer3D.AREA_PARAM_GRAVITY, 98)
 	else:
 		PhysicsServer3D.area_set_param(get_viewport().find_world_3d().space, PhysicsServer3D.AREA_PARAM_GRAVITY, 0)
-
+		

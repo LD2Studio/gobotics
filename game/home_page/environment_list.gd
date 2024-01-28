@@ -1,9 +1,5 @@
 extends ItemList
 
-
-func _ready() -> void:
-	update_list()
-
 func update_list():
 	clear()
 	for asset in GSettings.database.assets:
