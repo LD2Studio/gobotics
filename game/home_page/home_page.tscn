@@ -74,13 +74,27 @@ script = ExtResource("3_47auv")
 
 [node name="NewGameDialog" type="ConfirmationDialog" parent="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton"]
 
-[node name="EnvironmentList" type="ItemList" parent="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton/NewGameDialog"]
-unique_name_in_owner = true
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton/NewGameDialog"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 192.0
-offset_bottom = 51.0
+offset_right = -8.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="EnvironmentList" type="ItemList" parent="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton/NewGameDialog/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
 script = ExtResource("4_ic4l2")
+
+[node name="ProjectNameEdit" type="LineEdit" parent="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton/NewGameDialog/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Nom du projet"
 
 [node name="SettingsButton" type="Button" parent="HBoxContainer/LeftPanel/ButtonContainer"]
 layout_mode = 2
@@ -101,5 +115,14 @@ theme_override_constants/margin_bottom = 100
 layout_mode = 2
 script = ExtResource("5_sjge8")
 
+[node name="DeleteProjectDialog" type="ConfirmationDialog" parent="HBoxContainer/RightPanel/GameList"]
+ok_button_text = "Yes"
+dialog_text = "Do you want to delete this project ?"
+cancel_button_text = "No"
+
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton" to="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton" method="_on_pressed"]
+[connection signal="confirmed" from="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton/NewGameDialog" to="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton" method="_on_new_game_dialog_confirmed"]
+[connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="gui_input" from="HBoxContainer/RightPanel/GameList" to="HBoxContainer/RightPanel/GameList" method="_on_gui_input"]
 [connection signal="item_activated" from="HBoxContainer/RightPanel/GameList" to="HBoxContainer/RightPanel/GameList" method="_on_item_activated"]
+[connection signal="confirmed" from="HBoxContainer/RightPanel/GameList/DeleteProjectDialog" to="HBoxContainer/RightPanel/GameList" method="_on_delete_project_dialog_confirmed"]

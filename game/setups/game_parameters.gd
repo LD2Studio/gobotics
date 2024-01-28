@@ -4,6 +4,8 @@ class_name GameParameters extends Node
 ## Stocke les caractéristiques du jeu en cours, comme ...
 
 var project_file: String
+var env_path: String
+var creating_new_project: bool
 
 const SCALE : float = 10.0
 

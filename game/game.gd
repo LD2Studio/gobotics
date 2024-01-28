@@ -36,10 +36,14 @@ func _ready():
 	%SaveSceneAsButton.disabled = true
 	object_inspector.visible = false
 	
-	current_filename = GSettings.projects_global_path.path_join(GParam.project_file)
-	#print("current filename: ", current_filename)
-	game_scene.load_scene(current_filename)
-	
+	if GParam.creating_new_project:
+		current_filename = GSettings.projects_global_path.path_join(GParam.project_file)
+		game_scene.new_scene(GParam.env_path)
+		game_scene.save_scene(current_filename)
+	else:
+		current_filename = GSettings.projects_global_path.path_join(GParam.project_file)
+		game_scene.load_scene(current_filename)
+
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.keycode == KEY_ESCAPE and event.pressed:

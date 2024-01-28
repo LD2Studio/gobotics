@@ -4,7 +4,8 @@ class_name GoboticsSettings extends Node
 ## Stocke la configuration du jeu Gobotics
 
 ## Chemin vers les projets utilisateur de Gobotics.
-var projects_global_path: String = "user://projects"
+var projects_global_path: String = "res://examples"
+var projects_export_path: String = "examples"
 
 var asset_dir : String = "assets"
 var asset_base_dir: String

@@ -38,3 +38,6 @@ func create_dir():
 	if not DirAccess.dir_exists_absolute(GSettings.asset_base_dir):
 		DirAccess.make_dir_absolute(GSettings.asset_base_dir)
 
+
+func _on_exit_button_pressed():
+	get_tree().quit()
