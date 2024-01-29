@@ -6,16 +6,33 @@ class_name GoboticsSettings extends Node
 ## Chemin vers les projets utilisateur de Gobotics.
 var project_path: String:
 	get:
-		return (ProjectSettings.globalize_path(projects_editor_path)
+		return (ProjectSettings.globalize_path(_project_editor_path)
 			if OS.has_feature("editor")
-			else ProjectSettings.globalize_path(projects_export_path))
+			else ProjectSettings.globalize_path(_project_export_path))
 
-var projects_editor_path: String = "res://projects"
-var projects_export_path: String = "user://projects"
+var _project_editor_path = "res://projects"
+var _project_export_path = "user://projects"
 
-var asset_dir : String = "assets"
-var asset_base_dir: String
-var temp_path: String = "temp"
+## Chemin vers les assets de Gobotics.
+var asset_path: String:
+	get:
+		return (ProjectSettings.globalize_path(_asset_editor_path)
+			if OS.has_feature("editor")
+			else ProjectSettings.globalize_path(_asset_export_path))
 
-var database: GoboticsDB = GoboticsDB.new(temp_path)
+var _asset_editor_path: String = "res://assets"
+var _asset_export_path: String = "user://assets"
 
+## Chemin vers les fichiers temporaires de Gobotics.
+var temp_path: String:
+	get:
+		return (ProjectSettings.globalize_path(_temp_editor_path)
+			if OS.has_feature("editor")
+			else ProjectSettings.globalize_path(_temp_export_path))
+var _temp_editor_path = "res://temp"
+var _temp_export_path = "user://temp"
+
+var database: GoboticsDB
+
+func _init() -> void:
+	database = GoboticsDB.new()

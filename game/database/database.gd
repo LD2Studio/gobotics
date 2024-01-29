@@ -1,17 +1,11 @@
 class_name GoboticsDB extends Resource
 
 @export var assets: Array
-var asset_base_path: String
-var temp_abs_path: String
+
 var urdf_parser = URDFParser.new()
 var reader := ZIPReader.new()
 
-func _init(temp_dir: String):
-	if OS.has_feature("editor"):
-		temp_abs_path = ProjectSettings.globalize_path("res://" + temp_dir)
-	else:
-		temp_abs_path = OS.get_executable_path().get_base_dir().path_join(temp_dir)
-		
+func _init():
 	urdf_parser.scale = 10
 	urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
 	
@@ -48,7 +42,7 @@ func add_assets(search_path: String, asset_base_dir: String):
 			
 			assets.append({
 				name = scene[0], # asset name setting in URDF
-				fullname = urdf_pathname.trim_prefix(asset_base_path+"/"), # relative path
+				fullname = urdf_pathname.trim_prefix(GSettings.asset_path+"/"), # relative path
 				filename = urdf_pathname, # absolute path of file
 				scene = scene[1], # absolute path of scene
 				type = scene[2], # 
@@ -64,7 +58,7 @@ func add_assets(search_path: String, asset_base_dir: String):
 	for search_dir in search_dirs:
 		add_assets(search_dir, asset_base_dir)
 	
-	var err = ResourceSaver.save(self, "res://temp/database.tres")
+	var err = ResourceSaver.save(self, GSettings.temp_path.path_join("database.tres"))
 	if err:
 		printerr("Database not saving!")
 		
@@ -81,31 +75,31 @@ func _update_asset(fullname: String):
 	for idx in len(assets):
 		var asset = assets[idx]
 		if asset.fullname == fullname:
-			var urdf_pathname = asset_base_path.path_join(fullname)
+			var urdf_pathname = GSettings.asset_path.path_join(fullname)
 			var scene : Array = []
 			if create_scene(urdf_pathname, scene):
 				assets[idx] = {
 					name = scene[0], # asset name setting in URDF
-					fullname = urdf_pathname.trim_prefix(asset_base_path+"/"), # relative path
+					fullname = urdf_pathname.trim_prefix(GSettings.asset_path+"/"), # relative path
 					filename = urdf_pathname, # absolute path of file
 					scene = scene[1], # absolute path of scene
 					type = scene[2], # 
 				}
-				var err = ResourceSaver.save(self, "res://temp/database.tres")
+				var err = ResourceSaver.save(self, GSettings.temp_path.path_join("database.tres"))
 				if err:
-					printerr("Database not saving!")
+					printerr("[ERROR] Database not saving!")
 			else:
 				printerr("[DB] creating scene failed")
 			return
 		
 func add_new_asset(asset_fullname: String):
-	var urdf_pathname = asset_base_path.path_join(asset_fullname)
+	var urdf_pathname = GSettings.asset_path.path_join(asset_fullname)
 #	print("urdf pathname: ", urdf_pathname)
 	var scene : Array = []
 	if create_scene(urdf_pathname, scene):
 		assets.append({
 			name = scene[0], # asset name setting in URDF
-			fullname = urdf_pathname.trim_prefix(asset_base_path+"/"), # relative path
+			fullname = urdf_pathname.trim_prefix(GSettings.asset_path+"/"), # relative path
 			filename = urdf_pathname, # absolute path of file
 			scene = scene[1], # absolute path of scene
 			type = scene[2], # 
@@ -130,16 +124,16 @@ func create_scene(urdf_pathname: String, scene: Array) -> bool:
 		printerr("[DB] URDF Parser failed")
 		return false
 		
-	var fullname = urdf_pathname.trim_prefix(asset_base_path+"/")
+	var fullname = urdf_pathname.trim_prefix(GSettings.asset_path+"/")
 #	print("[DB] fullname: ", fullname)
 	root_node.set_meta("fullname", fullname) # Save fullname in asset scene for updating
 #	print("root_node.name : ", root_node.name)
 #	print("root node type: ", root_node.get_meta("type"))
 	var scene_pathname: String
 	if ProjectSettings.get_setting("application/config/create_binary_scene"):
-		scene_pathname = temp_abs_path.path_join(urdf_pathname.trim_prefix(asset_base_path).trim_prefix("/").get_basename().validate_node_name() + ".scn")
+		scene_pathname = GSettings.temp_path.path_join(urdf_pathname.trim_prefix(GSettings.asset_path).trim_prefix("/").get_basename().validate_node_name() + ".scn")
 	else:
-		scene_pathname = temp_abs_path.path_join(urdf_pathname.trim_prefix(asset_base_path).trim_prefix("/").get_basename().validate_node_name() + ".tscn")
+		scene_pathname = GSettings.temp_path.path_join(urdf_pathname.trim_prefix(GSettings.asset_path).trim_prefix("/").get_basename().validate_node_name() + ".tscn")
 #	print("[DB] scene pathname: ", scene_pathname)
 	scene.append(root_node.name)
 	scene.append(scene_pathname)

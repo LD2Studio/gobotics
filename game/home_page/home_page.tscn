@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://game/home_page/home_page.gd" id="1_rkbcx"]
 [ext_resource type="Texture2D" uid="uid://b2d0gmn22lric" path="res://game/assets/gobotics_mascot.png" id="2_4e0v7"]
-[ext_resource type="Script" path="res://game/home_page/new_game_button.gd" id="3_47auv"]
+[ext_resource type="Script" path="res://game/home_page/new_project_button.gd" id="3_47auv"]
 [ext_resource type="Script" path="res://game/home_page/environment_list.gd" id="4_ic4l2"]
 [ext_resource type="Script" path="res://game/home_page/game_list.gd" id="5_sjge8"]
 

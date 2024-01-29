@@ -66,6 +66,7 @@ func add_buttons_to_item():
 	var scrool_bar = get_v_scroll_bar()
 	scrool_bar.scrolling.connect(_on_resized)
 
+
 func show_projects_in_list():
 	if not DirAccess.dir_exists_absolute(GSettings.project_path):
 		DirAccess.make_dir_absolute(GSettings.project_path)

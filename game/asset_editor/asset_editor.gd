@@ -21,7 +21,6 @@ var asset_scene : PackedScene = null
 var asset_node : Node3D = null:
 	set(value):
 		asset_node = value
-var asset_base_dir: String
 
 @onready var urdf_code_edit: CodeEdit = %URDFCodeEdit
 @onready var preview_viewport = %PreviewViewport
@@ -30,7 +29,6 @@ var asset_base_dir: String
 @onready var save_asset_button = %SaveAssetButton
 
 func _ready():
-	asset_base_dir  = ProjectSettings.globalize_path("res://assets")
 	urdf_parser.scale = 10
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	if not asset_fullname:
@@ -46,7 +44,7 @@ func _ready():
 				
 		asset_fullname = "noname.urdf"
 	else:
-		var asset_path = asset_base_dir.path_join(asset_fullname)
+		var asset_path = GSettings.asset_path.path_join(asset_fullname)
 		#print("[AE] asset path: ", asset_path)
 		var urdf_file = FileAccess.open(asset_path, FileAccess.READ)
 		if urdf_file == null:
@@ -67,8 +65,8 @@ func _ready():
 		printerr("[AE] creating asset failed")
 	
 func generate_scene() -> bool:
-	urdf_parser.asset_user_path = asset_base_dir.path_join(asset_filename_edit.text).get_base_dir()
-#	print("asset user path: ", urdf_parser.asset_user_path)
+	urdf_parser.asset_user_path = GSettings.asset_path.path_join(asset_filename_edit.text).get_base_dir()
+
 	var error_output : Array = []
 	var root_node = urdf_parser.parse(urdf_code_edit.text.to_ascii_buffer(), error_output)
 	
@@ -105,7 +103,7 @@ func _on_save_button_pressed():
 		return
 	if not asset_filename_edit.text.ends_with(".urdf"):
 		asset_filename_edit.text = asset_filename_edit.text + ".urdf"
-	var new_asset_filename = asset_base_dir.path_join(asset_filename_edit.text)
+	var new_asset_filename = GSettings.asset_path.path_join(asset_filename_edit.text)
 #	print("new asset filename: ", new_asset_filename)
 	var path = new_asset_filename.get_base_dir()
 	if not DirAccess.dir_exists_absolute(path):
@@ -118,7 +116,7 @@ func _on_save_button_pressed():
 		save_asset()
 
 func save_asset():
-	var asset_path = asset_base_dir.path_join(asset_filename_edit.text)
+	var asset_path = GSettings.asset_path.path_join(asset_filename_edit.text)
 	var urdf_file = FileAccess.open(asset_path, FileAccess.WRITE)
 	if urdf_file == null:
 		printerr("urdf file failed to saving!")
