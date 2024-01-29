@@ -5,7 +5,7 @@ extends ItemList
 
 var icon: Texture2D = preload("res://gobotics_logo.png")
 var buttons_container: VBoxContainer
-
+const project_scene_path = "res://game/project/game.tscn"
 
 func _ready() -> void:
 	add_buttons_to_item()
@@ -67,6 +67,8 @@ func add_buttons_to_item():
 	scrool_bar.scrolling.connect(_on_resized)
 
 func show_projects_in_list():
+	if not DirAccess.dir_exists_absolute(GSettings.project_path):
+		DirAccess.make_dir_absolute(GSettings.project_path)
 	var project_files = Array(DirAccess.get_files_at(GSettings.project_path))
 	var project_names = project_files.map(func(file: String): return file.trim_suffix(".scene"))
 	
@@ -82,7 +84,7 @@ func load_project():
 
 	GParam.project_file = project_file
 	GParam.creating_new_project = false
-	var err = get_tree().change_scene_to_file("res://game/game.tscn")
+	var err = get_tree().change_scene_to_file(project_scene_path)
 	if err != OK:
 		printerr("Changing scene failed")
 

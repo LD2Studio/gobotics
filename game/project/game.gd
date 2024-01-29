@@ -37,11 +37,11 @@ func _ready():
 	object_inspector.visible = false
 	
 	if GParam.creating_new_project:
-		current_filename = GSettings.projects_global_path.path_join(GParam.project_file)
+		current_filename = GSettings.project_path.path_join(GParam.project_file)
 		game_scene.new_scene(GParam.env_path)
 		game_scene.save_scene(current_filename)
 	else:
-		current_filename = GSettings.projects_global_path.path_join(GParam.project_file)
+		current_filename = GSettings.project_path.path_join(GParam.project_file)
 		game_scene.load_scene(current_filename)
 
 

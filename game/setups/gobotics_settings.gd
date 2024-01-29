@@ -6,12 +6,12 @@ class_name GoboticsSettings extends Node
 ## Chemin vers les projets utilisateur de Gobotics.
 var project_path: String:
 	get:
-		return (ProjectSettings.globalize_path(projects_global_path)
+		return (ProjectSettings.globalize_path(projects_editor_path)
 			if OS.has_feature("editor")
-			else OS.get_executable_path().get_base_dir().path_join(projects_export_path))
+			else ProjectSettings.globalize_path(projects_export_path))
 
-var projects_global_path: String = "res://examples"
-var projects_export_path: String = "examples"
+var projects_editor_path: String = "res://projects"
+var projects_export_path: String = "user://projects"
 
 var asset_dir : String = "assets"
 var asset_base_dir: String

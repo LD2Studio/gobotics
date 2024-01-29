@@ -6,11 +6,8 @@ __pycache__/
 
 # Project Specific
 /assets
-/package
-/packages
-/examples
 /temp
-/sandbox
+/projects
 
 # Blender
 *.blend1

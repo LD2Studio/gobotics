@@ -20,6 +20,6 @@ func _on_new_game_dialog_confirmed():
 	GParam.project_file = project_name_edit.text + ".scene"
 	GParam.env_path = env_path
 	GParam.creating_new_project = true
-	var err = get_tree().change_scene_to_file("res://game/game.tscn")
+	var err = get_tree().change_scene_to_file("res://game/project/game.tscn")
 	if err != OK:
 		printerr("Changing scene failed")
