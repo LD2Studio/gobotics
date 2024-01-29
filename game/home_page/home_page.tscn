@@ -1,10 +1,27 @@
-[gd_scene load_steps=6 format=3 uid="uid://dsm47w5bpvyqx"]
+[gd_scene load_steps=11 format=3 uid="uid://dsm47w5bpvyqx"]
 
 [ext_resource type="Script" path="res://game/home_page/home_page.gd" id="1_rkbcx"]
 [ext_resource type="Texture2D" uid="uid://b2d0gmn22lric" path="res://game/assets/gobotics_mascot.png" id="2_4e0v7"]
 [ext_resource type="Script" path="res://game/home_page/new_game_button.gd" id="3_47auv"]
 [ext_resource type="Script" path="res://game/home_page/environment_list.gd" id="4_ic4l2"]
 [ext_resource type="Script" path="res://game/home_page/game_list.gd" id="5_sjge8"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_qcxj2"]
+font_size = 32
+
+[sub_resource type="LabelSettings" id="LabelSettings_khw2i"]
+font_size = 24
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_q0b5s"]
+color = Color(0.764706, 0.0313726, 0.0313726, 1)
+thickness = 5
+vertical = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ju14m"]
+bg_color = Color(0.6, 0.6, 0.6, 0.133333)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lps7k"]
+bg_color = Color(0, 0.811765, 0.988235, 0.141176)
 
 [node name="HomePage" type="Control"]
 layout_mode = 3
@@ -22,7 +39,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.0196078, 0.0901961, 0.376471, 1)
+color = Color(0.211765, 0.372549, 0.505882, 1)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -35,6 +52,7 @@ grow_vertical = 2
 [node name="LeftPanel" type="Control" parent="HBoxContainer"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
+focus_mode = 1
 
 [node name="Logo" type="TextureRect" parent="HBoxContainer/LeftPanel"]
 layout_mode = 0
@@ -45,15 +63,16 @@ offset_bottom = 390.0
 texture = ExtResource("2_4e0v7")
 expand_mode = 3
 
-[node name="Title" type="RichTextLabel" parent="HBoxContainer/LeftPanel"]
+[node name="Title" type="Label" parent="HBoxContainer/LeftPanel"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 30.0
-offset_right = 297.0
-offset_bottom = 127.0
-theme_override_font_sizes/normal_font_size = 64
-bbcode_enabled = true
-text = "[center]Gobotics[/center]"
+offset_left = 4.0
+offset_top = 68.0
+offset_right = 295.0
+offset_bottom = 123.0
+text = "Gobotics"
+label_settings = SubResource("LabelSettings_qcxj2")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ButtonContainer" type="VBoxContainer" parent="HBoxContainer/LeftPanel"]
 layout_mode = 1
@@ -107,22 +126,50 @@ text = "Exit"
 [node name="RightPanel" type="MarginContainer" parent="HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+focus_mode = 1
 theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 100
 
-[node name="GameList" type="ItemList" parent="HBoxContainer/RightPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/RightPanel"]
 layout_mode = 2
+
+[node name="ProjectTitle" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+text = "Project List"
+label_settings = SubResource("LabelSettings_khw2i")
+horizontal_alignment = 1
+
+[node name="GameList" type="ItemList" parent="HBoxContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/hovered = SubResource("StyleBoxLine_q0b5s")
+theme_override_styles/selected = SubResource("StyleBoxFlat_ju14m")
+theme_override_styles/selected_focus = SubResource("StyleBoxFlat_lps7k")
 script = ExtResource("5_sjge8")
 
-[node name="DeleteProjectDialog" type="ConfirmationDialog" parent="HBoxContainer/RightPanel/GameList"]
+[node name="DeleteProjectDialog" type="ConfirmationDialog" parent="HBoxContainer/RightPanel/VBoxContainer/GameList"]
+size = Vector2i(289, 100)
 ok_button_text = "Yes"
 dialog_text = "Do you want to delete this project ?"
 cancel_button_text = "No"
 
+[node name="RenameProjectDialog" type="ConfirmationDialog" parent="HBoxContainer/RightPanel/VBoxContainer/GameList"]
+title = "Rename your project..."
+size = Vector2i(226, 100)
+ok_button_text = "Rename"
+
+[node name="ProjectNameEdit" type="LineEdit" parent="HBoxContainer/RightPanel/VBoxContainer/GameList/RenameProjectDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 218.0
+offset_bottom = 51.0
+
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton" to="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton" method="_on_pressed"]
 [connection signal="confirmed" from="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton/NewGameDialog" to="HBoxContainer/LeftPanel/ButtonContainer/NewGameButton" method="_on_new_game_dialog_confirmed"]
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/ExitButton" to="." method="_on_exit_button_pressed"]
-[connection signal="gui_input" from="HBoxContainer/RightPanel/GameList" to="HBoxContainer/RightPanel/GameList" method="_on_gui_input"]
-[connection signal="item_activated" from="HBoxContainer/RightPanel/GameList" to="HBoxContainer/RightPanel/GameList" method="_on_item_activated"]
-[connection signal="confirmed" from="HBoxContainer/RightPanel/GameList/DeleteProjectDialog" to="HBoxContainer/RightPanel/GameList" method="_on_delete_project_dialog_confirmed"]
+[connection signal="gui_input" from="HBoxContainer/RightPanel/VBoxContainer/GameList" to="HBoxContainer/RightPanel/VBoxContainer/GameList" method="_on_gui_input"]
+[connection signal="item_activated" from="HBoxContainer/RightPanel/VBoxContainer/GameList" to="HBoxContainer/RightPanel/VBoxContainer/GameList" method="_on_item_activated"]
+[connection signal="item_selected" from="HBoxContainer/RightPanel/VBoxContainer/GameList" to="HBoxContainer/RightPanel/VBoxContainer/GameList" method="_on_item_selected"]
+[connection signal="confirmed" from="HBoxContainer/RightPanel/VBoxContainer/GameList/DeleteProjectDialog" to="HBoxContainer/RightPanel/VBoxContainer/GameList" method="_on_delete_project_dialog_confirmed"]
+[connection signal="confirmed" from="HBoxContainer/RightPanel/VBoxContainer/GameList/RenameProjectDialog" to="HBoxContainer/RightPanel/VBoxContainer/GameList" method="_on_rename_project_dialog_confirmed"]

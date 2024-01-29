@@ -47,6 +47,7 @@ func _ready():
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.keycode == KEY_ESCAPE and event.pressed:
+		game_scene.save_scene(current_filename)
 		var err = get_tree().change_scene_to_file("res://game/home_page/home_page.tscn")
 
 func _on_new_scene_button_pressed() -> void:
