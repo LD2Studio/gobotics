@@ -12,8 +12,6 @@ var _cams : Array
 var _current_cam: int = 0
 
 @onready var game = owner
-@onready var save_scene_as_button: Button = %SaveSceneAsButton
-@onready var save_scene_button: Button = %SaveSceneButton
 @onready var terminal_output = %TerminalOutput
 @onready var object_inspector: PanelContainer = %ObjectInspector
 @onready var udp_port_number: SpinBox = %UDPPortNumber
@@ -67,9 +65,8 @@ func new_scene(environment_path: String) -> void:
 	connect_pickable()
 	update_robot_select_menu()
 	%RunStopButton.button_pressed = false
-	save_scene_as_button.disabled = false
-	save_scene_button.disabled = true
-	
+
+
 func connect_pickable():
 	var nodes = get_tree().get_nodes_in_group("PICKABLE")
 #	print(nodes)
@@ -343,7 +340,7 @@ func save_scene(path: String):
 	
 	var file = FileAccess.open(scene_filename, FileAccess.WRITE)
 	file.store_string(scene_json)
-	save_scene_button.disabled = false
+
 
 func load_scene(path):
 	var scene_filename = path
@@ -400,9 +397,8 @@ func load_scene(path):
 	update_robot_select_menu()
 	update_camera_view_menu()
 	%RunStopButton.button_pressed = false
-	save_scene_as_button.disabled = false
-	save_scene_button.disabled = false
-	
+
+
 func add_assets_to_scene():
 	pass
 	
@@ -417,8 +413,8 @@ func delete_scene():
 		return
 	remove_child(scene_node)
 	scene_node.queue_free()
-	save_scene_as_button.disabled = true
-	
+
+
 func freeze_asset(asset, frozen):
 	asset.set_physics_process(not frozen)
 	freeze_children(asset, frozen)

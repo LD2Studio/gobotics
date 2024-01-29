@@ -1,9 +1,7 @@
-[gd_scene load_steps=26 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=24 format=3 uid="uid://b4s6pohitqafc"]
 
 [ext_resource type="Script" path="res://game/project/game.gd" id="1_85jys"]
-[ext_resource type="Texture2D" uid="uid://cws42r7tqpygr" path="res://game/icons/Tools.svg" id="2_hpbft"]
 [ext_resource type="Texture2D" uid="uid://kr5y1p8nf73q" path="res://game/icons/Add.svg" id="3_bkwo3"]
-[ext_resource type="Script" path="res://game/environment_manager/env_list.gd" id="3_nau71"]
 [ext_resource type="Script" path="res://game/asset_manager/asset_list.gd" id="3_webwb"]
 [ext_resource type="Script" path="res://game/project/game_scene.gd" id="4_htgp6"]
 [ext_resource type="Script" path="res://game/asset_manager/new_asset_button.gd" id="5_c4llk"]
@@ -135,79 +133,10 @@ theme_override_constants/margin_top = 7
 theme_override_constants/margin_right = 7
 theme_override_constants/margin_bottom = 7
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="SceneFileName" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="ProjectName" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
-
-[node name="SetupSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 10
-icon = ExtResource("2_hpbft")
-
-[node name="SetupDialog" type="ConfirmationDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton"]
-unique_name_in_owner = true
-
-[node name="GravityCheckBox" type="CheckBox" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton/SetupDialog"]
-unique_name_in_owner = true
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 192.0
-offset_bottom = 51.0
-button_pressed = true
-text = "Gravity"
-
-[node name="NewSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "New Scene"
-
-[node name="NewSceneDialog" type="ConfirmationDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton"]
-unique_name_in_owner = true
-unresizable = true
-
-[node name="EnvironmentList" type="ItemList" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton/NewSceneDialog"]
-unique_name_in_owner = true
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 192.0
-offset_bottom = 51.0
-script = ExtResource("3_nau71")
-
-[node name="LoadSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Load Scene"
-
-[node name="LoadSceneDialog" type="FileDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton"]
-unique_name_in_owner = true
-title = "Open a File"
-size = Vector2i(558, 162)
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-filters = PackedStringArray("*.scene;Gobotics Scene")
-
-[node name="SaveSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Save Scene"
-
-[node name="SaveSceneAsButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Save Scene As ..."
-
-[node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton"]
-unique_name_in_owner = true
-size = Vector2i(647, 162)
-access = 2
-filters = PackedStringArray("*.scene;Gobotics scene")
 
 [node name="AssetsPanel" type="PanelContainer" parent="SplitContainer/ControlContainer/VBoxContainer"]
 layout_mode = 2
@@ -647,15 +576,6 @@ offset_top = 8.0
 offset_right = 392.0
 offset_bottom = 351.0
 
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton" to="." method="_on_setup_scene_button_pressed"]
-[connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton/SetupDialog" to="." method="_on_setup_dialog_confirmed"]
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton" to="." method="_on_new_scene_button_pressed"]
-[connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton/NewSceneDialog" to="." method="_on_new_scene_dialog_confirmed"]
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton" to="." method="_on_load_scene_button_pressed"]
-[connection signal="file_selected" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton/LoadSceneDialog" to="." method="_on_load_scene_dialog_file_selected"]
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneButton" to="." method="_on_save_button_pressed"]
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton" to="." method="_on_save_scene_as_button_pressed"]
-[connection signal="file_selected" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" method="_on_pressed"]
 [connection signal="item_activated" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_activated"]
 [connection signal="item_clicked" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_clicked"]
