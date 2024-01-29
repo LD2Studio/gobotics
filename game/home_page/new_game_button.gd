@@ -1,7 +1,7 @@
 extends Button
 
 @onready var environment_list: ItemList = %EnvironmentList
-@onready var new_game_dialog: ConfirmationDialog = $NewGameDialog
+@onready var new_game_dialog: ConfirmationDialog = $NewProjectDialog
 @onready var project_name_edit = %ProjectNameEdit
 
 func _on_pressed() -> void:
