@@ -1,0 +1,44 @@
+<standalone name="Tree">
+   <link name="link_name">
+     	<visual name="leaves">
+      	<origin xyz="0.0 0.0 0" rpy="0.0 0.0 0.0"/>
+      	<geometry>
+       		<sphere radius="0.1"/>
+      	</geometry>
+		<material name="white">
+			<color rgba="0 0.8 0 1"/>
+		</material>
+    	</visual>
+	
+		<visual name="trunk">
+			<origin xyz="0 0 -0.1" rpy="0 0 0"/>
+			<geometry>
+			<cylinder radius="0.02" length="0.3"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.2 0.1 0 1"/>
+			</material>
+		</visual>
+
+	
+		<collision name="">
+			<origin xyz="0.0 0.0 0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+         <sphere radius="0.1"/>
+      </geometry>
+		</collision>
+		
+		<collision name="">
+			<origin xyz="0 0 -0.1" rpy="0 0 0"/>
+			<geometry>
+			<cylinder radius="0.02" length="0.3"/>
+			</geometry>
+		</collision>
+
+
+		<inertial>
+			<mass value="0.01"/>
+		</inertial>
+
+   </link>
+</<standalone

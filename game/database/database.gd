@@ -14,6 +14,7 @@ func generate():
 	add_builtin_env(GSettings.builtin_env)
 	add_assets(GSettings.asset_path, GSettings.asset_path)
 
+
 func add_builtin_env(builtin_env: Array):
 	for env in builtin_env:
 		assets.append({
@@ -23,7 +24,7 @@ func add_builtin_env(builtin_env: Array):
 			scene=env.scene_filename,
 			type="builtin_env",
 		})
-		
+
 
 func add_assets(search_path: String, asset_base_dir: String):
 #	print("[DB] search path: ", search_path)
