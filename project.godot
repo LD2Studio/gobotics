@@ -23,8 +23,8 @@ config/create_binary_scene=true
 
 [autoload]
 
-GParam="*res://game/setups/game_parameters.gd"
-GSettings="*res://game/setups/gobotics_settings.gd"
+GParam="*res://game/settings/game_parameters.gd"
+GSettings="*res://game/settings/gobotics_settings.gd"
 
 [display]
 
