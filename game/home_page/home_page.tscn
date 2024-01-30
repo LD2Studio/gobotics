@@ -167,6 +167,7 @@ offset_bottom = 51.0
 
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" to="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" method="_on_pressed"]
 [connection signal="confirmed" from="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog" to="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" method="_on_new_game_dialog_confirmed"]
+[connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/ExitButton" to="." method="_on_exit_button_pressed"]
 [connection signal="gui_input" from="HBoxContainer/RightPanel/VBoxContainer/GameList" to="HBoxContainer/RightPanel/VBoxContainer/GameList" method="_on_gui_input"]
 [connection signal="item_activated" from="HBoxContainer/RightPanel/VBoxContainer/GameList" to="HBoxContainer/RightPanel/VBoxContainer/GameList" method="_on_item_activated"]

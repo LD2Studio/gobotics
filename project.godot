@@ -14,17 +14,19 @@ config/name="Gobotics"
 config/version="0.12.0"
 config/tags=PackedStringArray("project")
 run/main_scene="res://game/home_page/home_page.tscn"
+config/use_custom_user_dir=true
 config/features=PackedStringArray("4.2", "Forward Plus")
 run/low_processor_mode=true
 run/low_processor_mode_sleep_usec=16667
 config/icon="res://gobotics_logo.svg"
 config/windows_native_icon="res://gobotics_logo.ico"
 config/create_binary_scene=true
+config/use_user_path=false
 
 [autoload]
 
-GParam="*res://game/setups/game_parameters.gd"
-GSettings="*res://game/setups/gobotics_settings.gd"
+GParam="*res://game/settings/game_parameters.gd"
+GSettings="*res://game/settings/gobotics_settings.gd"
 
 [display]
 
