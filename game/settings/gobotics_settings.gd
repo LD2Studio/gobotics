@@ -1,7 +1,7 @@
 class_name GoboticsSettings extends Node
 ## Singleton GoboticsSettings
 ##
-## Stocke la configuration du jeu Gobotics
+## Stocke les paramètres de configuration du jeu Gobotics
 
 ## Chemin vers les projets utilisateur de Gobotics.
 var project_path: String:
@@ -42,6 +42,10 @@ var database: GoboticsDB
 func _init() -> void:
 	create_dir()
 	database = GoboticsDB.new()
+	
+
+func _ready() -> void:
+	database.generate()
 
 
 ## Create directory like assets and temp in res/user path.

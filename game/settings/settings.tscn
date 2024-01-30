@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=3 uid="uid://dw4xt6fss5ksj"]
+
+[ext_resource type="Script" path="res://game/settings/settings.gd" id="1_1myt1"]
+
+[node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1myt1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginReturnButton" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="ReturnButton" type="Button" parent="VBoxContainer/MarginReturnButton"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Return to HomePage"
+
+[connection signal="pressed" from="VBoxContainer/MarginReturnButton/ReturnButton" to="." method="_on_return_button_pressed"]
