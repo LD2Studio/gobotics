@@ -68,8 +68,6 @@ func add_buttons_to_item():
 
 
 func show_projects_in_list():
-	if not DirAccess.dir_exists_absolute(GSettings.project_path):
-		DirAccess.make_dir_absolute(GSettings.project_path)
 	var project_files = Array(DirAccess.get_files_at(GSettings.project_path))
 	var project_names = project_files.map(func(file: String): return file.trim_suffix(".scene"))
 	

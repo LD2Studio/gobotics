@@ -8,16 +8,18 @@ var project_path: String:
 	get:
 		return (ProjectSettings.globalize_path(_project_editor_path)
 			if OS.has_feature("editor")
-			else ProjectSettings.globalize_path(_project_export_path))
+				and not ProjectSettings.get_setting("application/config/use_user_path")
+			else _project_export_path)
 
 var _project_editor_path = "res://projects"
-var _project_export_path = "user://projects"
+var _project_export_path = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS).path_join("Gobotics")
 
 ## Chemin vers les assets de Gobotics.
 var asset_path: String:
 	get:
 		return (ProjectSettings.globalize_path(_asset_editor_path)
 			if OS.has_feature("editor")
+				and not ProjectSettings.get_setting("application/config/use_user_path")
 			else ProjectSettings.globalize_path(_asset_export_path))
 
 var _asset_editor_path: String = "res://assets"
@@ -65,7 +67,7 @@ func create_dir():
 		DirAccess.make_dir_absolute(asset_path)
 		
 	# Copy demo assets in user folder
-	if not OS.has_feature("editor"):
+	if not OS.has_feature("editor") or ProjectSettings.get_setting("application/config/use_user_path"):
 		if not DirAccess.dir_exists_absolute(asset_path.path_join("demo")):
 			DirAccess.make_dir_absolute(asset_path.path_join("demo"))
 		var demo_asset_dir = DirAccess.open(_asset_editor_path.path_join("demo"))
@@ -76,3 +78,7 @@ func create_dir():
 				demo_asset_dir.copy(_asset_editor_path.path_join("demo").path_join(file), asset_path.path_join("demo").path_join(file))
 		else:
 			printerr("[ERROR] Opening demo assets folder failed (%d)" % [DirAccess.get_open_error()])
+	
+	# Creating projects directory
+	if not DirAccess.dir_exists_absolute(project_path):
+		DirAccess.make_dir_absolute(project_path)

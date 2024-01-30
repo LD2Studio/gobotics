@@ -11,6 +11,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_1myt1")
 
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.211765, 0.372549, 0.505882, 1)
+
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -22,6 +31,54 @@ grow_vertical = 2
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="AssetPathContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer/AssetPathContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Asset Path : "
+horizontal_alignment = 2
+
+[node name="AssetPathEdit" type="LineEdit" parent="VBoxContainer/MarginContainer/VBoxContainer/AssetPathContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+editable = false
+
+[node name="OpenAssetFolderButton" type="Button" parent="VBoxContainer/MarginContainer/VBoxContainer/AssetPathContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Open Asset Folder"
+
+[node name="ProjectPathContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer/ProjectPathContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Project Path : "
+horizontal_alignment = 2
+
+[node name="ProjectPathEdit" type="LineEdit" parent="VBoxContainer/MarginContainer/VBoxContainer/ProjectPathContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+editable = false
+
+[node name="OpenProjectFolderButton" type="Button" parent="VBoxContainer/MarginContainer/VBoxContainer/ProjectPathContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Open Project Folder"
 
 [node name="MarginReturnButton" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -33,4 +90,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Return to HomePage"
 
+[connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/AssetPathContainer/OpenAssetFolderButton" to="." method="_on_open_asset_folder_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/ProjectPathContainer/OpenProjectFolderButton" to="." method="_on_open_project_folder_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/MarginReturnButton/ReturnButton" to="." method="_on_return_button_pressed"]
