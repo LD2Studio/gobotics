@@ -357,7 +357,7 @@ func load_scene(path):
 	init_scene()
 	
 	var scene_objects = json.data
-	var env_filename: String = ""
+	var env_filename
 	if "fullname" in scene_objects.environment:
 		env_filename = GSettings.database.get_scene_from_fullname(scene_objects.environment.fullname)
 	if env_filename:

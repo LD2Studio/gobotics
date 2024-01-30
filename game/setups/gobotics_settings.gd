@@ -59,3 +59,16 @@ func create_dir():
 	# Creating assets directory
 	if not DirAccess.dir_exists_absolute(asset_path):
 		DirAccess.make_dir_absolute(asset_path)
+		
+	# Copy demo assets in user folder
+	if not OS.has_feature("editor"):
+		if not DirAccess.dir_exists_absolute(asset_path.path_join("demo")):
+			DirAccess.make_dir_absolute(asset_path.path_join("demo"))
+		var demo_asset_dir = DirAccess.open(_asset_editor_path.path_join("demo"))
+		if demo_asset_dir:
+			var demo_files = demo_asset_dir.get_files()
+			#print("demo asset files: ", demo_files)
+			for file in demo_files:
+				demo_asset_dir.copy(_asset_editor_path.path_join("demo").path_join(file), asset_path.path_join("demo").path_join(file))
+		else:
+			printerr("[ERROR] Opening demo assets folder failed (%d)" % [DirAccess.get_open_error()])
