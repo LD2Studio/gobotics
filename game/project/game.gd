@@ -42,8 +42,7 @@ func _ready():
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.keycode == KEY_ESCAPE and event.pressed:
-		game_scene.save_scene(current_filename)
-		var err = get_tree().change_scene_to_file("res://game/home_page/home_page.tscn")
+		_on_button_pressed()
 
 
 func _on_clear_button_pressed() -> void:
@@ -60,3 +59,10 @@ func fill_assets_list():
 		var idx = assets_list.add_item(asset.name)
 		assets_list.set_item_metadata(idx, asset.fullname)
 		assets_list.set_item_tooltip(idx, asset.fullname)
+
+
+func _on_button_pressed() -> void:
+	game_scene.save_scene(current_filename)
+	var err = get_tree().change_scene_to_file("res://game/home_page/home_page.tscn")
+	if err != OK:
+		printerr("Changing scene failed")
