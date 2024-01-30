@@ -1,12 +1,6 @@
 class_name Game extends Control
 
-var asset_base_dir: String # Full pathname
 var gravity_enabled: bool = true
-
-var builtin_env = [
-	{ name = "DarkEnv", scene_filename = "res://game/environments/dark_environment.tscn"},
-	{ name = "LightEnv", scene_filename = "res://game/environments/light_environment.tscn"},
-]
 
 # IMPORTANT : Mettre la propriété "mouse_filter" du noeud racine sur "Pass" pour ne pas bloquer la détection des objets physiques avec la souris
 @onready var game_scene = %GameScene
@@ -57,7 +51,7 @@ func _on_clear_button_pressed() -> void:
 
 
 func load_assets_in_database():
-	GSettings.database.generate(asset_base_dir, builtin_env)
+	GSettings.database.generate()
 	
 func fill_assets_list():
 	assets_list.clear()

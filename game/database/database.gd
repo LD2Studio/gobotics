@@ -9,10 +9,10 @@ func _init():
 	urdf_parser.scale = 10
 	urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
 	
-func generate(asset_base_dir: String, builtin_env: Array):
+func generate():
 	assets.clear()
-	add_builtin_env(builtin_env)
-	add_assets(asset_base_dir, asset_base_dir)
+	add_builtin_env(GSettings.builtin_env)
+	add_assets(GSettings.asset_path, GSettings.asset_path)
 
 func add_builtin_env(builtin_env: Array):
 	for env in builtin_env:

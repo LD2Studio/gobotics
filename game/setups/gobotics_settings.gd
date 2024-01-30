@@ -32,7 +32,30 @@ var temp_path: String:
 var _temp_editor_path = "res://temp"
 var _temp_export_path = "user://temp"
 
+var builtin_env = [
+	{ name = "DarkEnv", scene_filename = "res://game/environments/dark_environment.tscn"},
+	{ name = "LightEnv", scene_filename = "res://game/environments/light_environment.tscn"},
+]
+
 var database: GoboticsDB
 
 func _init() -> void:
+	create_dir()
 	database = GoboticsDB.new()
+
+
+## Create directory like assets and temp in res/user path.
+## Must be called first before creating database.
+func create_dir():
+	# Creating temp directory
+	if DirAccess.dir_exists_absolute(temp_path):
+		# delete all files before remove temp dir
+		var files = DirAccess.get_files_at(temp_path)
+		for file in files:
+			DirAccess.remove_absolute(temp_path.path_join(file))
+		DirAccess.remove_absolute(temp_path)
+	DirAccess.make_dir_absolute(temp_path)
+		
+	# Creating assets directory
+	if not DirAccess.dir_exists_absolute(asset_path):
+		DirAccess.make_dir_absolute(asset_path)
