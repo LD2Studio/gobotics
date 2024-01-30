@@ -12,8 +12,6 @@ var _cams : Array
 var _current_cam: int = 0
 
 @onready var game = owner
-@onready var save_scene_as_button: Button = %SaveSceneAsButton
-@onready var save_scene_button: Button = %SaveSceneButton
 @onready var terminal_output = %TerminalOutput
 @onready var object_inspector: PanelContainer = %ObjectInspector
 @onready var udp_port_number: SpinBox = %UDPPortNumber
@@ -67,9 +65,8 @@ func new_scene(environment_path: String) -> void:
 	connect_pickable()
 	update_robot_select_menu()
 	%RunStopButton.button_pressed = false
-	save_scene_as_button.disabled = false
-	save_scene_button.disabled = true
-	
+
+
 func connect_pickable():
 	var nodes = get_tree().get_nodes_in_group("PICKABLE")
 #	print(nodes)
@@ -322,7 +319,7 @@ func save_scene(path: String):
 			
 			var scene_path = ProjectSettings.globalize_path(item.scene_file_path)
 			scene_objects.assets.append({
-					fullname = game.database.get_fullname(scene_path),
+					fullname = GSettings.database.get_fullname(scene_path),
 					string_name=item.name,
 					transform=asset_transform,
 					udp_port=udp_port,
@@ -336,14 +333,14 @@ func save_scene(path: String):
 			else:
 				var scene_path = ProjectSettings.globalize_path(item.scene_file_path)
 				scene_objects.environment = {
-					fullname = game.database.get_fullname(scene_path),
+					fullname = GSettings.database.get_fullname(scene_path),
 					}
 	var scene_json = JSON.stringify(scene_objects, "\t", false)
 #		print("scene JSON: ", scene_json)
 	
 	var file = FileAccess.open(scene_filename, FileAccess.WRITE)
 	file.store_string(scene_json)
-	save_scene_button.disabled = false
+
 
 func load_scene(path):
 	var scene_filename = path
@@ -360,16 +357,16 @@ func load_scene(path):
 	init_scene()
 	
 	var scene_objects = json.data
-	var env_filename: String = ""
+	var env_filename
 	if "fullname" in scene_objects.environment:
-		env_filename = game.database.get_scene_from_fullname(scene_objects.environment.fullname)
+		env_filename = GSettings.database.get_scene_from_fullname(scene_objects.environment.fullname)
 	if env_filename:
 		var environment = ResourceLoader.load(env_filename).instantiate()
 		scene.add_child(environment)
 	
 	for asset in scene_objects.assets:
 		if "fullname" in asset:
-			var asset_filename = game.database.get_asset_scene(asset.fullname)
+			var asset_filename = GSettings.database.get_asset_scene(asset.fullname)
 			if asset_filename == null:
 				printerr("Asset %s not available!" % [asset.fullname])
 				continue
@@ -400,9 +397,8 @@ func load_scene(path):
 	update_robot_select_menu()
 	update_camera_view_menu()
 	%RunStopButton.button_pressed = false
-	save_scene_as_button.disabled = false
-	save_scene_button.disabled = false
-	
+
+
 func add_assets_to_scene():
 	pass
 	
@@ -417,8 +413,8 @@ func delete_scene():
 		return
 	remove_child(scene_node)
 	scene_node.queue_free()
-	save_scene_as_button.disabled = true
-	
+
+
 func freeze_asset(asset, frozen):
 	asset.set_physics_process(not frozen)
 	freeze_children(asset, frozen)

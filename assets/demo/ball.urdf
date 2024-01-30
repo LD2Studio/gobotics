@@ -1,0 +1,23 @@
+<standalone name="Ball">
+   <link name="link_name">
+     <visual>
+      <origin xyz="0.0 0.0 0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+         <sphere radius="0.1"/>
+      </geometry>
+	
+	<material name="white">
+		<color rgba="1 0 0 1"/>
+	</material>
+
+     </visual>
+	
+		<collision name="">
+			<origin xyz="0.0 0.0 0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+         <sphere radius="0.1"/>
+      </geometry>
+		</collision>
+
+   </link>
+</standalone>

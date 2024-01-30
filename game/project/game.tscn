@@ -1,21 +1,19 @@
-[gd_scene load_steps=26 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=24 format=3 uid="uid://b4s6pohitqafc"]
 
-[ext_resource type="Script" path="res://game/game.gd" id="1_85jys"]
-[ext_resource type="Texture2D" uid="uid://cws42r7tqpygr" path="res://game/icons/Tools.svg" id="2_hpbft"]
+[ext_resource type="Script" path="res://game/project/game.gd" id="1_85jys"]
 [ext_resource type="Texture2D" uid="uid://kr5y1p8nf73q" path="res://game/icons/Add.svg" id="3_bkwo3"]
-[ext_resource type="Script" path="res://game/environment_manager/env_list.gd" id="3_nau71"]
 [ext_resource type="Script" path="res://game/asset_manager/asset_list.gd" id="3_webwb"]
-[ext_resource type="Script" path="res://game/game_scene.gd" id="4_htgp6"]
+[ext_resource type="Script" path="res://game/project/game_scene.gd" id="4_htgp6"]
 [ext_resource type="Script" path="res://game/asset_manager/new_asset_button.gd" id="5_c4llk"]
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="5_i338u"]
 [ext_resource type="Texture2D" uid="uid://dcedg06r2n4f1" path="res://game/icons/ViewportSpeed.svg" id="6_6ryau"]
-[ext_resource type="Script" path="res://game/TopCamera2D.gd" id="7_eidv5"]
+[ext_resource type="Script" path="res://game/project/TopCamera2D.gd" id="7_eidv5"]
 [ext_resource type="Script" path="res://game/asset_manager/scene_view.gd" id="7_jksff"]
 [ext_resource type="Texture2D" uid="uid://jyx0ifv4wnkt" path="res://game/icons/Camera3D.svg" id="8_hvuby"]
 [ext_resource type="StyleBox" uid="uid://die6ekhbco4pr" path="res://game/styles/HUD.tres" id="10_q2yc6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxght"]
-bg_color = Color(0.25098, 0.411765, 0.768627, 1)
+bg_color = Color(0.211765, 0.372549, 0.505882, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 
@@ -24,7 +22,7 @@ content_margin_left = 7.0
 content_margin_top = 7.0
 content_margin_right = 7.0
 content_margin_bottom = 7.0
-bg_color = Color(0.686275, 0.580392, 0.266667, 1)
+bg_color = Color(0.211765, 0.372549, 0.505882, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 
@@ -135,79 +133,10 @@ theme_override_constants/margin_top = 7
 theme_override_constants/margin_right = 7
 theme_override_constants/margin_bottom = 7
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="SceneFileName" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="ProjectName" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
-
-[node name="SetupSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 10
-icon = ExtResource("2_hpbft")
-
-[node name="SetupDialog" type="ConfirmationDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton"]
-unique_name_in_owner = true
-
-[node name="GravityCheckBox" type="CheckBox" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton/SetupDialog"]
-unique_name_in_owner = true
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 192.0
-offset_bottom = 51.0
-button_pressed = true
-text = "Gravity"
-
-[node name="NewSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "New Scene"
-
-[node name="NewSceneDialog" type="ConfirmationDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton"]
-unique_name_in_owner = true
-unresizable = true
-
-[node name="EnvironmentList" type="ItemList" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton/NewSceneDialog"]
-unique_name_in_owner = true
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 192.0
-offset_bottom = 51.0
-script = ExtResource("3_nau71")
-
-[node name="LoadSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Load Scene"
-
-[node name="LoadSceneDialog" type="FileDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton"]
-unique_name_in_owner = true
-title = "Open a File"
-size = Vector2i(558, 162)
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-filters = PackedStringArray("*.scene;Gobotics Scene")
-
-[node name="SaveSceneButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Save Scene"
-
-[node name="SaveSceneAsButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Save Scene As ..."
-
-[node name="SaveSceneDialog" type="FileDialog" parent="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton"]
-unique_name_in_owner = true
-size = Vector2i(647, 162)
-access = 2
-filters = PackedStringArray("*.scene;Gobotics scene")
 
 [node name="AssetsPanel" type="PanelContainer" parent="SplitContainer/ControlContainer/VBoxContainer"]
 layout_mode = 2
@@ -258,6 +187,7 @@ transient = true
 exclusive = true
 
 [node name="TerminalPanel" type="PanelContainer" parent="SplitContainer/ControlContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlContainer/VBoxContainer/TerminalPanel"]
@@ -288,6 +218,10 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 editable = false
+
+[node name="Button" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer"]
+layout_mode = 2
+text = "Return"
 
 [node name="SceneView" type="SubViewportContainer" parent="SplitContainer"]
 unique_name_in_owner = true
@@ -647,20 +581,12 @@ offset_top = 8.0
 offset_right = 392.0
 offset_bottom = 351.0
 
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton" to="." method="_on_setup_scene_button_pressed"]
-[connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/HBoxContainer/SetupSceneButton/SetupDialog" to="." method="_on_setup_dialog_confirmed"]
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton" to="." method="_on_new_scene_button_pressed"]
-[connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/NewSceneButton/NewSceneDialog" to="." method="_on_new_scene_dialog_confirmed"]
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton" to="." method="_on_load_scene_button_pressed"]
-[connection signal="file_selected" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/LoadSceneButton/LoadSceneDialog" to="." method="_on_load_scene_dialog_file_selected"]
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneButton" to="." method="_on_save_button_pressed"]
-[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton" to="." method="_on_save_scene_as_button_pressed"]
-[connection signal="file_selected" from="SplitContainer/ControlContainer/VBoxContainer/ScenePanel/MarginContainer/VBoxContainer/SaveSceneAsButton/SaveSceneDialog" to="." method="_on_save_scene_dialog_file_selected"]
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/HBoxContainer/NewAssetButton" method="_on_pressed"]
 [connection signal="item_activated" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_activated"]
 [connection signal="item_clicked" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_item_clicked"]
 [connection signal="confirmed" from="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList/DeleteConfirmationDialog" to="SplitContainer/ControlContainer/VBoxContainer/AssetsPanel/VBoxContainer/AssetList" method="_on_delete_confirmation_dialog_confirmed"]
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/TerminalPanel/MarginContainer/VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_clear_button_pressed"]
+[connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]
 [connection signal="gui_input" from="SplitContainer/SceneView" to="SplitContainer/SceneView" method="_on_gui_input"]
 [connection signal="value_changed" from="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/X_pos" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_x_pos_value_changed"]
 [connection signal="value_changed" from="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/TransformContainer/Y_pos" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_y_pos_value_changed"]
