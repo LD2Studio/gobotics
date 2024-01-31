@@ -1,5 +1,5 @@
-class_name GameParameters extends Node
-## Singleton GameParameters
+class_name GProjectSettings extends Node
+## Singleton GProjectSettings
 ##
 ## Stocke les caractéristiques du jeu en cours, comme ...
 

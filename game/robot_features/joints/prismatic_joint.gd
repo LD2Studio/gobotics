@@ -59,8 +59,7 @@ func _physics_process(_delta):
 
 #region METHODS
 func _target_dist_changed(value: float):
-	target_input = value * GParam.SCALE
-	#print("target dist: ", target_input)
+	target_input = value * GPSettings.SCALE
 
 func shift_target(step):
 	if step > 0 and target_input <= limit_upper:

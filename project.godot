@@ -25,7 +25,7 @@ config/use_user_path=false
 
 [autoload]
 
-GParam="*res://game/settings/game_parameters.gd"
+GPSettings="*res://game/settings/project_settings.gd"
 GSettings="*res://game/settings/gobotics_settings.gd"
 
 [display]
