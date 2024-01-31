@@ -1,19 +1,17 @@
-from gobotics import app, DiffRobot
+from gobotics import app, Robot
+from math import radians
 from time import sleep
 
+my_robot = Robot(4243)
 app.run()
-my_robot = DiffRobot(4243)
 
 print("Pose: ", my_robot.get_pose())
 
-my_robot.set_pose(0,0,0)
-my_robot.move(5,5)
+my_robot.set_pose(0,0.5,radians(45))
 
-while True:
-    pose = my_robot.get_pose()
-    if pose[0] > 1.0:
-        my_robot.move(0,0)
-        break
-    sleep(0.1)
+my_robot.set_continuous_velocity("right_joint", 2)
+sleep(2)
+my_robot.set_continuous_velocity("right_joint", 0)
 
+sleep(1)
 app.stop()

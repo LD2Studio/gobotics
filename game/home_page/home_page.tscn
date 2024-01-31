@@ -1,13 +1,15 @@
-[gd_scene load_steps=11 format=3 uid="uid://dsm47w5bpvyqx"]
+[gd_scene load_steps=13 format=3 uid="uid://dsm47w5bpvyqx"]
 
 [ext_resource type="Script" path="res://game/home_page/home_page.gd" id="1_rkbcx"]
 [ext_resource type="Texture2D" uid="uid://b2d0gmn22lric" path="res://game/assets/gobotics_mascot.png" id="2_4e0v7"]
+[ext_resource type="FontFile" uid="uid://crgb1pwcsi7bx" path="res://game/fonts/Monofett-Regular.ttf" id="3_4k6wj"]
 [ext_resource type="Script" path="res://game/home_page/new_project_button.gd" id="3_47auv"]
 [ext_resource type="Script" path="res://game/home_page/environment_list.gd" id="4_ic4l2"]
 [ext_resource type="Script" path="res://game/home_page/game_list.gd" id="5_sjge8"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_qcxj2"]
-font_size = 32
+font = ExtResource("3_4k6wj")
+font_size = 56
 
 [sub_resource type="LabelSettings" id="LabelSettings_khw2i"]
 font_size = 24
@@ -22,6 +24,8 @@ bg_color = Color(0.6, 0.6, 0.6, 0.133333)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lps7k"]
 bg_color = Color(0, 0.811765, 0.988235, 0.141176)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_04w17"]
 
 [node name="HomePage" type="Control"]
 layout_mode = 3
@@ -63,12 +67,13 @@ offset_bottom = 390.0
 texture = ExtResource("2_4e0v7")
 expand_mode = 3
 
-[node name="Title" type="Label" parent="HBoxContainer/LeftPanel"]
+[node name="AppTitle" type="Label" parent="HBoxContainer/LeftPanel"]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 68.0
-offset_right = 295.0
-offset_bottom = 123.0
+offset_left = -19.0
+offset_top = 87.0
+offset_right = 277.0
+offset_bottom = 160.0
+rotation = -0.322886
 text = "Gobotics"
 label_settings = SubResource("LabelSettings_qcxj2")
 horizontal_alignment = 1
@@ -129,7 +134,7 @@ size_flags_horizontal = 3
 focus_mode = 1
 theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 100
+theme_override_constants/margin_bottom = 20
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/RightPanel"]
 layout_mode = 2
@@ -164,6 +169,17 @@ offset_left = 8.0
 offset_top = 8.0
 offset_right = 218.0
 offset_bottom = 51.0
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+theme_override_styles/separator = SubResource("StyleBoxEmpty_04w17")
+
+[node name="GoboticsInfo" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Develop with Godot Engine 4.2"
+horizontal_alignment = 2
 
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" to="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" method="_on_pressed"]
 [connection signal="confirmed" from="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog" to="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" method="_on_new_game_dialog_confirmed"]

@@ -111,6 +111,7 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="TitlePanel" type="PanelContainer" parent="SplitContainer/ControlContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="SplitContainer/ControlContainer/VBoxContainer/TitlePanel"]
@@ -236,7 +237,7 @@ handle_input_locally = false
 msaa_3d = 2
 screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(1058, 720)
+size = Vector2i(2, 2)
 render_target_update_mode = 4
 
 [node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView/SceneViewport"]

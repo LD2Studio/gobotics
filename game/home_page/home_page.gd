@@ -1,5 +1,10 @@
 extends Control
 
+func _ready() -> void:
+	var app_name: String = ProjectSettings.get_setting("application/config/name")
+	var version: String = ProjectSettings.get_setting("application/config/version")
+	%GoboticsInfo.text = "%s v%s - Develop with Godot Engine 4.2" % [app_name, version]
+
 
 func _on_exit_button_pressed():
 	get_tree().quit()
