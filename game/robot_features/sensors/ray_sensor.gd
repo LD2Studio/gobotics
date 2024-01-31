@@ -42,7 +42,7 @@ func _physics_process(delta: float) -> void:
 			ray_cast.colliding = true
 			ray_cast.mat.albedo_color = Color.RED
 			var collider_point : Vector3 = ray_cast.node.get_collision_point()
-			ray_cast.length = ray_cast.node.global_position.distance_to(collider_point) / GParam.SCALE
+			ray_cast.length = ray_cast.node.global_position.distance_to(collider_point) / GPSettings.SCALE
 #			print("length: ", ray_cast.length)
 			length = ray_cast.length
 		else:

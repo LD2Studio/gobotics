@@ -5,7 +5,7 @@ class_name VisualRayCast3D extends RayCast3D
 func activate(value: bool, length: float = 0.0):
 	if value:
 		_ray_debug.set_surface_override_material(0, _ray_active)
-		_ray_debug.mesh.length = length  * GParam.SCALE
+		_ray_debug.mesh.length = length  * GPSettings.SCALE
 	else:
 		_ray_debug.set_surface_override_material(0, _ray_inactive)
 		_ray_debug.mesh.length = (_ray_max - _ray_min)
@@ -25,6 +25,6 @@ func _init(ray_max: float, ray_min: float):
 
 func _ready() -> void:
 	_ray_debug.mesh = _ray_debug_mesh
-	_ray_debug.mesh.length = (_ray_max - _ray_min)  * GParam.SCALE
+	_ray_debug.mesh.length = (_ray_max - _ray_min)  * GPSettings.SCALE
 	_ray_debug.set_surface_override_material(0, _ray_inactive)
 	add_child(_ray_debug)

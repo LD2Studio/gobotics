@@ -46,6 +46,8 @@ func _drop_data(_at_position: Vector2, data) -> void:
 	if part_name:
 		part_name.text = asset.name
 		
+	game_scene.save_project()
+
 
 func get_new_name(current_name: StringName) -> StringName:
 #	print(current_name)

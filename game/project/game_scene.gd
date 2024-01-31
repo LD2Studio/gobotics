@@ -51,8 +51,8 @@ func _process(_delta: float) -> void:
 	#Node.print_orphan_nodes()
 
 func _physics_process(_delta: float) -> void:
-	%PhysicsFrameLabel.text = "Frame: %d" % [GParam.physics_tick]
-	GParam.physics_tick += 1
+	%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
+	GPSettings.physics_tick += 1
 
 #endregion
 	
@@ -211,7 +211,7 @@ func show_asset_parameters(asset: Node3D):
 		velocity_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		velocity_edit.min_value = -joint.LIMIT_VELOCITY
 		velocity_edit.max_value = joint.LIMIT_VELOCITY
-		velocity_edit.step = joint.LIMIT_VELOCITY / GParam.SCALE
+		velocity_edit.step = joint.LIMIT_VELOCITY / GPSettings.SCALE
 #			velocity_edit.tick_count = 3
 		velocity_edit.value = joint.target_velocity
 		velocity_edit.value_changed.connect(joint._target_velocity_changed)
@@ -243,10 +243,10 @@ func show_asset_parameters(asset: Node3D):
 		var dist_edit = PropertySlider.new()
 		%JointsContainer.add_child(dist_edit)
 		dist_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		dist_edit.min_value = joint.limit_lower / GParam.SCALE
-		dist_edit.max_value = joint.limit_upper / GParam.SCALE
+		dist_edit.min_value = joint.limit_lower / GPSettings.SCALE
+		dist_edit.max_value = joint.limit_upper / GPSettings.SCALE
 		dist_edit.step = 0.01
-		dist_edit.value = joint.target_input / GParam.SCALE
+		dist_edit.value = joint.target_input / GPSettings.SCALE
 		dist_edit.value_changed.connect(joint._target_dist_changed)
 			
 	var all_grouped_joints = get_tree().get_nodes_in_group("GROUPED_JOINTS")
@@ -280,7 +280,13 @@ func show_asset_parameters(asset: Node3D):
 func hide_asset_parameters():
 	object_inspector.visible = false
 
+
+func save_project():
+	save_scene(GSettings.project_path.path_join(GPSettings.project_file))
+
+
 func save_scene(path: String):
+	
 	if path.get_extension() != "scene":
 		game.current_filename = ""
 		return
@@ -547,8 +553,8 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 func _on_reload_button_pressed():
 	if owner.current_filename != "":
 		load_scene(owner.current_filename)
-		GParam.physics_tick = 0
-		%PhysicsFrameLabel.text = "Frame: %d" % [GParam.physics_tick]
+		GPSettings.physics_tick = 0
+		%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
 
 func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
 	mouse_pos_on_area = mouse_position

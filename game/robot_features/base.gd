@@ -170,7 +170,7 @@ func get_revolute(jname: String) -> PackedFloat32Array:
 		if joint.is_in_group("REVOLUTE") and joint.name == joint_name:
 			angle = joint.angle
 	var data = PackedFloat32Array(
-		[angle, GParam.physics_tick]
+		[angle, GPSettings.physics_tick]
 	)
 	return data
 			
@@ -188,9 +188,9 @@ func set_prismatic(jname: String, value: float, velocity: bool = false):
 	for joint in _joints:
 		if joint.is_in_group("PRISMATIC") and joint.name == joint_name:
 			if velocity:
-				joint.target_speed = value * GParam.SCALE
+				joint.target_speed = value * GPSettings.SCALE
 			else:
-				joint.target_input = value * GParam.SCALE
+				joint.target_input = value * GPSettings.SCALE
 			return
 			
 func get_prismatic(jname: String) -> PackedFloat32Array:
@@ -198,9 +198,9 @@ func get_prismatic(jname: String) -> PackedFloat32Array:
 	var dist: float
 	for joint: Node3D in _joints:
 		if joint.is_in_group("PRISMATIC") and joint.name == joint_name:
-			dist = joint.dist / GParam.SCALE
+			dist = joint.dist / GPSettings.SCALE
 	var data = PackedFloat32Array(
-		[dist, GParam.physics_tick]
+		[dist, GPSettings.physics_tick]
 	)
 	return data
 

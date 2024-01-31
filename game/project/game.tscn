@@ -8,7 +8,7 @@
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="5_i338u"]
 [ext_resource type="Texture2D" uid="uid://dcedg06r2n4f1" path="res://game/icons/ViewportSpeed.svg" id="6_6ryau"]
 [ext_resource type="Script" path="res://game/project/TopCamera2D.gd" id="7_eidv5"]
-[ext_resource type="Script" path="res://game/asset_manager/scene_view.gd" id="7_jksff"]
+[ext_resource type="Script" path="res://game/project/scene_view.gd" id="7_jksff"]
 [ext_resource type="Texture2D" uid="uid://jyx0ifv4wnkt" path="res://game/icons/Camera3D.svg" id="8_hvuby"]
 [ext_resource type="StyleBox" uid="uid://die6ekhbco4pr" path="res://game/styles/HUD.tres" id="10_q2yc6"]
 
