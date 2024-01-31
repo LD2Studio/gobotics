@@ -677,6 +677,7 @@ func _on_confirm_delete_dialog_confirmed() -> void:
 		asset_selected.queue_free()
 		update_robot_select_menu()
 		update_camera_view_menu()
+		save_project()
 		
 func _on_rename_dialog_confirmed() -> void:
 	object_inspector.visible = false
@@ -691,7 +692,7 @@ func _on_rename_dialog_confirmed() -> void:
 					return
 			asset_selected.name = new_name
 			update_robot_select_menu()
-#			print("[GS] Asset selected: ", asset_selected)
+		save_project()
 
 func _on_script_dialog_confirmed() -> void:
 	if asset_selected == null: return
