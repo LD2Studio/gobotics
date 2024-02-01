@@ -702,7 +702,10 @@ func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
 	var gltf_state := GLTFState.new()
 	var gltf_filename : String = asset_user_path.path_join(attrib.filename)
 #	print("[PU] gltf filename: ", gltf_filename)
-	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
+	# Fixed bug : https://github.com/godotengine/godot/issues/85960
+	# 8 is the constant for EditorSceneFormatImporter.IMPORT_GENERATE_TANGENT_ARRAYS :
+	# blendshapes without tangents seem to have been broken in 4.2, so this is why it works around the bug.
+	var err = gltf_res.append_from_file(gltf_filename, gltf_state, 8)
 	if err:
 		printerr("gltf from buffer failed!")
 		parse_error_message = "GLTF file import failed!"
