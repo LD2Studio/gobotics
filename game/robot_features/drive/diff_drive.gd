@@ -8,13 +8,16 @@ class_name DiffDrive extends Node
 var right_wheel_joint: Node3D
 var left_wheel_joint: Node3D
 
-func setup():
-	right_wheel_joint = get_parent().get_node_or_null("%%%s" % [right_wheel])
-	left_wheel_joint = get_parent().get_node_or_null("%%%s" % [left_wheel])
+enum {
+	IDLE,
+	MOVE_TO,
+}
+class Behavior:
+	var task: int = IDLE
+	var finished_task: bool = true
 
 
-func _physics_process(delta: float) -> void:
-	pass
+@onready var behavior = Behavior.new()
 
 
 func _input(event):
@@ -50,7 +53,23 @@ func _input(event):
 			right_wheel_joint.target_velocity = 0
 			left_wheel_joint.target_velocity = 0
 
-## Functions exposed to Python
+func _physics_process(delta: float) -> void:
+	match behavior.task:
+		IDLE:
+			print("IDLE BEHAVIOR")
+		MOVE_TO:
+			pass
+
+
+#region PUBLIC METHODS
+
+func setup():
+	right_wheel_joint = get_parent().get_node_or_null("%%%s" % [right_wheel])
+	left_wheel_joint = get_parent().get_node_or_null("%%%s" % [left_wheel])
+	
+#endregion
+
+#region PUBLIC METHODS EXPOSED TO PYTHON_BRIDGE
 
 func move_diff_drive(right_vel: float, left_vel: float):
 	right_wheel_joint.target_velocity = right_vel
@@ -59,3 +78,5 @@ func move_diff_drive(right_vel: float, left_vel: float):
 
 func move_to(new_position: Vector2, new_speed: float):
 	print("Move to %s at %f m/s" % [new_position, new_speed])
+
+#endregion
