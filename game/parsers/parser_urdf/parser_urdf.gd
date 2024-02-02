@@ -694,60 +694,55 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 	return OK
 	
 func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
-	if attrib.filename.begins_with("package://"):
-		printerr("[PARSER] not available yet")
-		return null
 	
 	var gltf_res := GLTFDocument.new()
-	var gltf_state := GLTFState.new()
-	var gltf_filename : String = asset_user_path.path_join(attrib.filename)
-#	print("[PU] gltf filename: ", gltf_filename)
+	var gltf_data := GLTFState.new()
+	var gltf_filename : String = GSettings.asset_path.path_join(attrib.filename)
+	
 	# Fixed bug : https://github.com/godotengine/godot/issues/85960
 	# 8 is the constant for EditorSceneFormatImporter.IMPORT_GENERATE_TANGENT_ARRAYS :
 	# blendshapes without tangents seem to have been broken in 4.2, so this is why it works around the bug.
-	var err = gltf_res.append_from_file(gltf_filename, gltf_state, 8)
+	var err = gltf_res.append_from_file(gltf_filename, gltf_data, 8)
 	if err:
 		printerr("gltf from buffer failed!")
 		parse_error_message = "GLTF file import failed!"
 		return null
 		
-	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
+	var meshes : Array[GLTFMesh] = gltf_data.get_meshes()
 	
-	if gltf_state.json.nodes.is_empty():
+	if gltf_data.json.nodes.is_empty():
 		printerr("[PARSER] gltf is empty")
 		return null
 		
-	var active_node = gltf_state.json.nodes[0]
+	var active_node = gltf_data.json.nodes[0]
 	
 	var imported_mesh : ImporterMesh = meshes[active_node.mesh].mesh
 	var mesh: ArrayMesh = imported_mesh.get_mesh()
 	
 	# To avoid orphan nodes created by append_from_file()
-	var scene_node = gltf_res.generate_scene(gltf_state)
+	var scene_node = gltf_res.generate_scene(gltf_data)
 	scene_node.queue_free()
 
 	return mesh
 	
 func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
-	if attrib.filename.begins_with("package://"):
-		printerr("[PARSER] not available yet")
-		return null
 		
 	var gltf_res := GLTFDocument.new()
-	var gltf_state := GLTFState.new()
-	var gltf_filename : String = asset_user_path + attrib.filename
-	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
+	var gltf_data := GLTFState.new()
+	
+	var gltf_filename : String = GSettings.asset_path.path_join(attrib.filename)
+	var err = gltf_res.append_from_file(gltf_filename, gltf_data)
 	if err:
 		printerr("gltf from buffer failed")
 		parse_error_message = "GLTF file import failed!"
 		return null
 	
-	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
-	if gltf_state.json.nodes.is_empty():
+	var meshes : Array[GLTFMesh] = gltf_data.get_meshes()
+	if gltf_data.json.nodes.is_empty():
 		printerr("[PARSER] gltf is empty")
 		return null
 		
-	var active_node = gltf_state.json.nodes[0]
+	var active_node = gltf_data.json.nodes[0]
 	
 	var imported_mesh : ImporterMesh = meshes[active_node.mesh].mesh
 	var mesh: ArrayMesh = imported_mesh.get_mesh()
@@ -771,7 +766,7 @@ func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
 		var debug_mesh = shape.get_debug_mesh()
 		debug_col.mesh = debug_mesh
 	# To avoid orphan nodes created by append_from_file()
-	var scene_node = gltf_res.generate_scene(gltf_state)
+	var scene_node = gltf_res.generate_scene(gltf_data)
 	scene_node.queue_free()
 	
 	return shape

@@ -70,12 +70,26 @@ func create_dir():
 	if not OS.has_feature("editor") or ProjectSettings.get_setting("application/config/use_user_path"):
 		if not DirAccess.dir_exists_absolute(asset_path.path_join("demo")):
 			DirAccess.make_dir_absolute(asset_path.path_join("demo"))
+			
 		var demo_asset_dir = DirAccess.open(_asset_editor_path.path_join("demo"))
 		if demo_asset_dir:
 			var demo_files = demo_asset_dir.get_files()
-			#print("demo asset files: ", demo_files)
 			for file in demo_files:
-				demo_asset_dir.copy(_asset_editor_path.path_join("demo").path_join(file), asset_path.path_join("demo").path_join(file))
+				demo_asset_dir.copy(_asset_editor_path.path_join("demo").path_join(file),
+						asset_path.path_join("demo").path_join(file))
+						
+		if not DirAccess.dir_exists_absolute(asset_path.path_join("demo/meshes")):
+			DirAccess.make_dir_absolute(asset_path.path_join("demo/meshes"))
+			
+		var demo_meshes_dir = DirAccess.open(_asset_editor_path.path_join("demo/meshes"))
+		if demo_meshes_dir:
+			var demo_mesh_files = demo_meshes_dir.get_files()
+			for file in demo_mesh_files:
+				#print("extension: ", file.get_extension())
+				if file.get_extension() == "import": continue # Exclude *.import files
+				demo_meshes_dir.copy(_asset_editor_path.path_join("demo/meshes").path_join(file),
+						asset_path.path_join("demo/meshes").path_join(file))
+						
 		else:
 			printerr("[ERROR] Opening demo assets folder failed (%d)" % [DirAccess.get_open_error()])
 	
