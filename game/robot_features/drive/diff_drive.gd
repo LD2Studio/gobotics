@@ -55,4 +55,7 @@ func _input(event):
 func move_diff_drive(right_vel: float, left_vel: float):
 	right_wheel_joint.target_velocity = right_vel
 	left_wheel_joint.target_velocity = left_vel
-	
+
+
+func move_to(new_position: Vector2, new_speed: float):
+	print("Move to %s at %f m/s" % [new_position, new_speed])
