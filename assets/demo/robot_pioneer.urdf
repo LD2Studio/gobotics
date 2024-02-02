@@ -14,12 +14,24 @@
 				<color rgba="0.8 0.8 0.8 1"/>
 			</material>
 		</visual>
+		
 		<collision name="chassis">
 			<origin xyz="0 0 0.04" rpy="0 0 0"/>
 			<geometry>
 				<cylinder radius="0.19" length="0.02"/>
 			</geometry>
 		</collision>
+
+		<visual name="">
+			<origin xyz="0 0 0.065" rpy="0 0 0"/>
+			<geometry>
+				<cylinder radius="0.02" length="0.06"/>
+			</geometry>
+			<material name="">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+
 	</link>
 	
 	<!-- RIGHT WHEEL LINK --> 
@@ -153,4 +165,16 @@
         <left_wheel joint="left_joint"/>
 		<max_speed value="8.0"/>
     </gobotics>
+	
+	<!-- HALF-LIDAR SENSOR -->
+	<sensor name="half-lidar" type="ray" update_rate="">
+		<origin xyz="0 0 0.08" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<ray>
+			<horizontal samples="15" resolution="1.0" min_angle="-1" max_angle="1"/>
+			<vertical samples="1" resolution="1.0" min_angle="0" max_angle="0"/>
+			<range min="0" max="1"/>
+		</ray>
+	</sensor>
+
 </robot>
