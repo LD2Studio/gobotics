@@ -422,10 +422,15 @@ func delete_scene():
 
 
 func freeze_asset(asset, frozen):
-	asset.set_physics_process(not frozen)
-	freeze_children(asset, frozen)
+	#print("script %s: %s: %s" % [asset.name, asset.get_script(), asset.get("frozen")])
+	if asset.get("frozen") == null:
+		asset.set_physics_process(not frozen)
+	else:
+		asset.frozen = frozen
+		
+	_freeze_children(asset, frozen)
 
-func freeze_children(node, frozen):
+func _freeze_children(node, frozen):
 	if node.is_in_group("STATIC"):
 		node.freeze = true
 	elif node is RigidBody3D:
@@ -433,7 +438,7 @@ func freeze_children(node, frozen):
 	elif node.is_in_group("RAY"):
 		node.frozen = frozen
 	for child in node.get_children():
-		freeze_children(child, frozen)
+		_freeze_children(child, frozen)
 		
 func rename_asset():
 	rename_dialog.get_node("NameEdit").text = asset_selected.name

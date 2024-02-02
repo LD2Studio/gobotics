@@ -12,6 +12,11 @@ func setup():
 	right_wheel_joint = get_parent().get_node_or_null("%%%s" % [right_wheel])
 	left_wheel_joint = get_parent().get_node_or_null("%%%s" % [left_wheel])
 
+
+func _physics_process(delta: float) -> void:
+	pass
+
+
 func _input(event):
 	if event is InputEventKey and activated:
 #		print(event)
