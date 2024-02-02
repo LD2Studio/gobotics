@@ -79,10 +79,12 @@ func parse_call_from_python(peer: PacketPeerUDP, json_message: String):
 					args.append(p.value.to_int())
 				elif p.type == "bool":
 					var value = true if p.value == "True" else false
-					#print("value:" , value)
 					args.append(value)
 				elif p.type == "string":
 					args.append(p.value)
+				elif p.type == "vec2":
+					var vec2 = Vector2(p.value[0], p.value[1])
+					args.append(vec2)
 				elif p.type == "vec3":
 					var vec3 = Vector3(p.value[0], p.value[1], p.value[2])
 					args.append(vec3)
