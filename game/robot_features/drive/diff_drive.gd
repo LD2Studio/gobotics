@@ -1,9 +1,18 @@
 class_name DiffDrive extends Node
 
 @export var activated: bool = false
+@export var frozen: bool = true:
+	set(value):
+		frozen = value
+		set_physics_process(!frozen)
+		if frozen and behavior != null:
+			behavior.task = IDLE
+			move_diff_drive(0,0)
+
 @export var right_wheel: String
 @export var left_wheel: String
 @export var max_speed: float
+@export var base_link: RigidBody3D
 
 var right_wheel_joint: Node3D
 var left_wheel_joint: Node3D
@@ -15,9 +24,15 @@ enum {
 class Behavior:
 	var task: int = IDLE
 	var finished_task: bool = true
+	var target_pos: Vector2
+	var speed: float
 
 
 @onready var behavior = Behavior.new()
+
+
+func _ready() -> void:
+	set_physics_process(!frozen)
 
 
 func _input(event):
@@ -56,9 +71,10 @@ func _input(event):
 func _physics_process(delta: float) -> void:
 	match behavior.task:
 		IDLE:
-			print("IDLE BEHAVIOR")
-		MOVE_TO:
 			pass
+			#print("IDLE BEHAVIOR")
+		MOVE_TO:
+			_path_control_process()
 
 
 #region PUBLIC METHODS
@@ -77,6 +93,38 @@ func move_diff_drive(right_vel: float, left_vel: float):
 
 
 func move_to(new_position: Vector2, new_speed: float):
-	print("Move to %s at %f m/s" % [new_position, new_speed])
+	#print("Move to %s at %f m/s" % [new_position, new_speed])
+	behavior.task = MOVE_TO
+	behavior.finished_task = false
+	behavior.target_pos = new_position
+	behavior.speed = new_speed
+
+
+func finished_task() -> bool:
+	return behavior.finished_task
 
 #endregion
+
+func _path_control_process() -> void:
+	#print("path control")
+	var current_pos := Vector2(
+			base_link.global_position.x/GPSettings.SCALE,
+			-base_link.global_position.z/GPSettings.SCALE)
+	var d_square = pow((behavior.target_pos.x - current_pos.x), 2)\
+			+ pow((behavior.target_pos.y - current_pos.y), 2)
+	#print(d_square)
+	const d_square_threshold = 0.01**2
+	
+	if d_square > d_square_threshold:
+		var forward_3d_dir :Vector3 = base_link.global_transform.basis.x
+		var dir := Vector2(forward_3d_dir.x, -forward_3d_dir.z)
+		var err_theta: float = dir.angle_to(behavior.target_pos - current_pos)
+		const Kp = 10.0
+		const MAX_SPEED = 7
+		var omega_c: float = Kp * err_theta
+		move_diff_drive(clampf(behavior.speed + omega_c, -MAX_SPEED, MAX_SPEED),
+			clampf(behavior.speed - omega_c, -MAX_SPEED, MAX_SPEED))
+	else:
+		move_diff_drive(0,0)
+		behavior.task = IDLE
+		behavior.finished_task = true
