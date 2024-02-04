@@ -48,7 +48,7 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 			add_root_script_to(root_node)
 			add_python_bridge(root_node)
 			add_robot_base(root_node)
-			add_gobotics_control(root_node)
+			add_gobotics_control(root_node, base_link)
 			add_camera_on_robot(root_node, base_link)
 		root_node.add_child(base_link)
 		root_node.set_meta("offset_pos", Vector3.ZERO)
@@ -1369,7 +1369,7 @@ func add_robot_base(root_node: Node3D):
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(robot_base)
 		
-func add_gobotics_control(root_node: Node3D):
+func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
 #	print("_gobotics: ", _gobotics)
 	for control in _gobotics:
 		if "type" in control:
@@ -1377,7 +1377,7 @@ func add_gobotics_control(root_node: Node3D):
 				"grouped_joints":
 					add_grouped_joints(root_node, control)
 				"diff_drive":
-					add_diff_drive(root_node, control)
+					add_diff_drive(root_node, base_link, control)
 				"4_mecanum_drive":
 					add_4_mecanum_drive(root_node, control)
 
@@ -1391,13 +1391,14 @@ func add_grouped_joints(root_node: Node3D, control):
 	grouped_joints.limit_upper = control.upper.to_float() * scale
 	grouped_joints.outputs = control.outputs
 	
-func add_diff_drive(root_node: Node3D, control):
+func add_diff_drive(root_node: Node3D, base_link: RigidBody3D, control):
 	var diff_drive : Node = DiffDrive.new()
 	diff_drive.name = StringName(control.name.to_pascal_case())
 	diff_drive.set_meta("owner", true)
 	diff_drive.right_wheel = control.right_wheel_joint
 	diff_drive.left_wheel = control.left_wheel_joint
 	diff_drive.max_speed = control.max_speed
+	diff_drive.base_link = base_link
 	root_node.add_child(diff_drive)
 	
 	if root_node.get_node_or_null("PythonBridge"):

@@ -55,6 +55,13 @@ class GodotBridge:
                 }
                 params.append(param)
             elif type(arg) is tuple:
+                if len(arg) == 2:
+                    param = {
+                        "type": "vec2",
+                        "value": arg,
+                    }
+                params.append(param)
+            elif type(arg) is tuple:
                 if len(arg) == 3:
                     param = {
                         "type": "vec3",

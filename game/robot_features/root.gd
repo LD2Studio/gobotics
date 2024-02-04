@@ -5,7 +5,10 @@ var frozen: bool = true:
 		frozen = value
 		for node in behavior_nodes:
 			#print("node %s frozen %s" % [node.name,frozen])
-			node.set_physics_process(!frozen)
+			if node.get("frozen") == null:
+				node.set_physics_process(!frozen)
+			else:
+				node.frozen = frozen
 
 @export var activated: bool = false:
 	set(value):
