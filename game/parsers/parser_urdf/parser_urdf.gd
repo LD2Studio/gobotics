@@ -999,12 +999,17 @@ func parse_sensors(urdf_data: PackedByteArray):
 					if root_tag != Tag.NONE: continue
 					root_tag = Tag.SENSOR
 					var attrib = {}
+					sensor_node = null
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value : String = parser.get_attribute_value(idx)
 						attrib[name] = value
 					if "name" in attrib:
 						sensor_attrib.name = attrib.name.replace(" ", "_")
+						if not _sensors.filter(func(sensor): return sensor.name == sensor_attrib.name).is_empty():
+							printerr("Sensor name \"%s\" already used!" % sensor_attrib.name)
+							root_tag = Tag.NONE
+							continue
 					if "type" in attrib:
 						match attrib.type:
 							"ray":
@@ -1021,6 +1026,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 						sensor_node.set_meta("orphan", true)
 						sensor_node.set_meta("owner", true)
 						sensor_node.add_to_group("SENSORS", true)
+						sensor_node.unique_name_in_owner = true
 						if sensor_attrib.name:
 							sensor_node.name = sensor_attrib.name
 						sensor_attrib.node = sensor_node
@@ -1132,7 +1138,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 			elif node_name == "ray":
 				internal_tag = Tag.NONE
 				
-#	print("sensors: ", JSON.stringify(_sensors, "\t", false))
+	#print("_sensors: ", JSON.stringify(_sensors, "\t", false))
 
 func create_asset_scene(root_node: Node3D):
 	# Attach links to joints
