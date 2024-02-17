@@ -6,3 +6,4 @@ func update_list():
 		if asset.type == "env" or asset.type == "builtin_env":
 			var idx = add_item(asset.name)
 			set_item_metadata(idx, asset.scene)
+	select(0)
