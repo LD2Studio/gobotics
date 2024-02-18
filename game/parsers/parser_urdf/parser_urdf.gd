@@ -117,6 +117,7 @@ func parse_gobotics_params(urdf_path: PackedByteArray):
 	var gobotics_types = [
 		"diff_drive",
 		"4_mecanum_drive",
+		"3_omni_drive",
 		"grouped_joints",
 	]
 	var root_tag: int = Tag.NONE
@@ -215,7 +216,37 @@ func parse_gobotics_params(urdf_path: PackedByteArray):
 						attrib[name] = value
 					if "joint" in attrib:
 						gobotics_attrib.back_left_wheel_joint = attrib.joint
+
+				"wheel_1":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.wheel_1_joint = attrib.joint
+					
+				"wheel_2":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.wheel_2_joint = attrib.joint
 						
+				"wheel_3":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.wheel_3_joint = attrib.joint
+
 				"max_speed":
 					if not root_tag == Tag.GOBOTICS: continue
 					var attrib: Dictionary = {}
@@ -275,7 +306,7 @@ func parse_gobotics_params(urdf_path: PackedByteArray):
 					if root_tag == Tag.JOINT:
 						root_tag = Tag.NONE
 	
-#	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
+	#print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 
 func parse_materials(urdf_path: PackedByteArray):
 	var parse_err = parser.open_buffer(urdf_path)
@@ -346,7 +377,7 @@ func parse_materials(urdf_path: PackedByteArray):
 				"gobotics":
 					current_tag = Tag.NONE
 
-#	print("materials: ", _materials)
+	#print("materials: ", _materials)
 
 func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 	var parse_err = parser.open_buffer(urdf_data)
@@ -382,11 +413,14 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 					if "extends" in link_attrib:
 						match link_attrib.extends:
 							"right_mecanum_wheel":
-#								print("Right Mecanum Wheel")
+								#print("Right Mecanum Wheel")
 								link = load("res://game/builtins/right_mecanum_wheel.tscn").instantiate()
 							"left_mecanum_wheel":
-#								print("Left Mecanum Wheel")
+								#print("Left Mecanum Wheel")
 								link = load("res://game/builtins/left_mecanum_wheel.tscn").instantiate()
+							"omni_wheel":
+								#print("Omni Wheel parsed")
+								link = load("res://game/builtins/omni_wheel.tscn").instantiate()
 							_:
 								printerr("Unrecognized extends link!")
 								return ERR_PARSE_ERROR
@@ -690,7 +724,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 				"collision":
 					current_tag = Tag.NONE
 				
-#	print("links: ", JSON.stringify(_links, "\t", false))
+	#print("links: ", JSON.stringify(_links, "\t", false))
 	return OK
 	
 func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
@@ -971,7 +1005,7 @@ func parse_joints(urdf_data: PackedByteArray):
 				joint_attrib.clear()
 				root_tag = Tag.NONE
 
-#	print("joints: ", JSON.stringify(_joints, "\t", false))
+	#print("joints: ", JSON.stringify(_joints, "\t", false))
 
 func parse_sensors(urdf_data: PackedByteArray):
 	# http://wiki.ros.org/urdf/XML/sensor/proposals
@@ -1062,11 +1096,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 					if sensor_node:
 						sensor_node.position = xyz * scale
 						sensor_node.rotation = rpy
-
-#					if sensor_attrib.node.is_in_group("RAY"):
-#
-#						print("Sensor %s is in RAY group" % sensor_attrib.name)
-					
+						
 				"ray":
 					if root_tag != Tag.SENSOR: continue
 					internal_tag = Tag.RAY
@@ -1238,7 +1268,6 @@ func create_asset_scene(root_node: Node3D):
 					else:
 						joint_node.limit_lower = 0.0
 				if not "axis" in joint:
-#					printerr("No axis for %s" % joint.name)
 					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
 					joint_node.transform.basis *= new_joint_basis
 				elif joint.axis != Vector3.UP:
@@ -1376,7 +1405,7 @@ func add_robot_base(root_node: Node3D):
 		root_node.behavior_nodes.append(robot_base)
 		
 func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
-#	print("_gobotics: ", _gobotics)
+	#print("_gobotics: ", _gobotics)
 	for control in _gobotics:
 		if "type" in control:
 			match control.type:
@@ -1386,6 +1415,8 @@ func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
 					add_diff_drive(root_node, base_link, control)
 				"4_mecanum_drive":
 					add_4_mecanum_drive(root_node, control)
+				"3_omni_drive":
+					add_3_omni_drive(root_node, control)
 
 func add_grouped_joints(root_node: Node3D, control):
 	var grouped_joints : Node = GroupedJoints.new()
@@ -1427,7 +1458,25 @@ func add_4_mecanum_drive(root_node: Node3D, control):
 		root_node.get_node("PythonBridge").nodes.append(mecanum_drive)
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(mecanum_drive)
-	
+
+
+func add_3_omni_drive(root_node: Node3D, control):
+	pass
+	var omni_drive : Node = ThreeOmniDrive.new()
+	omni_drive.name = StringName(control.name.to_pascal_case())
+	omni_drive.set_meta("owner", true)
+	omni_drive.wheel_1 = control.wheel_1_joint
+	omni_drive.wheel_2 = control.wheel_2_joint
+	omni_drive.wheel_3 = control.wheel_3_joint
+	omni_drive.max_speed = control.max_speed
+	root_node.add_child(omni_drive)
+
+	if root_node.get_node_or_null("PythonBridge"):
+		root_node.get_node("PythonBridge").nodes.append(omni_drive)
+	if root_node.get("behavior_nodes") != null:
+		root_node.behavior_nodes.append(omni_drive)
+
+
 func add_dummy_node(root_node: Node3D):
 	var dummy_node : Node = DummyNode.new()
 	dummy_node.name = &"Dummy"
