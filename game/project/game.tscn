@@ -428,6 +428,7 @@ text = "RUN"
 icon = ExtResource("6_6ryau")
 
 [node name="ReloadButton" type="Button" parent="SplitContainer/SceneView/SceneViewport/ToolBar"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Reload"
 

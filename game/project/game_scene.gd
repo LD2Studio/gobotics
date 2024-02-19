@@ -407,6 +407,7 @@ func delete_scene():
 	var scene_node = get_node_or_null("Scene")
 	if scene_node == null:
 		return
+	scene.child_exiting_tree.disconnect(_on_asset_exited_scene)
 	remove_child(scene_node)
 	scene_node.queue_free()
 
@@ -521,6 +522,7 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	
 	%ObjectInspector.visible = not button_pressed
 	%ControlContainer.visible = not button_pressed
+	%ReloadButton.visible = not button_pressed
 	
 	var environments: Array = get_tree().get_nodes_in_group("ENVIRONMENT")
 	if environments.is_empty(): return
