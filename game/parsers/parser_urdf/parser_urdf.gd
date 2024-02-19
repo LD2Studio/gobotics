@@ -50,6 +50,9 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 			add_robot_base(root_node)
 			add_gobotics_control(root_node, base_link)
 			add_camera_on_robot(root_node, base_link)
+		if root_node.is_in_group("ENVIRONMENT"):
+			_add_area_out_of_bounds(root_node)
+		
 		root_node.add_child(base_link)
 		root_node.set_meta("offset_pos", Vector3.ZERO)
 		kinematics_scene_owner_of(root_node)
@@ -1419,6 +1422,7 @@ func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
 				"3_omni_drive":
 					add_3_omni_drive(root_node, control)
 
+
 func add_grouped_joints(root_node: Node3D, control):
 	var grouped_joints : Node = GroupedJoints.new()
 	grouped_joints.name = StringName(control.name.to_pascal_case())
@@ -1428,7 +1432,8 @@ func add_grouped_joints(root_node: Node3D, control):
 	grouped_joints.limit_lower = control.lower.to_float() * scale
 	grouped_joints.limit_upper = control.upper.to_float() * scale
 	grouped_joints.outputs = control.outputs
-	
+
+
 func add_diff_drive(root_node: Node3D, base_link: RigidBody3D, control):
 	var diff_drive : Node = DiffDrive.new()
 	diff_drive.name = StringName(control.name.to_pascal_case())
@@ -1443,7 +1448,8 @@ func add_diff_drive(root_node: Node3D, base_link: RigidBody3D, control):
 		root_node.get_node("PythonBridge").nodes.append(diff_drive)
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(diff_drive)
-		
+
+
 func add_4_mecanum_drive(root_node: Node3D, control):
 	var mecanum_drive : Node = FourMecanumDrive.new()
 	mecanum_drive.name = StringName(control.name.to_pascal_case())
@@ -1462,7 +1468,6 @@ func add_4_mecanum_drive(root_node: Node3D, control):
 
 
 func add_3_omni_drive(root_node: Node3D, control):
-	pass
 	var omni_drive : Node = ThreeOmniDrive.new()
 	omni_drive.name = StringName(control.name.to_pascal_case())
 	omni_drive.set_meta("owner", true)
@@ -1483,7 +1488,8 @@ func add_dummy_node(root_node: Node3D):
 	dummy_node.name = &"Dummy"
 	dummy_node.set_meta("owner", true)
 	root_node.add_child(dummy_node)
-	
+
+
 func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 	var pivot := Node3D.new()
 	pivot.set_meta("owner", true)
@@ -1505,7 +1511,24 @@ func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 	boom.add_child(camera)
 	pivot.add_child(boom)
 	root_node.add_child(pivot)
-	
+
+
+func _add_area_out_of_bounds(root_node: Node3D):
+	print("Add area for %s" % root_node.name)
+	var living_area := Area3D.new()
+	living_area.name = &"LivingArea"
+	living_area.unique_name_in_owner = true
+	var area_col_shape := CollisionShape3D.new()
+	var col_shape := BoxShape3D.new()
+	col_shape.size = Vector3(20, 5, 20) * GPSettings.SCALE
+	area_col_shape.shape = col_shape
+	area_col_shape.set_meta("owner", true)
+	living_area.add_child(area_col_shape)
+	living_area.set_meta("owner", true)
+	var env_script: GDScript = load("res://game/environments/environment.gd")
+	root_node.set_script(env_script)
+	root_node.add_child(living_area)
+
 func kinematics_scene_owner_of(root_node: Node3D):
 	add_owner(root_node, root_node.get_children())
 	return root_node
