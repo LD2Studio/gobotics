@@ -70,7 +70,7 @@ func _input(event):
 			right_wheel_joint.target_velocity = 0
 			left_wheel_joint.target_velocity = 0
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	match _move_to_settings.task:
 		Task.IDLE:
 			pass

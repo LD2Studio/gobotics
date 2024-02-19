@@ -32,7 +32,7 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 	clear_buffer()
 	var root_node : Node3D = get_root_node(urdf_data)
 	if root_node == null:
-		printerr("[PARSER] root node not founded")
+		printerr("[URDF PARSER] root node not founded")
 		return null
 	parse_gobotics_params(urdf_data)
 	parse_materials(urdf_data)
@@ -382,7 +382,7 @@ func parse_materials(urdf_path: PackedByteArray):
 func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 	var parse_err = parser.open_buffer(urdf_data)
 	if parse_err:
-		printerr("[PARSER] parse error ", parse_err)
+		printerr("[URDF PARSER] parse error ", parse_err)
 		return ERR_PARSE_ERROR
 		
 	var link_attrib = {}
@@ -1372,6 +1372,7 @@ func create_asset_scene(root_node: Node3D):
 	for link in _links:
 		if link and link.get_parent() == null:
 			base_link = link
+			base_link.add_to_group("BASE_LINK", true)
 			link.set_meta("orphan", false)
 			if link.name == "world":
 				link.add_to_group("STATIC", true)

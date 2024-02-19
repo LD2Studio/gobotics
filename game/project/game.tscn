@@ -97,6 +97,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="ControlContainer" type="MarginContainer" parent="SplitContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
@@ -237,7 +238,7 @@ handle_input_locally = false
 msaa_3d = 2
 screen_space_aa = 1
 physics_object_picking = true
-size = Vector2i(2, 2)
+size = Vector2i(1058, 720)
 render_target_update_mode = 4
 
 [node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView/SceneViewport"]
@@ -427,6 +428,7 @@ text = "RUN"
 icon = ExtResource("6_6ryau")
 
 [node name="ReloadButton" type="Button" parent="SplitContainer/SceneView/SceneViewport/ToolBar"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Reload"
 
@@ -601,6 +603,6 @@ offset_bottom = 351.0
 [connection signal="pressed" from="SplitContainer/SceneView/SceneViewport/ToolBar/ReloadButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_reload_button_pressed"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/FrameCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_frame_check_box_toggled"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/JointCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_joint_check_box_toggled"]
-[connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_confirm_delete_dialog_confirmed"]
+[connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_asset_delete_dialog_confirmed"]
 [connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/RenameDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_rename_dialog_confirmed"]
 [connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/ScriptDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_script_dialog_confirmed"]

@@ -88,14 +88,14 @@ func load_project():
 		printerr("Changing scene failed")
 
 
-func _on_item_activated(index: int) -> void:
+func _on_item_activated(_index: int) -> void:
 	load_project()
 
 
 func delete_project():
 	var selected_project_index = get_selected_items()
 	if selected_project_index.is_empty(): return
-	var project_file = get_item_text(selected_project_index[0])
+	#var project_file = get_item_text(selected_project_index[0])
 	delete_project_dialog.popup_centered()
 
 

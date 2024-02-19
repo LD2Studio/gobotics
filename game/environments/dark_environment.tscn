@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://b1l2mlf7hsuwm"]
+[gd_scene load_steps=7 format=3 uid="uid://b1l2mlf7hsuwm"]
 
 [ext_resource type="Texture2D" uid="uid://cgwuo8ikfadac" path="res://game/assets/tex/texture_01.png" id="1_00e8d"]
+[ext_resource type="Script" path="res://game/environments/environment.gd" id="1_4hs3k"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_7w2gt"]
 size = Vector3(100, 0.01, 100)
@@ -14,7 +15,12 @@ albedo_texture = ExtResource("1_00e8d")
 uv1_scale = Vector3(5, 5, 5)
 texture_filter = 4
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_fsk81"]
+size = Vector3(150, 50, 150)
+
 [node name="DarkEnv" type="Node3D" groups=["BUILTIN", "ENVIRONMENT"]]
+script = ExtResource("1_4hs3k")
+metadata/_edit_lock_ = true
 
 [node name="Floor" type="StaticBody3D" parent="." groups=["PICKABLE"]]
 
@@ -24,3 +30,11 @@ shape = SubResource("BoxShape3D_7w2gt")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
 mesh = SubResource("PlaneMesh_njqku")
 surface_material_override/0 = SubResource("StandardMaterial3D_8m1ak")
+
+[node name="LivingArea" type="Area3D" parent="."]
+unique_name_in_owner = true
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LivingArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
+shape = SubResource("BoxShape3D_fsk81")
