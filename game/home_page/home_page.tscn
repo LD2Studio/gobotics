@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://dsm47w5bpvyqx"]
+[gd_scene load_steps=14 format=3 uid="uid://dsm47w5bpvyqx"]
 
 [ext_resource type="Script" path="res://game/home_page/home_page.gd" id="1_rkbcx"]
 [ext_resource type="Texture2D" uid="uid://b2d0gmn22lric" path="res://game/assets/gobotics_mascot.png" id="2_4e0v7"]
 [ext_resource type="FontFile" uid="uid://crgb1pwcsi7bx" path="res://game/fonts/Monofett-Regular.ttf" id="3_4k6wj"]
 [ext_resource type="Script" path="res://game/home_page/new_project_button.gd" id="3_47auv"]
 [ext_resource type="Script" path="res://game/home_page/environment_list.gd" id="4_ic4l2"]
+[ext_resource type="Script" path="res://game/home_page/new_project_dialog.gd" id="5_rbqy6"]
 [ext_resource type="Script" path="res://game/home_page/game_list.gd" id="5_sjge8"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_qcxj2"]
@@ -97,6 +98,12 @@ text = "New Project"
 script = ExtResource("3_47auv")
 
 [node name="NewProjectDialog" type="ConfirmationDialog" parent="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton"]
+title = "New Project"
+position = Vector2i(0, 36)
+size = Vector2i(200, 119)
+ok_button_text = "Create"
+dialog_close_on_escape = false
+script = ExtResource("5_rbqy6")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog"]
 anchors_preset = 15
@@ -108,6 +115,10 @@ offset_right = -8.0
 offset_bottom = -49.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog/VBoxContainer"]
+layout_mode = 2
+text = "Environments :"
 
 [node name="EnvironmentList" type="ItemList" parent="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog/VBoxContainer"]
 unique_name_in_owner = true
@@ -183,6 +194,8 @@ horizontal_alignment = 2
 
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" to="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" method="_on_pressed"]
 [connection signal="confirmed" from="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog" to="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" method="_on_new_game_dialog_confirmed"]
+[connection signal="item_clicked" from="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog/VBoxContainer/EnvironmentList" to="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog" method="_on_environment_list_item_clicked"]
+[connection signal="text_changed" from="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog/VBoxContainer/ProjectNameEdit" to="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton/NewProjectDialog" method="_on_project_name_edit_text_changed"]
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/ExitButton" to="." method="_on_exit_button_pressed"]
 [connection signal="gui_input" from="HBoxContainer/RightPanel/VBoxContainer/GameList" to="HBoxContainer/RightPanel/VBoxContainer/GameList" method="_on_gui_input"]

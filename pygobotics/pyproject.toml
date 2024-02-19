@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygobotics"
-version = "0.8.0"
+version = "0.9.0"
 authors = [
     {name = "Laurent Dethoor", email = "ld2studiogame@gmail.com"}
 ]
@@ -27,6 +27,10 @@ classifiers = [
 [tool.setuptools]
 packages = ["gobotics"]
 
-# Build with : $ python -m build
-# Dev mode : $ pip install --editable .
+# $ cd pygobotics
+# Build with : $ python -m build -> dist folder contains python package
+# Dev mode : $ pip install --editable . (update pip if failed)
 # Push PyPi : $ twine upload dist/*
+
+# To publish on PyPi : username = __token__
+# password = pypi-*****

@@ -38,12 +38,11 @@ func _ready() -> void:
 	
 #region PROCESS
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("DELETE") and asset_selected:
+	if not running and event.is_action_pressed("DELETE") and asset_selected:
 		confirm_delete_dialog.dialog_text = "Delete %s object ?" % [asset_selected.name]
 		confirm_delete_dialog.popup_centered()
 		
-	if event.is_action_pressed("rename") and asset_selected:
-#		print("Asset Name: ", asset_selected.name)
+	if not running and event.is_action_pressed("rename") and asset_selected:
 		rename_asset()
 		
 func _process(_delta: float) -> void:
@@ -55,17 +54,6 @@ func _physics_process(_delta: float) -> void:
 	GPSettings.physics_tick += 1
 
 #endregion
-	
-func new_scene(environment_path: String) -> void:
-#	print("Env path: ", environment_path)
-	delete_scene()
-	init_scene()
-	var environment = ResourceLoader.load(environment_path).instantiate()
-	scene.add_child(environment)
-	connect_pickable()
-	update_robot_select_menu()
-	%RunStopButton.button_pressed = false
-
 
 func connect_pickable():
 	var nodes = get_tree().get_nodes_in_group("PICKABLE")
@@ -120,6 +108,7 @@ func _camera_view_selected(idx: int):
 		else:
 			cam_popup.set_item_checked(i, false)
 	if not _cams.is_empty():
+		if not is_robots_inside_scene(): return
 		_cams[idx].current = true
 			
 func update_robot_select_menu():
@@ -129,23 +118,14 @@ func update_robot_select_menu():
 	robot_selected_button.visible = true
 	# Get robots menu
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
-	
-	var robot_checked_idx : int = -1
-	for idx in robot_popup.item_count:
-		if robot_popup.is_item_checked(idx):
-			robot_checked_idx = idx
-			break
-
 	if not robot_popup.index_pressed.is_connected(_on_robot_selected):
 		robot_popup.index_pressed.connect(_on_robot_selected)
 	robot_popup.clear()
 	var robots = get_tree().get_nodes_in_group("ROBOTS")
+	#print("robots: ", robots)
 	for robot in robots:
 		robot_popup.add_check_item(robot.name)
-	if robot_checked_idx != -1:
-		_on_robot_selected(robot_checked_idx)
-	else:
-		_on_robot_selected(0)
+	_on_robot_selected(0)
 	
 	
 ## Callback on menu item selected
@@ -281,6 +261,17 @@ func hide_asset_parameters():
 	object_inspector.visible = false
 
 
+func new_scene(environment_path: String) -> void:
+	#print("Env path: ", environment_path)
+	delete_scene()
+	init_scene()
+	var environment: Node3D = ResourceLoader.load(environment_path).instantiate()
+	scene.add_child(environment)
+	connect_pickable()
+	update_robot_select_menu()
+	%RunStopButton.button_pressed = false
+
+
 func save_project():
 	save_scene(GSettings.project_path.path_join(GPSettings.project_file))
 
@@ -350,7 +341,7 @@ func save_scene(path: String):
 
 func load_scene(path):
 	var scene_filename = path
-#	print("Load scene filename: ", scene_filename)
+	#print("Load scene filename: ", scene_filename)
 	if scene_filename == "": return
 	var json = JSON.new()
 	var json_scene = FileAccess.get_file_as_string(scene_filename)
@@ -405,27 +396,32 @@ func load_scene(path):
 	%RunStopButton.button_pressed = false
 
 
-func add_assets_to_scene():
-	pass
-	
 func init_scene():
 	scene = Node3D.new()
 	scene.name = &"Scene"
 	add_child(scene)
-	
+	scene.child_exiting_tree.connect(_on_asset_exited_scene)
+
+
 func delete_scene():
 	var scene_node = get_node_or_null("Scene")
 	if scene_node == null:
 		return
+	scene.child_exiting_tree.disconnect(_on_asset_exited_scene)
 	remove_child(scene_node)
 	scene_node.queue_free()
 
 
 func freeze_asset(asset, frozen):
-	asset.set_physics_process(not frozen)
-	freeze_children(asset, frozen)
+	#print("script %s, %s, frozen: %s" % [asset.name, asset.get_script(), asset.get("frozen")])
+	if asset.get("frozen") == null:
+		asset.set_physics_process(not frozen)
+	else:
+		asset.frozen = frozen
+		
+	_freeze_children(asset, frozen)
 
-func freeze_children(node, frozen):
+func _freeze_children(node, frozen):
 	if node.is_in_group("STATIC"):
 		node.freeze = true
 	elif node is RigidBody3D:
@@ -433,7 +429,7 @@ func freeze_children(node, frozen):
 	elif node.is_in_group("RAY"):
 		node.frozen = frozen
 	for child in node.get_children():
-		freeze_children(child, frozen)
+		_freeze_children(child, frozen)
 		
 func rename_asset():
 	rename_dialog.get_node("NameEdit").text = asset_selected.name
@@ -455,7 +451,6 @@ func get_base_link(asset: Node) -> RigidBody3D:
 			return child
 	return null
 
-##
 
 var _asset_aabb: AABB
 
@@ -510,12 +505,10 @@ func print_on_terminal(text: String):
 	terminal_output.text += "%s\n" % text
 	
 func show_joint_infos():
-#	print("selected asset: ", asset_selected)
 	if asset_selected == null: return
 	if asset_selected.has_node("RobotBase") and asset_selected.get_node("RobotBase").focused_joint:
 		%InfosContainer.visible = true
 		var focused_joint = asset_selected.get_node("RobotBase").focused_joint.name
-	#			print(focused_joint)
 		_joint_focus_changed(focused_joint)
 		if not asset_selected.get_node("RobotBase").is_connected("joint_changed", _joint_focus_changed):
 			asset_selected.get_node("RobotBase").joint_changed.connect(_joint_focus_changed)
@@ -525,30 +518,41 @@ func show_joint_infos():
 ## Slot functions
 
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
-	if scene == null:
-		return
+	if scene == null: return
+	
 	%ObjectInspector.visible = not button_pressed
+	%ControlContainer.visible = not button_pressed
+	%ReloadButton.visible = not button_pressed
+	
+	var environments: Array = get_tree().get_nodes_in_group("ENVIRONMENT")
+	if environments.is_empty(): return
+	var environment: Node3D = environments[0]
+	
 	if button_pressed:
 		running = true
 		set_physics_process(true)
+		if environment.has_signal("asset_exited"):
+			environment.asset_exited.connect(_on_asset_out_of_bound_detected)
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
 		show_joint_infos()
 	else:
 		running = false
 		set_physics_process(false)
+		if environment.has_signal("asset_exited"):
+			environment.asset_exited.disconnect(_on_asset_out_of_bound_detected)
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
 		%InfosContainer.visible = false
 		hide_asset_parameters()
-
-	# activate/desactivate physics behavior
+	
 	for asset in scene.get_children():
 		freeze_asset(asset, !running)
 		if asset.is_in_group("ROBOTS"):
 			var udp_port = asset.get_meta("udp_port")
 			if udp_port:
 				asset.activate_python(running, asset.get_meta("udp_port"))
+
 
 func _on_reload_button_pressed():
 	if owner.current_filename != "":
@@ -666,19 +670,7 @@ func _on_open_script_button_pressed() -> void:
 		%SourceCodeEdit.text = asset_selected.source_code
 		%ScriptDialog.popup_centered()
 
-#func _on_keys_control_check_toggled(button_pressed: bool) -> void:
-#	if asset_selected == null: return
-#	if asset_selected.is_in_group("ROBOTS"):
-#		asset_selected.control.manual = button_pressed
 
-func _on_confirm_delete_dialog_confirmed() -> void:
-	if scene:
-		scene.remove_child(asset_selected)
-		asset_selected.queue_free()
-		update_robot_select_menu()
-		update_camera_view_menu()
-		save_project()
-		
 func _on_rename_dialog_confirmed() -> void:
 	object_inspector.visible = false
 	if scene:
@@ -712,3 +704,28 @@ func _on_joint_check_box_toggled(button_pressed):
 
 func _joint_focus_changed(value: String):
 	focused_joint_label.text = value
+
+
+func _on_asset_delete_dialog_confirmed() -> void:
+	if scene:
+		#print("Delete %s" % asset_selected.name)
+		scene.remove_child.call_deferred(asset_selected)
+
+
+func _on_asset_out_of_bound_detected(body: Node3D):
+	#print("%s detected" % body)
+	if body.is_in_group("BASE_LINK"):
+		var root_node := body.get_parent_node_3d()
+		if root_node:
+			#print("Delete %s out of bounds" % root_node.name)
+			scene.remove_child.call_deferred(root_node)
+
+
+func _on_asset_exited_scene(node: Node):
+	#print("%s exited scene" % node.name)
+	await node.tree_exited
+	if is_inside_tree():
+		update_robot_select_menu()
+		update_camera_view_menu()
+		save_project()
+		node.queue_free()

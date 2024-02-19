@@ -82,14 +82,17 @@ func create_dir():
 			DirAccess.make_dir_absolute(asset_path.path_join("demo/meshes"))
 			
 		var demo_meshes_dir = DirAccess.open(_asset_editor_path.path_join("demo/meshes"))
+		#print("Open asset editor error : ", DirAccess.get_open_error())
 		if demo_meshes_dir:
 			var demo_mesh_files = demo_meshes_dir.get_files()
 			for file in demo_mesh_files:
 				#print("extension: ", file.get_extension())
 				if file.get_extension() == "import": continue # Exclude *.import files
-				demo_meshes_dir.copy(_asset_editor_path.path_join("demo/meshes").path_join(file),
+				#print("Copy %s to %s" % [file, asset_path.path_join("demo/meshes")])
+				var err = demo_meshes_dir.copy(_asset_editor_path.path_join("demo/meshes").path_join(file),
 						asset_path.path_join("demo/meshes").path_join(file))
-						
+				if err != OK:
+					printerr("Copy GLTF files failed!")
 		else:
 			printerr("[ERROR] Opening demo assets folder failed (%d)" % [DirAccess.get_open_error()])
 	

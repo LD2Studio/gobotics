@@ -9,7 +9,7 @@
 - Ray sensor is implemented (like **Lidar**), camera, etc.
 - The robots can be controlled manually from the keyboard or a gamepad.
 - The robots are accessible from a Python script to control them remotely (still limited use).
-- Extra URDF tags for Gobotics (Differential Drive, Grouped joints, 4 Mecanum wheels Drive).
+- Extra URDF tags for Gobotics (Differential Drive, Grouped joints, 4 Mecanum wheels, omni wheels).
 
 ## Usage
 

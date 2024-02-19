@@ -32,7 +32,7 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 	clear_buffer()
 	var root_node : Node3D = get_root_node(urdf_data)
 	if root_node == null:
-		printerr("[PARSER] root node not founded")
+		printerr("[URDF PARSER] root node not founded")
 		return null
 	parse_gobotics_params(urdf_data)
 	parse_materials(urdf_data)
@@ -48,8 +48,11 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 			add_root_script_to(root_node)
 			add_python_bridge(root_node)
 			add_robot_base(root_node)
-			add_gobotics_control(root_node)
+			add_gobotics_control(root_node, base_link)
 			add_camera_on_robot(root_node, base_link)
+		if root_node.is_in_group("ENVIRONMENT"):
+			_add_area_out_of_bounds(root_node)
+		
 		root_node.add_child(base_link)
 		root_node.set_meta("offset_pos", Vector3.ZERO)
 		kinematics_scene_owner_of(root_node)
@@ -117,6 +120,7 @@ func parse_gobotics_params(urdf_path: PackedByteArray):
 	var gobotics_types = [
 		"diff_drive",
 		"4_mecanum_drive",
+		"3_omni_drive",
 		"grouped_joints",
 	]
 	var root_tag: int = Tag.NONE
@@ -215,7 +219,37 @@ func parse_gobotics_params(urdf_path: PackedByteArray):
 						attrib[name] = value
 					if "joint" in attrib:
 						gobotics_attrib.back_left_wheel_joint = attrib.joint
+
+				"wheel_1":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.wheel_1_joint = attrib.joint
+					
+				"wheel_2":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.wheel_2_joint = attrib.joint
 						
+				"wheel_3":
+					if not root_tag == Tag.GOBOTICS: continue
+					var attrib: Dictionary = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "joint" in attrib:
+						gobotics_attrib.wheel_3_joint = attrib.joint
+
 				"max_speed":
 					if not root_tag == Tag.GOBOTICS: continue
 					var attrib: Dictionary = {}
@@ -275,7 +309,7 @@ func parse_gobotics_params(urdf_path: PackedByteArray):
 					if root_tag == Tag.JOINT:
 						root_tag = Tag.NONE
 	
-#	print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
+	#print("gobotics: ", JSON.stringify(_gobotics, "\t", false))
 
 func parse_materials(urdf_path: PackedByteArray):
 	var parse_err = parser.open_buffer(urdf_path)
@@ -346,12 +380,12 @@ func parse_materials(urdf_path: PackedByteArray):
 				"gobotics":
 					current_tag = Tag.NONE
 
-#	print("materials: ", _materials)
+	#print("materials: ", _materials)
 
 func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 	var parse_err = parser.open_buffer(urdf_data)
 	if parse_err:
-		printerr("[PARSER] parse error ", parse_err)
+		printerr("[URDF PARSER] parse error ", parse_err)
 		return ERR_PARSE_ERROR
 		
 	var link_attrib = {}
@@ -382,11 +416,14 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 					if "extends" in link_attrib:
 						match link_attrib.extends:
 							"right_mecanum_wheel":
-#								print("Right Mecanum Wheel")
+								#print("Right Mecanum Wheel")
 								link = load("res://game/builtins/right_mecanum_wheel.tscn").instantiate()
 							"left_mecanum_wheel":
-#								print("Left Mecanum Wheel")
+								#print("Left Mecanum Wheel")
 								link = load("res://game/builtins/left_mecanum_wheel.tscn").instantiate()
+							"omni_wheel":
+								#print("Omni Wheel parsed")
+								link = load("res://game/builtins/omni_wheel.tscn").instantiate()
 							_:
 								printerr("Unrecognized extends link!")
 								return ERR_PARSE_ERROR
@@ -690,7 +727,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 				"collision":
 					current_tag = Tag.NONE
 				
-#	print("links: ", JSON.stringify(_links, "\t", false))
+	#print("links: ", JSON.stringify(_links, "\t", false))
 	return OK
 	
 func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
@@ -971,7 +1008,7 @@ func parse_joints(urdf_data: PackedByteArray):
 				joint_attrib.clear()
 				root_tag = Tag.NONE
 
-#	print("joints: ", JSON.stringify(_joints, "\t", false))
+	#print("joints: ", JSON.stringify(_joints, "\t", false))
 
 func parse_sensors(urdf_data: PackedByteArray):
 	# http://wiki.ros.org/urdf/XML/sensor/proposals
@@ -999,12 +1036,17 @@ func parse_sensors(urdf_data: PackedByteArray):
 					if root_tag != Tag.NONE: continue
 					root_tag = Tag.SENSOR
 					var attrib = {}
+					sensor_node = null
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
 						var value : String = parser.get_attribute_value(idx)
 						attrib[name] = value
 					if "name" in attrib:
 						sensor_attrib.name = attrib.name.replace(" ", "_")
+						if not _sensors.filter(func(sensor): return sensor.name == sensor_attrib.name).is_empty():
+							printerr("Sensor name \"%s\" already used!" % sensor_attrib.name)
+							root_tag = Tag.NONE
+							continue
 					if "type" in attrib:
 						match attrib.type:
 							"ray":
@@ -1021,6 +1063,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 						sensor_node.set_meta("orphan", true)
 						sensor_node.set_meta("owner", true)
 						sensor_node.add_to_group("SENSORS", true)
+						sensor_node.unique_name_in_owner = true
 						if sensor_attrib.name:
 							sensor_node.name = sensor_attrib.name
 						sensor_attrib.node = sensor_node
@@ -1056,11 +1099,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 					if sensor_node:
 						sensor_node.position = xyz * scale
 						sensor_node.rotation = rpy
-
-#					if sensor_attrib.node.is_in_group("RAY"):
-#
-#						print("Sensor %s is in RAY group" % sensor_attrib.name)
-					
+						
 				"ray":
 					if root_tag != Tag.SENSOR: continue
 					internal_tag = Tag.RAY
@@ -1132,7 +1171,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 			elif node_name == "ray":
 				internal_tag = Tag.NONE
 				
-#	print("sensors: ", JSON.stringify(_sensors, "\t", false))
+	#print("_sensors: ", JSON.stringify(_sensors, "\t", false))
 
 func create_asset_scene(root_node: Node3D):
 	# Attach links to joints
@@ -1232,7 +1271,6 @@ func create_asset_scene(root_node: Node3D):
 					else:
 						joint_node.limit_lower = 0.0
 				if not "axis" in joint:
-#					printerr("No axis for %s" % joint.name)
 					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
 					joint_node.transform.basis *= new_joint_basis
 				elif joint.axis != Vector3.UP:
@@ -1337,6 +1375,7 @@ func create_asset_scene(root_node: Node3D):
 	for link in _links:
 		if link and link.get_parent() == null:
 			base_link = link
+			base_link.add_to_group("BASE_LINK", true)
 			link.set_meta("orphan", false)
 			if link.name == "world":
 				link.add_to_group("STATIC", true)
@@ -1369,17 +1408,20 @@ func add_robot_base(root_node: Node3D):
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(robot_base)
 		
-func add_gobotics_control(root_node: Node3D):
-#	print("_gobotics: ", _gobotics)
+func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
+	#print("_gobotics: ", _gobotics)
 	for control in _gobotics:
 		if "type" in control:
 			match control.type:
 				"grouped_joints":
 					add_grouped_joints(root_node, control)
 				"diff_drive":
-					add_diff_drive(root_node, control)
+					add_diff_drive(root_node, base_link, control)
 				"4_mecanum_drive":
 					add_4_mecanum_drive(root_node, control)
+				"3_omni_drive":
+					add_3_omni_drive(root_node, control)
+
 
 func add_grouped_joints(root_node: Node3D, control):
 	var grouped_joints : Node = GroupedJoints.new()
@@ -1390,21 +1432,24 @@ func add_grouped_joints(root_node: Node3D, control):
 	grouped_joints.limit_lower = control.lower.to_float() * scale
 	grouped_joints.limit_upper = control.upper.to_float() * scale
 	grouped_joints.outputs = control.outputs
-	
-func add_diff_drive(root_node: Node3D, control):
+
+
+func add_diff_drive(root_node: Node3D, base_link: RigidBody3D, control):
 	var diff_drive : Node = DiffDrive.new()
 	diff_drive.name = StringName(control.name.to_pascal_case())
 	diff_drive.set_meta("owner", true)
 	diff_drive.right_wheel = control.right_wheel_joint
 	diff_drive.left_wheel = control.left_wheel_joint
 	diff_drive.max_speed = control.max_speed
+	diff_drive.base_link = base_link
 	root_node.add_child(diff_drive)
 	
 	if root_node.get_node_or_null("PythonBridge"):
 		root_node.get_node("PythonBridge").nodes.append(diff_drive)
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(diff_drive)
-		
+
+
 func add_4_mecanum_drive(root_node: Node3D, control):
 	var mecanum_drive : Node = FourMecanumDrive.new()
 	mecanum_drive.name = StringName(control.name.to_pascal_case())
@@ -1420,13 +1465,31 @@ func add_4_mecanum_drive(root_node: Node3D, control):
 		root_node.get_node("PythonBridge").nodes.append(mecanum_drive)
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(mecanum_drive)
-	
+
+
+func add_3_omni_drive(root_node: Node3D, control):
+	var omni_drive : Node = ThreeOmniDrive.new()
+	omni_drive.name = StringName(control.name.to_pascal_case())
+	omni_drive.set_meta("owner", true)
+	omni_drive.wheel_1 = control.wheel_1_joint
+	omni_drive.wheel_2 = control.wheel_2_joint
+	omni_drive.wheel_3 = control.wheel_3_joint
+	omni_drive.max_speed = control.max_speed
+	root_node.add_child(omni_drive)
+
+	if root_node.get_node_or_null("PythonBridge"):
+		root_node.get_node("PythonBridge").nodes.append(omni_drive)
+	if root_node.get("behavior_nodes") != null:
+		root_node.behavior_nodes.append(omni_drive)
+
+
 func add_dummy_node(root_node: Node3D):
 	var dummy_node : Node = DummyNode.new()
 	dummy_node.name = &"Dummy"
 	dummy_node.set_meta("owner", true)
 	root_node.add_child(dummy_node)
-	
+
+
 func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 	var pivot := Node3D.new()
 	pivot.set_meta("owner", true)
@@ -1448,7 +1511,24 @@ func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 	boom.add_child(camera)
 	pivot.add_child(boom)
 	root_node.add_child(pivot)
-	
+
+
+func _add_area_out_of_bounds(root_node: Node3D):
+	print("Add area for %s" % root_node.name)
+	var living_area := Area3D.new()
+	living_area.name = &"LivingArea"
+	living_area.unique_name_in_owner = true
+	var area_col_shape := CollisionShape3D.new()
+	var col_shape := BoxShape3D.new()
+	col_shape.size = Vector3(20, 5, 20) * GPSettings.SCALE
+	area_col_shape.shape = col_shape
+	area_col_shape.set_meta("owner", true)
+	living_area.add_child(area_col_shape)
+	living_area.set_meta("owner", true)
+	var env_script: GDScript = load("res://game/environments/environment.gd")
+	root_node.set_script(env_script)
+	root_node.add_child(living_area)
+
 func kinematics_scene_owner_of(root_node: Node3D):
 	add_owner(root_node, root_node.get_children())
 	return root_node

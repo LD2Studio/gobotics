@@ -68,6 +68,14 @@ class DiffRobot(Robot):
     def move(self, right_vel: float, left_vel: float):
         self.call("move_diff_drive", right_vel, left_vel)
 
+    def move_to(self, position: tuple, speed: float,
+                precision: float = 0.01,
+                response: float = 20):
+        self.call("move_to", position, speed, precision, response)
+
+    def finished_task(self) -> bool:
+        return self.call("finished_task")
+
 # 4 Mecanum Drive
 class MecanumRobot(Robot):
 
