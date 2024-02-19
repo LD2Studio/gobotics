@@ -724,8 +724,8 @@ func _on_asset_out_of_bound_detected(body: Node3D):
 func _on_asset_exited_scene(node: Node):
 	#print("%s exited scene" % node.name)
 	await node.tree_exited
-	
-	update_robot_select_menu()
-	update_camera_view_menu()
-	save_project()
-	node.queue_free()
+	if is_inside_tree():
+		update_robot_select_menu()
+		update_camera_view_menu()
+		save_project()
+		node.queue_free()

@@ -45,6 +45,12 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		_on_button_pressed()
 
 
+func _notification(what: int) -> void:
+	#print("notification: ", what)
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		print("CLOSE REQUEST")
+
+
 func _on_clear_button_pressed() -> void:
 	%TerminalOutput.text = ""
 
