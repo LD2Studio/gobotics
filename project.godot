@@ -241,6 +241,7 @@ rename={
 
 [layer_names]
 
+3d_render/layer_20="camera_lens"
 3d_physics/layer_1="Robots"
 3d_physics/layer_2="Table"
 3d_physics/layer_3="GameArea"

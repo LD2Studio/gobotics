@@ -16,6 +16,7 @@ enum Tag {
 	JOINT_PRISMATIC,
 	JOINT_PIN,
 	SENSOR_RAY,
+	SENSOR_CAMERA,
 	GOBOTICS_CONTROL,
 	GOBOTICS_4_MECANUM_DRIVE,
 	GOBOTICS_GROUPED_JOINTS,
@@ -37,6 +38,7 @@ func _ready():
 	menu.id_pressed.connect(_on_item_pressed)
 	
 	menu.add_separator()
+	# Joints submenu
 	var submenu_joint = PopupMenu.new()
 	submenu_joint.name = "SubmenuJoint"
 	submenu_joint.add_item("Insert Continuous Joint", Tag.JOINT_CONTINUOUS)
@@ -46,14 +48,15 @@ func _ready():
 	submenu_joint.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_joint)
 	menu.add_submenu_item("Joints", "SubmenuJoint")
-	
+	# Sensors submenu
 	var submenu_sensors = PopupMenu.new()
 	submenu_sensors.name = "SubmenuSensors"
 	submenu_sensors.add_item("Insert Ray Sensor", Tag.SENSOR_RAY)
+	submenu_sensors.add_item("Insert Camera Sensor", Tag.SENSOR_CAMERA)
 	submenu_sensors.id_pressed.connect(_on_item_pressed)
 	menu.add_child(submenu_sensors)
 	menu.add_submenu_item("Sensors", "SubmenuSensors")
-	
+	# Geometry submenu
 	menu.add_separator()
 	var submenu_geometry = PopupMenu.new()
 	submenu_geometry.name = "SubmenuGeometry"
@@ -109,6 +112,8 @@ func _on_item_pressed(id):
 			insert_text_at_caret(URDFTemplate.JOINT_PIN_TAG)
 		Tag.SENSOR_RAY:
 			insert_text_at_caret(URDFTemplate.SENSOR_RAY_TAG)
+		Tag.SENSOR_CAMERA:
+			insert_text_at_caret(URDFTemplate.SENSOR_CAM_TAG)
 		Tag.BOX:
 			insert_text_at_caret(URDFTemplate.BOX_GEOMETRY_TAG)
 		Tag.SPHERE:

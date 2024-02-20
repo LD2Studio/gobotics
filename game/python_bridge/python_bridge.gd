@@ -146,7 +146,7 @@ func parse_call_from_python(peer: PacketPeerUDP, json_message: String):
 						end = len(ret)
 					var packed_data : PackedByteArray = ret.slice(num*65507, end) 
 					err = peer.put_packet(packed_data)
-					print("packed %d" % num)
+					#print("packed %d" % num)
 #					print("packed data: ", packed_data)
 					if err:
 						printerr("Error %d" % err)

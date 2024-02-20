@@ -1114,7 +1114,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
 					sensor_attrib.horizontal = {}
-					if internal_tag == Tag.RAY:
+					if sensor_node and sensor_node.is_in_group("RAY") and internal_tag == Tag.RAY:
 						if "samples" in attrib:
 							sensor_attrib.horizontal.samples = int(attrib.samples)
 						else:
@@ -1147,7 +1147,7 @@ func parse_sensors(urdf_data: PackedByteArray):
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
 					sensor_attrib.range = {}
-					if internal_tag == Tag.RAY:
+					if sensor_node and sensor_node.is_in_group("RAY") and internal_tag == Tag.RAY:
 						if "min" in attrib:
 							sensor_attrib.range.min = float(attrib.min) * scale
 						else:
