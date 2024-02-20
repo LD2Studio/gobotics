@@ -87,6 +87,12 @@ const SENSOR_RAY_TAG = """
 		</ray>
 	</sensor>
 """
+const SENSOR_CAM_TAG = """
+	<sensor name="sensor_name" type="camera" update_rate="">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<parent link=""/>
+	</sensor>
+"""
 const BOX_GEOMETRY_TAG = """<box size="0.1 0.1 0.1"/>"""
 const SPHERE_GEOMETRY_TAG = """<sphere radius="0.1"/>"""
 const CYLINDER_GEOMETRY_TAG = """<cylinder radius="0.1" length="0.2"/>"""

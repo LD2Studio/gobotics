@@ -24,7 +24,7 @@ func _ready() -> void:
 
 #region PROCESS
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	img = %RenderCam.get_texture().get_image()
 	
 #endregion

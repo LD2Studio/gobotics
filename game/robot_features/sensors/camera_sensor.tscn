@@ -1,9 +1,31 @@
-[gd_scene load_steps=3 format=3 uid="uid://cv8x52p1oigjq"]
+[gd_scene load_steps=9 format=3 uid="uid://cv8x52p1oigjq"]
 
 [ext_resource type="Script" path="res://game/robot_features/sensors/camera_sensor.gd" id="1_o1css"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_ot0pl"]
 viewport_path = NodePath("RenderCam")
+
+[sub_resource type="BoxMesh" id="BoxMesh_5iok4"]
+size = Vector3(0.2, 1.5, 1.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jxok6"]
+albedo_color = Color(0.254902, 0.254902, 0.254902, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_vhc31"]
+top_radius = 0.3
+bottom_radius = 0.1
+height = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mteje"]
+albedo_color = Color(0.176471, 0.176471, 0.176471, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_f0hjb"]
+radius = 0.25
+height = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wv6d1"]
+albedo_color = Color(0.117647, 0.117647, 0.117647, 1)
+roughness = 0.08
 
 [node name="CameraSensor" type="Node3D"]
 script = ExtResource("1_o1css")
@@ -14,12 +36,31 @@ unique_name_in_owner = true
 [node name="Camera3D" type="Camera3D" parent="RenderCam"]
 unique_name_in_owner = true
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+cull_mask = 524287
 current = true
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(-2.18557e-08, 0, -0.5, 0, 0.5, 0, 0.5, 0, -2.18557e-08, 0, 0, 0)
+transform = Transform3D(-2.18557e-08, 0, -0.5, 0, 0.5, 0, 0.5, 0, -2.18557e-08, -0.115379, 0, 0)
+pixel_size = 0.005
+double_sided = false
 texture = SubResource("ViewportTexture_ot0pl")
 
 [node name="RemoteTransform3D" type="RemoteTransform3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 remote_path = NodePath("../RenderCam/Camera3D")
+
+[node name="Box" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_5iok4")
+surface_material_override/0 = SubResource("StandardMaterial3D_jxok6")
+
+[node name="Lens" type="MeshInstance3D" parent="Box"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0.176389, 0, 0)
+mesh = SubResource("CylinderMesh_vhc31")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_mteje")
+
+[node name="Hole" type="MeshInstance3D" parent="Box/Lens"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.06921e-08, 0.244607, 0)
+layers = 524288
+mesh = SubResource("SphereMesh_f0hjb")
+surface_material_override/0 = SubResource("StandardMaterial3D_wv6d1")
