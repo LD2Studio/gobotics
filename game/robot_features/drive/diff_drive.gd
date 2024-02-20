@@ -37,11 +37,11 @@ func _ready() -> void:
 	set_physics_process(!frozen)
 	_move_to_settings = MoveToSettings.new()
 
-func _input(event):
-	if event is InputEventKey and activated:
-#		print(event)
+func _input(_event):
+	if _move_to_settings.task == Task.IDLE and activated:
+		#print(event)
 		var speed = max_speed if Input.is_action_pressed("BOOST") else max_speed/2.0
-#		print("FORWARD: ", event.is_action("FORWARD"))
+
 		if Input.is_action_pressed("FORWARD"):
 			if Input.is_action_pressed("RIGHT"):
 				right_wheel_joint.target_velocity = 0

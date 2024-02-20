@@ -1514,7 +1514,7 @@ func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 
 
 func _add_area_out_of_bounds(root_node: Node3D):
-	print("Add area for %s" % root_node.name)
+	#print("Add area for %s" % root_node.name)
 	var living_area := Area3D.new()
 	living_area.name = &"LivingArea"
 	living_area.unique_name_in_owner = true
