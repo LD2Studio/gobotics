@@ -61,19 +61,18 @@ func _physics_process(_delta: float) -> void:
 
 func _highlight_asset():
 	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
-	#print("mouse pos: ", mouse_pos)
 	var ray_origin = get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
-	#print("ray origin: ", ray_origin)
 	var ray_direction = get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
-	#print("ray direction: ", ray_direction)
-	var ray_quering = PhysicsRayQueryParameters3D.create(ray_origin, ray_origin + ray_direction * 1000)
-	ray_quering.collide_with_areas = true
+	# Collision shape is in SELECTION Layer (mask 8)
+	var ray_quering = PhysicsRayQueryParameters3D.create(
+		ray_origin, ray_origin + ray_direction * 1000, 0b1000)
 	
 	var result = get_world_3d().direct_space_state.intersect_ray(ray_quering)
 	if result:
-		print("collider: %s , shape: %d" % [result.collider.name, result.shape])
-		if result.collider.is_in_group("SELECT"):
-			print("SELECT ASSET")
+		#print("collider: %s , shape: %d" % [result.collider.name, result.shape])
+		get_tree().call_group("VISUAL", "highlight", result.collider.owner)
+	else: # Deselects all assets
+		get_tree().call_group("VISUAL", "highlight", null)
 
 func connect_pickable():
 	var nodes = get_tree().get_nodes_in_group("PICKABLE")

@@ -61,7 +61,7 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 		delete_links()
 		root_node.free()
 		return null
-	
+
 ## Return the root node of URDF tree
 func get_root_node(urdf_data: PackedByteArray) -> Node3D:
 	var parse_err = parser.open_buffer(urdf_data)
@@ -111,7 +111,233 @@ func get_root_node(urdf_data: PackedByteArray) -> Node3D:
 				break
 				
 	return root_node
+
+func create_asset_scene(root_node: Node3D):
+	# Attach links to joints
+	for joint in _joints:
+		# search for the link that matches the parent link of joint
+		var parent_name: String = joint.parent.link
+		var parent_node: Node3D
+		for link in _links:
+			if link.name == parent_name:
+				parent_node = link
+				link.set_meta("orphan", false) # Marked as used
+		if parent_node == null:
+			parse_error_message += "Joint <%s> has no parent link!" % [joint.name]
+			return null
+		# search for the link that matches the child link of joint
+		var child_name: String = joint.child.link
+		var child_node: Node3D
+		for link in _links:
+			if link.name == child_name:
+				child_node = link
+				link.set_meta("orphan", false)
+		if child_node == null:
+			parse_error_message += "Joint <%s> has no child link!" % [joint.name]
+			return null
+			
+		var joint_node : Node3D
+		var new_joint_basis : Basis
+		if not "type" in joint:
+			printerr("joint %s has no type" % joint.name)
+			return null
+			
+		match joint.type:
+			"fixed":
+				joint_node = JoltGeneric6DOFJoint3D.new()
+				joint_node.name = joint.name
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
+
+			"pin":
+				joint_node = JoltPinJoint3D.new()
+				joint_node.name = joint.name
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
+					
+			"continuous":
+				joint_node = JoltHingeJoint3D.new()
+				joint_node.name = joint.name
+				joint_node.add_to_group("CONTINUOUS", true)
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
+				
+				var limit_velocity : float = 1.0
+				if "limit" in joint:
+					if "effort" in joint.limit:
+						joint_node.motor_max_torque = float(joint.limit.effort)
+					if "velocity" in joint.limit:
+						limit_velocity = float(joint.limit.velocity)
+				if not "axis" in joint:
+					#printerr("No axis for %s" % joint.name)
+					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
+					joint_node.transform.basis *= new_joint_basis
+				elif joint.axis != Vector3.UP:
+					new_joint_basis = Basis.looking_at(-joint.axis)
+					joint_node.transform.basis *= new_joint_basis
+				else:
+					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
+					joint_node.transform.basis *= new_joint_basis
+					
+				var joint_script := GDScript.new()
+				joint_script.source_code = get_continuous_joint_script(child_node, limit_velocity)
+				joint_node.set_script(joint_script)
+				
+			"revolute":
+				joint_node = RevoluteJoint.new()
+				joint_node.name = joint.name
+				joint_node.child_link = child_node
+				joint_node.limit_enabled = true
+				joint_node.set_meta("owner", true)
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
+				var limit_velocity : float = 1.0
+				if "limit" in joint:
+					if "effort" in joint.limit:
+						joint_node.motor_max_torque = float(joint.limit.effort)
+					if "velocity" in joint.limit:
+						joint_node.limit_velocity = float(joint.limit.velocity)
+					if "lower" in joint.limit:
+						joint_node.limit_upper = -joint.limit.lower
+					else:
+						joint_node.limit_upper = 0.0
+					if "upper" in joint.limit:
+						joint_node.limit_lower = -joint.limit.upper
+					else:
+						joint_node.limit_lower = 0.0
+				if not "axis" in joint:
+					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
+					joint_node.transform.basis *= new_joint_basis
+				elif joint.axis != Vector3.UP:
+					new_joint_basis = Basis.looking_at(-joint.axis)
+					joint_node.transform.basis *= new_joint_basis
+				else:
+					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
+					joint_node.transform.basis *= new_joint_basis
+					
+				var basis_node = Node3D.new()
+				basis_node.set_meta("owner", true)
+				basis_node.name = joint_node.name + "_basis_inv"
+				basis_node.transform.basis = new_joint_basis
+				child_node.add_child(basis_node)
+				
+			"prismatic":
+				joint_node = PrismaticJoint.new()
+				joint_node.name = joint.name
+				joint_node.child_link = child_node
+				joint_node.limit_enabled = true
+				joint_node.set_meta("owner", true)
+				if "origin" in joint:
+					joint_node.position = joint.origin.xyz * scale
+					joint_node.rotation = joint.origin.rpy
+				var limit_velocity : float = 1.0
+				if "limit" in joint:
+					if "effort" in joint.limit:
+						joint_node.motor_max_force = float(joint.limit.effort)
+					if "velocity" in joint.limit:
+						joint_node.limit_velocity = float(joint.limit.velocity) * scale
+					if "lower" in joint.limit:
+						joint_node.limit_lower = joint.limit.lower * scale
+					else:
+						joint_node.limit_lower = 0.0
+					if "upper" in joint.limit:
+						joint_node.limit_upper = joint.limit.upper * scale
+					else:
+						joint_node.limit_upper = 0.0
+				if not "axis" in joint:
+					new_joint_basis = Basis.looking_at(Vector3(1,0,0)).rotated(Vector3.UP, PI/2)
+					joint_node.transform.basis *= new_joint_basis
+				elif joint.axis != Vector3.UP:
+					new_joint_basis = Basis.looking_at(joint.axis).rotated(Vector3.UP, PI/2)
+					joint_node.transform.basis *= new_joint_basis
+				else:
+					new_joint_basis = Basis().rotated(Vector3.BACK, PI/2)
+					joint_node.transform.basis *= new_joint_basis
+					
+				var basis_node = Node3D.new()
+				basis_node.set_meta("owner", true)
+				basis_node.name = joint_node.name + "_basis_inv"
+				basis_node.transform.basis = new_joint_basis
+				child_node.add_child(basis_node)
+				
+			_:
+				return null
+				
+		joint_node.node_a = ^"../"
+		joint_node.node_b = NodePath("%s" % [child_node.name])
+		joint_node.unique_name_in_owner = true
+		joint_node.set_meta("owner", true)
+		# Add frame gizmo
+		var frame_visual := MeshInstance3D.new()
+		frame_visual.set_meta("owner", true)
+		frame_visual.name = joint_node.name + "_frame"
+		frame_visual.add_to_group("JOINT_GIZMO", true)
+		frame_visual.mesh = _frame_mesh
+		if new_joint_basis:
+			frame_visual.transform.basis = new_joint_basis.inverse()
+		frame_visual.scale = Vector3.ONE * scale
+		frame_visual.visible = false
+		joint_node.add_child(frame_visual)
+		joint_node.add_child(child_node)
+		if new_joint_basis:
+			child_node.transform.basis = new_joint_basis.inverse()
+		parent_node.add_child(joint_node)
+		
+	# Attach sensors to links
+	for sensor in _sensors:
+		var parent_name: String = sensor.parent.link
+		var parent_node: Node3D
+		for link in _links:
+			if link.name == parent_name:
+				parent_node = link
+				break
+		if parent_node == null:
+			printerr("Sensor <%s> has no parent link!" % [sensor.name])
+			continue
+		else:
+			# Add frame gizmo
+			var frame_visual := MeshInstance3D.new()
+			frame_visual.set_meta("owner", true)
+			frame_visual.name = sensor.name + "_frame"
+			frame_visual.add_to_group("SENSOR_GIZMO", true)
+			frame_visual.mesh = _frame_mesh
+			frame_visual.scale = Vector3.ONE * scale
+			frame_visual.visible = false
+			sensor.node.add_child(frame_visual)
+			parent_node.add_child(sensor.node)
+		
+	var base_link: RigidBody3D
+	for link in _links:
+		if link and link.get_parent() == null:
+			base_link = link
+			base_link.add_to_group("BASE_LINK", true)
+			link.set_meta("orphan", false)
+			if link.name == "world":
+				link.add_to_group("STATIC", true)
+				link.add_to_group("PICKABLE", true)
+			if root_node.get_meta("type") == "env":
+				base_link.freeze = true
+			break
+			
+	# Create asset outline shape
+	#var asset_area := Area3D.new()
+	#asset_area.name = &"AssetArea"
+	#_record(asset_area)
+	#base_link.add_child(asset_area)
+	#for shape in _visual_shapes:
+		#var collision = CollisionShape3D.new()
+		#collision.shape = shape
+		#_record(collision)
+		#asset_area.add_child(collision)
+	#print("%s: %s" % [root_node.name, ])
 	
+	freeing_nodes()
+	return base_link
+
 func parse_gobotics_params(urdf_path: PackedByteArray):
 	var parse_err = parser.open_buffer(urdf_path)
 	if parse_err:
@@ -432,14 +658,15 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						link = RigidLink.new()
 					var physics_material = PhysicsMaterial.new()
 					link.physics_material_override = physics_material
+					link.collision_layer = 0b1001 # Robots + Selection mask
 					link.set_meta("orphan", true)
-					link.set_meta("owner", true)
+					_record(link)
 					if "name" in link_attrib and link_attrib.name != "":
 						link.name = link_attrib.name.replace(" ", "_")
 					else:
 						printerr("No name for link!")
 						return ERR_PARSE_ERROR
-						
+					
 					if asset_type == "standalone" or asset_type == "robot":
 						link.add_to_group("SELECT", true)
 					if "xyz" in link_attrib:
@@ -498,13 +725,13 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
 					
-					current_visual = MeshInstance3D.new()
+					current_visual = VisualMesh.new()
 					current_visual.add_to_group("VISUAL", true)
 					if "name" in attrib and attrib.name != "":
 						current_visual.name = attrib.name + "_mesh"
 					else:
 						current_visual.name = link_attrib.name + "_mesh"
-					current_visual.set_meta("owner", true)
+					_record(current_visual)
 					link.add_child(current_visual)
 
 				"collision":
@@ -576,7 +803,6 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						var box_mesh := BoxMesh.new()
 						box_mesh.size = size * scale
 						current_visual.mesh = box_mesh
-
 					elif current_tag == Tag.COLLISION:
 						var box_shape := BoxShape3D.new()
 						box_shape.size = size * scale
@@ -683,13 +909,15 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						if "name" in attrib and attrib.name != "":
 							for mat in _materials:
 								if mat.name == attrib.name:
-	#								print("[global material tag] current visual: ", current_visual)
+									#print("[global material tag] current visual: ", current_visual)
+									mat.res.resource_local_to_scene = true
 									current_visual.set_surface_override_material(0, mat.res)
 						## Local material
 						if current_visual.get_surface_override_material(0) == null:
-	#						print("[local material tag] current visual: ", current_visual)
-							var res := StandardMaterial3D.new()
-							current_visual.set_surface_override_material(0, res)
+							#print("[local material tag] current visual: ", current_visual)
+							var material := StandardMaterial3D.new()
+							material.resource_local_to_scene = true
+							current_visual.set_surface_override_material(0, material)
 				
 				"color":
 					if root_tag != Tag.LINK: continue
@@ -729,7 +957,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 				
 	#print("links: ", JSON.stringify(_links, "\t", false))
 	return OK
-	
+
 func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
 	
 	var gltf_res := GLTFDocument.new()
@@ -761,7 +989,7 @@ func get_mesh_from_gltf(attrib: Dictionary) -> ArrayMesh:
 	scene_node.queue_free()
 
 	return mesh
-	
+
 func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
 		
 	var gltf_res := GLTFDocument.new()
@@ -808,93 +1036,6 @@ func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
 	
 	return shape
 
-#func load_gltf(current_visual: MeshInstance3D, current_collision: CollisionShape3D, current_col_debug: MeshInstance3D, attrib: Dictionary, current_tag, trimesh=false):
-	
-#	if Engine.is_editor_hint():
-#		var scene_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
-##		print_debug(scene_filename)
-##		print("Editor")
-#		var scene: PackedScene = load(scene_filename)
-##		print_debug(scene)
-#		var scene_state = scene.get_state()
-##		print("node count: ", scene_state.get_node_count())
-#		for idx in scene_state.get_node_count():
-##			print("node name: ", scene_state.get_node_name(idx))
-#			if scene_state.get_node_name(idx) == attrib.object:
-#				for prop_idx in scene_state.get_node_property_count(idx):
-#					var prop_name = scene_state.get_node_property_name(idx, prop_idx)
-##					print("props: ", prop_name)
-#					## Mesh attached to node
-#					if prop_name == "mesh":
-#						var mesh: ArrayMesh = scene_state.get_node_property_value(idx, prop_idx)
-##						print("mesh: ", mesh)
-#						if current_tag == Tag.VISUAL:
-#							current_visual.mesh = mesh
-#							current_visual.scale = Vector3.ONE * scale
-						
-#					if prop_name == "transform":
-#						var tr: Transform3D = scene_state.get_node_property_value(idx, prop_idx)
-##						print("tranform: ", tr)
-#						var xyz: Vector3 = tr.origin
-#						var rpy: Vector3 = tr.basis.get_euler()
-#						if current_tag == Tag.VISUAL:
-#							current_visual.position = xyz * scale
-#							current_visual.rotation = rpy
-	
-#	var gltf_filename: String
-#
-#	if not FileAccess.file_exists(gltf_filename):
-#		parse_error_message = "GLTF file not found!"
-#		return ERR_FILE_NOT_FOUND
-#	var gltf_res := GLTFDocument.new()
-#	var gltf_state = GLTFState.new()
-#	var err = gltf_res.append_from_file(gltf_filename, gltf_state)
-#	if err:
-#		parse_error_message = "GLTF file import failed!"
-#		return ERR_PARSE_ERROR
-#
-#	var nodes : Array[GLTFNode] = gltf_state.get_nodes()
-#	var meshes : Array[GLTFMesh] = gltf_state.get_meshes()
-#	var idx = 0
-#
-#	for node in gltf_state.json.nodes:
-#		if node.name == attrib.object:
-##			print("node.name:%s, id=%d " % [node.name, node.mesh])
-#			var imported_mesh : ImporterMesh = meshes[node.mesh].mesh
-#			var mesh: ArrayMesh = imported_mesh.get_mesh()
-#			if current_tag == Tag.VISUAL:
-#				current_visual.mesh = mesh
-#				if "transform" in attrib and attrib.transform == "true":
-#					current_visual.position = nodes[idx].position * scale
-#				if "scale" in attrib:
-#					current_visual.scale = Vector3.ONE * scale * float(attrib.scale)
-#				else:
-#					current_visual.scale = Vector3.ONE * scale
-#				return OK
-#			elif current_tag == Tag.COLLISION:
-#				var mdt = MeshDataTool.new()
-#				mdt.create_from_surface(mesh, 0)
-#				for i in range(mdt.get_vertex_count()):
-#					var vertex = mdt.get_vertex(i)
-#					vertex *= scale
-#					# Save your change.
-#					mdt.set_vertex(i, vertex)
-#				mesh.clear_surfaces()
-#				mdt.commit_to_surface(mesh)
-#				var shape
-#				if trimesh:
-#					shape = mesh.create_trimesh_shape()
-#				else:
-#					shape = mesh.create_convex_shape()
-#				current_collision.shape = shape
-#				if "transform" in attrib and attrib.transform == "true":
-#					current_collision.position = nodes[idx].position * scale
-#				var debug_mesh: ArrayMesh = shape.get_debug_mesh()
-#				current_col_debug.mesh = debug_mesh
-#				return OK
-#		idx += 1
-#	return ERR_CANT_RESOLVE
-	
 func parse_joints(urdf_data: PackedByteArray):
 	var parse_err = parser.open_buffer(urdf_data)
 	if parse_err:
@@ -1173,231 +1314,18 @@ func parse_sensors(urdf_data: PackedByteArray):
 				
 	#print("_sensors: ", JSON.stringify(_sensors, "\t", false))
 
-func create_asset_scene(root_node: Node3D):
-	# Attach links to joints
-	for joint in _joints:
-		# search for the link that matches the parent link of joint
-		var parent_name: String = joint.parent.link
-		var parent_node: Node3D
-		for link in _links:
-			if link.name == parent_name:
-				parent_node = link
-				link.set_meta("orphan", false) # Marked as used
-		if parent_node == null:
-			parse_error_message += "Joint <%s> has no parent link!" % [joint.name]
-			return null
-		# search for the link that matches the child link of joint
-		var child_name: String = joint.child.link
-		var child_node: Node3D
-		for link in _links:
-			if link.name == child_name:
-				child_node = link
-				link.set_meta("orphan", false)
-		if child_node == null:
-			parse_error_message += "Joint <%s> has no child link!" % [joint.name]
-			return null
-			
-		var joint_node : Node3D
-		var new_joint_basis : Basis
-		if not "type" in joint:
-			printerr("joint %s has no type" % joint.name)
-			return null
-			
-		match joint.type:
-			"fixed":
-				joint_node = JoltGeneric6DOFJoint3D.new()
-				joint_node.name = joint.name
-				if "origin" in joint:
-					joint_node.position = joint.origin.xyz * scale
-					joint_node.rotation = joint.origin.rpy
 
-			"pin":
-				joint_node = JoltPinJoint3D.new()
-				joint_node.name = joint.name
-				if "origin" in joint:
-					joint_node.position = joint.origin.xyz * scale
-					joint_node.rotation = joint.origin.rpy
-					
-			"continuous":
-				joint_node = JoltHingeJoint3D.new()
-				joint_node.name = joint.name
-				joint_node.add_to_group("CONTINUOUS", true)
-				if "origin" in joint:
-					joint_node.position = joint.origin.xyz * scale
-					joint_node.rotation = joint.origin.rpy
-				
-				var limit_velocity : float = 1.0
-				if "limit" in joint:
-					if "effort" in joint.limit:
-						joint_node.motor_max_torque = float(joint.limit.effort)
-					if "velocity" in joint.limit:
-						limit_velocity = float(joint.limit.velocity)
-				if not "axis" in joint:
-#					printerr("No axis for %s" % joint.name)
-					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
-					joint_node.transform.basis *= new_joint_basis
-				elif joint.axis != Vector3.UP:
-					new_joint_basis = Basis.looking_at(-joint.axis)
-					joint_node.transform.basis *= new_joint_basis
-				else:
-					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
-					joint_node.transform.basis *= new_joint_basis
-					
-				var joint_script := GDScript.new()
-				joint_script.source_code = get_continuous_joint_script(child_node, limit_velocity)
-				joint_node.set_script(joint_script)
-				
-			"revolute":
-				joint_node = RevoluteJoint.new()
-				joint_node.name = joint.name
-				joint_node.child_link = child_node
-				joint_node.limit_enabled = true
-				joint_node.set_meta("owner", true)
-				if "origin" in joint:
-					joint_node.position = joint.origin.xyz * scale
-					joint_node.rotation = joint.origin.rpy
-				var limit_velocity : float = 1.0
-				if "limit" in joint:
-					if "effort" in joint.limit:
-						joint_node.motor_max_torque = float(joint.limit.effort)
-					if "velocity" in joint.limit:
-						joint_node.limit_velocity = float(joint.limit.velocity)
-					if "lower" in joint.limit:
-						joint_node.limit_upper = -joint.limit.lower
-					else:
-						joint_node.limit_upper = 0.0
-					if "upper" in joint.limit:
-						joint_node.limit_lower = -joint.limit.upper
-					else:
-						joint_node.limit_lower = 0.0
-				if not "axis" in joint:
-					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
-					joint_node.transform.basis *= new_joint_basis
-				elif joint.axis != Vector3.UP:
-					new_joint_basis = Basis.looking_at(-joint.axis)
-					joint_node.transform.basis *= new_joint_basis
-				else:
-					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
-					joint_node.transform.basis *= new_joint_basis
-					
-				var basis_node = Node3D.new()
-				basis_node.set_meta("owner", true)
-				basis_node.name = joint_node.name + "_basis_inv"
-				basis_node.transform.basis = new_joint_basis
-				child_node.add_child(basis_node)
-				
-			"prismatic":
-				joint_node = PrismaticJoint.new()
-				joint_node.name = joint.name
-				joint_node.child_link = child_node
-				joint_node.limit_enabled = true
-				joint_node.set_meta("owner", true)
-				if "origin" in joint:
-					joint_node.position = joint.origin.xyz * scale
-					joint_node.rotation = joint.origin.rpy
-				var limit_velocity : float = 1.0
-				if "limit" in joint:
-					if "effort" in joint.limit:
-						joint_node.motor_max_force = float(joint.limit.effort)
-					if "velocity" in joint.limit:
-						joint_node.limit_velocity = float(joint.limit.velocity) * scale
-					if "lower" in joint.limit:
-						joint_node.limit_lower = joint.limit.lower * scale
-					else:
-						joint_node.limit_lower = 0.0
-					if "upper" in joint.limit:
-						joint_node.limit_upper = joint.limit.upper * scale
-					else:
-						joint_node.limit_upper = 0.0
-				if not "axis" in joint:
-					new_joint_basis = Basis.looking_at(Vector3(1,0,0)).rotated(Vector3.UP, PI/2)
-					joint_node.transform.basis *= new_joint_basis
-				elif joint.axis != Vector3.UP:
-					new_joint_basis = Basis.looking_at(joint.axis).rotated(Vector3.UP, PI/2)
-					joint_node.transform.basis *= new_joint_basis
-				else:
-					new_joint_basis = Basis().rotated(Vector3.BACK, PI/2)
-					joint_node.transform.basis *= new_joint_basis
-					
-				var basis_node = Node3D.new()
-				basis_node.set_meta("owner", true)
-				basis_node.name = joint_node.name + "_basis_inv"
-				basis_node.transform.basis = new_joint_basis
-				child_node.add_child(basis_node)
-				
-			_:
-				return null
-				
-		joint_node.node_a = ^"../"
-		joint_node.node_b = NodePath("%s" % [child_node.name])
-		joint_node.unique_name_in_owner = true
-		joint_node.set_meta("owner", true)
-		# Add frame gizmo
-		var frame_visual := MeshInstance3D.new()
-		frame_visual.set_meta("owner", true)
-		frame_visual.name = joint_node.name + "_frame"
-		frame_visual.add_to_group("JOINT_GIZMO", true)
-		frame_visual.mesh = _frame_mesh
-		if new_joint_basis:
-			frame_visual.transform.basis = new_joint_basis.inverse()
-		frame_visual.scale = Vector3.ONE * scale
-		frame_visual.visible = false
-		joint_node.add_child(frame_visual)
-		joint_node.add_child(child_node)
-		if new_joint_basis:
-			child_node.transform.basis = new_joint_basis.inverse()
-		parent_node.add_child(joint_node)
-		
-	# Attach sensors to links
-	for sensor in _sensors:
-		var parent_name: String = sensor.parent.link
-		var parent_node: Node3D
-		for link in _links:
-			if link.name == parent_name:
-				parent_node = link
-				break
-		if parent_node == null:
-			printerr("Sensor <%s> has no parent link!" % [sensor.name])
-			continue
-		else:
-			# Add frame gizmo
-			var frame_visual := MeshInstance3D.new()
-			frame_visual.set_meta("owner", true)
-			frame_visual.name = sensor.name + "_frame"
-			frame_visual.add_to_group("SENSOR_GIZMO", true)
-			frame_visual.mesh = _frame_mesh
-			frame_visual.scale = Vector3.ONE * scale
-			frame_visual.visible = false
-			sensor.node.add_child(frame_visual)
-			parent_node.add_child(sensor.node)
-		
-	var base_link: RigidBody3D
-	for link in _links:
-		if link and link.get_parent() == null:
-			base_link = link
-			base_link.add_to_group("BASE_LINK", true)
-			link.set_meta("orphan", false)
-			if link.name == "world":
-				link.add_to_group("STATIC", true)
-				link.add_to_group("PICKABLE", true)
-			if root_node.get_meta("type") == "env":
-				base_link.freeze = true
-			break
-			
-	freeing_nodes()
-	return base_link
-	
 func add_root_script_to(root_node: Node3D):
 	var root_script: GDScript = load("res://game/robot_features/root.gd")
 	root_node.set_script(root_script)
-	
+
 func add_python_bridge(root_node: Node3D):
 	var python_bridge : Node = load("res://game/python_bridge/python_bridge.tscn").instantiate()
 	python_bridge.name = &"PythonBridge"
 	python_bridge.set_meta("owner", true)
 	root_node.add_child(python_bridge)
 	root_node.set_meta("udp_port", 0)
-	
+
 func add_robot_base(root_node: Node3D):
 	var robot_base : Node = RobotBase.new()
 	robot_base.name = &"RobotBase"
@@ -1407,7 +1335,7 @@ func add_robot_base(root_node: Node3D):
 		root_node.get_node("PythonBridge").nodes.append(robot_base)
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(robot_base)
-		
+
 func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
 	#print("_gobotics: ", _gobotics)
 	for control in _gobotics:
@@ -1422,7 +1350,6 @@ func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
 				"3_omni_drive":
 					add_3_omni_drive(root_node, control)
 
-
 func add_grouped_joints(root_node: Node3D, control):
 	var grouped_joints : Node = GroupedJoints.new()
 	grouped_joints.name = StringName(control.name.to_pascal_case())
@@ -1432,7 +1359,6 @@ func add_grouped_joints(root_node: Node3D, control):
 	grouped_joints.limit_lower = control.lower.to_float() * scale
 	grouped_joints.limit_upper = control.upper.to_float() * scale
 	grouped_joints.outputs = control.outputs
-
 
 func add_diff_drive(root_node: Node3D, base_link: RigidBody3D, control):
 	var diff_drive : Node = DiffDrive.new()
@@ -1448,7 +1374,6 @@ func add_diff_drive(root_node: Node3D, base_link: RigidBody3D, control):
 		root_node.get_node("PythonBridge").nodes.append(diff_drive)
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(diff_drive)
-
 
 func add_4_mecanum_drive(root_node: Node3D, control):
 	var mecanum_drive : Node = FourMecanumDrive.new()
@@ -1466,7 +1391,6 @@ func add_4_mecanum_drive(root_node: Node3D, control):
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(mecanum_drive)
 
-
 func add_3_omni_drive(root_node: Node3D, control):
 	var omni_drive : Node = ThreeOmniDrive.new()
 	omni_drive.name = StringName(control.name.to_pascal_case())
@@ -1482,13 +1406,11 @@ func add_3_omni_drive(root_node: Node3D, control):
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(omni_drive)
 
-
 func add_dummy_node(root_node: Node3D):
 	var dummy_node : Node = DummyNode.new()
 	dummy_node.name = &"Dummy"
 	dummy_node.set_meta("owner", true)
 	root_node.add_child(dummy_node)
-
 
 func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 	var pivot := Node3D.new()
@@ -1505,13 +1427,12 @@ func add_camera_on_robot(root_node: Node3D, base_link: RigidBody3D):
 	camera.position = Vector3(0, 0 , 6.0)
 	var camera_script := GDScript.new()
 	var base_link_path = "../" + base_link.name
-#	print("BaseLink NodePath: ", base_link_path)
+	#print("BaseLink NodePath: ", base_link_path)
 	camera_script.source_code = get_pivot_camera_script(base_link_path)
 	pivot.set_script(camera_script)
 	boom.add_child(camera)
 	pivot.add_child(boom)
 	root_node.add_child(pivot)
-
 
 func _add_area_out_of_bounds(root_node: Node3D):
 	#print("Add area for %s" % root_node.name)
@@ -1532,7 +1453,7 @@ func _add_area_out_of_bounds(root_node: Node3D):
 func kinematics_scene_owner_of(root_node: Node3D):
 	add_owner(root_node, root_node.get_children())
 	return root_node
-		
+
 func add_owner(owner_node, nodes: Array):
 	for node in nodes:
 		if not node.get_meta("owner", false):
@@ -1559,7 +1480,7 @@ func _target_velocity_changed(value: float):
 	motor_target_velocity = -target_velocity
 """ % [child_node.name, limit_velocity]
 	return source_code
-	
+
 func follow_camera_script(position: Vector3):
 	var source_code = """extends Camera3D
 var lerp_speed = 3.0
@@ -1587,7 +1508,7 @@ func _ready():
 	base_link_path = "%s"
 """ % [node_path]
 	return source_code
-	
+
 func clear_buffer():
 	_materials.clear()
 	_links.clear()
@@ -1608,3 +1529,7 @@ func freeing_nodes():
 	for sensor in _sensors:
 		if sensor.node.get_meta("orphan"):
 			sensor.node.queue_free()
+
+# Helper function to record node in scenetree
+func _record(node: Node):
+	node.set_meta("owner", true)
