@@ -45,15 +45,34 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not running and event.is_action_pressed("rename") and asset_selected:
 		rename_asset()
 		
+	if event.is_action_pressed("SELECT"):
+		_highlight_asset()
+
+
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
-	#Node.print_orphan_nodes()
+	
 
 func _physics_process(_delta: float) -> void:
 	%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
 	GPSettings.physics_tick += 1
 
 #endregion
+
+func _highlight_asset():
+	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
+	var ray_origin = get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
+	var ray_direction = get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
+	# Collision shape is in SELECTION Layer (mask 8)
+	var ray_quering = PhysicsRayQueryParameters3D.create(
+		ray_origin, ray_origin + ray_direction * 1000, 0b1000)
+	
+	var result = get_world_3d().direct_space_state.intersect_ray(ray_quering)
+	if result:
+		#print("collider: %s , shape: %d" % [result.collider.name, result.shape])
+		get_tree().call_group("VISUAL", "highlight", result.collider.owner)
+	else: # Deselects all assets
+		get_tree().call_group("VISUAL", "highlight", null)
 
 func connect_pickable():
 	var nodes = get_tree().get_nodes_in_group("PICKABLE")
