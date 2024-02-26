@@ -21,6 +21,7 @@ enum Tag {
 		JOINT,
 		MATERIAL,
 		VISUAL,
+		VISUAL_WITH_COL,
 		COLLISION,
 		INERTIAL,
 		SENSOR,
@@ -322,18 +323,6 @@ func create_asset_scene(root_node: Node3D):
 			if root_node.get_meta("type") == "env":
 				base_link.freeze = true
 			break
-			
-	# Create asset outline shape
-	#var asset_area := Area3D.new()
-	#asset_area.name = &"AssetArea"
-	#_record(asset_area)
-	#base_link.add_child(asset_area)
-	#for shape in _visual_shapes:
-		#var collision = CollisionShape3D.new()
-		#collision.shape = shape
-		#_record(collision)
-		#asset_area.add_child(collision)
-	#print("%s: %s" % [root_node.name, ])
 	
 	freeing_nodes()
 	return base_link
@@ -718,7 +707,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 				
 				"visual":
 					if root_tag != Tag.LINK: continue
-					current_tag = Tag.VISUAL
+					#current_tag = Tag.VISUAL
 					var attrib = {}
 					for idx in parser.get_attribute_count():
 						var name = parser.get_attribute_name(idx)
@@ -733,7 +722,30 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						current_visual.name = link_attrib.name + "_mesh"
 					_record(current_visual)
 					link.add_child(current_visual)
-
+					
+					if "with_col" in attrib:
+						match attrib.with_col:
+							"true":
+								current_tag = Tag.VISUAL_WITH_COL
+								current_collision = CollisionShape3D.new()
+								current_collision.name = attrib.name + "_col"
+								_record(current_collision)
+								link.add_child(current_collision)
+								
+								current_col_debug = MeshInstance3D.new()
+								current_col_debug.add_to_group("COLLISION", true)
+								current_col_debug.visible = false
+								current_col_debug.name = attrib.name + "_debug"
+								_record(current_col_debug)
+								link.add_child(current_col_debug)
+							"false":
+								current_tag = Tag.VISUAL
+							_:
+								printerr("with_col attribut has wrong value!")
+								current_tag = Tag.VISUAL
+					else:
+						current_tag = Tag.VISUAL
+				
 				"collision":
 					if root_tag != Tag.LINK: continue
 					current_tag = Tag.COLLISION
@@ -748,7 +760,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						current_collision.name = attrib.name + "_col"
 					else:
 						current_collision.name = link_attrib.name + "_col"
-					current_collision.set_meta("owner", true)
+					_record(current_collision)
 					link.add_child(current_collision)
 					
 					current_col_debug = MeshInstance3D.new()
@@ -758,7 +770,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						current_col_debug.name = attrib.name + "_debug"
 					else:
 						current_col_debug.name = link_attrib.name + "_debug"
-					current_col_debug.set_meta("owner", true)
+					_record(current_col_debug)
 					link.add_child(current_col_debug)
 	
 				"geometry":
@@ -777,7 +789,19 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						cylinder_mesh.top_radius = float(attrib.radius) * scale
 						cylinder_mesh.height = float(attrib.length) * scale
 						current_visual.mesh = cylinder_mesh
-
+					elif current_tag == Tag.VISUAL_WITH_COL:
+						var cylinder_mesh := CylinderMesh.new()
+						cylinder_mesh.bottom_radius = float(attrib.radius) * scale
+						cylinder_mesh.top_radius = float(attrib.radius) * scale
+						cylinder_mesh.height = float(attrib.length) * scale
+						current_visual.mesh = cylinder_mesh
+						var cylinder_shape := CylinderShape3D.new()
+						cylinder_shape.radius = float(attrib.radius) * scale
+						cylinder_shape.height = float(attrib.length) * scale
+						current_collision.shape = cylinder_shape
+						var debug_mesh: ArrayMesh = cylinder_shape.get_debug_mesh()
+						current_col_debug.mesh = debug_mesh
+						
 					elif current_tag == Tag.COLLISION:
 						var cylinder_shape := CylinderShape3D.new()
 						cylinder_shape.radius = float(attrib.radius) * scale
@@ -803,6 +827,15 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						var box_mesh := BoxMesh.new()
 						box_mesh.size = size * scale
 						current_visual.mesh = box_mesh
+					elif current_tag == Tag.VISUAL_WITH_COL:
+						var box_mesh := BoxMesh.new()
+						box_mesh.size = size * scale
+						current_visual.mesh = box_mesh
+						var box_shape := BoxShape3D.new()
+						box_shape.size = size * scale
+						current_collision.shape = box_shape
+						var debug_mesh: ArrayMesh = box_shape.get_debug_mesh()
+						current_col_debug.mesh = debug_mesh
 					elif current_tag == Tag.COLLISION:
 						var box_shape := BoxShape3D.new()
 						box_shape.size = size * scale
@@ -822,6 +855,16 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						sphere_mesh.radius = float(attrib.radius) * scale
 						sphere_mesh.height = float(attrib.radius) * scale * 2
 						current_visual.mesh = sphere_mesh
+					elif current_tag == Tag.VISUAL_WITH_COL:
+						var sphere_mesh := SphereMesh.new()
+						sphere_mesh.radius = float(attrib.radius) * scale
+						sphere_mesh.height = float(attrib.radius) * scale * 2
+						current_visual.mesh = sphere_mesh
+						var sphere_shape := SphereShape3D.new()
+						sphere_shape.radius = float(attrib.radius) * scale
+						current_collision.shape = sphere_shape
+						var debug_mesh: ArrayMesh = sphere_shape.get_debug_mesh()
+						current_col_debug.mesh = debug_mesh
 					elif current_tag == Tag.COLLISION:
 						var sphere_shape := SphereShape3D.new()
 						sphere_shape.radius = float(attrib.radius) * scale
@@ -838,14 +881,6 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						attrib[name] = value
 					if "filename" in attrib:
 						match attrib.filename.get_extension():
-							"obj":
-								var mesh_filename = _filename.get_base_dir().path_join(attrib.filename.trim_prefix("package://"))
-		#						print_debug(mesh_filename)
-								var mesh: ArrayMesh = load(mesh_filename)
-								if mesh:
-									current_visual.mesh = mesh
-									current_visual.scale = Vector3.ONE * scale
-							
 							"glb":
 								if current_tag == Tag.VISUAL:
 									var mesh: ArrayMesh = get_mesh_from_gltf(attrib)
@@ -854,14 +889,26 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 										continue
 									current_visual.mesh = mesh
 									current_visual.scale = Vector3.ONE * scale
+								elif current_tag == Tag.VISUAL_WITH_COL:
+									var mesh: ArrayMesh = get_mesh_from_gltf(attrib)
+									if mesh == null:
+										printerr("Failed to load mesh into gltf")
+										continue
+									current_visual.mesh = mesh
+									current_visual.scale = Vector3.ONE * scale
+									if current_collision:
+										printerr("Collision for 3D mesh is not supported!")
+										link.remove_child(current_collision)
+										link.remove_child(current_col_debug)
+										current_collision = null
+										current_col_debug = null
+									
 								elif current_tag == Tag.COLLISION:
 									var shape: Shape3D = get_shape_from_gltf(attrib, current_col_debug, link.name == "world")
 									if shape == null:
 										printerr("Failed to load shape into gltf")
 										continue
 									current_collision.shape = shape
-							"dae":
-								pass
 							_:
 								printerr("3D format not supported!")
 						
@@ -887,6 +934,13 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 					if current_tag == Tag.VISUAL:
 						current_visual.position = xyz * scale
 						current_visual.rotation = rpy
+					elif current_tag == Tag.VISUAL_WITH_COL:
+						current_visual.position = xyz * scale
+						current_visual.rotation = rpy
+						current_collision.position = xyz * scale
+						current_collision.rotation = rpy
+						current_col_debug.position = xyz * scale
+						current_col_debug.rotation = rpy
 					elif current_tag == Tag.COLLISION:
 						current_collision.position = xyz * scale
 						current_collision.rotation = rpy
@@ -904,7 +958,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
-					if current_tag == Tag.VISUAL:
+					if current_tag == Tag.VISUAL or current_tag == Tag.VISUAL_WITH_COL:
 						## Global material
 						if "name" in attrib and attrib.name != "":
 							for mat in _materials:
@@ -1531,5 +1585,5 @@ func freeing_nodes():
 			sensor.node.queue_free()
 
 # Helper function to record node in scenetree
-func _record(node: Node):
-	node.set_meta("owner", true)
+func _record(node: Node, saving = true):
+	node.set_meta("owner", saving)
