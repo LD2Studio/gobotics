@@ -644,7 +644,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 								return ERR_PARSE_ERROR
 					
 					else:
-						link = RigidLink.new()
+						link = RigidBody3D.new()
 					var physics_material = PhysicsMaterial.new()
 					link.physics_material_override = physics_material
 					link.collision_layer = 0b1001 # Robots + Selection mask

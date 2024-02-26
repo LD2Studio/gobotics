@@ -44,7 +44,7 @@ var database: GoboticsDB
 func _init() -> void:
 	create_dir()
 	database = GoboticsDB.new()
-	
+
 
 func _ready() -> void:
 	database.generate()
