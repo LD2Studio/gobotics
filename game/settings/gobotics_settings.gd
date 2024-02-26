@@ -8,6 +8,16 @@ enum AssetType {
 	ROBOT,
 	ENVIRONMENT,
 }
+## Chemin vers le fichier de configuration de Gobotics
+var setting_path: String:
+	get:
+		return (ProjectSettings.globalize_path(_setting_editor_path)
+			if OS.has_feature("editor")
+				and not ProjectSettings.get_setting("application/config/use_user_path")
+			else ProjectSettings.globalize_path(_setting_export_path))
+
+var _setting_editor_path: String = "res://"
+var _setting_export_path: String = "user://"
 
 ## Chemin vers les projets utilisateur de Gobotics.
 var project_path: String:
@@ -37,6 +47,7 @@ var temp_path: String:
 		return (ProjectSettings.globalize_path(_temp_editor_path)
 			if OS.has_feature("editor")
 			else ProjectSettings.globalize_path(_temp_export_path))
+
 var _temp_editor_path = "res://temp"
 var _temp_export_path = "user://temp"
 
@@ -46,14 +57,17 @@ var builtin_env = [
 ]
 
 var database: GoboticsDB
+var settings_db: SettingsDB
 
 func _init() -> void:
 	create_dir()
 	database = GoboticsDB.new()
-
-
-func _ready() -> void:
-	database.generate()
+	
+	settings_db = ResourceLoader.load(setting_path.path_join("settings.tres"))
+	if settings_db == null:
+		#printerr("Loading settings failed!")
+		settings_db = SettingsDB.new()
+		save_settings()
 
 
 ## Create directory like assets and temp in res/user path.
@@ -106,3 +120,14 @@ func create_dir():
 	# Creating projects directory
 	if not DirAccess.dir_exists_absolute(project_path):
 		DirAccess.make_dir_absolute(project_path)
+
+
+func save_settings():
+	settings_db.save_settings(setting_path.path_join("settings.tres"))
+
+
+func load_mods():
+	for mod_path in settings_db.mod_paths:
+		var success = ProjectSettings.load_resource_pack(mod_path, false)
+		if not success:
+			printerr("Failed to loading modules!")

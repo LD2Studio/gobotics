@@ -80,6 +80,37 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Open Project Folder"
 
+[node name="ModsContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_vertical = 0
+text = "Modules :"
+horizontal_alignment = 2
+
+[node name="ModsList" type="ItemList" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AddModsButton" type="Button" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 0
+text = "Add Module"
+
+[node name="AddModsDialog" type="FileDialog" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/AddModsButton"]
+unique_name_in_owner = true
+title = "Add a modules for Gobotics"
+ok_button_text = "Add"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.zip")
+use_native_dialog = true
+
 [node name="MarginReturnButton" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 20
@@ -92,4 +123,6 @@ text = "Return to HomePage"
 
 [connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/AssetPathContainer/OpenAssetFolderButton" to="." method="_on_open_asset_folder_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/ProjectPathContainer/OpenProjectFolderButton" to="." method="_on_open_project_folder_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/AddModsButton" to="." method="_on_add_mods_button_pressed"]
+[connection signal="file_selected" from="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/AddModsButton/AddModsDialog" to="." method="_on_add_mods_dialog_file_selected"]
 [connection signal="pressed" from="VBoxContainer/MarginReturnButton/ReturnButton" to="." method="_on_return_button_pressed"]
