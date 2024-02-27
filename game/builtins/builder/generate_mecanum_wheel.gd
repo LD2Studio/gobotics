@@ -21,7 +21,7 @@ enum Order {
 
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
-	var right_mecanum_wheel: RigidBody3D = generate_mecanum_wheel("RightMecanumWheel", Order.RIGHT)
+	var right_mecanum_wheel: RigidBody3D = generate_mecanum_wheel("right_mecanum_wheel", Order.RIGHT)
 	if true:
 		var scene := PackedScene.new()
 		var err = scene.pack(right_mecanum_wheel)
@@ -32,7 +32,7 @@ func _run():
 		else:
 			printerr("Packing failed")
 		
-	var left_mecanum_wheel: RigidBody3D = generate_mecanum_wheel("LeftMecanumWheel", Order.LEFT)
+	var left_mecanum_wheel: RigidBody3D = generate_mecanum_wheel("left_mecanum_wheel", Order.LEFT)
 	if true:
 		var scene := PackedScene.new()
 		var err = scene.pack(left_mecanum_wheel)
@@ -47,6 +47,7 @@ func _run():
 
 func generate_mecanum_wheel(name: String, order: int):
 	var mecanum_wheel := RigidBody3D.new()
+	mecanum_wheel.add_to_group("EXTENDS_LINK", true)
 	var rim_visual := MeshInstance3D.new()
 	var shaft_visual := MeshInstance3D.new()
 	var rim_collision := CollisionShape3D.new()

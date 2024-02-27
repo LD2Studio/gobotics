@@ -10,7 +10,7 @@ func _ready() -> void:
 	connected_game_controllers = Input.get_connected_joypads()
 	
 	GSettings.load_mods()
-	GSettings.database.generate()
+	GSettings.load_assets()
 
 
 func _on_exit_button_pressed():

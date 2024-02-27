@@ -16,7 +16,7 @@ var roller_node3d = load("res://game/builtins/shapes/roller.glb")
 
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
-	var omni_wheel: RigidBody3D = generate_omni_wheel("OmniWheel")
+	var omni_wheel: RigidBody3D = generate_omni_wheel("omni_wheel")
 	if true:
 		var scene := PackedScene.new()
 		var err = scene.pack(omni_wheel)
@@ -31,6 +31,7 @@ func _run():
 
 func generate_omni_wheel(name: String):
 	var mecanum_wheel := RigidBody3D.new()
+	mecanum_wheel.add_to_group("EXTENDS_LINK", true)
 	var rim_visual := MeshInstance3D.new()
 	var shaft_visual := MeshInstance3D.new()
 	var rim_collision := CollisionShape3D.new()

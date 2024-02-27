@@ -104,8 +104,8 @@ text = "Add Module"
 
 [node name="AddModsDialog" type="FileDialog" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/AddModsButton"]
 unique_name_in_owner = true
-title = "Add a modules for Gobotics"
-ok_button_text = "Add"
+title = "Open a File"
+ok_button_text = "Open"
 file_mode = 0
 access = 2
 filters = PackedStringArray("*.zip")

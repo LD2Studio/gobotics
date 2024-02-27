@@ -6,7 +6,7 @@ var urdf_parser = URDFParser.new()
 var reader := ZIPReader.new()
 
 func _init():
-	urdf_parser.scale = 10
+	urdf_parser.scale = GPSettings.SCALE
 	urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
 	
 func generate():

@@ -51,6 +51,8 @@ var temp_path: String:
 var _temp_editor_path = "res://temp"
 var _temp_export_path = "user://temp"
 
+var custom_links: Array
+
 var builtin_env = [
 	{ name = "DarkEnv", scene_filename = "res://game/environments/dark_environment.tscn"},
 	{ name = "LightEnv", scene_filename = "res://game/environments/light_environment.tscn"},
@@ -68,6 +70,27 @@ func _init() -> void:
 		#printerr("Loading settings failed!")
 		settings_db = SettingsDB.new()
 		save_settings()
+
+## Loading modules for Gobotics
+func load_mods():
+	for mod_path in settings_db.mod_paths:
+		if FileAccess.file_exists(mod_path):
+			var success = ProjectSettings.load_resource_pack(mod_path, false)
+			if not success:
+				printerr("Failed to loading modules!")
+			#else:
+				#print("Loading modules success!")
+
+
+## Loading assets for Gobotics
+func load_assets():
+	_load_custom_links()
+	database.generate()
+
+
+## Saving Gobotics settings in [code]settings.tres[/code]
+func save_settings():
+	settings_db.save_settings(setting_path.path_join("settings.tres"))
 
 
 ## Create directory like assets and temp in res/user path.
@@ -122,12 +145,55 @@ func create_dir():
 		DirAccess.make_dir_absolute(project_path)
 
 
-func save_settings():
-	settings_db.save_settings(setting_path.path_join("settings.tres"))
-
-
-func load_mods():
-	for mod_path in settings_db.mod_paths:
-		var success = ProjectSettings.load_resource_pack(mod_path, false)
-		if not success:
-			printerr("Failed to loading modules!")
+func _load_custom_links():
+	custom_links.clear()
+	# Append builtin links
+	var builtin_links_dir = DirAccess.open(ProjectSettings.globalize_path("res://game/builtins/"))
+	if builtin_links_dir:
+		var scene_files = Array(builtin_links_dir.get_files())
+		scene_files = scene_files.filter(
+				func(file: String): return file.get_extension() == "tscn"
+				)
+		#print("scene files: ", scene_files)
+		for scene_file in scene_files:
+			var scene: PackedScene = load("res://game/builtins/".path_join(scene_file))
+			#print("scene: ", scene.get_state())
+			var node_count: int = scene.get_state().get_node_count()
+			#print("count: ", node_count)
+			#print("node 0: ", scene.get_state().get_node_name(0))
+			var groups: PackedStringArray = scene.get_state().get_node_groups(0)
+			#print("groups: ", groups)
+			if "EXTENDS_LINK" in groups:
+				#print("path: ", "res://game/builtins/".path_join(scene_file))
+				#print("name: ", scene.get_state().get_node_name(0))
+				custom_links.append(
+					{
+						name = scene.get_state().get_node_name(0),
+						path = "res://game/builtins/".path_join(scene_file)
+					}
+				)
+	# Append mods links
+	var mods_links_dir = DirAccess.open(ProjectSettings.globalize_path("res://mods/"))
+	if mods_links_dir:
+		var scene_files = Array(mods_links_dir.get_files())
+		scene_files = scene_files.filter(
+				func(file: String): return file.get_extension() == "tscn"
+				)
+		#print("scene files: ", scene_files)
+		for scene_file in scene_files:
+			var scene: PackedScene = load("res://mods/".path_join(scene_file))
+			#print("scene: ", scene.get_state())
+			var node_count: int = scene.get_state().get_node_count()
+			#print("count: ", node_count)
+			#print("node 0: ", scene.get_state().get_node_name(0))
+			var groups: PackedStringArray = scene.get_state().get_node_groups(0)
+			#print("groups: ", groups)
+			if "EXTENDS_LINK" in groups:
+				#print("path: ", "res://mods/".path_join(scene_file))
+				#print("name: ", scene.get_state().get_node_name(0))
+				custom_links.append(
+					{
+						name = scene.get_state().get_node_name(0),
+						path = "res://mods/".path_join(scene_file)
+					}
+				)
