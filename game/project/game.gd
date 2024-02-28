@@ -46,13 +46,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 
 func _notification(what: int) -> void:
+	pass
 	#print("notification: ", what)
-	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		print("CLOSE REQUEST")
-
-
-func _on_clear_button_pressed() -> void:
-	%TerminalOutput.text = ""
+	#if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		#print("CLOSE REQUEST")
 
 
 func load_assets_in_database():

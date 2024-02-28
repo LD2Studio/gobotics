@@ -38,7 +38,6 @@ func _drop_data(_at_position: Vector2, data) -> void:
 		asset.set_meta("udp_port", null)
 	game_scene.freeze_asset(asset, true)
 	game_scene.get_node("Scene").add_child(asset)
-	game_scene.connect_editable()
 	game_scene.update_robot_select_menu()
 	game_scene.update_camera_view_menu()
 	
@@ -70,4 +69,3 @@ func _on_gui_input(event):
 			game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
 			game_scene.asset_dragged.queue_free()
 			game_scene.asset_dragged = null
-		
