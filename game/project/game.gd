@@ -7,7 +7,6 @@ var gravity_enabled: bool = true
 @onready var assets_list = %AssetList
 @onready var control_camera_3d: Camera3D = %"3DView"
 @onready var top_camera_2d: Camera3D = %TopView
-@onready var object_inspector = %ObjectInspector
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 @onready var project_name: Label = %ProjectName
 
@@ -24,7 +23,6 @@ func _ready():
 	%TitleApp.text = "%s v%s" % [app_name, version]
 	
 	fill_assets_list()
-	object_inspector.visible = false
 	
 	if GPSettings.creating_new_project:
 		current_filename = GSettings.project_path.path_join(GPSettings.project_file)

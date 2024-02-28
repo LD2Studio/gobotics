@@ -190,6 +190,7 @@ func create_asset_scene(root_node: Node3D):
 			"revolute":
 				joint_node = RevoluteJoint.new()
 				joint_node.name = joint.name
+				joint_node.add_to_group("REVOLUTE", true)
 				joint_node.child_link = child_node
 				joint_node.limit_enabled = true
 				joint_node.set_meta("owner", true)

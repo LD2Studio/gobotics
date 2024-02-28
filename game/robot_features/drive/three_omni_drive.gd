@@ -21,8 +21,8 @@ func get_wheel_speed(x_speed : float, y_speed : float, z_ang_speed : float):
 	var v3 = -0.67*y_speed + 0.04*z_ang_speed;
 	return [v1, v2, v3]
 
-func _input(event):
-	if event is InputEventKey and activated:
+func command(_event):
+	if true:
 		var speed = max_speed if Input.is_action_pressed("BOOST") else max_speed/2.0
 		var wheel_speeds = [];
 		

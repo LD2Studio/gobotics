@@ -18,8 +18,8 @@ func setup():
 	back_right_wheel_joint = get_parent().get_node_or_null("%%%s" % [back_right_wheel])
 	back_left_wheel_joint = get_parent().get_node_or_null("%%%s" % [back_left_wheel])
 
-func _input(event):
-	if event is InputEventKey and activated:
+func command(_event):
+	if true:
 		var speed : float = max_speed if Input.is_action_pressed("BOOST") else max_speed/2.0
 		
 		if Input.is_action_pressed("FORWARD"):

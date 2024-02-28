@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=24 format=3 uid="uid://b4s6pohitqafc"]
 
 [ext_resource type="Script" path="res://game/project/game.gd" id="1_85jys"]
 [ext_resource type="Texture2D" uid="uid://kr5y1p8nf73q" path="res://game/icons/Add.svg" id="3_bkwo3"]
@@ -52,16 +52,6 @@ corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kn244"]
-bg_color = Color(0.192157, 0.439216, 0.321569, 0.454902)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sjw4w"]
-bg_color = Color(0.6, 0.6, 0.6, 0.34902)
 
 [sub_resource type="LabelSettings" id="LabelSettings_f7ski"]
 font_color = Color(0.894118, 0.0862745, 0.0901961, 1)
@@ -300,6 +290,27 @@ min_value = -10.0
 max_value = 10.0
 step = 0.001
 
+[node name="UDPPortContainer" type="HBoxContainer" parent="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer/UDPPortContainer"]
+layout_mode = 2
+text = "UDP Port :"
+
+[node name="UDPPortNumber" type="SpinBox" parent="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer/UDPPortContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 4243.0
+max_value = 65535.0
+value = 4243.0
+
+[node name="UDPPortWarning" type="Label" parent="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer/UDPPortContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+label_settings = SubResource("LabelSettings_f7ski")
+
 [node name="ReturnButton" type="Button" parent="SplitContainer/ControlContainer/VBoxContainer"]
 layout_mode = 2
 text = "Return to home page"
@@ -319,114 +330,6 @@ screen_space_aa = 1
 physics_object_picking = true
 size = Vector2i(987, 720)
 render_target_update_mode = 4
-
-[node name="ObjectInspector" type="PanelContainer" parent="SplitContainer/SceneView/SceneViewport"]
-unique_name_in_owner = true
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_top = 10.0
-offset_right = -10.0
-grow_horizontal = 0
-size_flags_horizontal = 3
-mouse_force_pass_scroll_events = false
-theme_override_styles/panel = SubResource("StyleBoxFlat_kn244")
-
-[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector"]
-layout_mode = 2
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
-
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer"]
-layout_mode = 2
-
-[node name="InspectorPartName" type="Label" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Inspector"
-horizontal_alignment = 1
-
-[node name="PythonBridgeContainer" type="PanelContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_sjw4w")
-
-[node name="MarginContainer" type="MarginContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 0
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
-
-[node name="VBoxContainer" type="VBoxContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
-visible = false
-layout_mode = 2
-
-[node name="PythonRemoteButton" type="CheckBox" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "Python Remote"
-
-[node name="UDPPortContainer" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer"]
-layout_mode = 2
-text = "UDP Port :"
-
-[node name="UDPPortNumber" type="SpinBox" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = 4243.0
-max_value = 65535.0
-value = 4243.0
-
-[node name="UDPPortWarning" type="Label" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-label_settings = SubResource("LabelSettings_f7ski")
-
-[node name="HBoxContainer2" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer"]
-visible = false
-layout_mode = 2
-
-[node name="BuiltinScriptCheckBox" type="CheckBox" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Builtin"
-
-[node name="OpenScriptButton" type="Button" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Edit Script"
-
-[node name="JointsContainer" type="GridContainer" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-columns = 2
-
-[node name="JointLabel" type="Label" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/JointsContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Motor"
-
-[node name="HSlider" type="HSlider" parent="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/JointsContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = -10.0
-max_value = 10.0
-tick_count = 3
-ticks_on_borders = true
 
 [node name="ToolBar" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport"]
 anchors_preset = 5
@@ -612,12 +515,9 @@ offset_bottom = 351.0
 [connection signal="value_changed" from="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer/TransformContainer/Roll" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_roll_value_changed"]
 [connection signal="value_changed" from="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer/TransformContainer/Pitch" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_pitch_value_changed"]
 [connection signal="value_changed" from="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer/TransformContainer/Yaw" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_yaw_value_changed"]
+[connection signal="value_changed" from="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer/UDPPortContainer/UDPPortNumber" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_udp_port_number_value_changed"]
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ReturnButton" to="." method="_on_button_pressed"]
 [connection signal="gui_input" from="SplitContainer/SceneView" to="SplitContainer/SceneView" method="_on_gui_input"]
-[connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer/PythonRemoteButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_python_remote_button_toggled"]
-[connection signal="value_changed" from="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/UDPPortContainer/UDPPortNumber" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_udp_port_number_value_changed"]
-[connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2/BuiltinScriptCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_builtin_script_check_box_toggled"]
-[connection signal="pressed" from="SplitContainer/SceneView/SceneViewport/ObjectInspector/MarginContainer/VBoxContainer/PythonBridgeContainer/MarginContainer/VBoxContainer/HBoxContainer2/OpenScriptButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_open_script_button_pressed"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/ToolBar/RunStopButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
 [connection signal="pressed" from="SplitContainer/SceneView/SceneViewport/ToolBar/ReloadButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_reload_button_pressed"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/FrameCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_frame_check_box_toggled"]

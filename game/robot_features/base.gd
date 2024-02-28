@@ -2,20 +2,7 @@ class_name RobotBase extends Node
 
 #region INPUTS
 
-@export var activated: bool = false:
-	set(value):
-		activated = value
-#		print("update activated flag : %s" % activated)
-		if activated:
-			update_all_joints()
-			update_all_sensors()
-			
 @export var base_link: RigidBody3D
-
-func setup():
-	for node in get_parent().get_children():
-		if node is RigidBody3D:
-			base_link = node
 
 #endregion
 
@@ -34,6 +21,32 @@ signal joint_changed(joint_name: String)
 var _joints := Array()
 var _ray_sensors := Array()
 var _joint_idx : int = 0
+
+#region INIT
+func _init():
+	Input.joy_connection_changed.connect(_on_joypad_changed)
+	joypads_connected = Input.get_connected_joypads()
+#	print("Joypads connected: ", joypads_connected)
+	if joypad_selected in joypads_connected:
+		joypad_connected = true
+	else:
+		joypad_connected = false
+
+
+func _ready():
+	set_name.call_deferred(&"RobotBase")
+	if not _joints.is_empty():
+		focused_joint = _joints[_joint_idx]
+		joint_changed.emit(focused_joint.name)
+
+
+func setup():
+	for node in get_parent().get_children():
+		if node is RigidBody3D:
+			base_link = node
+	update_all_joints()
+	update_all_sensors()
+#endregion
 
 func update_all_joints():
 #	print("update all joints")
@@ -73,27 +86,10 @@ func _on_joypad_changed(device: int, connected: bool):
 		
 #endregion
 
-#region INIT
-func _init():
-	Input.joy_connection_changed.connect(_on_joypad_changed)
-	joypads_connected = Input.get_connected_joypads()
-#	print("Joypads connected: ", joypads_connected)
-	if joypad_selected in joypads_connected:
-		joypad_connected = true
-	else:
-		joypad_connected = false
-		
-func _ready():
-	set_name.call_deferred(&"RobotBase")
-	if not _joints.is_empty():
-		focused_joint = _joints[_joint_idx]
-		joint_changed.emit(focused_joint.name)
-	update_all_sensors()
-#endregion
 
 #region PROCESS
-func _physics_process(delta):
-	if activated and focused_joint:
+func command(delta):
+	if focused_joint:
 		if focused_joint.has_method("shift_target"):
 			if Input.is_action_pressed("JOINT_POS"):
 				focused_joint.shift_target(delta)
@@ -137,10 +133,10 @@ func set_pose(x: float, y: float, a: float):
 	
 func set_continuous_velocity(jname: String, value: float):
 	var joint_name = jname.replace(" ", "_")
-#	print("%s : %f " % [joint_name, value])
+	#print("%s : %f " % [joint_name, value])
 	for joint in _joints:
 		if joint.is_in_group("CONTINUOUS") and joint.name == joint_name:
-#			print("%s : %f" % [joint_name, value])
+			#print("%s : %f" % [joint_name, value])
 			joint.target_velocity = value
 			return
 			

@@ -7,9 +7,9 @@ app.run()
 
 print("Pose: ", my_robot.get_pose())
 
-my_robot.set_pose(0,0.5,radians(45))
+my_robot.set_pose(0,0,radians(0))
 
-my_robot.set_continuous_velocity("right_joint", 2)
+my_robot.set_continuous_velocity("right_joint", 5)
 sleep(2)
 my_robot.set_continuous_velocity("right_joint", 0)
 

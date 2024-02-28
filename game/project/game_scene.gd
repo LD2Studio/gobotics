@@ -8,14 +8,15 @@ var game_area_pointed: bool = false
 var asset_focused : Node3D = null
 
 var _selected_asset: Node3D
+var _robot_selected: Node3D
 var _cams : Array
 var _current_cam: int = 0
 
 @onready var game = owner
 @onready var transform_container: GridContainer = %TransformContainer
 @onready var asset_name_label: Label = %AssetNameLabel
-
 @onready var udp_port_number: SpinBox = %UDPPortNumber
+
 @onready var camera_view_button = %CameraViewButton
 @onready var robot_selected_button = %RobotSelectedButton
 @onready var focused_joint_label = %FocusedJointLabel
@@ -43,6 +44,13 @@ func _ready() -> void:
 
 #region PROCESS
 
+func _input(event: InputEvent) -> void:
+	if running and _robot_selected:
+		var control_robot: Node = _robot_selected.get_node_or_null("ControlRobot")
+		if control_robot and control_robot.has_method("command"):
+			control_robot.command(event)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not running and event.is_action_pressed("DELETE") and _selected_asset:
 		confirm_delete_dialog.dialog_text = "Delete %s object ?" % [_selected_asset.name]
@@ -59,9 +67,14 @@ func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
 	
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
 	GPSettings.physics_tick += 1
+	
+	if running and _robot_selected:
+		var robot_base: Node = _robot_selected.get_node_or_null("RobotBase")
+		if robot_base and robot_base.has_method("command"):
+			robot_base.command(delta)
 
 #endregion
 
@@ -97,6 +110,7 @@ func _show_asset_properties(asset):
 			asset_name_label.text = asset.name
 		else:
 			asset_name_label.text = "no selection"
+		%UDPPortNumber.editable = editable
 	
 	if asset == null:
 		set_property_editable.call(false)
@@ -127,7 +141,15 @@ func _show_asset_properties(asset):
 	transform_container.get_node("Roll").call_deferred("set_value_no_signal", tr.roll)
 	transform_container.get_node("Pitch").call_deferred("set_value_no_signal", tr.pitch)
 	transform_container.get_node("Yaw").call_deferred("set_value_no_signal", tr.yaw)
-
+	
+	if _selected_asset.is_in_group("ROBOTS"):
+		%UDPPortContainer.visible = true
+		#%PythonRemoteButton.set_pressed_no_signal(_selected_asset.get_node("PythonBridge").activate)
+		var udp_port = _selected_asset.get_meta("udp_port")
+		if udp_port:
+			udp_port_number.set_value_no_signal(int(udp_port))
+	else:
+		%UDPPortContainer.visible = false
 
 func _on_x_pos_value_changed(value: float) -> void:
 	if _selected_asset == null:
@@ -171,6 +193,19 @@ func _on_yaw_value_changed(value: float) -> void:
 	base_link.rotation.y = value
 
 
+func _on_udp_port_number_value_changed(value: float) -> void:
+	if _selected_asset == null: return
+	if _selected_asset.is_in_group("ROBOTS"):
+		if not is_udp_port_available(int(value)):
+			printerr("udp port not availabled")
+			%UDPPortNumber.value = _selected_asset.get_meta("udp_port")
+			%UDPPortWarning.visible = true
+			%UDPPortWarning.text = "%d is already used" % [value]
+			var warning_message := get_tree().create_tween()
+			warning_message.tween_property(%UDPPortWarning, "visible", false, 2)
+			return
+		_selected_asset.set_meta("udp_port", int(value))
+
 #endregion
 
 
@@ -197,17 +232,16 @@ func update_camera_view_menu():
 	for cam in builtin_cams:
 		_cams.push_back(cam)
 		cam_popup.add_check_item(cam.name)
-	var robots = get_tree().get_nodes_in_group("ROBOTS")
-	if not robots.is_empty():
-		var selected_robot = robots.filter(func(robot): return robot.activated == true)
-		var first_robot = selected_robot.front()
-		if first_robot:
-			_cams.push_back(first_robot.get_node("PivotCamera/Boom/Camera"))
-			cam_popup.add_check_item("EmbeddedView")
+	
+	if _robot_selected:
+		_cams.push_back(_robot_selected.get_node("PivotCamera/Boom/Camera"))
+		cam_popup.add_check_item("EmbeddedView")
+	
 	if _current_cam > len(_cams):
 		_current_cam = 0
 	_camera_view_selected(_current_cam)
-		
+
+
 func _camera_view_selected(idx: int):
 	_current_cam = idx
 	var cam_popup: PopupMenu = camera_view_button.get_popup()
@@ -219,7 +253,8 @@ func _camera_view_selected(idx: int):
 	if not _cams.is_empty():
 		if not is_robots_inside_scene(): return
 		_cams[idx].current = true
-			
+
+
 func update_robot_select_menu():
 	if not is_robots_inside_scene():
 		robot_selected_button.visible = false
@@ -235,8 +270,8 @@ func update_robot_select_menu():
 	for robot in robots:
 		robot_popup.add_check_item(robot.name)
 	_on_robot_selected(0)
-	
-	
+
+
 ## Callback on menu item selected
 func _on_robot_selected(idx: int):
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
@@ -247,16 +282,14 @@ func _on_robot_selected(idx: int):
 	for robot in robots:
 		if robot.name == robot_popup.get_item_text(idx):
 			robot_popup.set_item_checked(idx, true)
-			robot.activated = true
-			_selected_asset = robot
-			robot_selected_button.text = _selected_asset.name
-		else:
-			robot.activated = false
+			_robot_selected = robot
+			robot_selected_button.text = robot.name
+	
 	update_camera_view_menu()
 	show_joint_infos()
-		
-func show_asset_parameters(asset: Node3D):
 
+
+func show_asset_parameters(asset: Node3D):
 	# Remove joint parameters
 	for child in %JointsContainer.get_children():
 		%JointsContainer.remove_child(child)
@@ -330,16 +363,6 @@ func show_asset_parameters(asset: Node3D):
 		input_edit.step = 0.01
 		input_edit.value = joint.input_value
 		input_edit.value_changed.connect(joint._input_value_changed)
-		
-	if _selected_asset.is_in_group("ROBOTS"):
-		%PythonBridgeContainer.visible = true
-		%PythonRemoteButton.set_pressed_no_signal(_selected_asset.get_node("PythonBridge").activate)
-#		%UDPPortNumber.value = asset_selected.get_node("PythonBridge").port
-		var udp_port = _selected_asset.get_meta("udp_port")
-		if udp_port:
-			%UDPPortNumber.set_value_no_signal(int(udp_port))
-	else:
-		%PythonBridgeContainer.visible = false
 
 
 func new_scene(environment_path: String) -> void:
@@ -466,7 +489,7 @@ func load_scene(path):
 				asset_node.name = asset.string_name
 			if "udp_port" in asset and asset.udp_port:
 				asset_node.set_meta("udp_port", asset.udp_port)
-			freeze_asset(asset_node, true)
+			set_physics(asset_node, true)
 			scene.add_child(asset_node)
 
 	connect_pickable()
@@ -491,7 +514,7 @@ func delete_scene():
 	scene_node.queue_free()
 
 
-func freeze_asset(asset, frozen):
+func set_physics(asset, frozen):
 	#print("script %s, %s, frozen: %s" % [asset.name, asset.get_script(), asset.get("frozen")])
 	if asset.get("frozen") == null:
 		asset.set_physics_process(not frozen)
@@ -600,7 +623,6 @@ func show_joint_infos():
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	if scene == null: return
 	
-	%ObjectInspector.visible = not button_pressed
 	%ControlContainer.visible = not button_pressed
 	%ReloadButton.visible = not button_pressed
 	
@@ -611,7 +633,8 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	if button_pressed:
 		running = true
 		set_physics_process(true)
-		if environment.has_signal("asset_exited"):
+		if (environment.has_signal("asset_exited")
+			and not environment.asset_exited.is_connected(_on_asset_out_of_bound_detected)):
 			environment.asset_exited.connect(_on_asset_out_of_bound_detected)
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
@@ -626,7 +649,7 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 		%InfosContainer.visible = false
 	
 	for asset in scene.get_children():
-		freeze_asset(asset, !running)
+		set_physics(asset, !running)
 		if asset.is_in_group("ROBOTS"):
 			var udp_port = asset.get_meta("udp_port")
 			if udp_port:
@@ -639,6 +662,7 @@ func _on_reload_button_pressed():
 		GPSettings.physics_tick = 0
 		%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
 
+
 func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
 	mouse_pos_on_area = mouse_position
 	if event.is_action_pressed("EDIT"):
@@ -646,6 +670,7 @@ func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal,
 	if asset_dragged:
 #		print("mouse position: ", mouse_position)
 		asset_dragged.position = mouse_position + scene_view.offset_pos
+
 
 func _on_ground_mouse_entered():
 #	print("[GS] mouse entered")
@@ -663,20 +688,6 @@ func _on_editable_mouse_entered():
 func _on_editable_mouse_exited():
 	#print("[GS] mouse exited on %s" % [owner.mouse_default_cursor_shape])
 	owner.mouse_default_cursor_shape = Control.CURSOR_ARROW
-
-
-func _on_udp_port_number_value_changed(value: float) -> void:
-	if _selected_asset == null: return
-	if _selected_asset.is_in_group("ROBOTS"):
-		if not is_udp_port_available(int(value)):
-#			printerr("udp port not availabled")
-			%UDPPortNumber.value = _selected_asset.get_meta("udp_port")
-			%UDPPortWarning.visible = true
-			%UDPPortWarning.text = "%d is already used" % [value]
-			var warning_message := get_tree().create_tween()
-			warning_message.tween_property(%UDPPortWarning, "visible", false, 2)
-			return
-		_selected_asset.set_meta("udp_port", int(value))
 
 
 func get_available_udp_port():

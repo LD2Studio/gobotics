@@ -6,7 +6,7 @@ class_name DiffDrive extends Node
 		frozen = value
 		set_physics_process(!frozen)
 		if frozen and _move_to_settings != null:
-			_move_to_settings.task = Task.IDLE
+			#_move_to_settings.task = Task.IDLE
 			if right_wheel_joint != null and left_wheel_joint != null:
 				move_diff_drive(0,0)
 
@@ -20,6 +20,7 @@ var left_wheel_joint: Node3D
 
 enum Task {
 	IDLE,
+	MOVE,
 	MOVE_TO,
 }
 
@@ -37,8 +38,26 @@ func _ready() -> void:
 	set_physics_process(!frozen)
 	_move_to_settings = MoveToSettings.new()
 
-func _input(_event):
-	if _move_to_settings.task == Task.IDLE and activated:
+
+func _physics_process(_delta: float) -> void:
+	match _move_to_settings.task:
+		Task.IDLE:
+			pass
+			#print("IDLE (%s)" % [get_parent().name])
+		Task.MOVE_TO:
+			#print("MOVE TO (%s)" % [get_parent().name])
+			_path_control_process()
+
+
+#region PUBLIC METHODS
+
+func setup():
+	right_wheel_joint = get_parent().get_node_or_null("%%%s" % [right_wheel])
+	left_wheel_joint = get_parent().get_node_or_null("%%%s" % [left_wheel])
+
+
+func command(event: InputEvent):
+	if _move_to_settings.task == Task.IDLE:
 		#print(event)
 		var speed = max_speed if Input.is_action_pressed("BOOST") else max_speed/2.0
 
@@ -70,22 +89,6 @@ func _input(_event):
 			right_wheel_joint.target_velocity = 0
 			left_wheel_joint.target_velocity = 0
 
-func _physics_process(_delta: float) -> void:
-	match _move_to_settings.task:
-		Task.IDLE:
-			pass
-			#print("IDLE (%s)" % [get_parent().name])
-		Task.MOVE_TO:
-			#print("MOVE TO (%s)" % [get_parent().name])
-			_path_control_process()
-
-
-#region PUBLIC METHODS
-
-func setup():
-	right_wheel_joint = get_parent().get_node_or_null("%%%s" % [right_wheel])
-	left_wheel_joint = get_parent().get_node_or_null("%%%s" % [left_wheel])
-	
 #endregion
 
 #region PUBLIC METHODS EXPOSED TO PYTHON_BRIDGE
@@ -93,7 +96,10 @@ func setup():
 func move_diff_drive(right_vel: float, left_vel: float):
 	right_wheel_joint.target_velocity = right_vel
 	left_wheel_joint.target_velocity = left_vel
-
+	_move_to_settings.task = Task.MOVE
+	
+	if right_vel == 0.0 and left_vel == 0.0:
+		_move_to_settings.task = Task.IDLE
 
 func move_to(new_position: Vector2, new_speed: float,
 			precision: float = 0.01, response: float = 20.0):
