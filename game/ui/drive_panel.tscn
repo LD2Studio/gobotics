@@ -1,0 +1,65 @@
+[gd_scene load_steps=3 format=3 uid="uid://iem50p7y7tm3"]
+
+[ext_resource type="Script" path="res://game/ui/drive_panel.gd" id="1_rb2ud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cgysh"]
+
+[node name="DrivePanel" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_cgysh")
+script = ExtResource("1_rb2ud")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 2
+columns = 3
+
+[node name="Control" type="Control" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ForwardButton" type="Button" parent="GridContainer"]
+layout_mode = 2
+text = "Forward"
+
+[node name="Control2" type="Control" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LeftButton" type="Button" parent="GridContainer"]
+layout_mode = 2
+text = "Left"
+
+[node name="Control3" type="Control" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RightButton" type="Button" parent="GridContainer"]
+layout_mode = 2
+text = "Right"
+
+[node name="Control4" type="Control" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BackButton" type="Button" parent="GridContainer"]
+layout_mode = 2
+text = "Back"
+
+[node name="Control5" type="Control" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[connection signal="button_down" from="GridContainer/ForwardButton" to="." method="_on_forward_button_button_down"]
+[connection signal="button_up" from="GridContainer/ForwardButton" to="." method="_on_forward_button_button_up"]
+[connection signal="button_down" from="GridContainer/LeftButton" to="." method="_on_left_button_button_down"]
+[connection signal="button_up" from="GridContainer/LeftButton" to="." method="_on_left_button_button_up"]
+[connection signal="button_down" from="GridContainer/RightButton" to="." method="_on_right_button_button_down"]
+[connection signal="button_up" from="GridContainer/RightButton" to="." method="_on_right_button_button_up"]
+[connection signal="button_down" from="GridContainer/BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="button_up" from="GridContainer/BackButton" to="." method="_on_back_button_button_up"]

@@ -12,7 +12,6 @@ var _links: Array
 var _joints: Array
 var _sensors: Array
 var _gobotics: Array
-var _filename : String
 var _frame_mesh : ArrayMesh = load("res://game/gizmos/frame_arrows.res")
 
 enum Tag {

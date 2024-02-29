@@ -16,10 +16,11 @@ var _current_cam: int = 0
 @onready var transform_container: GridContainer = %TransformContainer
 @onready var asset_name_label: Label = %AssetNameLabel
 @onready var udp_port_number: SpinBox = %UDPPortNumber
+@onready var inputs_container: MarginContainer = %InputsContainer
+@onready var drive_panel: PanelContainer = %DrivePanel
 
 @onready var camera_view_button = %CameraViewButton
 @onready var robot_selected_button = %RobotSelectedButton
-@onready var focused_joint_label = %FocusedJointLabel
 @onready var scene_view = %SceneView
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 @onready var rename_dialog: ConfirmationDialog = %RenameDialog
@@ -30,7 +31,7 @@ var python_bridge_scene : PackedScene = preload("res://game/python_bridge/python
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
-	%InfosContainer.visible = false
+	inputs_container.visible = false
 	_show_asset_properties(null)
 	update_camera_view_menu()
 	set_physics_process(false)
@@ -43,13 +44,6 @@ func _ready() -> void:
 
 
 #region PROCESS
-
-func _input(event: InputEvent) -> void:
-	if running and _robot_selected:
-		var control_robot: Node = _robot_selected.get_node_or_null("ControlRobot")
-		if control_robot and control_robot.has_method("command"):
-			control_robot.command(event)
-
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not running and event.is_action_pressed("DELETE") and _selected_asset:
@@ -75,6 +69,10 @@ func _physics_process(delta: float) -> void:
 		var robot_base: Node = _robot_selected.get_node_or_null("RobotBase")
 		if robot_base and robot_base.has_method("command"):
 			robot_base.command(delta)
+		
+		var robot_drive: Node = _robot_selected.get_node_or_null("ControlRobot")
+		if robot_drive and robot_drive.has_method("command"):
+			robot_drive.command(delta)
 
 #endregion
 
@@ -118,14 +116,14 @@ func _show_asset_properties(asset):
 	else:
 		set_property_editable.call(true)
 	
-	var search_base_link = func(asset):
+	var search_base_link = func():
 		for child_node in asset.get_children():
 			if child_node is RigidBody3D:
 				return child_node
 	
 	var base_link = search_base_link.call(asset)
 	#print("asset: %s, base link: %s" % [asset, base_link])
-	var tr = {
+	var base_link_tr = {
 		x = base_link.global_position.x / GPSettings.SCALE,
 		y = -base_link.global_position.z / GPSettings.SCALE,
 		z = base_link.global_position.y / GPSettings.SCALE,
@@ -135,12 +133,12 @@ func _show_asset_properties(asset):
 	}
 	#print("tr: ", tr)
 	
-	transform_container.get_node("X_pos").call_deferred("set_value_no_signal", tr.x)
-	transform_container.get_node("Y_pos").call_deferred("set_value_no_signal", tr.y)
-	transform_container.get_node("Z_pos").call_deferred("set_value_no_signal", tr.z)
-	transform_container.get_node("Roll").call_deferred("set_value_no_signal", tr.roll)
-	transform_container.get_node("Pitch").call_deferred("set_value_no_signal", tr.pitch)
-	transform_container.get_node("Yaw").call_deferred("set_value_no_signal", tr.yaw)
+	transform_container.get_node("X_pos").call_deferred("set_value_no_signal", base_link_tr.x)
+	transform_container.get_node("Y_pos").call_deferred("set_value_no_signal", base_link_tr.y)
+	transform_container.get_node("Z_pos").call_deferred("set_value_no_signal", base_link_tr.z)
+	transform_container.get_node("Roll").call_deferred("set_value_no_signal", base_link_tr.roll)
+	transform_container.get_node("Pitch").call_deferred("set_value_no_signal", base_link_tr.pitch)
+	transform_container.get_node("Yaw").call_deferred("set_value_no_signal", base_link_tr.yaw)
 	
 	if _selected_asset.is_in_group("ROBOTS"):
 		%UDPPortContainer.visible = true
@@ -254,6 +252,7 @@ func _camera_view_selected(idx: int):
 		if not is_robots_inside_scene(): return
 		_cams[idx].current = true
 
+#region ROBOT SELECTION
 
 func update_robot_select_menu():
 	if not is_robots_inside_scene():
@@ -284,12 +283,22 @@ func _on_robot_selected(idx: int):
 			robot_popup.set_item_checked(idx, true)
 			_robot_selected = robot
 			robot_selected_button.text = robot.name
-	
+	_show_robot_command()
 	update_camera_view_menu()
-	show_joint_infos()
+
+#endregion
+
+func _show_robot_command():
+	inputs_container.visible = running
+	
+	var driving_node = _robot_selected.get_node_or_null("ControlRobot")
+	if driving_node:
+		drive_panel.visible = true
+	else:
+		drive_panel.visible = false
 
 
-func show_asset_parameters(asset: Node3D):
+func show_asset_parameters():
 	# Remove joint parameters
 	for child in %JointsContainer.get_children():
 		%JointsContainer.remove_child(child)
@@ -607,19 +616,6 @@ func is_robots_inside_scene() -> bool:
 	return true
 
 
-func show_joint_infos():
-	if _selected_asset == null: return
-	if _selected_asset.has_node("RobotBase") and _selected_asset.get_node("RobotBase").focused_joint:
-		%InfosContainer.visible = true
-		var focused_joint = _selected_asset.get_node("RobotBase").focused_joint.name
-		_joint_focus_changed(focused_joint)
-		if not _selected_asset.get_node("RobotBase").is_connected("joint_changed", _joint_focus_changed):
-			_selected_asset.get_node("RobotBase").joint_changed.connect(_joint_focus_changed)
-	else:
-		%InfosContainer.visible = false
-		
-## Slot functions
-
 func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	if scene == null: return
 	
@@ -638,7 +634,6 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 			environment.asset_exited.connect(_on_asset_out_of_bound_detected)
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
-		show_joint_infos()
 	else:
 		running = false
 		set_physics_process(false)
@@ -646,7 +641,6 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 			environment.asset_exited.disconnect(_on_asset_out_of_bound_detected)
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
-		%InfosContainer.visible = false
 	
 	for asset in scene.get_children():
 		set_physics(asset, !running)
@@ -654,6 +648,8 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 			var udp_port = asset.get_meta("udp_port")
 			if udp_port:
 				asset.activate_python(running, asset.get_meta("udp_port"))
+	
+	_show_robot_command()
 
 
 func _on_reload_button_pressed():
@@ -706,7 +702,8 @@ func get_available_udp_port():
 	else:
 		printerr("UDP port not assigned!")
 		return null
-		
+
+
 func is_udp_port_available(udp_port: int) -> bool:
 	var robots_udp_port : Array[int]= []
 	for asset in get_node("Scene").get_children():
@@ -718,7 +715,8 @@ func is_udp_port_available(udp_port: int) -> bool:
 		return false
 	else:
 		return true
-		
+
+
 func _on_open_script_button_pressed() -> void:
 	if _selected_asset == null: return
 	if _selected_asset.is_in_group("PYTHON"):
@@ -740,24 +738,25 @@ func _on_rename_dialog_confirmed() -> void:
 			update_robot_select_menu()
 		save_project()
 
+
 func _on_script_dialog_confirmed() -> void:
 	if _selected_asset == null: return
 	_selected_asset.source_code = %SourceCodeEdit.text
+
 
 func _on_builtin_script_check_box_toggled(button_pressed: bool) -> void:
 	if _selected_asset == null: return
 	_selected_asset.builtin = button_pressed
 
+
 func _on_frame_check_box_toggled(button_pressed):
 	for node in get_tree().get_nodes_in_group("FRAME"):
 		node.visible = button_pressed
 
+
 func _on_joint_check_box_toggled(button_pressed):
 	for node in get_tree().get_nodes_in_group("JOINT_GIZMO"):
 		node.visible = button_pressed
-
-func _joint_focus_changed(value: String):
-	focused_joint_label.text = value
 
 
 func _on_asset_delete_dialog_confirmed() -> void:

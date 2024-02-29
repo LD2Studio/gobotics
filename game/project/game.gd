@@ -43,8 +43,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		_on_button_pressed()
 
 
-func _notification(what: int) -> void:
-	pass
+#func _notification(what: int) -> void:
+	#pass
 	#print("notification: ", what)
 	#if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		#print("CLOSE REQUEST")
