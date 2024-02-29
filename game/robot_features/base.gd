@@ -6,6 +6,7 @@ class_name RobotBase extends Node
 
 #endregion
 
+
 #region OUTPUTS
 
 var joypads_connected: Array[int]
@@ -17,6 +18,7 @@ signal joint_changed(joint_name: String)
 
 #endregion
 
+
 #region INTERNALS
 var _joints := Array()
 var _ray_sensors := Array()
@@ -26,7 +28,7 @@ var _joint_idx : int = 0
 func _init():
 	Input.joy_connection_changed.connect(_on_joypad_changed)
 	joypads_connected = Input.get_connected_joypads()
-#	print("Joypads connected: ", joypads_connected)
+	#print("Joypads connected: ", joypads_connected)
 	if joypad_selected in joypads_connected:
 		joypad_connected = true
 	else:
@@ -46,10 +48,11 @@ func setup():
 			base_link = node
 	update_all_joints()
 	update_all_sensors()
+
 #endregion
 
 func update_all_joints():
-#	print("update all joints")
+	#print("update all joints")
 	_joints.clear()
 	for node in get_tree().get_nodes_in_group("CONTINUOUS"):
 		if node.owner == get_parent(): _joints.append(node)
@@ -69,13 +72,15 @@ func update_all_joints():
 		focused_joint = _joints[0]
 		joint_changed.emit(focused_joint.name)
 
+
 func update_all_sensors():
 	_ray_sensors.clear()
 	for node in get_tree().get_nodes_in_group("SENSORS"):
 		if node.owner == get_parent():
 			_ray_sensors.append(node)
 	#print("ray sensors: ", _ray_sensors)
-	
+
+
 func _on_joypad_changed(device: int, connected: bool):
 	print("device %d connected: %s" % [device, connected])
 	joypads_connected = Input.get_connected_joypads()
@@ -83,7 +88,7 @@ func _on_joypad_changed(device: int, connected: bool):
 		joypad_connected = true
 	else:
 		joypad_connected = false
-		
+
 #endregion
 
 
@@ -92,25 +97,10 @@ func command(delta):
 	if focused_joint:
 		if focused_joint.has_method("shift_target"):
 			if Input.is_action_pressed("JOINT_POS"):
-				focused_joint.shift_target(delta)
-			elif Input.is_action_pressed("JOINT_NEG"):
 				focused_joint.shift_target(-delta)
-			
-		if Input.is_action_just_pressed("JOINT_UP"):
-			_joint_idx += 1
-			if _joint_idx >= len(_joints):
-				_joint_idx = 0
-			focused_joint = _joints[_joint_idx]
-			joint_changed.emit(focused_joint.name)
-#			print("focused joint: ", focused_joint)
-			
-		if Input.is_action_just_pressed("JOINT_DOWN"):
-			_joint_idx -= 1
-			if _joint_idx == -1:
-				_joint_idx = len(_joints) - 1
-			focused_joint = _joints[_joint_idx]
-			joint_changed.emit(focused_joint.name)
-#			print("focused joint: ", focused_joint)
+			elif Input.is_action_pressed("JOINT_NEG"):
+				focused_joint.shift_target(delta)
+
 #endregion
 
 #region PYTHON_BRIDGE FUNCTIONS

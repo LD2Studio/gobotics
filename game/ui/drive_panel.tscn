@@ -25,7 +25,8 @@ size_flags_horizontal = 3
 
 [node name="ForwardButton" type="Button" parent="GridContainer"]
 layout_mode = 2
-text = "Forward"
+focus_mode = 0
+text = "Forward (Z)"
 
 [node name="Control2" type="Control" parent="GridContainer"]
 layout_mode = 2
@@ -33,7 +34,8 @@ size_flags_horizontal = 3
 
 [node name="LeftButton" type="Button" parent="GridContainer"]
 layout_mode = 2
-text = "Left"
+focus_mode = 0
+text = "Left (Q)"
 
 [node name="Control3" type="Control" parent="GridContainer"]
 layout_mode = 2
@@ -41,7 +43,8 @@ size_flags_horizontal = 3
 
 [node name="RightButton" type="Button" parent="GridContainer"]
 layout_mode = 2
-text = "Right"
+focus_mode = 0
+text = "Right (D)"
 
 [node name="Control4" type="Control" parent="GridContainer"]
 layout_mode = 2
@@ -49,7 +52,8 @@ size_flags_horizontal = 3
 
 [node name="BackButton" type="Button" parent="GridContainer"]
 layout_mode = 2
-text = "Back"
+focus_mode = 0
+text = "Back (S)"
 
 [node name="Control5" type="Control" parent="GridContainer"]
 layout_mode = 2

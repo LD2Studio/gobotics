@@ -57,7 +57,7 @@
 		</inertial>
 	</link>
 
-	<joint name="arm servo" type="revolute">
+	<joint name="arm servo" type="revolute" visible="true">
 		<origin xyz="0 0 0.1" rpy="1.57 0 0"/>
 		<parent link="base_link"/>
 		<child link="arm_link"/>
@@ -101,7 +101,7 @@
 
 	</link>
 	
-	<joint name="arm2 servo" type="revolute">
+	<joint name="arm2 servo" type="revolute" visible="true">
 		<origin xyz="0.2 0.05 0" rpy="0 0 0"/>
 		<parent link="arm_link"/>
 		<child link="arm2_link"/>

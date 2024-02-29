@@ -18,6 +18,7 @@ var _current_cam: int = 0
 @onready var udp_port_number: SpinBox = %UDPPortNumber
 @onready var inputs_container: MarginContainer = %InputsContainer
 @onready var drive_panel: PanelContainer = %DrivePanel
+@onready var joints_panel: PanelContainer = %JointsPanel
 
 @onready var camera_view_button = %CameraViewButton
 @onready var robot_selected_button = %RobotSelectedButton
@@ -90,7 +91,6 @@ func _select_asset():
 	var result = get_world_3d().direct_space_state.intersect_ray(ray_quering)
 	if result:
 		_selected_asset = result.collider.owner
-		#print("collider owner: %s" % [result.collider.owner])
 		get_tree().call_group("VISUAL", "highlight", result.collider.owner)
 		_show_asset_properties(result.collider.owner)
 	else: # Deselects all assets
@@ -120,9 +120,8 @@ func _show_asset_properties(asset):
 		for child_node in asset.get_children():
 			if child_node is RigidBody3D:
 				return child_node
+	var base_link = search_base_link.call()
 	
-	var base_link = search_base_link.call(asset)
-	#print("asset: %s, base link: %s" % [asset, base_link])
 	var base_link_tr = {
 		x = base_link.global_position.x / GPSettings.SCALE,
 		y = -base_link.global_position.z / GPSettings.SCALE,
@@ -131,7 +130,6 @@ func _show_asset_properties(asset):
 		pitch = -base_link.global_basis.get_euler().z,
 		yaw = base_link.global_basis.get_euler().y,
 	}
-	#print("tr: ", tr)
 	
 	transform_container.get_node("X_pos").call_deferred("set_value_no_signal", base_link_tr.x)
 	transform_container.get_node("Y_pos").call_deferred("set_value_no_signal", base_link_tr.y)
@@ -142,7 +140,6 @@ func _show_asset_properties(asset):
 	
 	if _selected_asset.is_in_group("ROBOTS"):
 		%UDPPortContainer.visible = true
-		#%PythonRemoteButton.set_pressed_no_signal(_selected_asset.get_node("PythonBridge").activate)
 		var udp_port = _selected_asset.get_meta("udp_port")
 		if udp_port:
 			udp_port_number.set_value_no_signal(int(udp_port))
@@ -296,6 +293,20 @@ func _show_robot_command():
 		drive_panel.visible = true
 	else:
 		drive_panel.visible = false
+		
+	var base_node = _robot_selected.get_node_or_null("RobotBase")
+	if base_node:
+		var visible_joints: Array = base_node._joints.filter(
+			func(joint: Node3D):
+				return joint.get_meta("visible", false) == true
+				)
+		#print("visible joints: ", visible_joints)
+		if visible_joints.is_empty():
+			joints_panel.visible = false
+		else:
+			joints_panel.visible = true
+			joints_panel.joints = visible_joints
+			joints_panel.base_robot = base_node
 
 
 func show_asset_parameters():
