@@ -158,21 +158,24 @@ func create_asset_scene(root_node: Node3D):
 					joint_node.rotation = joint.origin.rpy
 					
 			"continuous":
-				joint_node = JoltHingeJoint3D.new()
+				joint_node = ContinuousJoint.new()
 				joint_node.name = joint.name
 				joint_node.add_to_group("CONTINUOUS", true)
+				joint_node.child_link = child_node
+				_record(joint_node)
+				if "visible" in joint:
+					joint_node.set_meta("visible", joint.visible)
+				else:
+					joint_node.set_meta("visible", false)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
-				
-				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
 						joint_node.motor_max_torque = float(joint.limit.effort)
 					if "velocity" in joint.limit:
-						limit_velocity = float(joint.limit.velocity)
+						joint_node.limit_velocity = float(joint.limit.velocity)
 				if not "axis" in joint:
-					#printerr("No axis for %s" % joint.name)
 					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
 					joint_node.transform.basis *= new_joint_basis
 				elif joint.axis != Vector3.UP:
@@ -181,10 +184,6 @@ func create_asset_scene(root_node: Node3D):
 				else:
 					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
 					joint_node.transform.basis *= new_joint_basis
-					
-				var joint_script := GDScript.new()
-				joint_script.source_code = get_continuous_joint_script(child_node, limit_velocity)
-				joint_node.set_script(joint_script)
 				
 			"revolute":
 				joint_node = RevoluteJoint.new()
@@ -200,7 +199,6 @@ func create_asset_scene(root_node: Node3D):
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
-				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
 						joint_node.motor_max_torque = float(joint.limit.effort)
@@ -235,7 +233,11 @@ func create_asset_scene(root_node: Node3D):
 				joint_node.name = joint.name
 				joint_node.child_link = child_node
 				joint_node.limit_enabled = true
-				joint_node.set_meta("owner", true)
+				_record(joint_node)
+				if "visible" in joint:
+					joint_node.set_meta("visible", joint.visible)
+				else:
+					joint_node.set_meta("visible", false)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
@@ -1528,24 +1530,6 @@ func add_owner(owner_node, nodes: Array):
 		if node.get_child_count():
 			add_owner(owner_node, node.get_children())
 
-func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
-	var source_code = """extends JoltHingeJoint3D
-@export var grouped: bool = false
-@onready var child_link: RigidBody3D = $%s
-var target_velocity: float = 0.0:
-	set = _target_velocity_changed
-const LIMIT_VELOCITY = %f
-
-func _ready():
-	child_link.can_sleep = false
-	motor_enabled = true
-	motor_target_velocity = -target_velocity
-	
-func _target_velocity_changed(value: float):
-	target_velocity = value
-	motor_target_velocity = -target_velocity
-""" % [child_node.name, limit_velocity]
-	return source_code
 
 func follow_camera_script(position: Vector3):
 	var source_code = """extends Camera3D

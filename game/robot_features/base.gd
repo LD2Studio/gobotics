@@ -97,9 +97,9 @@ func command(delta):
 	if focused_joint:
 		if focused_joint.has_method("shift_target"):
 			if Input.is_action_pressed("JOINT_POS"):
-				focused_joint.shift_target(-delta)
-			elif Input.is_action_pressed("JOINT_NEG"):
 				focused_joint.shift_target(delta)
+			elif Input.is_action_pressed("JOINT_NEG"):
+				focused_joint.shift_target(-delta)
 
 #endregion
 

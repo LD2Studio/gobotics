@@ -37,7 +37,6 @@ func _on_next_button_pressed() -> void:
 
 func _on_dir_minus_button_button_down() -> void:
 	Input.action_press("JOINT_NEG")
-	
 
 
 func _on_dir_minus_button_button_up() -> void:
