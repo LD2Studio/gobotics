@@ -543,14 +543,12 @@ func init_scene():
 	scene = Node3D.new()
 	scene.name = &"Scene"
 	add_child(scene)
-	scene.child_exiting_tree.connect(_on_asset_exited_scene)
 
 
 func delete_scene():
 	var scene_node = get_node_or_null("Scene")
 	if scene_node == null:
 		return
-	scene.child_exiting_tree.disconnect(_on_asset_exited_scene)
 	remove_child(scene_node)
 	scene_node.queue_free()
 

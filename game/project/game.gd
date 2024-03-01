@@ -64,7 +64,6 @@ func fill_assets_list():
 
 func _on_button_pressed() -> void:
 	game_scene.save_scene(current_filename)
-	game_scene.scene.child_exiting_tree.disconnect(game_scene._on_asset_exited_scene)
 	var err = get_tree().change_scene_to_file("res://game/home_page/home_page.tscn")
 	if err != OK:
 		printerr("Changing scene failed")
