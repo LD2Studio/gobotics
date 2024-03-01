@@ -300,13 +300,14 @@ func _show_robot_command():
 			func(joint: Node3D):
 				return joint.get_meta("visible", false) == true
 				)
-		#print("visible joints: ", visible_joints)
+		#print("robot: %s, base: %s, visible joints: %s" % [_robot_selected.name,
+															#base_node, visible_joints])
 		if visible_joints.is_empty():
 			joints_panel.visible = false
 		else:
 			joints_panel.visible = true
+			joints_panel.base_robot = base_node # Call before next instruction
 			joints_panel.joints = visible_joints
-			joints_panel.base_robot = base_node
 
 
 func show_asset_parameters():
