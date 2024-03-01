@@ -92,12 +92,32 @@ func _select_asset():
 	if result:
 		_selected_asset = result.collider.owner
 		get_tree().call_group("VISUAL", "highlight", result.collider.owner)
+		_show_asset_name(result.collider.owner)
 		_show_asset_properties(result.collider.owner)
 	else: # Deselects all assets
 		_selected_asset = null
 		get_tree().call_group("VISUAL", "highlight", null)
+		_show_asset_name(null)
 		_show_asset_properties(null)
 
+
+func _show_asset_name(asset):
+	if asset:
+		#print("show %s" % asset.name)
+		var asset_label = Label.new()
+		asset_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		asset_label.text = asset.name
+		var asset_position = func():
+			for child in asset.get_children():
+				if child is RigidBody3D:
+					return child.global_position
+		asset_label.position = (get_viewport().get_camera_3d()
+			.unproject_position(asset_position.call())
+			)
+		add_child(asset_label)
+		await get_tree().create_timer(1).timeout
+		remove_child(asset_label)
+		asset_label.queue_free()
 
 func _show_asset_properties(asset):
 	var set_property_editable = func(editable):
