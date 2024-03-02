@@ -1420,7 +1420,7 @@ func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
 
 func add_grouped_joints(root_node: Node3D, control):
 	var grouped_joints : Node = GroupedJoints.new()
-	grouped_joints.name = StringName(control.name.to_pascal_case())
+	grouped_joints.name = StringName(control.name)
 	grouped_joints.set_meta("owner", true)
 	grouped_joints.set_meta("visible", true)
 	root_node.add_child(grouped_joints)

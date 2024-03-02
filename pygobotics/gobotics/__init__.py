@@ -52,6 +52,9 @@ class Robot(GodotBridge):
 
     def get_prismatic(self, name: str) -> tuple:
         return self.call("get_prismatic", name)
+    
+    def set_grouped_joints(self, name: str, value: float):
+        self.call("set_grouped_joints", name, value)
 
     def is_ray_colliding(self, name: str) -> bool:
         return self.call("is_ray_colliding", name)

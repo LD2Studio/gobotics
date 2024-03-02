@@ -2,7 +2,7 @@ from gobotics import Robot, app
 import time
 
 app.run()
-my_servo = Robot(4244)
+my_servo = Robot(4243)
 
 my_servo.set_revolute_angle("arm_servo", 0)
 my_servo.set_revolute_angle("arm2_servo", 0)

@@ -192,10 +192,10 @@ func get_prismatic(jname: String) -> PackedFloat32Array:
 
 func set_grouped_joints(jname: String, value: float):
 	var grouped_joint_name = jname.replace(" ", "_")
-#	print("Grouped joint name: %s = %f " % [grouped_joint_name, value])
+	#print("Grouped joint name: %s = %f " % [grouped_joint_name, value])
 	for joint in _joints:
 		if joint.is_in_group("GROUPED_JOINTS") and joint.name == grouped_joint_name:
-			joint.target_value = value
+			joint.input_value = value * GPSettings.SCALE
 			return
 
 func is_ray_colliding(sname: String) -> bool:
