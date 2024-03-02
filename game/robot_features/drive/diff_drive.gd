@@ -1,6 +1,5 @@
 class_name DiffDrive extends Node
 
-@export var activated: bool = false
 @export var frozen: bool = true:
 	set(value):
 		frozen = value
