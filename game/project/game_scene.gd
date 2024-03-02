@@ -317,7 +317,7 @@ func _show_robot_command():
 	var base_node = _robot_selected.get_node_or_null("RobotBase")
 	if base_node:
 		var visible_joints: Array = base_node._joints.filter(
-			func(joint: Node3D):
+			func(joint: Node):
 				return joint.get_meta("visible", false) == true
 				)
 		#print("robot: %s, base: %s, visible joints: %s" % [_robot_selected.name,

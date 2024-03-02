@@ -12,7 +12,7 @@ var joints: Array:
 		if base_robot:
 			base_robot.focused_joint = _current_joint
 
-var _current_joint: Node3D
+var _current_joint: Node
 
 
 func _unhandled_key_input(event: InputEvent) -> void:

@@ -10,11 +10,6 @@ var input_value: float = 0.0:
 func _init():
 	add_to_group("GROUPED_JOINTS", true)
 
-func _ready():
-	pass
-#	for output in outputs:
-##		print("output: ", output)
-#		get_parent().get_node("%%%s" % [output.joint]).grouped = true
 
 func _input_value_changed(value: float):
 #	print("input: ", value)
