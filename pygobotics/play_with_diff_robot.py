@@ -5,7 +5,8 @@ from math import radians
 my_robot = DiffRobot(4243)
 
 app.run()
-my_robot.set_pose(0,0.5,radians(45))
+
+my_robot.set_pose(0,0,radians(45))
 my_robot.move(5,5)
 
 while True:

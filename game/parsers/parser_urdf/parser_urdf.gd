@@ -12,7 +12,6 @@ var _links: Array
 var _joints: Array
 var _sensors: Array
 var _gobotics: Array
-var _filename : String
 var _frame_mesh : ArrayMesh = load("res://game/gizmos/frame_arrows.res")
 
 enum Tag {
@@ -159,21 +158,24 @@ func create_asset_scene(root_node: Node3D):
 					joint_node.rotation = joint.origin.rpy
 					
 			"continuous":
-				joint_node = JoltHingeJoint3D.new()
+				joint_node = ContinuousJoint.new()
 				joint_node.name = joint.name
 				joint_node.add_to_group("CONTINUOUS", true)
+				joint_node.child_link = child_node
+				_record(joint_node)
+				if "visible" in joint:
+					joint_node.set_meta("visible", joint.visible)
+				else:
+					joint_node.set_meta("visible", false)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
-				
-				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
 						joint_node.motor_max_torque = float(joint.limit.effort)
 					if "velocity" in joint.limit:
-						limit_velocity = float(joint.limit.velocity)
+						joint_node.limit_velocity = float(joint.limit.velocity)
 				if not "axis" in joint:
-					#printerr("No axis for %s" % joint.name)
 					new_joint_basis = Basis.looking_at(-Vector3(1,0,0))
 					joint_node.transform.basis *= new_joint_basis
 				elif joint.axis != Vector3.UP:
@@ -182,21 +184,21 @@ func create_asset_scene(root_node: Node3D):
 				else:
 					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
 					joint_node.transform.basis *= new_joint_basis
-					
-				var joint_script := GDScript.new()
-				joint_script.source_code = get_continuous_joint_script(child_node, limit_velocity)
-				joint_node.set_script(joint_script)
 				
 			"revolute":
 				joint_node = RevoluteJoint.new()
 				joint_node.name = joint.name
+				joint_node.add_to_group("REVOLUTE", true)
 				joint_node.child_link = child_node
 				joint_node.limit_enabled = true
-				joint_node.set_meta("owner", true)
+				_record(joint_node)
+				if "visible" in joint:
+					joint_node.set_meta("visible", joint.visible)
+				else:
+					joint_node.set_meta("visible", false)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
-				var limit_velocity : float = 1.0
 				if "limit" in joint:
 					if "effort" in joint.limit:
 						joint_node.motor_max_torque = float(joint.limit.effort)
@@ -219,9 +221,9 @@ func create_asset_scene(root_node: Node3D):
 				else:
 					new_joint_basis = Basis(Vector3(1,0,0), Vector3(0,0,-1), Vector3(0,1,0))
 					joint_node.transform.basis *= new_joint_basis
-					
+				
 				var basis_node = Node3D.new()
-				basis_node.set_meta("owner", true)
+				_record(basis_node)
 				basis_node.name = joint_node.name + "_basis_inv"
 				basis_node.transform.basis = new_joint_basis
 				child_node.add_child(basis_node)
@@ -231,7 +233,11 @@ func create_asset_scene(root_node: Node3D):
 				joint_node.name = joint.name
 				joint_node.child_link = child_node
 				joint_node.limit_enabled = true
-				joint_node.set_meta("owner", true)
+				_record(joint_node)
+				if "visible" in joint:
+					joint_node.set_meta("visible", joint.visible)
+				else:
+					joint_node.set_meta("visible", false)
 				if "origin" in joint:
 					joint_node.position = joint.origin.xyz * scale
 					joint_node.rotation = joint.origin.rpy
@@ -1115,6 +1121,14 @@ func parse_joints(urdf_data: PackedByteArray):
 						joint_attrib[name] = value
 					if "name" in joint_attrib:
 						joint_attrib.name = joint_attrib.name.replace(" ", "_")
+					if "visible" in joint_attrib:
+						match joint_attrib.visible:
+							"true":
+								joint_attrib.visible = true
+							"false":
+								joint_attrib.visible = false
+							_:
+								joint_attrib.visible = false
 						
 				"parent":
 					if not root_tag == Tag.JOINT: continue
@@ -1406,8 +1420,9 @@ func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
 
 func add_grouped_joints(root_node: Node3D, control):
 	var grouped_joints : Node = GroupedJoints.new()
-	grouped_joints.name = StringName(control.name.to_pascal_case())
+	grouped_joints.name = StringName(control.name)
 	grouped_joints.set_meta("owner", true)
+	grouped_joints.set_meta("visible", true)
 	root_node.add_child(grouped_joints)
 	grouped_joints.input = control.input
 	grouped_joints.limit_lower = control.lower.to_float() * scale
@@ -1516,24 +1531,6 @@ func add_owner(owner_node, nodes: Array):
 		if node.get_child_count():
 			add_owner(owner_node, node.get_children())
 
-func get_continuous_joint_script(child_node: Node3D, limit_velocity: float) -> String:
-	var source_code = """extends JoltHingeJoint3D
-@export var grouped: bool = false
-@onready var child_link: RigidBody3D = $%s
-var target_velocity: float = 0.0:
-	set = _target_velocity_changed
-const LIMIT_VELOCITY = %f
-
-func _ready():
-	child_link.can_sleep = false
-	motor_enabled = true
-	motor_target_velocity = -target_velocity
-	
-func _target_velocity_changed(value: float):
-	target_velocity = value
-	motor_target_velocity = -target_velocity
-""" % [child_node.name, limit_velocity]
-	return source_code
 
 func follow_camera_script(position: Vector3):
 	var source_code = """extends Camera3D

@@ -9,6 +9,7 @@ func _ready() -> void:
 	%GoboticsInfo.text = "%s v%s - Develop with Godot Engine 4.2" % [app_name, version]
 	connected_game_controllers = Input.get_connected_joypads()
 
+
 func _on_exit_button_pressed():
 	get_tree().quit()
 

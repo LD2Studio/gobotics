@@ -185,7 +185,7 @@
 		</inertial>
 	</link>
 	
-	<joint name="elevator_joint" type="prismatic">
+	<joint name="elevator_joint" type="prismatic" visible="true">
 		<origin xyz="0.14 0 0.05" rpy="0 0 0"/>
 		<parent link="base_link"/>
 		<child link="elevator_link"/>

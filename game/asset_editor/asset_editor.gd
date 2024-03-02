@@ -12,7 +12,6 @@ var asset_type : TypeAsset = TypeAsset.ROBOT
 ## OUTPUTS
 
 signal asset_updated_in_editor(fullname: String)
-signal asset_editor_exited()
 signal fullscreen_toggled(button_pressed: bool)
 
 var urdf_parser = URDFParser.new()
@@ -232,13 +231,21 @@ func _on_quit_button_pressed():
 	if save_asset_button.disabled == false:
 		%SavingConfirmationDialog.popup_centered()
 	else:
-		asset_editor_exited.emit()
+		_on_exit()
 
 
 func _on_saving_confirmation_dialog_confirmed():
 	save_asset()
-	asset_editor_exited.emit()
+	_on_exit()
 
 
 func _on_saving_confirmation_dialog_canceled():
-	asset_editor_exited.emit()
+	_on_exit()
+
+
+func _on_exit():
+	var asset_list = get_parent().get_parent()
+	asset_list.update_scene()
+	var dialog = get_parent()
+	dialog.visible = false
+	queue_free()

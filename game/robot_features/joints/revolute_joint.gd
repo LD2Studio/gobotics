@@ -22,7 +22,6 @@ var _basis_inv_node: Node3D
 
 #region INIT
 func _ready():
-	add_to_group("REVOLUTE", true)
 	child_link.can_sleep = false
 	motor_enabled = true
 	_angle_step = limit_velocity / Engine.physics_ticks_per_second

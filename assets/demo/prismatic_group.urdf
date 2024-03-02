@@ -1,0 +1,59 @@
+<robot name="PrismaticGroup">
+	<link name="base_link">
+		<visual name="" with_col="true">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+			<box size="0.4 0.1 0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0 0 0.5 1"/>
+			</material>
+		</visual>
+	</link>
+		
+	<link name="slider">
+		<visual name="" with_col="true">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+			<box size="0.1 0.1 0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0 0.5 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<joint name="slider_joint" type="prismatic" visible="false">
+		<origin xyz="0.05 0 0.1" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="slider"/>
+		<axis xyz="1.0 0.0 0.0"/>
+		<limit lower="0.0" upper="0.1" effort="1.0" velocity="0.2"/>
+	</joint>
+	
+	<link name="slider2">
+		<visual name="" with_col="true">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+			<box size="0.1 0.1 0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.5 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+	
+	<joint name="slider2_joint" type="prismatic" visible="false">
+		<origin xyz="-0.05 0 0.1" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="slider2"/>
+		<axis xyz="1.0 0.0 0.0"/>
+		<limit lower="-0.1" upper="0.0" effort="1.0" velocity="0.2"/>
+	</joint>
+	
+	<gobotics name="two_sliders" type="grouped_joints">
+		<input name="slider_group" lower="0" upper="0.1"/>
+		<output joint="slider_joint" factor="1"/>
+		<output joint="slider2_joint" factor="-1"/>
+    </gobotics>
+</robot>

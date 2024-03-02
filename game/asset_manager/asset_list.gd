@@ -75,31 +75,33 @@ func _on_item_menu_select(id: int):
 				return null
 			var fullname = get_item_metadata(idx)
 			delete_asset(fullname)
-			
+
+
 func _on_item_activated(index):
 	var fullname = get_item_metadata(index)
 	edit_asset(fullname)
-	
+
+
 func edit_asset(fullname: String):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_updated_in_editor.connect(func(value): asset_updated = value)
-	asset_editor.asset_editor_exited.connect(_on_asset_editor_exited)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_fullname = fullname
 	asset_editor_dialog.add_child(asset_editor)
 	asset_editor_dialog.popup_centered_ratio(0.8)
-	
+
+
 func create_new_asset(asset_type: int):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.asset_updated_in_editor.connect(func(value): asset_updated = value)
-	asset_editor.asset_editor_exited.connect(_on_asset_editor_exited)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_type = asset_type
 	asset_editor_dialog.add_child(asset_editor)
 	asset_editor_dialog.popup_centered_ratio(0.8)
-	
+
+
 func _on_asset_editor_exited():
 	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")
 	if asset_editor:
@@ -113,9 +115,9 @@ func delete_asset(fullname: String):
 	selected_asset_filename = GSettings.database.get_asset_filename(fullname)
 	%DeleteConfirmationDialog.dialog_text = "Do you want to delete the asset file \"%s\"" % [fullname]
 	%DeleteConfirmationDialog.popup_centered()
-	
+
+
 func _on_delete_confirmation_dialog_confirmed():
-#	DirAccess.remove_absolute(selected_asset_filename)
 	OS.move_to_trash(selected_asset_filename)
 	update_assets_database()
 	update_assets_in_scene()
@@ -142,7 +144,7 @@ func update_scene():
 		var fullname = asset.get_meta("fullname")
 		if fullname == null: continue
 		
-		game_scene.asset_selected = null
+		game_scene._selected_asset = null
 		if fullname != asset_updated: continue
 		
 		if GSettings.database.is_asset_exists(fullname):
@@ -162,10 +164,9 @@ func update_scene():
 			new_asset.name = asset_name
 			new_asset.global_transform = asset_tr
 			new_asset.set_meta("udp_port", udp_port)
-			game_scene.freeze_asset(new_asset, true)
+			game_scene.set_physics(new_asset, true)
 			scene_node.add_child(new_asset)
 			
-	game_scene.connect_editable()
 	game_scene.update_robot_select_menu()
 	game_scene.update_camera_view_menu()
 	
@@ -188,9 +189,8 @@ func update_assets_in_scene():
 			game_scene.scene.add_child(new_asset)
 			new_asset.get_child(0).global_position = asset_position
 			new_asset.get_child(0).global_rotation = asset_rotation
-			game_scene.connect_editable()
 			game_scene.connect_pickable()
-			game_scene.freeze_asset(new_asset, true)
+			game_scene.set_physics(new_asset, true)
 	game_scene.update_camera_view_menu()
 	asset_updated = ""
 

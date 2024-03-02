@@ -1,16 +1,12 @@
-from gobotics import app, GodotBridge
+from gobotics import app, Robot
 import time
 
-class Wrench(GodotBridge):
-    def set_value(self, value: float):
-        self.set("set_grouped_joints", "control_wrench", value)
-
 app.run()
-wrench = Wrench(4243)
+wrench = Robot(4243)
 
-wrench.set_value(0.5)
-time.sleep(1)
-wrench.set_value(0)
-time.sleep(1)
+wrench.set_grouped_joints("two_sliders", 0)
+time.sleep(2)
+wrench.set_grouped_joints("two_sliders", 0.1)
+time.sleep(2)
 
 app.stop()

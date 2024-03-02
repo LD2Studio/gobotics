@@ -7,7 +7,7 @@ func _can_drop_data(_at_position: Vector2, node) -> bool:
 	if game_scene.game_area_pointed:
 		if game_scene.asset_dragged == null:
 			game_scene.asset_dragged = node.duplicate()
-			game_scene.freeze_asset(game_scene.asset_dragged, true)
+			game_scene.set_physics(game_scene.asset_dragged, true)
 			game_scene.enable_pickable(game_scene.asset_dragged, false)
 			game_scene.get_node("Scene").add_child(game_scene.asset_dragged)
 			offset_pos = game_scene.calculate_position_on_floor(game_scene.asset_dragged)
@@ -36,9 +36,8 @@ func _drop_data(_at_position: Vector2, data) -> void:
 		asset.set_meta("udp_port", game_scene.get_available_udp_port())
 	else:
 		asset.set_meta("udp_port", null)
-	game_scene.freeze_asset(asset, true)
+	game_scene.set_physics(asset, true)
 	game_scene.get_node("Scene").add_child(asset)
-	game_scene.connect_editable()
 	game_scene.update_robot_select_menu()
 	game_scene.update_camera_view_menu()
 	
@@ -70,4 +69,3 @@ func _on_gui_input(event):
 			game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
 			game_scene.asset_dragged.queue_free()
 			game_scene.asset_dragged = null
-		

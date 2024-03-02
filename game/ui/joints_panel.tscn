@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=3 uid="uid://dle2ijlcn4b0g"]
+
+[ext_resource type="Script" path="res://game/ui/joints_panel.gd" id="1_xp8lw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lmfsw"]
+
+[node name="JointsPanel" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_lmfsw")
+script = ExtResource("1_xp8lw")
+
+[node name="GridContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="JointNameLabel" type="Label" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Joint"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GridContainer"]
+layout_mode = 2
+
+[node name="DirMinusButton" type="Button" parent="GridContainer/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Dir- (A)"
+
+[node name="DirPlusButton" type="Button" parent="GridContainer/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Dir+ (E)"
+
+[node name="NextButton" type="Button" parent="GridContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Next joint (TAB)"
+
+[connection signal="button_down" from="GridContainer/HBoxContainer/DirMinusButton" to="." method="_on_dir_minus_button_button_down"]
+[connection signal="button_up" from="GridContainer/HBoxContainer/DirMinusButton" to="." method="_on_dir_minus_button_button_up"]
+[connection signal="button_down" from="GridContainer/HBoxContainer/DirPlusButton" to="." method="_on_dir_plus_button_button_down"]
+[connection signal="button_up" from="GridContainer/HBoxContainer/DirPlusButton" to="." method="_on_dir_plus_button_button_up"]
+[connection signal="pressed" from="GridContainer/NextButton" to="." method="_on_next_button_pressed"]

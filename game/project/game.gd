@@ -7,7 +7,6 @@ var gravity_enabled: bool = true
 @onready var assets_list = %AssetList
 @onready var control_camera_3d: Camera3D = %"3DView"
 @onready var top_camera_2d: Camera3D = %TopView
-@onready var object_inspector = %ObjectInspector
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 @onready var project_name: Label = %ProjectName
 
@@ -24,7 +23,6 @@ func _ready():
 	%TitleApp.text = "%s v%s" % [app_name, version]
 	
 	fill_assets_list()
-	object_inspector.visible = false
 	
 	if GPSettings.creating_new_project:
 		current_filename = GSettings.project_path.path_join(GPSettings.project_file)
@@ -45,14 +43,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		_on_button_pressed()
 
 
-func _notification(what: int) -> void:
+#func _notification(what: int) -> void:
+	#pass
 	#print("notification: ", what)
-	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		print("CLOSE REQUEST")
-
-
-func _on_clear_button_pressed() -> void:
-	%TerminalOutput.text = ""
+	#if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		#print("CLOSE REQUEST")
 
 
 func load_assets_in_database():
@@ -69,7 +64,6 @@ func fill_assets_list():
 
 func _on_button_pressed() -> void:
 	game_scene.save_scene(current_filename)
-	game_scene.scene.child_exiting_tree.disconnect(game_scene._on_asset_exited_scene)
 	var err = get_tree().change_scene_to_file("res://game/home_page/home_page.tscn")
 	if err != OK:
 		printerr("Changing scene failed")
