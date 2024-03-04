@@ -11,7 +11,8 @@ func _ready() -> void:
 	for visual_node in get_tree().get_nodes_in_group("VISUAL"):
 		if visual_node.owner == self:
 			var mat: BaseMaterial3D = visual_node.get_surface_override_material(0)
-			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			if mat:
+				mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 
 
 func _on_body_exited(body):
