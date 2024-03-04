@@ -4,10 +4,10 @@
 .vscode
 __pycache__/
 
-# Project Specific
+# Gobotics specific ignores
 /temp
+/assets
 /projects
-/assets/tests
 
 # Blender
 *.blend1

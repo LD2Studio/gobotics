@@ -65,23 +65,22 @@ func create_dir():
 	# Creating assets directory
 	if not DirAccess.dir_exists_absolute(asset_path):
 		DirAccess.make_dir_absolute(asset_path)
-		
-	# Copy demo assets in user folder
-	if not OS.has_feature("editor") or ProjectSettings.get_setting("application/config/use_user_path"):
-		if not DirAccess.dir_exists_absolute(asset_path.path_join("demo")):
+	if not DirAccess.dir_exists_absolute(asset_path.path_join("demo")):
 			DirAccess.make_dir_absolute(asset_path.path_join("demo"))
-			
-		var demo_asset_dir = DirAccess.open(_asset_editor_path.path_join("demo"))
-		if demo_asset_dir:
-			var demo_files = demo_asset_dir.get_files()
-			for file in demo_files:
-				demo_asset_dir.copy(_asset_editor_path.path_join("demo").path_join(file),
-						asset_path.path_join("demo").path_join(file))
-						
+	
+	const DEMO_ASSET_PATH = "res://game/assets/demo/"
+	var demo_asset_dir = DirAccess.open(DEMO_ASSET_PATH)
+	var is_dev_mode: bool = not OS.has_feature("editor") or ProjectSettings.get_setting("application/config/use_user_path")
+	
+	if demo_asset_dir:
+		var demo_files = demo_asset_dir.get_files()
+		for file in demo_files:
+			demo_asset_dir.copy(DEMO_ASSET_PATH.path_join(file),
+					asset_path.path_join("demo").path_join(file))
 		if not DirAccess.dir_exists_absolute(asset_path.path_join("demo/meshes")):
 			DirAccess.make_dir_absolute(asset_path.path_join("demo/meshes"))
 			
-		var demo_meshes_dir = DirAccess.open(_asset_editor_path.path_join("demo/meshes"))
+		var demo_meshes_dir = DirAccess.open(DEMO_ASSET_PATH.path_join("meshes"))
 		#print("Open asset editor error : ", DirAccess.get_open_error())
 		if demo_meshes_dir:
 			var demo_mesh_files = demo_meshes_dir.get_files()
@@ -89,13 +88,15 @@ func create_dir():
 				#print("extension: ", file.get_extension())
 				if file.get_extension() == "import": continue # Exclude *.import files
 				#print("Copy %s to %s" % [file, asset_path.path_join("demo/meshes")])
-				var err = demo_meshes_dir.copy(_asset_editor_path.path_join("demo/meshes").path_join(file),
+				var err = demo_meshes_dir.copy(DEMO_ASSET_PATH.path_join("meshes").path_join(file),
 						asset_path.path_join("demo/meshes").path_join(file))
 				if err != OK:
 					printerr("Copy GLTF files failed!")
 		else:
-			printerr("[ERROR] Opening demo assets folder failed (%d)" % [DirAccess.get_open_error()])
-	
+			printerr("Opening demo meshes dir failed (%d)" % [DirAccess.get_open_error()])
+	else:
+		printerr("Opening demo asset dir failed (%d)" % [DirAccess.get_open_error()])
+		
 	# Creating projects directory
 	if not DirAccess.dir_exists_absolute(project_path):
 		DirAccess.make_dir_absolute(project_path)
