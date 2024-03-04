@@ -1,0 +1,153 @@
+<robot name="Robot with 2 wheels">
+	<!-- CHASSIS LINK -->
+	<link name="base_link">
+		
+		<inertial>
+			<mass value="1"/>
+		</inertial>
+
+		<visual name="chassis">
+			<origin xyz="0 0 0.06" rpy="0 0 0"/>
+			<geometry>
+				<cylinder radius="0.12" length="0.1"/>
+			</geometry>
+			<material name="">
+				<color rgba="0 0.1 0.5 1"/>
+			</material>
+		</visual>
+		
+		<visual name="front_flag">
+			<origin xyz="0.08 0 0.11" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.05 0.1 0.01"/>
+			</geometry>
+			<material name="">
+			<color rgba="1 0 0 1"/>
+			</material>
+		</visual>
+
+		<collision name="chassis">
+			<origin xyz="0 0 0.06" rpy="0 0 0"/>
+			<geometry>
+				<cylinder radius="0.12" length="0.1"/>
+			</geometry>
+		</collision>
+
+	</link>
+	
+	<!-- RIGHT WHEEL LINK --> 
+	<link name="right_wheel">
+		<inertial>
+			<mass value="1"/>
+		</inertial>
+		<visual name="wheel">
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<geometry>
+				<cylinder radius="0.05" length="0.02"/>
+			</geometry>
+			<material>
+				<color rgba="0 0 1 1"/>
+			</material>
+		</visual>
+		<visual name="shaft">
+			<origin xyz="0 0.02 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.02 0.07 0.02"/>
+			</geometry>
+			<material name="">
+			
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<geometry>
+				<cylinder radius="0.05" length="0.02"/>
+			</geometry>
+		</collision>
+
+	</link>
+	
+	<joint name="right_joint" type="continuous">
+		<origin xyz="0.05 -0.12 0.05" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="right_wheel"/>
+		<axis xyz="0.0 1.0 0.0"/>
+		<limit effort="10" velocity="5.0"/>
+	</joint>
+	
+	<!-- LEFT WHEEL LINK -->
+	<link name="left_wheel">
+		<inertial>
+			<mass value="1"/>
+		</inertial>
+		<visual name="wheel">
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<geometry>
+				<cylinder radius="0.05" length="0.02"/>
+			</geometry>
+			<material>
+				<color rgba="0 0 1 1"/>
+			</material>
+		</visual>
+		
+		<visual name="shaft">
+			<origin xyz="0 -0.02 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.02 0.07 0.02"/>
+			</geometry>
+			<material name="">
+			
+			</material>
+		</visual>
+
+		<collision>
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<geometry>
+				<cylinder radius="0.05" length="0.02"/>
+			</geometry>
+		</collision>
+
+	</link>
+	
+	<joint name="left_joint" type="continuous">
+		<origin xyz="0.05 0.13 0.05" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="left_wheel"/>
+		<axis xyz="0.0 1.0 0.0"/>
+		<limit effort="10" velocity="5.0"/>
+	</joint>
+	
+	<!-- BACK CASTER WHEEL LINK -->
+	<link name="back_caster_wheel">
+		<inertial>
+			<mass value="2"/>
+			<friction value="0.0" />
+		</inertial>
+        <visual>
+            <geometry>
+                <sphere radius="0.02"/>
+            </geometry>
+        <material>
+			<color rgba="0 0 0 1"/>
+		</material>
+        </visual>
+        <collision>
+            <geometry>
+				<!--><box size="0.1 0.1 0.04"/> -->
+                <sphere radius="0.02"/>
+            </geometry>
+        </collision>
+    </link>
+	
+	<joint name="back_caster_joint" type="fixed">
+		<origin xyz="-0.10 0.0 0.020" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="back_caster_wheel"/>
+	</joint>
+	
+	<gobotics name="control_robot" type="diff_drive">
+        <right_wheel joint="right_joint"/>
+        <left_wheel joint="left_joint"/>
+		<max_speed value="8.0"/>
+    </gobotics>
+</robot>

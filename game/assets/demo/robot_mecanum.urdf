@@ -1,0 +1,144 @@
+<robot name="Robot Mecanum">
+	<!-- CHASSIS LINK -->
+	<link name="base_link">
+		
+		<inertial>
+		<origin xyz="0 0 0.01" rpy="0 0 0"/>
+			<mass value="1"/>
+		</inertial>
+
+		<visual name="chassis">
+			<origin xyz="0 0 0.06" rpy="0 0 0"/>
+			<geometry>
+				<cylinder radius="0.12" length="0.1"/>
+			</geometry>
+			<material name="">
+				<color rgba="0 0.1 0.5 1"/>
+			</material>
+		</visual>
+		
+		<visual name="front_flag">
+			<origin xyz="0.08 0 0.11" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.05 0.1 0.01"/>
+			</geometry>
+			<material name="">
+			<color rgba="1 0 0 1"/>
+			</material>
+		</visual>
+
+		<collision name="chassis">
+			<origin xyz="0 0 0.06" rpy="0 0 0"/>
+			<geometry>
+				<cylinder radius="0.12" length="0.1"/>
+			</geometry>
+		</collision>
+
+	</link>
+	
+	<!-- FRONT RIGHT WHEEL LINK --> 
+	<link name="front_right_wheel" extends="right_mecanum_wheel">
+
+		<inertial>
+			<mass value="0.1"/>
+		</inertial>
+		<visual name="">
+			<origin xyz="0 0.05 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.005" length="0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.2 0.2 0 1"/>
+			</material>
+		</visual>
+	</link>
+	
+	<joint name="front_right_joint" type="continuous">
+		<origin xyz="0.11 -0.11 0.03" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="front_right_wheel"/>
+		<axis xyz="0.0 1.0 0.0"/>
+		<limit effort="100" velocity="5.0"/>
+	</joint>
+	
+	<!-- FRONT LEFT WHEEL LINK -->
+	<link name="front_left_wheel" extends="left_mecanum_wheel">
+		<inertial>
+			<mass value="0.1"/>
+		</inertial>
+		<visual name="">
+			<origin xyz="0 -0.05 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.005" length="0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.2 0.2 0 1"/>
+			</material>
+		</visual>
+	</link>
+	
+	<joint name="front_left_joint" type="continuous">
+		<origin xyz="0.11 0.11 0.03" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="front_left_wheel"/>
+		<axis xyz="0.0 1.0 0.0"/>
+		<limit effort="100" velocity="5.0"/>
+	</joint>
+	
+	<!-- BACK RIGHT WHEEL LINK --> 
+	<link name="back_right_wheel" extends="left_mecanum_wheel">
+		<inertial>
+			<mass value="0.1"/>
+		</inertial>
+		<visual name="">
+			<origin xyz="0 0.05 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.005" length="0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.2 0.2 0 1"/>
+			</material>
+		</visual>
+	</link>
+	
+	<joint name="back_right_joint" type="continuous">
+		<origin xyz="-0.11 -0.11 0.03" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="back_right_wheel"/>
+		<axis xyz="0.0 1.0 0.0"/>
+		<limit effort="100" velocity="5.0"/>
+	</joint>
+	
+	<!-- BACK LEFT WHEEL LINK -->
+	<link name="back_left_wheel" extends="right_mecanum_wheel">
+		<inertial>
+			<mass value="0.1"/>
+		</inertial>
+		<visual name="">
+			<origin xyz="0 -0.05 0" rpy="1.57 0 0"/>
+			<geometry>
+			<cylinder radius="0.005" length="0.1"/>
+			</geometry>
+			<material name="">
+			<color rgba="0.2 0.2 0 1"/>
+			</material>
+		</visual>
+	</link>
+	
+	<joint name="back_left_joint" type="continuous">
+		<origin xyz="-0.11 0.11 0.03" rpy="0 0 0"/>
+		<parent link="base_link"/>
+		<child link="back_left_wheel"/>
+		<axis xyz="0.0 1.0 0.0"/>
+		<limit effort="100" velocity="5.0"/>
+	</joint>
+	
+	<gobotics name="control_robot" type="4_mecanum_drive">
+        <front_right_wheel joint="front_right_joint"/>
+        <front_left_wheel joint="front_left_joint"/>
+		<back_right_wheel joint="back_right_joint"/>
+        <back_left_wheel joint="back_left_joint"/>
+		<max_speed value="8.0"/>
+    </gobotics>
+	
+</robot>
