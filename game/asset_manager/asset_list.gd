@@ -1,5 +1,7 @@
 extends ItemList
 
+# The updated asset is located int the %AssetEditorDialog.get_meta("fullname") 
+
 @onready var game: Control = owner
 @onready var game_scene = %GameScene
 @onready var asset_popup_menu: PopupMenu = %AssetPopupMenu
@@ -22,7 +24,6 @@ var asset_updated: String = "":
 		
 var _at_position: Vector2i
 var _asset_editor_rect: Rect2i
-var selected_asset_filename: String
 
 func _ready() -> void:
 	asset_popup_menu.add_item("Edit", AssetId.EDIT)
@@ -85,7 +86,6 @@ func _on_item_activated(index):
 func edit_asset(fullname: String):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
-	asset_editor.asset_updated_in_editor.connect(func(value): asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_fullname = fullname
 	asset_editor_dialog.add_child(asset_editor)
@@ -95,7 +95,6 @@ func edit_asset(fullname: String):
 func create_new_asset(asset_type: int):
 	var asset_editor = asset_editor_packed_scene.instantiate()
 	asset_editor.name = &"AssetEditor"
-	asset_editor.asset_updated_in_editor.connect(func(value): asset_updated = value)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_type = asset_type
 	asset_editor_dialog.add_child(asset_editor)
@@ -112,15 +111,18 @@ func _on_asset_editor_exited():
 
 
 func delete_asset(fullname: String):
-	selected_asset_filename = GSettings.database.get_asset_filename(fullname)
 	%DeleteConfirmationDialog.dialog_text = "Do you want to delete the asset file \"%s\"" % [fullname]
+	%DeleteConfirmationDialog.set_meta("asset_fullname", fullname)
 	%DeleteConfirmationDialog.popup_centered()
 
 
 func _on_delete_confirmation_dialog_confirmed():
-	OS.move_to_trash(selected_asset_filename)
-	update_assets_database()
-	update_assets_in_scene()
+	var fullname = %DeleteConfirmationDialog.get_meta("asset_fullname", "")
+	var filename = GSettings.database.get_asset_filename(fullname)
+	if filename:
+		OS.move_to_trash(filename)
+		update_assets_database()
+		update_assets_in_scene()
 
 func update_assets_database():
 	game.load_assets_in_database()
@@ -172,17 +174,20 @@ func update_scene():
 	
 	
 func update_assets_in_scene():
-	var assets = get_tree().get_nodes_in_group("ASSETS")
-	if asset_updated == "": return
+	var updated_asset = %AssetEditorDialog.get_meta("fullname")
+	if updated_asset == null or updated_asset == "": return
+	#print("updated asset: ", updated_asset)
+	var assets = game_scene.scene.get_children()
+	print("assets: ", assets)
 	for asset in assets:
-		if asset.get_meta("fullname") == asset_updated:
+		if asset.get_meta("fullname") == updated_asset:
 			var asset_position = asset.get_child(0).global_position
 			var asset_rotation = asset.get_child(0).global_rotation
 			var asset_name = asset.name
 			game_scene.scene.remove_child(asset)
-			asset.free()
+			asset.queue_free()
 			
-			var asset_res = GSettings.database.get_asset_scene(asset_updated)
+			var asset_res = GSettings.database.get_asset_scene(updated_asset)
 			var new_asset = load(asset_res).instantiate()
 			new_asset.name = asset_name
 			
@@ -191,8 +196,10 @@ func update_assets_in_scene():
 			new_asset.get_child(0).global_rotation = asset_rotation
 			game_scene.connect_pickable()
 			game_scene.set_physics(new_asset, true)
+			
 	game_scene.update_camera_view_menu()
-	asset_updated = ""
+	%AssetEditorDialog.set_meta("fullname", "")
+
 
 func show_visual_mesh(enable: bool):
 	for node in get_tree().get_nodes_in_group("VISUAL"):

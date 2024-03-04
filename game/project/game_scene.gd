@@ -307,6 +307,9 @@ func _on_robot_selected(idx: int):
 
 func _show_robot_command():
 	inputs_container.visible = running
+	if _robot_selected == null:
+		drive_panel.visible = false
+		return
 	
 	var driving_node = _robot_selected.get_node_or_null("ControlRobot")
 	if driving_node:
@@ -506,7 +509,7 @@ func load_scene(path):
 		scene.add_child(environment)
 	
 	for asset in scene_objects.assets:
-		if "fullname" in asset:
+		if "fullname" in asset and asset.fullname is String:
 			var asset_filename = GSettings.database.get_asset_scene(asset.fullname)
 			if asset_filename == null:
 				printerr("Asset %s not available!" % [asset.fullname])

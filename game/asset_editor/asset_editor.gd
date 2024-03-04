@@ -1,5 +1,7 @@
 class_name AssetEditor extends PanelContainer
 
+signal fullscreen_toggled(button_pressed: bool)
+
 @export var asset_fullname: String # Setting by caller
 
 enum TypeAsset {
@@ -9,10 +11,6 @@ enum TypeAsset {
 }
 var asset_type : TypeAsset = TypeAsset.ROBOT
 
-## OUTPUTS
-
-signal asset_updated_in_editor(fullname: String)
-signal fullscreen_toggled(button_pressed: bool)
 
 var urdf_parser = URDFParser.new()
 var urdf_syntaxhighlighter = URDFSyntaxHighlighter.new()
@@ -121,8 +119,16 @@ func save_asset():
 		printerr("urdf file failed to saving!")
 		return
 	urdf_file.store_string(urdf_code_edit.text)
-	urdf_file.flush()
-	asset_updated_in_editor.emit(asset_filename_edit.text)
+	urdf_file.flush() # Force writing
+	
+	GSettings.database.update_asset(asset_filename_edit.text)
+	
+	var asset_editor_dialog = get_parent()
+	if asset_editor_dialog:
+		asset_editor_dialog.set_meta("fullname", asset_filename_edit.text)
+		var asset_list = asset_editor_dialog.get_parent()
+		if asset_list:
+			asset_list.update_assets_in_scene()
 	save_asset_button.disabled = true
 	
 func _on_overwrite_confirmation_dialog_confirmed():
@@ -244,8 +250,6 @@ func _on_saving_confirmation_dialog_canceled():
 
 
 func _on_exit():
-	var asset_list = get_parent().get_parent()
-	asset_list.update_scene()
 	var dialog = get_parent()
 	dialog.visible = false
 	queue_free()

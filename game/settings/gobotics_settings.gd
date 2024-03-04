@@ -70,7 +70,7 @@ func create_dir():
 	
 	const DEMO_ASSET_PATH = "res://game/assets/demo/"
 	var demo_asset_dir = DirAccess.open(DEMO_ASSET_PATH)
-	var is_dev_mode: bool = not OS.has_feature("editor") or ProjectSettings.get_setting("application/config/use_user_path")
+	#var is_dev_mode: bool = not OS.has_feature("editor") or ProjectSettings.get_setting("application/config/use_user_path")
 	
 	if demo_asset_dir:
 		var demo_files = demo_asset_dir.get_files()

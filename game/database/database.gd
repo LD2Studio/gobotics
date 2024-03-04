@@ -64,12 +64,12 @@ func add_assets(search_path: String, asset_base_dir: String):
 		printerr("Database not saving!")
 		
 func update_asset(asset_fullname: String):
-#	print("[DB] fullname: " , asset_fullname)
+	#print("[DB] fullname: " , asset_fullname)
 	if is_asset_exists(asset_fullname):
-#		print("update asset")
+		#print("update asset")
 		_update_asset(asset_fullname)
 	else:
-#		print("add new asset")
+		#print("add new asset")
 		add_new_asset(asset_fullname)
 		
 func _update_asset(fullname: String):
