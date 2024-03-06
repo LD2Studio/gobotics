@@ -93,7 +93,10 @@ func _select_asset():
 		_selected_asset = result.collider.owner
 		get_tree().call_group("VISUAL", "highlight", result.collider.owner)
 		_show_asset_name(result.collider.owner)
-		_show_asset_properties(result.collider.owner)
+		if result.collider.owner.is_in_group("ASSETS"):
+			_show_asset_properties(result.collider.owner)
+		else:
+			_show_asset_properties(null)
 	else: # Deselects all assets
 		_selected_asset = null
 		get_tree().call_group("VISUAL", "highlight", null)
