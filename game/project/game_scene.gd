@@ -797,8 +797,10 @@ func _on_joint_check_box_toggled(button_pressed):
 
 func _on_asset_delete_dialog_confirmed() -> void:
 	if scene:
-		#print("Delete %s" % asset_selected.name)
-		scene.remove_child.call_deferred(_selected_asset)
+		scene.remove_child(_selected_asset)
+		# INFO: remove asset from project and update robot selection menu
+		update_robot_select_menu()
+		save_project()
 
 
 func _on_asset_out_of_bound_detected(body: Node3D):
