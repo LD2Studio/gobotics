@@ -284,7 +284,10 @@ func update_robot_select_menu():
 	if not robot_popup.index_pressed.is_connected(_on_robot_selected):
 		robot_popup.index_pressed.connect(_on_robot_selected)
 	robot_popup.clear()
-	var robots = get_tree().get_nodes_in_group("ROBOTS")
+	var robots = scene.get_children().filter(
+			func(child):
+				return child.is_in_group("ROBOTS")
+	)
 	#print("robots: ", robots)
 	for robot in robots:
 		robot_popup.add_check_item(robot.name)

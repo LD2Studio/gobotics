@@ -179,8 +179,11 @@ func update_assets_in_scene():
 	#print("assets: ", assets)
 	for asset in assets:
 		if asset.get_meta("fullname", "") == updated_asset:
-			var asset_position = asset.get_child(0).global_position
-			var asset_rotation = asset.get_child(0).global_rotation
+			var base_link: RigidBody3D = asset.get_children().filter(
+					func(child): return child is RigidBody3D).front()
+			if base_link == null: continue
+			var asset_position = base_link.global_position
+			var asset_rotation = base_link.global_rotation
 			var asset_name = asset.name
 			game_scene.scene.remove_child(asset)
 			asset.queue_free()
@@ -190,11 +193,15 @@ func update_assets_in_scene():
 			new_asset.name = asset_name
 			
 			game_scene.scene.add_child(new_asset)
-			new_asset.get_child(0).global_position = asset_position
-			new_asset.get_child(0).global_rotation = asset_rotation
+			base_link = new_asset.get_children().filter(
+					func(child): return child is RigidBody3D).front()
+			if base_link == null: continue
+			base_link.global_position = asset_position
+			base_link.global_rotation = asset_rotation
 			game_scene.connect_pickable()
 			game_scene.set_physics(new_asset, true)
 			
+	game_scene.update_robot_select_menu()
 	game_scene.update_camera_view_menu()
 	%AssetEditorDialog.set_meta("fullname", "")
 
