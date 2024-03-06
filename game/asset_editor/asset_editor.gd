@@ -4,14 +4,23 @@ signal fullscreen_toggled(button_pressed: bool)
 
 @export var asset_fullname: String # Setting by caller
 
-enum TypeAsset {
-	STANDALONE,
-	ROBOT,
-	ENVIRONMENT,
-}
-var asset_type : TypeAsset = TypeAsset.ROBOT
-
-
+var asset_type : GSettings.AssetType = GSettings.AssetType.ROBOT
+var valid_urdf: bool = false:
+	set(new_value):
+		valid_urdf = new_value
+		if valid_urdf and modified_asset:
+			%SaveAssetButton.disabled = false
+		elif valid_urdf and not modified_asset:
+			%SaveAssetButton.disabled = true
+		elif not valid_urdf:
+			%SaveAssetButton.disabled = true
+var modified_asset: bool = false:
+	set(new_value):
+		modified_asset = new_value
+		if modified_asset:
+			valid_urdf = false
+		else:
+			%SaveAssetButton.disabled = true
 var urdf_parser = URDFParser.new()
 var urdf_syntaxhighlighter = URDFSyntaxHighlighter.new()
 var asset_scene : PackedScene = null
@@ -23,20 +32,20 @@ var asset_node : Node3D = null:
 @onready var preview_viewport = %PreviewViewport
 @onready var preview_scene = %PreviewScene
 @onready var asset_filename_edit = %AssetFilenameEdit
-@onready var save_asset_button = %SaveAssetButton
+
 
 func _ready():
-	urdf_parser.scale = 10
+	urdf_parser.scale = GPSettings.SCALE
 	urdf_code_edit.syntax_highlighter = urdf_syntaxhighlighter
 	if not asset_fullname:
 		match asset_type:
-			TypeAsset.STANDALONE:
+			GSettings.AssetType.STANDALONE:
 				urdf_code_edit.text = urdf_standalone_template
 				
-			TypeAsset.ROBOT:
+			GSettings.AssetType.ROBOT:
 				urdf_code_edit.text = urdf_robot_template
 				
-			TypeAsset.ENVIRONMENT:
+			GSettings.AssetType.ENVIRONMENT:
 				urdf_code_edit.text = urdf_environment_template
 				
 		asset_fullname = "noname.urdf"
@@ -49,7 +58,7 @@ func _ready():
 			return
 		urdf_code_edit.text = urdf_file.get_as_text()
 		urdf_parser.gravity_scale = ProjectSettings.get_setting("physics/3d/default_gravity")/9.8
-		save_asset_button.disabled = true
+		%SaveAssetButton.disabled = true
 		
 	asset_filename_edit.text = asset_fullname
 	show_visual_mesh(%VisualCheckBox.button_pressed)
@@ -62,24 +71,35 @@ func _ready():
 		printerr("[AE] creating asset failed")
 	
 func generate_scene() -> bool:
+	for child in preview_scene.get_children():
+		if child.is_in_group("ASSETS") or child.is_in_group("ENVIRONMENT"):
+			preview_scene.remove_child(child)
+			child.queue_free()
+	
 	urdf_parser.asset_user_path = GSettings.asset_path.path_join(asset_filename_edit.text).get_base_dir()
 
 	var error_output : Array = []
 	var root_node = urdf_parser.parse(urdf_code_edit.text.to_ascii_buffer(), error_output)
 	
 	if root_node == null:
-		printerr("[DB] URDF Parser failed")
+		valid_urdf = false
+		match urdf_parser.get_urdf_error():
+			URDFParser.OK:
+				pass
+			
+		%MessageContainer.visible = true
+		%MessageLabel.text = "Invalid URDF"
 		return false
+	valid_urdf = true
+	
+	%MessageContainer.visible = false
 	
 	root_node.set_meta("fullname", asset_filename_edit.text)
 	asset_scene = PackedScene.new()
 	var err = asset_scene.pack(root_node)
 	if err:
 		printerr("error packed %s!" % root_node)
-	for child in preview_scene.get_children():
-		if child.is_in_group("ASSETS") or child.is_in_group("ENVIRONMENT"):
-			preview_scene.remove_child(child)
-			child.queue_free()
+	
 	asset_node = asset_scene.instantiate()
 	freeze_asset(asset_node, true)
 	preview_scene.add_child(asset_node)
@@ -129,15 +149,17 @@ func save_asset():
 		var asset_list = asset_editor_dialog.get_parent()
 		if asset_list:
 			asset_list.update_assets_in_scene()
-	save_asset_button.disabled = true
-	
+	modified_asset = false
+
+
 func _on_overwrite_confirmation_dialog_confirmed():
 	save_asset()
 
 
 func _on_urdf_code_edit_text_changed() -> void:
-	save_asset_button.disabled = false
-	
+	modified_asset = true
+
+
 func freeze_asset(root_node, frozen):
 	root_node.set_physics_process(not frozen)
 	freeze_children(root_node, frozen)
@@ -234,7 +256,7 @@ const urdf_environment_template = """<env name="noname">
 
 
 func _on_quit_button_pressed():
-	if save_asset_button.disabled == false:
+	if valid_urdf and modified_asset:
 		%SavingConfirmationDialog.popup_centered()
 	else:
 		_on_exit()

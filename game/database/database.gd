@@ -112,7 +112,7 @@ func add_new_asset(asset_fullname: String):
 		printerr("[DB] creating scene failed")
 	
 func create_scene(urdf_pathname: String, scene: Array) -> bool:
-#	print("[DB] urdf path: ", urdf_pathname)
+	#print("[DB] urdf path: ", urdf_pathname)
 	var asset_path = urdf_pathname.get_base_dir()+"/"
 #	print("asset path: ", asset_path)
 	urdf_parser.asset_user_path = asset_path

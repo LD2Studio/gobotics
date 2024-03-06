@@ -61,6 +61,15 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 		delete_links()
 		root_node.free()
 		return null
+		
+func get_urdf_error():
+	pass
+	
+
+enum {
+	OK,
+	
+}
 
 ## Return the root node of URDF tree
 func get_root_node(urdf_data: PackedByteArray) -> Node3D:
@@ -321,6 +330,11 @@ func create_asset_scene(root_node: Node3D):
 	for link in _links:
 		if link and link.get_parent() == null:
 			base_link = link
+			# INFO: evaluate if base_link has collision shape like children
+			if not base_link.get_children().any(func(child): return child is CollisionShape3D):
+				freeing_nodes()
+				printerr("[URDF PARSER] base_link has not collision shape!")
+				return null
 			base_link.add_to_group("BASE_LINK", true)
 			link.set_meta("orphan", false)
 			if link.name == "world":
@@ -789,12 +803,14 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
+					
 					if current_tag == Tag.VISUAL:
 						var cylinder_mesh := CylinderMesh.new()
 						cylinder_mesh.bottom_radius = float(attrib.radius) * scale
 						cylinder_mesh.top_radius = float(attrib.radius) * scale
 						cylinder_mesh.height = float(attrib.length) * scale
 						current_visual.mesh = cylinder_mesh
+						
 					elif current_tag == Tag.VISUAL_WITH_COL:
 						var cylinder_mesh := CylinderMesh.new()
 						cylinder_mesh.bottom_radius = float(attrib.radius) * scale
@@ -829,10 +845,12 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						size.x = size_arr[0]
 						size.y = size_arr[2]
 						size.z = size_arr[1]
+					
 					if current_tag == Tag.VISUAL:
 						var box_mesh := BoxMesh.new()
 						box_mesh.size = size * scale
 						current_visual.mesh = box_mesh
+					
 					elif current_tag == Tag.VISUAL_WITH_COL:
 						var box_mesh := BoxMesh.new()
 						box_mesh.size = size * scale
@@ -842,6 +860,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						current_collision.shape = box_shape
 						var debug_mesh: ArrayMesh = box_shape.get_debug_mesh()
 						current_col_debug.mesh = debug_mesh
+					
 					elif current_tag == Tag.COLLISION:
 						var box_shape := BoxShape3D.new()
 						box_shape.size = size * scale
@@ -856,11 +875,13 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						var name = parser.get_attribute_name(idx)
 						var value = parser.get_attribute_value(idx)
 						attrib[name] = value
+					
 					if current_tag == Tag.VISUAL:
 						var sphere_mesh := SphereMesh.new()
 						sphere_mesh.radius = float(attrib.radius) * scale
 						sphere_mesh.height = float(attrib.radius) * scale * 2
 						current_visual.mesh = sphere_mesh
+						
 					elif current_tag == Tag.VISUAL_WITH_COL:
 						var sphere_mesh := SphereMesh.new()
 						sphere_mesh.radius = float(attrib.radius) * scale
@@ -871,6 +892,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						current_collision.shape = sphere_shape
 						var debug_mesh: ArrayMesh = sphere_shape.get_debug_mesh()
 						current_col_debug.mesh = debug_mesh
+						
 					elif current_tag == Tag.COLLISION:
 						var sphere_shape := SphereShape3D.new()
 						sphere_shape.radius = float(attrib.radius) * scale
@@ -895,6 +917,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 										continue
 									current_visual.mesh = mesh
 									current_visual.scale = Vector3.ONE * scale
+								
 								elif current_tag == Tag.VISUAL_WITH_COL:
 									var mesh: ArrayMesh = get_mesh_from_gltf(attrib)
 									if mesh == null:
@@ -903,11 +926,11 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 									current_visual.mesh = mesh
 									current_visual.scale = Vector3.ONE * scale
 									if current_collision:
-										printerr("Collision for 3D mesh is not supported!")
-										link.remove_child(current_collision)
-										link.remove_child(current_col_debug)
-										current_collision = null
-										current_col_debug = null
+										var shape: Shape3D = get_shape_from_gltf(attrib, current_col_debug)
+										if shape == null:
+											printerr("Failed to load shape into gltf")
+											continue
+										current_collision.shape = shape
 									
 								elif current_tag == Tag.COLLISION:
 									var shape: Shape3D = get_shape_from_gltf(attrib, current_col_debug, link.name == "world")
@@ -917,7 +940,8 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 									current_collision.shape = shape
 							_:
 								printerr("3D format not supported!")
-						
+					else:
+						printerr("Filename was not entered!")
 				"origin":
 					if root_tag != Tag.LINK: continue
 					var attrib = {}

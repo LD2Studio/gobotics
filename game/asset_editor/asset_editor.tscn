@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bcv1hfrfva2qb"]
+[gd_scene load_steps=14 format=3 uid="uid://bcv1hfrfva2qb"]
 
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_d4jh8"]
 [ext_resource type="Script" path="res://game/asset_editor/asset_editor.gd" id="1_j1den"]
@@ -22,8 +22,12 @@ sky_material = SubResource("ProceduralSkyMaterial_77vla")
 background_mode = 2
 sky = SubResource("Sky_xa5ux")
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eb8be"]
+bg_color = Color(0.101961, 0.121569, 0.101961, 1)
+expand_margin_left = 10.0
+expand_margin_right = 10.0
+
 [sub_resource type="LabelSettings" id="LabelSettings_2w3f3"]
-font_size = 12
 font_color = Color(1, 0, 0, 1)
 
 [node name="AssetEditor" type="PanelContainer"]
@@ -191,21 +195,24 @@ text = "Sensors"
 [node name="MessageContainer" type="PanelContainer" parent="VBoxContainer/AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport"]
 unique_name_in_owner = true
 visible = false
-anchors_preset = 7
+anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 1.0
+anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 1.0
+anchor_bottom = 0.5
 offset_left = -20.0
-offset_top = -40.0
+offset_top = -20.0
 offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
-grow_vertical = 0
+grow_vertical = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_eb8be")
 
 [node name="MessageLabel" type="Label" parent="VBoxContainer/AssetMargin/VBoxContainer/HSplitContainer/PreviewContainer/PreviewViewport/MessageContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+text = "ERROR"
 label_settings = SubResource("LabelSettings_2w3f3")
 horizontal_alignment = 1
 
@@ -214,6 +221,7 @@ layout_mode = 2
 theme_override_constants/margin_bottom = 5
 
 [node name="QuitButton" type="Button" parent="VBoxContainer/QuitMargin"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Return to Scene"

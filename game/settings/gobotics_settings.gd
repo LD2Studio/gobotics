@@ -3,6 +3,12 @@ class_name GoboticsSettings extends Node
 ##
 ## Stocke les paramètres de configuration du jeu Gobotics
 
+enum AssetType {
+	STANDALONE,
+	ROBOT,
+	ENVIRONMENT,
+}
+
 ## Chemin vers les projets utilisateur de Gobotics.
 var project_path: String:
 	get:

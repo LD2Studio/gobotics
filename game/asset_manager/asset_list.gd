@@ -8,8 +8,6 @@ extends ItemList
 @onready var asset_editor_dialog = %AssetEditorDialog
 @onready var new_asset_button = %NewAssetButton
 
-var asset_editor_packed_scene = preload("res://game/asset_editor/asset_editor.tscn")
-
 enum AssetId {
 	EDIT,
 	DELETE,
@@ -84,7 +82,7 @@ func _on_item_activated(index):
 
 
 func edit_asset(fullname: String):
-	var asset_editor = asset_editor_packed_scene.instantiate()
+	var asset_editor: AssetEditor = preload("res://game/asset_editor/asset_editor.tscn").instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_fullname = fullname
@@ -92,8 +90,8 @@ func edit_asset(fullname: String):
 	asset_editor_dialog.popup_centered_ratio(0.8)
 
 
-func create_new_asset(asset_type: int):
-	var asset_editor = asset_editor_packed_scene.instantiate()
+func create_new_asset(asset_type: GSettings.AssetType):
+	var asset_editor: AssetEditor = preload("res://game/asset_editor/asset_editor.tscn").instantiate()
 	asset_editor.name = &"AssetEditor"
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_type = asset_type
@@ -178,9 +176,9 @@ func update_assets_in_scene():
 	if updated_asset == null or updated_asset == "": return
 	#print("updated asset: ", updated_asset)
 	var assets = game_scene.scene.get_children()
-	print("assets: ", assets)
+	#print("assets: ", assets)
 	for asset in assets:
-		if asset.get_meta("fullname") == updated_asset:
+		if asset.get_meta("fullname", "") == updated_asset:
 			var asset_position = asset.get_child(0).global_position
 			var asset_rotation = asset.get_child(0).global_rotation
 			var asset_name = asset.name
