@@ -90,12 +90,13 @@ func _select_asset():
 	
 	var result = get_world_3d().direct_space_state.intersect_ray(ray_quering)
 	if result:
-		_selected_asset = result.collider.owner
 		get_tree().call_group("VISUAL", "highlight", result.collider.owner)
 		_show_asset_name(result.collider.owner)
 		if result.collider.owner.is_in_group("ASSETS"):
+			_selected_asset = result.collider.owner
 			_show_asset_properties(result.collider.owner)
 		else:
+			_selected_asset = null
 			_show_asset_properties(null)
 	else: # Deselects all assets
 		_selected_asset = null
