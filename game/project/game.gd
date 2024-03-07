@@ -22,7 +22,7 @@ func _ready():
 	var version: String = ProjectSettings.get_setting("application/config/version")
 	%TitleApp.text = "%s v%s" % [app_name, version]
 	
-	fill_assets_list()
+	assets_list.update_assets_list()
 	
 	if GPSettings.creating_new_project:
 		current_filename = GSettings.project_path.path_join(GPSettings.project_file)
@@ -52,14 +52,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 func load_assets_in_database():
 	GSettings.database.generate()
-	
-func fill_assets_list():
-	assets_list.clear()
-	for asset in GSettings.database.assets:
-		if asset.type == "builtin_env": continue
-		var idx = assets_list.add_item(asset.name)
-		assets_list.set_item_metadata(idx, asset.fullname)
-		assets_list.set_item_tooltip(idx, asset.fullname)
 
 
 func _on_button_pressed() -> void:

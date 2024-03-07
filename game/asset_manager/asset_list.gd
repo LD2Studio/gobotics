@@ -124,7 +124,7 @@ func _on_delete_confirmation_dialog_confirmed():
 
 func update_assets_database():
 	game.load_assets_in_database()
-	game.fill_assets_list()
+	update_assets_list()
 	show_visual_mesh(true)
 	show_collision_shape(false)
 	show_link_frame(false)
@@ -132,7 +132,12 @@ func update_assets_database():
 
 
 func update_assets_list():
-	game.fill_assets_list()
+	clear()
+	for asset in GSettings.database.assets:
+		if asset.type == "builtin_env": continue
+		var idx = add_item(asset.name)
+		set_item_metadata(idx, asset.fullname)
+		set_item_tooltip(idx, asset.fullname)
 
 
 func update_scene():
@@ -172,7 +177,7 @@ func update_scene():
 	
 	
 func update_assets_in_scene():
-	var updated_asset = %AssetEditorDialog.get_meta("fullname")
+	var updated_asset = %AssetEditorDialog.get_meta("fullname", "")
 	if updated_asset == null or updated_asset == "": return
 	#print("updated asset: ", updated_asset)
 	var assets = game_scene.scene.get_children()

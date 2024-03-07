@@ -148,6 +148,7 @@ func save_asset():
 		asset_editor_dialog.set_meta("fullname", asset_filename_edit.text)
 		var asset_list = asset_editor_dialog.get_parent()
 		if asset_list:
+			asset_list.update_assets_list()
 			asset_list.update_assets_in_scene()
 	modified_asset = false
 
