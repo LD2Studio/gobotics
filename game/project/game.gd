@@ -55,7 +55,6 @@ func load_assets_in_database():
 
 
 func _on_button_pressed() -> void:
-	game_scene.save_scene(current_filename)
 	var err = get_tree().change_scene_to_file("res://game/home_page/home_page.tscn")
 	if err != OK:
 		printerr("Changing scene failed")

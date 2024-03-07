@@ -699,6 +699,10 @@ func _on_reload_button_pressed():
 		%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
 
 
+func _on_save_position_button_pressed() -> void:
+	save_project()
+
+
 func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
 	mouse_pos_on_area = mouse_position
 	if event.is_action_pressed("EDIT"):
