@@ -12,19 +12,19 @@ var _robot_selected: Node3D
 var _cams : Array
 var _current_cam: int = 0
 
+
+
 @onready var game = owner
-@onready var transform_container: GridContainer = %TransformContainer
-@onready var asset_name_label: Label = %AssetNameLabel
 @onready var udp_port_number: SpinBox = %UDPPortNumber
 @onready var inputs_container: MarginContainer = %InputsContainer
 @onready var drive_panel: PanelContainer = %DrivePanel
 @onready var joints_panel: PanelContainer = %JointsPanel
-
 @onready var camera_view_button = %CameraViewButton
 @onready var robot_selected_button = %RobotSelectedButton
 @onready var scene_view = %SceneView
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 @onready var rename_dialog: ConfirmationDialog = %RenameDialog
+
 
 var python_bridge_scene : PackedScene = preload("res://game/python_bridge/python_bridge.tscn")
 
@@ -32,6 +32,11 @@ var python_bridge_scene : PackedScene = preload("res://game/python_bridge/python
 
 func _ready() -> void:
 	%RunStopButton.modulate = Color.GREEN
+	%ControlContainer.visible = true
+	%ReloadButton.visible = true
+	%SavePositionButton.visible = true
+	%RobotSelectedButton.visible = false
+	
 	inputs_container.visible = false
 	_show_asset_properties(null)
 	update_camera_view_menu()
@@ -125,13 +130,13 @@ func _show_asset_name(asset):
 
 func _show_asset_properties(asset):
 	var set_property_editable = func(editable):
-		for child in transform_container.get_children():
+		for child in %TransformContainer.get_children():
 			if child is SpinBox:
 				child.editable = editable
 		if editable:
-			asset_name_label.text = asset.name
+			%AssetNameLabel.text = asset.name
 		else:
-			asset_name_label.text = "no selection"
+			%AssetNameLabel.text = "no selection"
 		%UDPPortNumber.editable = editable
 	
 	if asset == null:
@@ -155,12 +160,12 @@ func _show_asset_properties(asset):
 		yaw = base_link.global_basis.get_euler().y,
 	}
 	
-	transform_container.get_node("X_pos").call_deferred("set_value_no_signal", base_link_tr.x)
-	transform_container.get_node("Y_pos").call_deferred("set_value_no_signal", base_link_tr.y)
-	transform_container.get_node("Z_pos").call_deferred("set_value_no_signal", base_link_tr.z)
-	transform_container.get_node("Roll").call_deferred("set_value_no_signal", base_link_tr.roll)
-	transform_container.get_node("Pitch").call_deferred("set_value_no_signal", base_link_tr.pitch)
-	transform_container.get_node("Yaw").call_deferred("set_value_no_signal", base_link_tr.yaw)
+	%TransformContainer.get_node("X_pos").call_deferred("set_value_no_signal", base_link_tr.x)
+	%TransformContainer.get_node("Y_pos").call_deferred("set_value_no_signal", base_link_tr.y)
+	%TransformContainer.get_node("Z_pos").call_deferred("set_value_no_signal", base_link_tr.z)
+	%TransformContainer.get_node("Roll").call_deferred("set_value_no_signal", base_link_tr.roll)
+	%TransformContainer.get_node("Pitch").call_deferred("set_value_no_signal", base_link_tr.pitch)
+	%TransformContainer.get_node("Yaw").call_deferred("set_value_no_signal", base_link_tr.yaw)
 	
 	if _selected_asset.is_in_group("ROBOTS"):
 		%UDPPortContainer.visible = true
@@ -277,9 +282,7 @@ func _camera_view_selected(idx: int):
 
 func update_robot_select_menu():
 	if not is_robots_inside_scene():
-		robot_selected_button.visible = false
 		return
-	robot_selected_button.visible = true
 	# Get robots menu
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
 	if not robot_popup.index_pressed.is_connected(_on_robot_selected):
@@ -661,6 +664,8 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 	
 	%ControlContainer.visible = not button_pressed
 	%ReloadButton.visible = not button_pressed
+	%SavePositionButton.visible = not button_pressed
+	%RobotSelectedButton.visible = button_pressed
 	
 	var environments: Array = get_tree().get_nodes_in_group("ENVIRONMENT")
 	if environments.is_empty(): return

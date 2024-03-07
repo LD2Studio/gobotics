@@ -21,9 +21,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 
 func _on_next_button_pressed() -> void:
-	
 	var idx = joints.find(_current_joint)
 	#print("idx: ", idx)
+	if idx == -1: return
 	#print("joints size: ", len(joints))
 	if idx + 1 == len(joints):
 		_current_joint = joints[0]
