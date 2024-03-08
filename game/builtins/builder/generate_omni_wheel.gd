@@ -37,6 +37,7 @@ func generate_omni_wheel(name: String):
 	
 	mecanum_wheel.name = name
 	mecanum_wheel.mass = 0.2
+	mecanum_wheel.collision_mask = 0b0011
 	# Visual
 	rim_visual.name = "RimVisual"
 	var rim_mesh := CylinderMesh.new()
@@ -81,6 +82,7 @@ func generate_omni_wheel(name: String):
 		var roller_link := RigidBody3D.new()
 		roller_link.name = "RollerLink%d" % [roller_idx]
 		roller_link.mass = 0.05
+		roller_link.collision_mask = 0b0011
 		roller_joint.node_b = "RollerLink%d" % [roller_idx]
 		roller_link.physics_material_override = load("res://game/builtins/physics/roller_physics.tres")
 		roller_joint.add_child(roller_link)
