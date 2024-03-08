@@ -55,7 +55,7 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 		root_node.set_meta("offset_pos", Vector3.ZERO)
 		if root_node.is_in_group("ASSETS"):
 			var asset_aabb: AABB = MeshTools.get_bounding_box(base_link)
-			print("name: %s, AABB: %s" % [root_node.name, asset_aabb])
+			#print("[URDF] name: %s, AABB: %s" % [root_node.name, asset_aabb])
 			root_node.set_meta("offset_pos", Vector3(0, -asset_aabb.position.y, 0))
 		root_node.add_child(base_link)
 		kinematics_scene_owner_of(root_node)
