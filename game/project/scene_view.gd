@@ -1,37 +1,43 @@
 extends SubViewportContainer
+
 @onready var game_scene = %GameScene as Node3D
 
 var offset_pos : Vector3
 
-func _can_drop_data(_at_position: Vector2, node) -> bool:
-	if game_scene.game_area_pointed:
+func _can_drop_data(_at_position: Vector2, node: Variant) -> bool:
+	#print("[SV] node: ", node)
+	var result = get_collider(game_scene)
+	#print("[SV] result: ", result)
+	if result != {}:
 		if game_scene.asset_dragged == null:
 			game_scene.asset_dragged = node.duplicate()
 			game_scene.set_physics(game_scene.asset_dragged, true)
-			game_scene.enable_pickable(game_scene.asset_dragged, false)
 			game_scene.get_node("Scene").add_child(game_scene.asset_dragged)
-			offset_pos = game_scene.calculate_position_on_floor(game_scene.asset_dragged)
-			
-#		print("can drop in ", game_scene.mouse_pos_on_area)
+			offset_pos = game_scene.asset_dragged.get_meta("offset_pos", Vector3.ZERO)
+			print("[SV] offset pos: ", offset_pos)
+		game_scene.asset_dragged.position = result.position + offset_pos
+		#print("[SV] offset pos: ", offset_pos)
 		return true
 	else:
-#		print("no drop")
 		if game_scene.asset_dragged:
 			game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
 			game_scene.asset_dragged.queue_free()
 			game_scene.asset_dragged = null
 		return false
 
+
 func _drop_data(_at_position: Vector2, data) -> void:
-	
 	var asset = data as Node
+	
 	# Remove ghost asset
+	var asset_pos = game_scene.asset_dragged.position
 	game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
 	game_scene.asset_dragged.queue_free()
 	game_scene.asset_dragged = null
 	
+	
 	asset.name = get_new_name(asset.name)
-	asset.position = game_scene.mouse_pos_on_area + offset_pos
+	asset.position = asset_pos
 	if asset.is_in_group("ROBOTS"):
 		asset.set_meta("udp_port", game_scene.get_available_udp_port())
 	else:
@@ -62,10 +68,12 @@ func get_new_name(current_name: StringName) -> StringName:
 			idx += 1
 		return &"%s_%03d" % [current_name, idx]
 
-func _on_gui_input(event):
-	if event is InputEventMouseButton and event.pressed:
-		if game_scene.asset_dragged:
-			# Remove ghost asset
-			game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
-			game_scene.asset_dragged.queue_free()
-			game_scene.asset_dragged = null
+
+func get_collider(scene: Node3D):
+	var mouse_pos: Vector2 = scene.get_viewport().get_mouse_position()
+	var ray_origin = scene.get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
+	var ray_direction = scene.get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
+	# Collision shape is in SELECTION Layer (mask 8)
+	var ray_quering = PhysicsRayQueryParameters3D.create(
+		ray_origin, ray_origin + ray_direction * 1000, 0b0010)
+	return scene.get_world_3d().direct_space_state.intersect_ray(ray_quering)

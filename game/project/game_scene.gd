@@ -3,7 +3,6 @@ class_name GameScene extends Node3D
 var scene : Node3D
 var running: bool = false
 var asset_dragged: Node3D
-var mouse_pos_on_area: Vector3
 var game_area_pointed: bool = false
 var asset_focused : Node3D = null
 
@@ -11,7 +10,6 @@ var _selected_asset: Node3D
 var _robot_selected: Node3D
 var _cams : Array
 var _current_cam: int = 0
-
 
 
 @onready var game = owner
@@ -51,6 +49,25 @@ func _ready() -> void:
 
 #region PROCESS
 
+var _request_moving: bool = false:
+	set(new_value):
+		_request_moving = new_value
+		if _request_moving:
+			%"3DView".set_process_unhandled_input(false)
+			%TopView.set_process_unhandled_input(false)
+		else:
+			%"3DView".set_process_unhandled_input(true)
+			%TopView.set_process_unhandled_input(true)
+
+var _is_moving: bool = false
+
+func _shortcut_input(event: InputEvent) -> void:
+	if event.is_action_pressed("move_asset"):
+		_request_moving = true
+	elif event.is_action_released("move_asset"):
+		_request_moving = false
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not running and event.is_action_pressed("DELETE") and _selected_asset:
 		confirm_delete_dialog.dialog_text = "Delete %s object ?" % [_selected_asset.name]
@@ -61,11 +78,20 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 	if event.is_action_pressed("SELECT"):
 		_select_asset()
+		
+	if not running and _selected_asset and _request_moving:
+		if event.is_action_pressed("SELECT"):
+			_is_moving = true
+		elif event.is_action_released("SELECT"):
+			_is_moving = false
+	
+	if _is_moving:
+		_move_asset()
 
 
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
-	
+
 
 func _physics_process(delta: float) -> void:
 	%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
@@ -86,14 +112,7 @@ func _physics_process(delta: float) -> void:
 #region ASSET SELECTION
 
 func _select_asset():
-	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
-	var ray_origin = get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
-	var ray_direction = get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
-	# Collision shape is in SELECTION Layer (mask 8)
-	var ray_quering = PhysicsRayQueryParameters3D.create(
-		ray_origin, ray_origin + ray_direction * 1000, 0b1000)
-	
-	var result = get_world_3d().direct_space_state.intersect_ray(ray_quering)
+	var result = get_asset_collider(self)
 	if result:
 		get_tree().call_group("VISUAL", "highlight", result.collider.owner)
 		_show_asset_name(result.collider.owner)
@@ -108,6 +127,78 @@ func _select_asset():
 		get_tree().call_group("VISUAL", "highlight", null)
 		_show_asset_name(null)
 		_show_asset_properties(null)
+
+
+func _move_asset():
+	var result = get_environment_collider(self)
+	if result:
+		#print("[GS] position: ", result.position)
+		if _selected_asset:
+			var base_link = _selected_asset.get_children().filter(
+				func(child): return child.is_in_group("BASE_LINK")).front()
+			#print("[GS] mouse position: ", result.position)
+			base_link.position = Vector3(
+					result.position.x,
+					base_link.position.y,
+					result.position.z)
+
+
+func compute_offset_on_floor(root_node: Node3D) -> Vector3:
+	var offset_pos := Vector3(0,1,0)
+	
+	var base_link = root_node.get_children().filter(
+			func(child): return child.is_in_group("BASE_LINK")).front()
+	print("base link position: ", base_link.position)
+	var get_visuals = func(node):
+		var all_visuals = get_tree().get_nodes_in_group("VISUAL")
+		return all_visuals.filter(
+			func(visual): return visual.owner == node)
+	
+	#print(get_visuals.call(root_node))
+	
+	for visual in get_visuals.call(root_node):
+		var mesh_aabb: AABB = visual.mesh.get_aabb()
+		print("mesh aabb=> position: %s, size: %s" % [mesh_aabb.position, mesh_aabb.size] )
+	
+	
+	#var height = _asset_aabb.position.y * (-1)
+	#offset_pos.y = height
+#	print("offset pos: ", offset_pos)
+	return offset_pos
+	
+	
+func iterate_inside_node(parent: Node):
+#	print("parent: ", parent)
+	for child in parent.get_children():
+		if child.is_in_group("VISUAL"):
+			var child_aabb : AABB = child.mesh.get_aabb()
+			child_aabb.position += child.global_position
+			if child.mesh is ArrayMesh:
+				child_aabb.size *= 10.0
+				child_aabb.position *= 10.0
+#			print("\tchild %s -> AABB = %s " % [child.name, child_aabb])
+			_asset_aabb = _asset_aabb.merge(child_aabb)
+#			print("\tmerge AABB = %s" % [_asset_aabb])
+		if child.get_child_count() > 0:
+			iterate_inside_node(child)
+
+
+func get_asset_collider(scene: Node3D) -> Dictionary:
+	var mouse_pos: Vector2 = scene.get_viewport().get_mouse_position()
+	var ray_origin = scene.get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
+	var ray_direction = scene.get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
+	var ray_quering = PhysicsRayQueryParameters3D.create(
+		ray_origin, ray_origin + ray_direction * 1000, 0b1000)
+	return scene.get_world_3d().direct_space_state.intersect_ray(ray_quering)
+
+
+func get_environment_collider(scene: Node3D) -> Dictionary:
+	var mouse_pos: Vector2 = scene.get_viewport().get_mouse_position()
+	var ray_origin = scene.get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
+	var ray_direction = scene.get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
+	var ray_quering = PhysicsRayQueryParameters3D.create(
+		ray_origin, ray_origin + ray_direction * 1000, 0b0010)
+	return scene.get_world_3d().direct_space_state.intersect_ray(ray_quering)
 
 
 func _show_asset_name(asset):
@@ -233,17 +324,17 @@ func _on_udp_port_number_value_changed(value: float) -> void:
 #endregion
 
 
-func connect_pickable():
-	var nodes = get_tree().get_nodes_in_group("PICKABLE")
-#	print(nodes)
-	for node in nodes:
-		if not node.is_connected("mouse_entered", _on_ground_mouse_entered):
-			#print("[GS] set node %s pickable" % [node])
-			node.mouse_entered.connect(_on_ground_mouse_entered)
-		if not node.is_connected("mouse_exited", _on_ground_mouse_exited):
-			node.mouse_exited.connect(_on_ground_mouse_exited)
-		if not node.is_connected("input_event", _on_ground_input_event):
-			node.input_event.connect(_on_ground_input_event)
+#func connect_pickable():
+	#var nodes = get_tree().get_nodes_in_group("PICKABLE")
+##	print(nodes)
+	#for node in nodes:
+		##if not node.is_connected("mouse_entered", _on_ground_mouse_entered):
+			###print("[GS] set node %s pickable" % [node])
+			##node.mouse_entered.connect(_on_ground_mouse_entered)
+		##if not node.is_connected("mouse_exited", _on_ground_mouse_exited):
+			##node.mouse_exited.connect(_on_ground_mouse_exited)
+		#if not node.is_connected("input_event", _on_ground_input_event):
+			#node.input_event.connect(_on_ground_input_event)
 
 
 func update_camera_view_menu():
@@ -425,7 +516,7 @@ func new_scene(environment_path: String) -> void:
 	init_scene()
 	var environment: Node3D = ResourceLoader.load(environment_path).instantiate()
 	scene.add_child(environment)
-	connect_pickable()
+	#connect_pickable()
 	update_robot_select_menu()
 	%RunStopButton.button_pressed = false
 
@@ -545,10 +636,9 @@ func load_scene(path):
 				asset_node.set_meta("udp_port", asset.udp_port)
 			set_physics(asset_node, true)
 			scene.add_child(asset_node)
-
-	connect_pickable()
 	update_robot_select_menu()
 	update_camera_view_menu()
+	#connect_pickable()
 	%RunStopButton.button_pressed = false
 
 
@@ -590,15 +680,6 @@ func _freeze_children(node, frozen):
 func rename_asset():
 	rename_dialog.get_node("NameEdit").text = _selected_asset.name
 	rename_dialog.popup_centered()
-
-
-func enable_pickable(asset: Node, enable: bool):
-	#print("[GS] pick %s: %s" % [asset, enable])
-	for child in asset.get_children():
-		if child.is_in_group("SELECT"):
-			child.input_ray_pickable = enable
-		if child.get_child_count() > 0:
-			enable_pickable(child, enable)
 
 ## Helper functions
 
@@ -708,21 +789,21 @@ func _on_save_position_button_pressed() -> void:
 	save_project()
 
 
-func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
-	mouse_pos_on_area = mouse_position
-	if event.is_action_pressed("EDIT"):
-		asset_focused = null
-	if asset_dragged:
-#		print("mouse position: ", mouse_position)
-		asset_dragged.position = mouse_position + scene_view.offset_pos
+#func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
+	#mouse_pos_on_area = mouse_position
+	#if event.is_action_pressed("EDIT"):
+		#asset_focused = null
+	#if asset_dragged:
+##		print("mouse position: ", mouse_position)
+		#asset_dragged.position = mouse_position + scene_view.offset_pos
 
 
 func _on_ground_mouse_entered():
-#	print("[GS] mouse entered")
+	print("[GS] mouse entered")
 	game_area_pointed = true
 
 func _on_ground_mouse_exited():
-#	print("[GS] mouse exited")
+	print("[GS] mouse exited")
 	game_area_pointed = false
 
 

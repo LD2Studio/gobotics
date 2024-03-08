@@ -36,7 +36,7 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 		return null
 	parse_gobotics_params(urdf_data)
 	parse_materials(urdf_data)
-	if parse_links(urdf_data, root_node.get_meta("type")) != OK:
+	if parse_links(urdf_data, root_node) != OK:
 		delete_links()
 		root_node.free()
 		return null
@@ -52,9 +52,12 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 			add_camera_on_robot(root_node, base_link)
 		if root_node.is_in_group("ENVIRONMENT"):
 			_add_area_out_of_bounds(root_node)
-		
-		root_node.add_child(base_link)
 		root_node.set_meta("offset_pos", Vector3.ZERO)
+		if root_node.is_in_group("ASSETS"):
+			var asset_aabb: AABB = MeshTools.get_bounding_box(base_link)
+			print("name: %s, AABB: %s" % [root_node.name, asset_aabb])
+			root_node.set_meta("offset_pos", Vector3(0, -asset_aabb.position.y, 0))
+		root_node.add_child(base_link)
 		kinematics_scene_owner_of(root_node)
 		return root_node
 	else:
@@ -339,7 +342,7 @@ func create_asset_scene(root_node: Node3D):
 			link.set_meta("orphan", false)
 			if link.name == "world":
 				link.add_to_group("STATIC", true)
-				link.add_to_group("PICKABLE", true)
+				#link.add_to_group("PICKABLE", true)
 			if root_node.get_meta("type") == "env":
 				base_link.freeze = true
 			break
@@ -617,7 +620,7 @@ func parse_materials(urdf_path: PackedByteArray):
 
 	#print("materials: ", _materials)
 
-func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
+func parse_links(urdf_data: PackedByteArray, root_node: Node3D) -> int:
 	var parse_err = parser.open_buffer(urdf_data)
 	if parse_err:
 		printerr("[URDF PARSER] parse error ", parse_err)
@@ -667,7 +670,13 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						link = RigidBody3D.new()
 					var physics_material = PhysicsMaterial.new()
 					link.physics_material_override = physics_material
-					link.collision_layer = 0b1001 # Robots + Selection mask
+					if root_node.is_in_group("ASSETS"):
+						link.collision_layer = 0b1001 # Robots + Selection mask
+						link.collision_mask = 0b0011
+					elif root_node.is_in_group("ENVIRONMENT"):
+						link.collision_layer = 0b0010 # Environment
+					else:
+						link.collision_layer = 0b0001
 					link.set_meta("orphan", true)
 					_record(link)
 					if "name" in link_attrib and link_attrib.name != "":
@@ -675,9 +684,6 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 					else:
 						printerr("No name for link!")
 						return ERR_PARSE_ERROR
-					
-					if asset_type == "standalone" or asset_type == "robot":
-						link.add_to_group("SELECT", true)
 					if "xyz" in link_attrib:
 						var xyz := Vector3.ZERO
 						var xyz_arr = link_attrib.xyz.split_floats(" ")
@@ -685,7 +691,7 @@ func parse_links(urdf_data: PackedByteArray, asset_type: String) -> int:
 						xyz.y = xyz_arr[2]
 						xyz.z = -xyz_arr[1]
 						link.position = xyz * scale
-
+					
 					## Add frame gizmo
 					var frame_visual := MeshInstance3D.new()
 					frame_visual.name = link_attrib.name + "_frame"
@@ -1119,6 +1125,7 @@ func get_shape_from_gltf(attrib, debug_col = null,  trimesh=false) -> Shape3D:
 	scene_node.queue_free()
 	
 	return shape
+
 
 func parse_joints(urdf_data: PackedByteArray):
 	var parse_err = parser.open_buffer(urdf_data)
