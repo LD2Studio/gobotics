@@ -14,22 +14,22 @@ var project_path: String:
 	get:
 		return (ProjectSettings.globalize_path(_project_editor_path)
 			if OS.has_feature("editor")
-				and not ProjectSettings.get_setting("application/config/use_user_path")
+				and not ProjectSettings.get_setting("application/run/global")
 			else _project_export_path)
 
 var _project_editor_path = "res://projects"
-var _project_export_path = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS).path_join("Gobotics")
+var _project_export_path = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS).path_join("Gobotics/projects")
 
 ## Chemin vers les assets de Gobotics.
 var asset_path: String:
 	get:
 		return (ProjectSettings.globalize_path(_asset_editor_path)
 			if OS.has_feature("editor")
-				and not ProjectSettings.get_setting("application/config/use_user_path")
+				and not ProjectSettings.get_setting("application/run/global")
 			else ProjectSettings.globalize_path(_asset_export_path))
 
 var _asset_editor_path: String = "res://assets"
-var _asset_export_path: String = "user://assets"
+var _asset_export_path: String = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS).path_join("Gobotics/assets")
 
 ## Chemin vers les fichiers temporaires de Gobotics.
 var temp_path: String:
@@ -87,7 +87,7 @@ func create_dir():
 			DirAccess.make_dir_absolute(asset_path.path_join("demo/meshes"))
 			
 		var demo_meshes_dir = DirAccess.open(DEMO_ASSET_PATH.path_join("meshes"))
-		#print("Open asset editor error : ", DirAccess.get_open_error())
+		#print("Open meshes dir error: ", DirAccess.get_open_error())
 		if demo_meshes_dir:
 			var demo_mesh_files = demo_meshes_dir.get_files()
 			for file in demo_mesh_files:
