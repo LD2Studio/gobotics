@@ -13,7 +13,6 @@ var setting_path: String:
 	get:
 		return (ProjectSettings.globalize_path(_setting_editor_path)
 			if OS.has_feature("editor")
-				and not ProjectSettings.get_setting("application/config/use_user_path")
 			else ProjectSettings.globalize_path(_setting_export_path))
 
 var _setting_editor_path: String = "res://"
