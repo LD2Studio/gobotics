@@ -14,9 +14,8 @@ func _can_drop_data(_at_position: Vector2, node: Variant) -> bool:
 			game_scene.set_physics(game_scene.asset_dragged, true)
 			game_scene.get_node("Scene").add_child(game_scene.asset_dragged)
 			offset_pos = game_scene.asset_dragged.get_meta("offset_pos", Vector3.ZERO)
-			print("[SV] offset pos: ", offset_pos)
+			#print("[SV] offset pos: ", offset_pos)
 		game_scene.asset_dragged.position = result.position + offset_pos
-		#print("[SV] offset pos: ", offset_pos)
 		return true
 	else:
 		if game_scene.asset_dragged:

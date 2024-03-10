@@ -200,7 +200,6 @@ func update_assets_in_scene():
 			if base_link == null: continue
 			base_link.global_position = asset_position
 			base_link.global_rotation = asset_rotation
-			game_scene.connect_pickable()
 			game_scene.set_physics(new_asset, true)
 			
 	game_scene.update_robot_select_menu()
