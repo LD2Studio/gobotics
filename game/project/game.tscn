@@ -525,7 +525,6 @@ offset_bottom = 351.0
 [connection signal="value_changed" from="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer/TransformContainer/Yaw" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_yaw_value_changed"]
 [connection signal="value_changed" from="SplitContainer/ControlContainer/VBoxContainer/InspectorPanel/MarginContainer/VBoxContainer/UDPPortContainer/UDPPortNumber" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_udp_port_number_value_changed"]
 [connection signal="pressed" from="SplitContainer/ControlContainer/VBoxContainer/ReturnButton" to="." method="_on_button_pressed"]
-[connection signal="gui_input" from="SplitContainer/SceneView" to="SplitContainer/SceneView" method="_on_gui_input"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/ToolBar/RunStopButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
 [connection signal="pressed" from="SplitContainer/SceneView/SceneViewport/ToolBar/ReloadButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_reload_button_pressed"]
 [connection signal="pressed" from="SplitContainer/SceneView/SceneViewport/ToolBar/SavePositionButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_save_position_button_pressed"]

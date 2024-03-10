@@ -23,33 +23,30 @@ var asset_updated: String = "":
 var _at_position: Vector2i
 var _asset_editor_rect: Rect2i
 
+
 func _ready() -> void:
 	asset_popup_menu.add_item("Edit", AssetId.EDIT)
 	asset_popup_menu.add_item("Delete", AssetId.DELETE)
 	asset_popup_menu.id_pressed.connect(_on_item_menu_select)
 
+
 func _get_drag_data(at_position: Vector2):
 	var idx = get_item_at_position(at_position, true)
-	if idx == -1 or %GameScene.running:
-		return null
-
+	if idx == -1: return null
+	# INFO: get asset fullname like "demo/ball.urdf"
 	var fullname = get_item_metadata(idx)
-	var asset = GSettings.database.get_scene_from_fullname(fullname)
 	var type = GSettings.database.get_type(fullname)
-	if asset and type and type == "standalone" or type == "robot":
-		var node: Node3D = load(asset).instantiate()
-		if node.get_node_or_null("./Preview"):
-#			print("Preview exist")
-			node.get_node("./Preview").preview = false
-
-#		var preview_path = database.get_preview(asset_name)
-#		print("preview: ", preview_path)
-#		if ResourceLoader.exists(preview_path):
-#			var preview_control = TextureRect.new()
-#			preview_control.texture = load(preview_path)
-#			preview_control.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-#			preview_control.size = Vector2(64,64)
-#			set_drag_preview(preview_control)
+	if type and type == "standalone" or type == "robot":
+		var node: Node3D = load(GSettings.database.get_scene_from_fullname(fullname)).instantiate()
+		
+		#var preview_path = database.get_preview(asset_name)
+		#print("preview: ", preview_path)
+		#if ResourceLoader.exists(preview_path):
+			#var preview_control = TextureRect.new()
+			#preview_control.texture = load(preview_path)
+			#preview_control.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			#preview_control.size = Vector2(64,64)
+			#set_drag_preview(preview_control)
 		return node
 	else:
 		return null
@@ -203,7 +200,6 @@ func update_assets_in_scene():
 			if base_link == null: continue
 			base_link.global_position = asset_position
 			base_link.global_rotation = asset_rotation
-			game_scene.connect_pickable()
 			game_scene.set_physics(new_asset, true)
 			
 	game_scene.update_robot_select_menu()

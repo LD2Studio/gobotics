@@ -1,7 +1,7 @@
 <standalone name="Tree">
    <link name="tree">
      	<visual name="leaves" with_col="true">
-      	<origin xyz="0.0 0.0 0" rpy="0.0 0.0 0.0"/>
+      	<origin xyz="0.0 0.0 0.15" rpy="0.0 0.0 0.0"/>
       	<geometry>
        		<sphere radius="0.1"/>
       	</geometry>
@@ -10,8 +10,8 @@
 		</material>
     	</visual>
 	
-		<visual name="trunk">
-			<origin xyz="0 0 -0.1" rpy="0 0 0"/>
+		<visual name="trunk" with_col="true">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
 			<geometry>
 			<cylinder radius="0.02" length="0.3"/>
 			</geometry>
@@ -20,17 +20,9 @@
 			</material>
 		</visual>
 		
-		<collision name="">
-			<origin xyz="0 0 -0.1" rpy="0 0 0"/>
-			<geometry>
-			<cylinder radius="0.02" length="0.3"/>
-			</geometry>
-		</collision>
-
-
 		<inertial>
 			<mass value="0.01"/>
 		</inertial>
 
    </link>
-</<standalone
+<standalone/>

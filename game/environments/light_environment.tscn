@@ -23,6 +23,7 @@ size = Vector3(150, 50, 150)
 script = ExtResource("1_1tisn")
 
 [node name="Floor" type="StaticBody3D" parent="." groups=["PICKABLE"]]
+collision_layer = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
 shape = SubResource("BoxShape3D_bi61y")
