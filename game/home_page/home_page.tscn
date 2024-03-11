@@ -231,7 +231,6 @@ theme_override_styles/separator = SubResource("StyleBoxEmpty_04w17")
 [node name="GoboticsInfo" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Develop with Godot Engine 4.2"
 horizontal_alignment = 2
 
 [connection signal="pressed" from="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" to="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton" method="_on_pressed"]

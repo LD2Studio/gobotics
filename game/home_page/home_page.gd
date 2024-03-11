@@ -6,7 +6,7 @@ var connected_game_controllers: Array[int]
 func _ready() -> void:
 	var app_name: String = ProjectSettings.get_setting("application/config/name")
 	var version: String = ProjectSettings.get_setting("application/config/version")
-	%GoboticsInfo.text = "%s v%s - Develop with Godot Engine 4.2" % [app_name, version]
+	%GoboticsInfo.text = "%s v%s - Godot Engine %s" % [app_name, version, Engine.get_version_info().string]
 	connected_game_controllers = Input.get_connected_joypads()
 
 
