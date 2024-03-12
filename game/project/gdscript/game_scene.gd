@@ -147,7 +147,8 @@ func compute_offset_on_floor(root_node: Node3D) -> Vector3:
 	var offset_pos := Vector3(0,1,0)
 	
 	var base_link = root_node.get_children().filter(
-			func(child): return child.is_in_group("BASE_LINK")).front()
+			func (child):
+				return child.is_in_group("BASE_LINK")).front()
 	print("base link position: ", base_link.position)
 	var get_visuals = func(node):
 		var all_visuals = get_tree().get_nodes_in_group("VISUAL")

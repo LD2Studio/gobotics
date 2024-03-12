@@ -1,5 +1,5 @@
-extends Camera3D
 class_name TopCamera2D
+extends Camera3D
 
 @export_group("Camera Control")
 ## Mouse button used for panoramic movement
