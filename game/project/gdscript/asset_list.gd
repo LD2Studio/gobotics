@@ -3,13 +3,15 @@ extends ItemList
 # The updated asset is located int the %AssetEditorDialog.get_meta("fullname") 
 
 @onready var game: Control = owner
-@onready var game_scene = %GameScene
+@onready var game_scene: Node3D = %GameScene
 @onready var asset_popup_menu: PopupMenu = %AssetPopupMenu
 @onready var asset_editor_dialog = %AssetEditorDialog
 @onready var new_asset_button = %NewAssetButton
+@onready var asset_duplicate_dialog: ConfirmationDialog = %AssetDuplicateDialog
 
-enum AssetId {
+enum AssetPopup {
 	EDIT,
+	DUPLICATE,
 	DELETE,
 }
 
@@ -20,13 +22,13 @@ var asset_updated: String = "":
 		GSettings.database.update_asset(asset_updated)
 		update_assets_list()
 		
-var _at_position: Vector2i
 var _asset_editor_rect: Rect2i
 
 
 func _ready() -> void:
-	asset_popup_menu.add_item("Edit", AssetId.EDIT)
-	asset_popup_menu.add_item("Delete", AssetId.DELETE)
+	asset_popup_menu.add_item("Edit", AssetPopup.EDIT)
+	asset_popup_menu.add_item("Duplicate", AssetPopup.DUPLICATE)
+	asset_popup_menu.add_item("Delete", AssetPopup.DELETE)
 	asset_popup_menu.id_pressed.connect(_on_item_menu_select)
 
 
@@ -51,26 +53,23 @@ func _get_drag_data(at_position: Vector2):
 	else:
 		return null
 
-func _on_item_clicked(_index: int, at_position: Vector2, mouse_button_index: int) -> void:
+
+func _on_item_clicked(index: int, _at_position: Vector2, mouse_button_index: int) -> void:
 	if mouse_button_index == MOUSE_BUTTON_RIGHT:
-		_at_position = at_position
+		deselect_all()
+		select(index)
 		asset_popup_menu.popup(Rect2i(get_global_mouse_position(), Vector2i(50,50)))
 
+
 func _on_item_menu_select(id: int):
+	var selected_fullname: String = get_item_metadata(get_selected_items()[0])
 	match id:
-		AssetId.EDIT:
-			var idx = get_item_at_position(_at_position, true)
-			if idx == -1 or %GameScene.running:
-				return null
-			var fullname = get_item_metadata(idx)
-			edit_asset(fullname)
-			
-		AssetId.DELETE:
-			var idx = get_item_at_position(_at_position, true)
-			if idx == -1 or %GameScene.running:
-				return null
-			var fullname = get_item_metadata(idx)
-			delete_asset(fullname)
+		AssetPopup.EDIT:
+			edit_asset(selected_fullname)
+		AssetPopup.DUPLICATE:
+			duplicate_asset(selected_fullname)
+		AssetPopup.DELETE:
+			delete_asset(selected_fullname)
 
 
 func _on_item_activated(index):
@@ -105,6 +104,34 @@ func _on_asset_editor_exited():
 		update_scene()
 
 
+func duplicate_asset(fullname: String):
+	asset_duplicate_dialog.get_node("VBoxContainer/Message").text = (
+		"Duplicate the \"%s\" project under the name :" % [fullname])
+	asset_duplicate_dialog.get_node("VBoxContainer/AssetFullnameEdit").text = fullname
+	asset_duplicate_dialog.get_ok_button().disabled = true
+	asset_duplicate_dialog.set_meta("asset_fullname", fullname)
+	asset_duplicate_dialog.popup_centered()
+
+
+func _on_asset_fullname_edit_text_changed(new_asset_fullname: String) -> void:
+	if GSettings.database.is_asset_exists(new_asset_fullname):
+		asset_duplicate_dialog.get_ok_button().disabled = true
+	else:
+		asset_duplicate_dialog.get_ok_button().disabled = false
+
+
+func _on_asset_duplicate_dialog_confirmed() -> void:
+	var asset_fullname = asset_duplicate_dialog.get_meta("asset_fullname")
+	if asset_fullname == null: return
+	var new_asset_fullname = asset_duplicate_dialog.get_node(
+		"VBoxContainer/AssetFullnameEdit").text
+	DirAccess.copy_absolute(
+		GSettings.asset_path.path_join(asset_fullname),
+		GSettings.asset_path.path_join(new_asset_fullname)
+	)
+	update_assets_database()
+
+
 func delete_asset(fullname: String):
 	%DeleteConfirmationDialog.dialog_text = "Do you want to delete the asset file \"%s\"" % [fullname]
 	%DeleteConfirmationDialog.set_meta("asset_fullname", fullname)
@@ -116,8 +143,10 @@ func _on_delete_confirmation_dialog_confirmed():
 	var filename = GSettings.database.get_asset_filename(fullname)
 	if filename:
 		OS.move_to_trash(filename)
+		GSettings.database.generate()
 		update_assets_database()
 		update_assets_in_scene()
+
 
 func update_assets_database():
 	game.load_assets_in_database()
