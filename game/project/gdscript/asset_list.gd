@@ -145,7 +145,7 @@ func _on_delete_confirmation_dialog_confirmed():
 		OS.move_to_trash(filename)
 		GSettings.database.generate()
 		update_assets_database()
-		update_assets_in_scene()
+		game_scene.save_project()
 
 
 func update_assets_database():
