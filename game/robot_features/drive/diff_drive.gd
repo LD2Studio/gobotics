@@ -5,7 +5,6 @@ class_name DiffDrive extends Node
 		frozen = value
 		set_physics_process(!frozen)
 		if frozen and _move_to_settings != null:
-			#_move_to_settings.task = Task.IDLE
 			if right_wheel_joint != null and left_wheel_joint != null:
 				move_diff_drive(0,0)
 
@@ -92,12 +91,12 @@ func command(_delta: float):
 #region PUBLIC METHODS EXPOSED TO PYTHON_BRIDGE
 
 func move_diff_drive(right_vel: float, left_vel: float):
-	right_wheel_joint.target_velocity = right_vel
-	left_wheel_joint.target_velocity = left_vel
+	_set_wheel_speed(right_vel, left_vel)
 	_move_to_settings.task = Task.MOVE
 	
 	if right_vel == 0.0 and left_vel == 0.0:
 		_move_to_settings.task = Task.IDLE
+
 
 func move_to(new_position: Vector2, new_speed: float,
 			precision: float = 0.01, response: float = 20.0):
@@ -109,13 +108,18 @@ func move_to(new_position: Vector2, new_speed: float,
 	_move_to_settings.square_precision = precision**2
 	_move_to_settings.response = response
 
+
 func finished_task() -> bool:
 	return _move_to_settings.finished_task
 
 #endregion
 
+func _set_wheel_speed(right_vel: float, left_vel: float):
+	right_wheel_joint.target_velocity = right_vel
+	left_wheel_joint.target_velocity = left_vel
+
+
 func _path_control_process() -> void:
-	#print("path control")
 	var current_pos := Vector2(
 			base_link.global_position.x/GPSettings.SCALE,
 			-base_link.global_position.z/GPSettings.SCALE)
@@ -129,9 +133,9 @@ func _path_control_process() -> void:
 		var err_theta: float = dir.angle_to(_move_to_settings.target_pos - current_pos)
 		const MAX_SPEED = 20
 		var omega_c: float = _move_to_settings.response * err_theta
-		move_diff_drive(clampf(_move_to_settings.speed + omega_c, -MAX_SPEED, MAX_SPEED),
+		_set_wheel_speed(clampf(_move_to_settings.speed + omega_c, -MAX_SPEED, MAX_SPEED),
 			clampf(_move_to_settings.speed - omega_c, -MAX_SPEED, MAX_SPEED))
 	else:
-		move_diff_drive(0,0)
+		_set_wheel_speed(0,0)
 		_move_to_settings.task = Task.IDLE
 		_move_to_settings.finished_task = true
