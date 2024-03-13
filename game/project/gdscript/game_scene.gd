@@ -17,6 +17,7 @@ var _current_cam: int = 0
 @onready var inputs_container: MarginContainer = %InputsContainer
 @onready var drive_panel: PanelContainer = %DrivePanel
 @onready var joints_panel: PanelContainer = %JointsPanel
+@onready var actuators_panel: PanelContainer = %ActuatorsPanel
 @onready var camera_view_button = %CameraViewButton
 @onready var robot_selected_button = %RobotSelectedButton
 @onready var scene_view = %SceneView
@@ -435,6 +436,18 @@ func _show_robot_command():
 			joints_panel.visible = true
 			joints_panel.base_robot = base_node # Call before next instruction
 			joints_panel.joints = visible_joints
+		
+		var visible_actuators: Array = base_node._actuators.filter(
+			func(actuator: Node):
+				return actuator.get_meta("visible", false) == true
+				)
+		if visible_actuators.is_empty():
+			actuators_panel.visible = false
+		else:
+			actuators_panel.visible = true
+			actuators_panel.base_robot = base_node # Call before next instruction
+			actuators_panel.actuators = visible_actuators
+	
 
 
 func new_scene(environment_path: String) -> void:

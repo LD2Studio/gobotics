@@ -20,5 +20,6 @@ extends Node3D
 
 
 func set_physics(enable: bool):
-	print("[%s] physics: %s" % [name, enable])
+	pass
+	#print("[%s] physics: %s" % [name, enable])
 	

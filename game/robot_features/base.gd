@@ -22,6 +22,7 @@ signal joint_changed(joint_name: String)
 #region INTERNALS
 var _joints := Array()
 var _ray_sensors := Array()
+var _actuators := Array()
 var _joint_idx : int = 0
 
 #region INIT
@@ -48,6 +49,7 @@ func setup():
 			base_link = node
 	update_all_joints()
 	update_all_sensors()
+	update_all_actuators()
 
 #endregion
 
@@ -79,6 +81,13 @@ func update_all_sensors():
 		if node.owner == get_parent():
 			_ray_sensors.append(node)
 	#print("ray sensors: ", _ray_sensors)
+
+
+func update_all_actuators():
+	_actuators.clear()
+	for node in get_tree().get_nodes_in_group("ACTUATORS"):
+		if node.owner == get_parent():
+			_actuators.append(node)
 
 
 func _on_joypad_changed(device: int, connected: bool):

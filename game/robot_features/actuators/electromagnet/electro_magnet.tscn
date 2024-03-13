@@ -15,6 +15,7 @@ albedo_color = Color(0.905882, 0.282353, 0.054902, 0.176471)
 
 [node name="ElectroMagnet" type="Node3D"]
 script = ExtResource("1_brq5j")
+metadata/visible = false
 
 [node name="Support" type="MeshInstance3D" parent="."]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)

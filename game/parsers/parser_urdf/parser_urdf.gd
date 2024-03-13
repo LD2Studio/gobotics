@@ -334,6 +334,8 @@ func create_asset_scene(root_node: Node3D):
 		
 	# Attach actuators to links
 	for actuator in _actuators:
+		if "visible" in actuator:
+			actuator.node.set_meta("visible", actuator.visible)
 		var parent_name: String = actuator.parent.link
 		var parent_node: Node3D
 		for link in _links:
@@ -1184,6 +1186,7 @@ func parse_joints(urdf_data: PackedByteArray):
 							"false":
 								joint_attrib.visible = false
 							_:
+								printerr("[PU] Unrecognized visible attribute!")
 								joint_attrib.visible = false
 						
 				"parent":
@@ -1446,7 +1449,7 @@ func parse_actuators(urdf_data: PackedByteArray):
 		return ERR_PARSE_ERROR
 	
 	var actuator_attrib = {}
-	var actuator_node: Node3D
+	var actuator_node: Node3D = null
 	var root_tag: int = Tag.NONE
 	
 	while true:
@@ -1474,6 +1477,15 @@ func parse_actuators(urdf_data: PackedByteArray):
 							printerr("[PU] Actuator name \"%s\" already used!" % actuator_attrib.name)
 							root_tag = Tag.NONE
 							continue
+					if "visible" in attrib:
+						match attrib.visible:
+							"true":
+								actuator_attrib.visible = true
+							"false":
+								actuator_attrib.visible = false
+							_:
+								printerr("[PU] Unrecognized visible attribute!")
+								actuator_attrib.visible = false
 					if "type" in attrib:
 						match attrib.type:
 							"electromagnet":
@@ -1531,6 +1543,7 @@ func parse_actuators(urdf_data: PackedByteArray):
 				if actuator_node:
 					_actuators.append(actuator_attrib.duplicate(true))
 					actuator_attrib.clear()
+					actuator_node = null
 				root_tag = Tag.NONE
 				
 	#print("_actuators: ", JSON.stringify(_actuators, "\t", false))
