@@ -435,82 +435,6 @@ func _show_robot_command():
 			joints_panel.joints = visible_joints
 
 
-func show_asset_parameters():
-	# Remove joint parameters
-	for child in %JointsContainer.get_children():
-		%JointsContainer.remove_child(child)
-		child.queue_free()
-		
-	var all_continuous_joints = get_tree().get_nodes_in_group("CONTINUOUS")
-	var continuous_joints = all_continuous_joints.filter(func(joint): return _selected_asset.is_ancestor_of(joint))
-#	print("Continuous joints: ", continuous_joints)
-	for joint in continuous_joints:
-		var velocity_label = Label.new()
-		velocity_label.text = joint.name
-		velocity_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		%JointsContainer.add_child(velocity_label)
-		var velocity_edit = PropertySlider.new()
-		%JointsContainer.add_child(velocity_edit)
-		velocity_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		velocity_edit.min_value = -joint.LIMIT_VELOCITY
-		velocity_edit.max_value = joint.LIMIT_VELOCITY
-		velocity_edit.step = joint.LIMIT_VELOCITY / GPSettings.SCALE
-#			velocity_edit.tick_count = 3
-		velocity_edit.value = joint.target_velocity
-		velocity_edit.value_changed.connect(joint._target_velocity_changed)
-			
-	var all_revolute_joints = get_tree().get_nodes_in_group("REVOLUTE")
-	var revolute_joints = all_revolute_joints.filter(func(joint): return _selected_asset.is_ancestor_of(joint))
-#	print("Revolute joints: ", revolute_joints)
-	for joint in revolute_joints:
-		var angle_label = Label.new()
-		angle_label.text = joint.name
-		angle_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		%JointsContainer.add_child(angle_label)
-		var angle_edit = PropertySlider.new()
-		%JointsContainer.add_child(angle_edit)
-		angle_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		angle_edit.min_value = rad_to_deg(-joint.limit_upper)
-		angle_edit.max_value = rad_to_deg(-joint.limit_lower)
-		angle_edit.value = joint.target_input
-		angle_edit.value_changed.connect(joint._target_angle_changed)
-			
-	var all_prismatic_joints = get_tree().get_nodes_in_group("PRISMATIC")
-	var primatic_joints = all_prismatic_joints.filter(func(joint): return _selected_asset.is_ancestor_of(joint) and not joint.grouped)
-#	print("Prismatic joints: ", primatic_joints)
-	for joint in primatic_joints:
-		var dist_label = Label.new()
-		dist_label.text = joint.name
-		dist_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		%JointsContainer.add_child(dist_label)
-		var dist_edit = PropertySlider.new()
-		%JointsContainer.add_child(dist_edit)
-		dist_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		dist_edit.min_value = joint.limit_lower / GPSettings.SCALE
-		dist_edit.max_value = joint.limit_upper / GPSettings.SCALE
-		dist_edit.step = 0.01
-		dist_edit.value = joint.target_input / GPSettings.SCALE
-		dist_edit.value_changed.connect(joint._target_dist_changed)
-			
-	var all_grouped_joints = get_tree().get_nodes_in_group("GROUPED_JOINTS")
-	var grouped_joints = all_grouped_joints.filter(func(joint): return _selected_asset.is_ancestor_of(joint))
-#	print("Grouped joints: ", grouped_joints)
-	for joint in grouped_joints:
-#		print("grouped joint: ", joint)
-		var input_label = Label.new()
-		input_label.text = joint.input
-		input_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		%JointsContainer.add_child(input_label)
-		var input_edit = PropertySlider.new()
-		%JointsContainer.add_child(input_edit)
-		input_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		input_edit.min_value = joint.limit_lower
-		input_edit.max_value = joint.limit_upper
-		input_edit.step = 0.01
-		input_edit.value = joint.input_value
-		input_edit.value_changed.connect(joint._input_value_changed)
-
-
 func new_scene(environment_path: String) -> void:
 	#print("Env path: ", environment_path)
 	delete_scene()
@@ -892,7 +816,11 @@ func _on_joint_check_box_toggled(button_pressed):
 
 func _on_asset_delete_dialog_confirmed() -> void:
 	if scene:
+		if _selected_asset.is_in_group("ROBOTS"):
+			_robot_selected = null
 		scene.remove_child(_selected_asset)
+		_selected_asset.queue_free()
+		
 		# INFO: remove asset from project and update robot selection menu
 		update_robot_select_menu()
 		save_project()

@@ -2,7 +2,8 @@ extends SubViewportContainer
 
 @onready var game_scene = %GameScene as Node3D
 
-var offset_pos : Vector3
+var _offset_pos : Vector3
+var _base_link: RigidBody3D = null
 
 func _can_drop_data(_at_position: Vector2, node: Variant) -> bool:
 	#print("[SV] node: ", node)
@@ -13,15 +14,19 @@ func _can_drop_data(_at_position: Vector2, node: Variant) -> bool:
 			game_scene.asset_dragged = node.duplicate()
 			game_scene.set_physics(game_scene.asset_dragged, true)
 			game_scene.get_node("Scene").add_child(game_scene.asset_dragged)
-			offset_pos = game_scene.asset_dragged.get_meta("offset_pos", Vector3.ZERO)
+			_offset_pos = game_scene.asset_dragged.get_meta("offset_pos", Vector3.ZERO)
 			#print("[SV] offset pos: ", offset_pos)
-		game_scene.asset_dragged.position = result.position + offset_pos
+			_base_link = game_scene.asset_dragged.get_children().filter(
+				func(child): return child.is_in_group("BASE_LINK")).front()
+		if _base_link:
+			_base_link.position = result.position + _offset_pos
 		return true
 	else:
 		if game_scene.asset_dragged:
 			game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
 			game_scene.asset_dragged.queue_free()
 			game_scene.asset_dragged = null
+			_base_link = null
 		return false
 
 
@@ -29,14 +34,16 @@ func _drop_data(_at_position: Vector2, data) -> void:
 	var asset = data as Node
 	
 	# Remove ghost asset
-	var asset_pos = game_scene.asset_dragged.position
+	var asset_pos = _base_link.position
 	game_scene.get_node("Scene").remove_child(game_scene.asset_dragged)
 	game_scene.asset_dragged.queue_free()
 	game_scene.asset_dragged = null
+	_base_link = null
 	
-	
+	var base_link = asset.get_children().filter(
+				func(child): return child.is_in_group("BASE_LINK")).front()
 	asset.name = get_new_name(asset.name)
-	asset.position = asset_pos
+	base_link.position = asset_pos
 	if asset.is_in_group("ROBOTS"):
 		asset.set_meta("udp_port", game_scene.get_available_udp_port())
 	else:
