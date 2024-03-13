@@ -1,5 +1,5 @@
-extends CodeHighlighter
 class_name URDFSyntaxHighlighter
+extends CodeHighlighter
 
 func _init():
 	# Comments
@@ -22,6 +22,7 @@ func _init():
 		joint = Color.ROYAL_BLUE,
 		material = Color.ROYAL_BLUE,
 		sensor = Color.ROYAL_BLUE,
+		actuator = Color.ROYAL_BLUE,
 		gobotics = Color.ROYAL_BLUE,
 		inertial = Color.ROYAL_BLUE,
 		visual = Color.ROYAL_BLUE,

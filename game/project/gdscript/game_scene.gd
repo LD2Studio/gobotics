@@ -392,6 +392,8 @@ func update_robot_select_menu():
 
 ## Callback on menu item selected
 func _on_robot_selected(idx: int):
+	if not is_robots_inside_scene():
+		return
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
 	for i in robot_popup.item_count:
 		robot_popup.set_item_checked(i, false)
@@ -441,7 +443,6 @@ func new_scene(environment_path: String) -> void:
 	init_scene()
 	var environment: Node3D = ResourceLoader.load(environment_path).instantiate()
 	scene.add_child(environment)
-	#connect_pickable()
 	update_robot_select_menu()
 	%RunStopButton.button_pressed = false
 
@@ -559,11 +560,10 @@ func load_scene(path):
 				asset_node.name = asset.string_name
 			if "udp_port" in asset and asset.udp_port:
 				asset_node.set_meta("udp_port", asset.udp_port)
-			set_physics(asset_node, true)
 			scene.add_child(asset_node)
+			set_physics(asset_node, true)
 	update_robot_select_menu()
 	update_camera_view_menu()
-	#connect_pickable()
 	%RunStopButton.button_pressed = false
 
 
@@ -589,6 +589,8 @@ func set_physics(asset, frozen):
 		asset.frozen = frozen
 		
 	_freeze_children(asset, frozen)
+	
+	get_tree().call_group("MAGNET", "set_physics", not frozen)
 
 
 func _freeze_children(node, frozen):

@@ -11,6 +11,7 @@ var _materials: Array
 var _links: Array
 var _joints: Array
 var _sensors: Array
+var _actuators: Array
 var _gobotics: Array
 var _frame_mesh : ArrayMesh = load("res://game/gizmos/frame_arrows.res")
 
@@ -26,6 +27,7 @@ enum Tag {
 		SENSOR,
 		RAY,
 		GOBOTICS,
+		ACTUATOR,
 	}
 
 func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
@@ -42,6 +44,7 @@ func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
 		return null
 	parse_joints(urdf_data)
 	parse_sensors(urdf_data)
+	parse_actuators(urdf_data)
 	var base_link = create_asset_scene(root_node)
 	if base_link:
 		if root_node.is_in_group("ROBOTS"):
@@ -329,6 +332,29 @@ func create_asset_scene(root_node: Node3D):
 			sensor.node.add_child(frame_visual)
 			parent_node.add_child(sensor.node)
 		
+	# Attach actuators to links
+	for actuator in _actuators:
+		var parent_name: String = actuator.parent.link
+		var parent_node: Node3D
+		for link in _links:
+			if link.name == parent_name:
+				parent_node = link
+				break
+		if parent_node == null:
+			printerr("Actuator <%s> has no parent link!" % [actuator.name])
+			continue
+		else:
+			# Add frame gizmo
+			var frame_visual := MeshInstance3D.new()
+			_record(frame_visual)
+			frame_visual.name = actuator.name + "_frame"
+			frame_visual.add_to_group("ACTUATOR_GIZMO", true)
+			frame_visual.mesh = _frame_mesh
+			frame_visual.scale = Vector3.ONE * scale
+			frame_visual.visible = false
+			actuator.node.add_child(frame_visual)
+			parent_node.add_child(actuator.node)
+	
 	var base_link: RigidBody3D
 	for link in _links:
 		if link and link.get_parent() == null:
@@ -342,7 +368,6 @@ func create_asset_scene(root_node: Node3D):
 			link.set_meta("orphan", false)
 			if link.name == "world":
 				link.add_to_group("STATIC", true)
-				#link.add_to_group("PICKABLE", true)
 			if root_node.get_meta("type") == "env":
 				base_link.freeze = true
 			break
@@ -1414,6 +1439,103 @@ func parse_sensors(urdf_data: PackedByteArray):
 	#print("_sensors: ", JSON.stringify(_sensors, "\t", false))
 
 
+func parse_actuators(urdf_data: PackedByteArray):
+	var parse_err = parser.open_buffer(urdf_data)
+	if parse_err:
+		printerr("[PU] parse error ", parse_err)
+		return ERR_PARSE_ERROR
+	
+	var actuator_attrib = {}
+	var actuator_node: Node3D
+	var root_tag: int = Tag.NONE
+	
+	while true:
+		if parser.read() != OK: # Ending parse XML file
+			break
+		var type = parser.get_node_type()
+		#print("[PU] type: ", type)
+		if type == XMLParser.NODE_ELEMENT:
+			# Get node name
+			var node_name = parser.get_node_name()
+			
+			match node_name:
+				"actuator":
+					if root_tag != Tag.NONE: continue
+					root_tag = Tag.ACTUATOR
+					var attrib = {}
+					actuator_node = null
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value : String = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if "name" in attrib:
+						actuator_attrib.name = attrib.name.replace(" ", "_")
+						if not _actuators.filter(func(actuator): return actuator.name == actuator_attrib.name).is_empty():
+							printerr("[PU] Actuator name \"%s\" already used!" % actuator_attrib.name)
+							root_tag = Tag.NONE
+							continue
+					if "type" in attrib:
+						match attrib.type:
+							"electromagnet":
+								actuator_node = load("res://game/robot_features/actuators/electromagnet/electro_magnet.tscn").instantiate()
+								actuator_node.add_to_group("MAGNET", true)
+							_:
+								printerr("Unrecognized actuator type name!")
+					else:
+						printerr("<type> attribute not present in <actuator> tag!")
+					if actuator_node:
+						actuator_node.set_meta("orphan", true)
+						_record(actuator_node)
+						actuator_node.add_to_group("ACTUATORS", true)
+						actuator_node.unique_name_in_owner = true
+						if actuator_attrib.name:
+							actuator_node.name = actuator_attrib.name
+						actuator_attrib.node = actuator_node
+						
+				"parent":
+					if not root_tag == Tag.ACTUATOR: continue
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value.replace(" ", "_")
+					actuator_attrib.parent = attrib
+					
+				"origin":
+					if not root_tag == Tag.ACTUATOR: continue
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					var xyz := Vector3.ZERO
+					if "xyz" in attrib:
+						var xyz_arr = attrib.xyz.split_floats(" ")
+						xyz.x = xyz_arr[0]
+						xyz.y = xyz_arr[2]
+						xyz.z = -xyz_arr[1]
+					var rpy := Vector3.ZERO
+					if "rpy" in attrib:
+						var rpy_arr = attrib.rpy.split_floats(" ")
+						rpy.x = rpy_arr[0]
+						rpy.y = rpy_arr[2]
+						rpy.z = -rpy_arr[1]
+					if actuator_node:
+						actuator_node.position = xyz * scale
+						actuator_node.rotation = rpy
+						
+		if type == XMLParser.NODE_ELEMENT_END:
+			# Get node name
+			var node_name = parser.get_node_name()
+			if node_name == "actuator":
+				if actuator_node:
+					_actuators.append(actuator_attrib.duplicate(true))
+					actuator_attrib.clear()
+				root_tag = Tag.NONE
+				
+	#print("_actuators: ", JSON.stringify(_actuators, "\t", false))
+
+
 func add_root_script_to(root_node: Node3D):
 	var root_script: GDScript = load("res://game/robot_features/root.gd")
 	root_node.set_script(root_script)
@@ -1596,6 +1718,7 @@ func clear_buffer():
 	_links.clear()
 	_joints.clear()
 	_sensors.clear()
+	_actuators.clear()
 	_gobotics.clear()
 	parse_error_message = ""
 
@@ -1611,6 +1734,9 @@ func freeing_nodes():
 	for sensor in _sensors:
 		if sensor.node.get_meta("orphan"):
 			sensor.node.queue_free()
+	for actuator in _actuators:
+		if actuator.node.get_meta("orphan"):
+			actuator.node.queue_free()
 
 # Helper function to record node in scenetree
 func _record(node: Node, saving = true):

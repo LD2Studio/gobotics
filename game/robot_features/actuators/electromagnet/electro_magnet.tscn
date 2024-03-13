@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://n4o2or7qwcvv"]
+
+[ext_resource type="Script" path="res://game/robot_features/actuators/electromagnet/electro_magnet.gd" id="1_brq5j"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_s132b"]
+top_radius = 0.1
+bottom_radius = 0.1
+height = 0.05
+
+[sub_resource type="SphereMesh" id="SphereMesh_fg6sb"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j8j6k"]
+transparency = 1
+albedo_color = Color(0.905882, 0.282353, 0.054902, 0.176471)
+
+[node name="ElectroMagnet" type="Node3D"]
+script = ExtResource("1_brq5j")
+
+[node name="Support" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CylinderMesh_s132b")
+
+[node name="ForceArea" type="MeshInstance3D" parent="Support"]
+visible = false
+mesh = SubResource("SphereMesh_fg6sb")
+surface_material_override/0 = SubResource("StandardMaterial3D_j8j6k")
