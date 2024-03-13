@@ -236,21 +236,45 @@ func _on_asset_filename_edit_text_changed(new_text):
 
 const urdf_robot_template = """<robot name="noname">
 	<link name="base_link">
-	
+		<visual name="" with_col="true">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.1 0.1 0.1"/>
+			</geometry>
+			<material name="">
+			
+			</material>
+		</visual>
 	</link>
 </robot>
 """
 
 const urdf_standalone_template = """<standalone name="noname">
 	<link name="base_link">
-	
+		<visual name="" with_col="true">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.1 0.1 0.1"/>
+			</geometry>
+			<material name="">
+			
+			</material>
+		</visual>
 	</link>
 </standalone>
 """
 
 const urdf_environment_template = """<env name="noname">
 	<link name="world">
-	
+		<visual name="" with_col="true">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="10 10 0.01"/>
+			</geometry>
+			<material name="">
+			
+			</material>
+		</visual>
 	</link>
 </env>
 """
