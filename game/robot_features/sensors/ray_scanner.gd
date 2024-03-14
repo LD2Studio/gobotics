@@ -29,42 +29,29 @@ var ray_lengths: PackedFloat32Array
 var _ray_cast_array: Array
 #endregion
 
-#region INIT
+#region SETUP
 func _ready():
 	set_physics_process(not frozen)
 	_init_ray_cast()
 
 func _init_ray_cast():
-	if samples == 0: return
-	if samples == 1:
+	for i: int in samples:
+		var ray_pivot := Node3D.new()
+		add_child(ray_pivot)
+		var ray_angle: float = 0 if samples==1 else lerpf(hor_min_angle, hor_max_angle, float(i)/(samples-1))
+		ray_pivot.rotate_object_local(Vector3.UP, ray_angle)
+
 		var ray_cast = VisualRayCast3D.new(ray_max, ray_min)
+		ray_pivot.add_child(ray_cast)
 		ray_cast.position.x = ray_min
 		ray_cast.target_position = Vector3(ray_max - ray_min, 0, 0)
-		add_child(ray_cast)
-		
-		var ray_cast_obj = {
+		var ray_cast_state = {
 			node=ray_cast,
 			colliding=false,
 			length=0.0,
 		}
-		_ray_cast_array.append(ray_cast_obj)
+		_ray_cast_array.append(ray_cast_state)
 		
-	else:
-		var hor_scan_range: float = hor_max_angle - hor_min_angle
-		var hor_scan_step: float = hor_scan_range / (samples - 1)
-		for i in samples:
-			var ray_cast = VisualRayCast3D.new(ray_max, ray_min)
-			add_child(ray_cast)
-			ray_cast.rotate_y(i * hor_scan_step + hor_min_angle)
-			ray_cast.position.x = ray_min
-			ray_cast.target_position = Vector3(ray_max - ray_min, 0, 0)
-			
-			var ray_cast_state = {
-				node=ray_cast,
-				colliding=false,
-				length=0.0,
-			}
-			_ray_cast_array.append(ray_cast_state)
 #endregion
 
 #region PROCESS
