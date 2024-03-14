@@ -23,6 +23,7 @@ text = "Actuator"
 horizontal_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="GridContainer"]
+visible = false
 layout_mode = 2
 
 [node name="DirMinusButton" type="Button" parent="GridContainer/HBoxContainer"]
@@ -35,7 +36,14 @@ layout_mode = 2
 focus_mode = 0
 text = "Dir+ (E)"
 
+[node name="EnableActuatorButton" type="CheckButton" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Enable actuator"
+
 [node name="NextButton" type="Button" parent="GridContainer"]
 layout_mode = 2
 focus_mode = 0
 text = "Next joint (TAB)"
+
+[connection signal="toggled" from="GridContainer/EnableActuatorButton" to="." method="_on_enable_actuator_button_toggled"]

@@ -10,7 +10,8 @@ height = 0.05
 [sub_resource type="SphereMesh" id="SphereMesh_fg6sb"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j8j6k"]
-transparency = 1
+blend_mode = 3
+depth_draw_mode = 1
 albedo_color = Color(0.905882, 0.282353, 0.054902, 0.176471)
 
 [node name="ElectroMagnet" type="Node3D"]

@@ -13,8 +13,8 @@ var joypads_connected: Array[int]
 var joypad_connected: bool = false
 var joypad_selected: int = 0
 var focused_joint: Node = null
+var focused_actuator: Node = null
 
-signal joint_changed(joint_name: String)
 
 #endregion
 
@@ -40,7 +40,6 @@ func _ready():
 	set_name.call_deferred(&"RobotBase")
 	if not _joints.is_empty():
 		focused_joint = _joints[_joint_idx]
-		joint_changed.emit(focused_joint.name)
 
 
 func setup():
@@ -72,7 +71,6 @@ func update_all_joints():
 			_joints.append(node)
 	if not _joints.is_empty():
 		focused_joint = _joints[0]
-		joint_changed.emit(focused_joint.name)
 
 
 func update_all_sensors():
@@ -109,6 +107,11 @@ func command(delta):
 				focused_joint.shift_target(delta)
 			elif Input.is_action_pressed("JOINT_NEG"):
 				focused_joint.shift_target(-delta)
+	
+	if focused_actuator:
+		if focused_actuator.get("activate") != null:
+			if Input.is_action_just_pressed("toggle_actuator"):
+				focused_actuator.activate = !focused_actuator.activate
 
 #endregion
 
@@ -119,7 +122,6 @@ func get_pose() -> PackedFloat32Array:
 		[
 			base_link.global_position.x / 10.0,
 			-base_link.global_position.z / 10.0,
-#			base_link.global_position.y / 10.0,
 			base_link.rotation.y
 		]
 	)

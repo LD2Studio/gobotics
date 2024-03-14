@@ -424,6 +424,7 @@ func _show_robot_command():
 		
 	var base_node = _robot_selected.get_node_or_null("RobotBase")
 	if base_node:
+		# get visible joints
 		var visible_joints: Array = base_node._joints.filter(
 			func(joint: Node):
 				return joint.get_meta("visible", false) == true
@@ -436,7 +437,7 @@ func _show_robot_command():
 			joints_panel.visible = true
 			joints_panel.base_robot = base_node # Call before next instruction
 			joints_panel.joints = visible_joints
-		
+		# get visible actuators
 		var visible_actuators: Array = base_node._actuators.filter(
 			func(actuator: Node):
 				return actuator.get_meta("visible", false) == true

@@ -2,7 +2,7 @@ extends PanelContainer
 
 @onready var joint_name_label: Label = %JointNameLabel
 
-var base_robot: Node
+var base_robot: RobotBase
 var joints: Array:
 	set(value):
 		joints = value
