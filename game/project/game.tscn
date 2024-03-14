@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=27 format=3 uid="uid://b4s6pohitqafc"]
 
 [ext_resource type="Script" path="res://game/project/gdscript/game.gd" id="1_85jys"]
 [ext_resource type="Texture2D" uid="uid://kr5y1p8nf73q" path="res://game/icons/Add.svg" id="3_bkwo3"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://iem50p7y7tm3" path="res://game/ui/drive_panel.tscn" id="10_e872d"]
 [ext_resource type="StyleBox" uid="uid://die6ekhbco4pr" path="res://game/styles/HUD.tres" id="10_q2yc6"]
 [ext_resource type="PackedScene" uid="uid://dle2ijlcn4b0g" path="res://game/ui/joints_panel.tscn" id="11_g7qc1"]
+[ext_resource type="PackedScene" uid="uid://c27pf4wi5sgjs" path="res://game/ui/actuators_panel.tscn" id="12_nxqr3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxght"]
 bg_color = Color(0.211765, 0.372549, 0.505882, 1)
@@ -460,6 +461,10 @@ unique_name_in_owner = true
 layout_mode = 2
 
 [node name="JointsPanel" parent="SplitContainer/SceneView/SceneViewport/InputsContainer/HBoxContainer" instance=ExtResource("11_g7qc1")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ActuatorsPanel" parent="SplitContainer/SceneView/SceneViewport/InputsContainer/HBoxContainer" instance=ExtResource("12_nxqr3")]
 unique_name_in_owner = true
 layout_mode = 2
 

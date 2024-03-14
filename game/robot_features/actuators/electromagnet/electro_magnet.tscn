@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3 uid="uid://n4o2or7qwcvv"]
+
+[ext_resource type="Script" path="res://game/robot_features/actuators/electromagnet/electro_magnet.gd" id="1_brq5j"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_ohlpl"]
+resource_local_to_scene = true
+height = 0.2
+radius = 0.1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_en2sp"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_nwsru"]
+resource_local_to_scene = true
+top_radius = 0.1
+bottom_radius = 0.1
+height = 0.05
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wnf2l"]
+resource_local_to_scene = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_16x0e"]
+albedo_color = Color(0.0392157, 0.027451, 0.027451, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_l1rxe"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_16x0e")
+top_radius = 0.07
+bottom_radius = 0.07
+height = 0.02
+
+[node name="ElectroMagnet" type="Area3D"]
+gravity_space_override = 1
+gravity_point = true
+gravity_point_center = Vector3(0, 0, 0)
+gravity_direction = Vector3(0, 0, 0)
+script = ExtResource("1_brq5j")
+metadata/visible = false
+
+[node name="MagnetCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.127381, 0, 0)
+shape = SubResource("CylinderShape3D_ohlpl")
+
+[node name="DebugMesh" type="MeshInstance3D" parent="MagnetCollision"]
+mesh = SubResource("ArrayMesh_en2sp")
+
+[node name="Support" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CylinderMesh_nwsru")
+surface_material_override/0 = SubResource("StandardMaterial3D_wnf2l")
+
+[node name="MagnetArea" type="MeshInstance3D" parent="Support"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.47222e-10, -0.0193822, 0)
+mesh = SubResource("CylinderMesh_l1rxe")

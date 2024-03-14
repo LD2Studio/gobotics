@@ -1,0 +1,50 @@
+[gd_scene load_steps=3 format=3 uid="uid://c27pf4wi5sgjs"]
+
+[ext_resource type="Script" path="res://game/ui/actuators_panel.gd" id="1_awmoh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lmfsw"]
+
+[node name="ActuatorsPanel" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_lmfsw")
+script = ExtResource("1_awmoh")
+
+[node name="GridContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ActuatorNameLabel" type="Label" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Actuator"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GridContainer"]
+visible = false
+layout_mode = 2
+
+[node name="DirMinusButton" type="Button" parent="GridContainer/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Dir- (A)"
+
+[node name="DirPlusButton" type="Button" parent="GridContainer/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Dir+ (E)"
+
+[node name="EnableActuatorButton" type="CheckButton" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Enable actuator (T)"
+
+[node name="NextButton" type="Button" parent="GridContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Next actuator (R)"
+
+[connection signal="toggled" from="GridContainer/EnableActuatorButton" to="." method="_on_enable_actuator_button_toggled"]
+[connection signal="pressed" from="GridContainer/NextButton" to="." method="_on_next_button_pressed"]

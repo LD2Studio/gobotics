@@ -13,8 +13,8 @@ var joypads_connected: Array[int]
 var joypad_connected: bool = false
 var joypad_selected: int = 0
 var focused_joint: Node = null
+var focused_actuator: Node = null
 
-signal joint_changed(joint_name: String)
 
 #endregion
 
@@ -22,6 +22,7 @@ signal joint_changed(joint_name: String)
 #region INTERNALS
 var _joints := Array()
 var _ray_sensors := Array()
+var _actuators := Array()
 var _joint_idx : int = 0
 
 #region INIT
@@ -39,7 +40,6 @@ func _ready():
 	set_name.call_deferred(&"RobotBase")
 	if not _joints.is_empty():
 		focused_joint = _joints[_joint_idx]
-		joint_changed.emit(focused_joint.name)
 
 
 func setup():
@@ -48,6 +48,7 @@ func setup():
 			base_link = node
 	update_all_joints()
 	update_all_sensors()
+	update_all_actuators()
 
 #endregion
 
@@ -70,7 +71,6 @@ func update_all_joints():
 			_joints.append(node)
 	if not _joints.is_empty():
 		focused_joint = _joints[0]
-		joint_changed.emit(focused_joint.name)
 
 
 func update_all_sensors():
@@ -79,6 +79,13 @@ func update_all_sensors():
 		if node.owner == get_parent():
 			_ray_sensors.append(node)
 	#print("ray sensors: ", _ray_sensors)
+
+
+func update_all_actuators():
+	_actuators.clear()
+	for node in get_tree().get_nodes_in_group("ACTUATORS"):
+		if node.owner == get_parent():
+			_actuators.append(node)
 
 
 func _on_joypad_changed(device: int, connected: bool):
@@ -110,7 +117,6 @@ func get_pose() -> PackedFloat32Array:
 		[
 			base_link.global_position.x / 10.0,
 			-base_link.global_position.z / 10.0,
-#			base_link.global_position.y / 10.0,
 			base_link.rotation.y
 		]
 	)

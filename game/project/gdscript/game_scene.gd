@@ -17,6 +17,7 @@ var _current_cam: int = 0
 @onready var inputs_container: MarginContainer = %InputsContainer
 @onready var drive_panel: PanelContainer = %DrivePanel
 @onready var joints_panel: PanelContainer = %JointsPanel
+@onready var actuators_panel: PanelContainer = %ActuatorsPanel
 @onready var camera_view_button = %CameraViewButton
 @onready var robot_selected_button = %RobotSelectedButton
 @onready var scene_view = %SceneView
@@ -392,6 +393,8 @@ func update_robot_select_menu():
 
 ## Callback on menu item selected
 func _on_robot_selected(idx: int):
+	if not is_robots_inside_scene():
+		return
 	var robot_popup: PopupMenu = robot_selected_button.get_popup()
 	for i in robot_popup.item_count:
 		robot_popup.set_item_checked(i, false)
@@ -421,6 +424,7 @@ func _show_robot_command():
 		
 	var base_node = _robot_selected.get_node_or_null("RobotBase")
 	if base_node:
+		# get visible joints
 		var visible_joints: Array = base_node._joints.filter(
 			func(joint: Node):
 				return joint.get_meta("visible", false) == true
@@ -433,6 +437,18 @@ func _show_robot_command():
 			joints_panel.visible = true
 			joints_panel.base_robot = base_node # Call before next instruction
 			joints_panel.joints = visible_joints
+		# get visible actuators
+		var visible_actuators: Array = base_node._actuators.filter(
+			func(actuator: Node):
+				return actuator.get_meta("visible", false) == true
+				)
+		if visible_actuators.is_empty():
+			actuators_panel.visible = false
+		else:
+			actuators_panel.visible = true
+			actuators_panel.base_robot = base_node # Call before next instruction
+			actuators_panel.actuators = visible_actuators
+	
 
 
 func new_scene(environment_path: String) -> void:
@@ -441,7 +457,6 @@ func new_scene(environment_path: String) -> void:
 	init_scene()
 	var environment: Node3D = ResourceLoader.load(environment_path).instantiate()
 	scene.add_child(environment)
-	#connect_pickable()
 	update_robot_select_menu()
 	%RunStopButton.button_pressed = false
 
@@ -559,11 +574,10 @@ func load_scene(path):
 				asset_node.name = asset.string_name
 			if "udp_port" in asset and asset.udp_port:
 				asset_node.set_meta("udp_port", asset.udp_port)
-			set_physics(asset_node, true)
 			scene.add_child(asset_node)
+			set_physics(asset_node, true)
 	update_robot_select_menu()
 	update_camera_view_menu()
-	#connect_pickable()
 	%RunStopButton.button_pressed = false
 
 
@@ -589,6 +603,8 @@ func set_physics(asset, frozen):
 		asset.frozen = frozen
 		
 	_freeze_children(asset, frozen)
+	
+	get_tree().call_group("MAGNET", "set_physics", not frozen)
 
 
 func _freeze_children(node, frozen):
