@@ -37,7 +37,7 @@ script = ExtResource("1_brq5j")
 metadata/visible = false
 
 [node name="MagnetCollision" type="CollisionShape3D" parent="."]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.119202, 0, 0)
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.127381, 0, 0)
 shape = SubResource("CylinderShape3D_ohlpl")
 
 [node name="DebugMesh" type="MeshInstance3D" parent="MagnetCollision"]
