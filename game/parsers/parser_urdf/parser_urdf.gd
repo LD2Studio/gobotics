@@ -28,6 +28,7 @@ enum Tag {
 		RAY,
 		GOBOTICS,
 		ACTUATOR,
+		FEATURE,
 	}
 
 func parse(urdf_data: PackedByteArray, _error_output: Array = []) -> Node3D:
@@ -1451,7 +1452,7 @@ func parse_actuators(urdf_data: PackedByteArray):
 	var actuator_attrib = {}
 	var actuator_node: Node3D = null
 	var root_tag: int = Tag.NONE
-	
+	var internal_tag: int = Tag.NONE
 	while true:
 		if parser.read() != OK: # Ending parse XML file
 			break
@@ -1535,7 +1536,35 @@ func parse_actuators(urdf_data: PackedByteArray):
 					if actuator_node:
 						actuator_node.position = xyz * scale
 						actuator_node.rotation = rpy
+					
+				"feature":
+					if root_tag != Tag.ACTUATOR: continue
+					internal_tag = Tag.FEATURE
+					if "type" in actuator_attrib and actuator_attrib.type != "electromagnet":
+						printerr("feature tag should not be use here!")
 						
+				"size":
+					if not root_tag == Tag.ACTUATOR : continue
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if internal_tag == Tag.FEATURE:
+						if attrib.radius:
+							actuator_node.set_meta("magnet_radius", float(attrib.radius))
+							
+				"physics":
+					if not root_tag == Tag.ACTUATOR : continue
+					var attrib = {}
+					for idx in parser.get_attribute_count():
+						var name = parser.get_attribute_name(idx)
+						var value = parser.get_attribute_value(idx)
+						attrib[name] = value
+					if internal_tag == Tag.FEATURE:
+						if attrib.strength:
+							actuator_node.set_meta("magnet_strength", float(attrib.strength))
+					
 		if type == XMLParser.NODE_ELEMENT_END:
 			# Get node name
 			var node_name = parser.get_node_name()
@@ -1545,6 +1574,8 @@ func parse_actuators(urdf_data: PackedByteArray):
 					actuator_attrib.clear()
 					actuator_node = null
 				root_tag = Tag.NONE
+			elif node_name == "feature":
+				internal_tag = Tag.NONE
 				
 	#print("_actuators: ", JSON.stringify(_actuators, "\t", false))
 
