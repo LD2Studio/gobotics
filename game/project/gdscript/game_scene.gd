@@ -184,22 +184,22 @@ func iterate_inside_node(parent: Node):
 			iterate_inside_node(child)
 
 
-func get_asset_collider(scene: Node3D) -> Dictionary:
-	var mouse_pos: Vector2 = scene.get_viewport().get_mouse_position()
-	var ray_origin = scene.get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
-	var ray_direction = scene.get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
+func get_asset_collider(node: Node3D) -> Dictionary:
+	var mouse_pos: Vector2 = node.get_viewport().get_mouse_position()
+	var ray_origin = node.get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
+	var ray_direction = node.get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
 	var ray_quering = PhysicsRayQueryParameters3D.create(
 		ray_origin, ray_origin + ray_direction * 1000, 0b1000)
-	return scene.get_world_3d().direct_space_state.intersect_ray(ray_quering)
+	return node.get_world_3d().direct_space_state.intersect_ray(ray_quering)
 
 
-func get_environment_collider(scene: Node3D) -> Dictionary:
-	var mouse_pos: Vector2 = scene.get_viewport().get_mouse_position()
-	var ray_origin = scene.get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
-	var ray_direction = scene.get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
+func get_environment_collider(node: Node3D) -> Dictionary:
+	var mouse_pos: Vector2 = node.get_viewport().get_mouse_position()
+	var ray_origin = node.get_viewport().get_camera_3d().project_ray_origin(mouse_pos)
+	var ray_direction = node.get_viewport().get_camera_3d().project_ray_normal(mouse_pos)
 	var ray_quering = PhysicsRayQueryParameters3D.create(
 		ray_origin, ray_origin + ray_direction * 1000, 0b0010)
-	return scene.get_world_3d().direct_space_state.intersect_ray(ray_quering)
+	return node.get_world_3d().direct_space_state.intersect_ray(ray_quering)
 
 
 func _show_asset_name(asset):

@@ -38,7 +38,11 @@ func _init_ray_cast():
 	for i: int in samples:
 		var ray_pivot := Node3D.new()
 		add_child(ray_pivot)
-		var ray_angle: float = 0 if samples==1 else lerpf(hor_min_angle, hor_max_angle, float(i)/(samples-1))
+		var ray_angle: float
+		if samples == 1:
+			ray_angle = 0
+		else:
+			ray_angle = lerpf(hor_min_angle, hor_max_angle, float(i)/(samples-1))
 		ray_pivot.rotate_object_local(Vector3.UP, ray_angle)
 
 		var ray_cast = VisualRayCast3D.new(ray_max, ray_min)
