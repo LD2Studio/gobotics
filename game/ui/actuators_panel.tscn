@@ -39,11 +39,12 @@ text = "Dir+ (E)"
 [node name="EnableActuatorButton" type="CheckButton" parent="GridContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Enable actuator"
+text = "Enable actuator (T)"
 
 [node name="NextButton" type="Button" parent="GridContainer"]
 layout_mode = 2
 focus_mode = 0
-text = "Next joint (TAB)"
+text = "Next actuator (R)"
 
 [connection signal="toggled" from="GridContainer/EnableActuatorButton" to="." method="_on_enable_actuator_button_toggled"]
+[connection signal="pressed" from="GridContainer/NextButton" to="." method="_on_next_button_pressed"]

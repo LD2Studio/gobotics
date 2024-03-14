@@ -107,11 +107,6 @@ func command(delta):
 				focused_joint.shift_target(delta)
 			elif Input.is_action_pressed("JOINT_NEG"):
 				focused_joint.shift_target(-delta)
-	
-	if focused_actuator:
-		if focused_actuator.get("activate") != null:
-			if Input.is_action_just_pressed("toggle_actuator"):
-				focused_actuator.activate = !focused_actuator.activate
 
 #endregion
 
