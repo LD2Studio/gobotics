@@ -414,6 +414,8 @@ func _show_robot_command():
 	inputs_container.visible = running
 	if _robot_selected == null:
 		drive_panel.visible = false
+		joints_panel.visible = false
+		actuators_panel.visible = false
 		return
 	
 	var driving_node = _robot_selected.get_node_or_null("ControlRobot")
@@ -448,7 +450,6 @@ func _show_robot_command():
 			actuators_panel.visible = true
 			actuators_panel.base_robot = base_node # Call before next instruction
 			actuators_panel.actuators = visible_actuators
-	
 
 
 func new_scene(environment_path: String) -> void:
