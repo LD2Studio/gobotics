@@ -66,7 +66,7 @@ func _init() -> void:
 	
 	settings_db = ResourceLoader.load(setting_path.path_join("settings.tres"))
 	if settings_db == null:
-		#printerr("Loading settings failed!")
+		printerr("Loading settings failed!")
 		settings_db = SettingsDB.new()
 		save_settings()
 
@@ -77,8 +77,8 @@ func load_mods():
 			var success = ProjectSettings.load_resource_pack(mod_path, false)
 			if not success:
 				printerr("Failed to loading modules!")
-			#else:
-				#print("Loading modules success!")
+			else:
+				print("Loading <%s> module successfully!" % [mod_path])
 
 
 ## Loading assets for Gobotics
@@ -147,37 +147,78 @@ func create_dir():
 func _load_custom_links():
 	custom_links.clear()
 	# Append builtin links
-	var builtin_links_dir = DirAccess.open(ProjectSettings.globalize_path("res://game/builtins/"))
-	if builtin_links_dir:
-		var scene_files = Array(builtin_links_dir.get_files())
-		scene_files = scene_files.filter(
-				func(file: String): return file.get_extension() == "tscn"
+	if OS.has_feature("editor"):
+		var builtin_links_dir = DirAccess.open(ProjectSettings.globalize_path("res://game/builtins/"))
+		if builtin_links_dir:
+			var scene_files = Array(builtin_links_dir.get_files())
+			#print("raw files", scene_files)
+			scene_files = scene_files.filter(
+					func(file: String): return file.get_extension() == "tscn"
+					)
+			#print("scene files: ", scene_files)
+			for scene_file in scene_files:
+				var scene: PackedScene = load("res://game/builtins/".path_join(scene_file))
+				#print("scene: ", scene.get_state())
+				var node_count: int = scene.get_state().get_node_count()
+				#print("count: ", node_count)
+				#print("node 0: ", scene.get_state().get_node_name(0))
+				var groups: PackedStringArray = scene.get_state().get_node_groups(0)
+				#print("groups: ", groups)
+				if "EXTENDS_LINK" in groups:
+					#print("path: ", "res://game/builtins/".path_join(scene_file))
+					#print("name: ", scene.get_state().get_node_name(0))
+					custom_links.append(
+						{
+							name = scene.get_state().get_node_name(0),
+							path = "res://game/builtins/".path_join(scene_file)
+						}
+					)
+	else: # exported
+		var builtin_links_dir = DirAccess.open("res://game/builtins")
+		# INFO: When exported, scene is "tscn.remap" extension
+		if builtin_links_dir:
+			var scene_files = Array(builtin_links_dir.get_files())
+			#print("raw files", scene_files)
+			scene_files = scene_files.filter(func(file: String):
+				return file.ends_with("tscn.remap")
 				)
-		#print("scene files: ", scene_files)
-		for scene_file in scene_files:
-			var scene: PackedScene = load("res://game/builtins/".path_join(scene_file))
-			#print("scene: ", scene.get_state())
-			var node_count: int = scene.get_state().get_node_count()
-			#print("count: ", node_count)
-			#print("node 0: ", scene.get_state().get_node_name(0))
-			var groups: PackedStringArray = scene.get_state().get_node_groups(0)
-			#print("groups: ", groups)
-			if "EXTENDS_LINK" in groups:
-				#print("path: ", "res://game/builtins/".path_join(scene_file))
-				#print("name: ", scene.get_state().get_node_name(0))
-				custom_links.append(
-					{
-						name = scene.get_state().get_node_name(0),
-						path = "res://game/builtins/".path_join(scene_file)
-					}
+			scene_files = scene_files.map(func(file: String):
+				return file.trim_suffix(".remap")
 				)
+			#print("scene files: ", scene_files)
+			for scene_file in scene_files:
+				var scene: PackedScene = load("res://game/builtins/".path_join(scene_file))
+				#print("scene: ", scene.get_state())
+				var node_count: int = scene.get_state().get_node_count()
+				#print("count: ", node_count)
+				#print("node 0: ", scene.get_state().get_node_name(0))
+				var groups: PackedStringArray = scene.get_state().get_node_groups(0)
+				#print("groups: ", groups)
+				if "EXTENDS_LINK" in groups:
+					#print("path: ", "res://game/builtins/".path_join(scene_file))
+					#print("name: ", scene.get_state().get_node_name(0))
+					custom_links.append(
+						{
+							name = scene.get_state().get_node_name(0),
+							path = "res://game/builtins/".path_join(scene_file)
+						}
+					)
 	# Append mods links
-	var mods_links_dir = DirAccess.open(ProjectSettings.globalize_path("res://mods/"))
+	#var mods_links_dir = DirAccess.open(ProjectSettings.globalize_path("res://mods/"))
+	var mods_links_dir = DirAccess.open("res://mods")
+	#print("mods link dir: ", mods_links_dir)
+	# BUG : mods dir is not accessed on export game
 	if mods_links_dir:
 		var scene_files = Array(mods_links_dir.get_files())
+		#scene_files = scene_files.filter(
+				#func(file: String): return file.get_extension() == "tscn"
+				#)
 		scene_files = scene_files.filter(
-				func(file: String): return file.get_extension() == "tscn"
+				func(file: String): return file.ends_with("tscn.remap")
 				)
+		scene_files = scene_files.map(func(file: String):
+			return file.trim_suffix(".remap")
+		)
 		#print("scene files: ", scene_files)
 		for scene_file in scene_files:
 			var scene: PackedScene = load("res://mods/".path_join(scene_file))
