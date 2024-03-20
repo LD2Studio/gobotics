@@ -2,7 +2,6 @@ extends Control
 
 @onready var asset_path_edit: LineEdit = %AssetPathEdit
 @onready var project_path_edit: LineEdit = %ProjectPathEdit
-@onready var add_mods_dialog: FileDialog = %AddModsDialog
 @onready var mods_list: ItemList = %ModsList
 
 func _ready() -> void:
@@ -13,6 +12,7 @@ func show_settings() -> void:
 	asset_path_edit.text = GSettings.asset_path
 	project_path_edit.text = GSettings.project_path
 	_update_mods_list()
+	%RemoveModsButton.disabled = true
 
 
 func _on_return_button_pressed() -> void:
@@ -34,7 +34,7 @@ func _on_open_project_folder_button_pressed() -> void:
 
 
 func _on_add_mods_button_pressed() -> void:
-	add_mods_dialog.popup_centered()
+	%AddModsDialog.popup_centered()
 
 
 func _on_add_mods_dialog_file_selected(path: String) -> void:
@@ -57,3 +57,31 @@ func _update_mods_list():
 	
 	for mod_path in GSettings.settings_db.mod_paths:
 		mods_list.add_item(mod_path)
+
+
+func _on_remove_mods_button_pressed() -> void:
+	var idx: int = mods_list.get_selected_items()[0]
+	var module_path: String = mods_list.get_item_text(idx)
+	%RemoveModsDialog.dialog_text = "Do you want to remove \"%s\" module from Gobotics?" % [module_path]
+	%RemoveModsDialog.popup_centered()
+
+
+func _on_mods_list_item_selected(index: int) -> void:
+	%RemoveModsButton.disabled = false
+
+
+func _on_remove_mods_dialog_confirmed() -> void:
+	var idx: int = mods_list.get_selected_items()[0]
+	var module_path: String = mods_list.get_item_text(idx)
+	_remove_mod(module_path)
+
+
+func _remove_mod(path: String):
+	GSettings.settings_db.remove_mod(path)
+	GSettings.save_settings()
+	%ReloadGoboticsDialog.popup_centered()
+
+
+func _on_reload_gobotics_dialog_confirmed() -> void:
+	OS.set_restart_on_exit(true)
+	get_tree().quit()

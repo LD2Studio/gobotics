@@ -96,13 +96,16 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="AddModsButton" type="Button" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer"]
+layout_mode = 2
+
+[node name="AddModsButton" type="Button" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_vertical = 0
 text = "Add Module"
 
-[node name="AddModsDialog" type="FileDialog" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/AddModsButton"]
+[node name="AddModsDialog" type="FileDialog" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/VBoxContainer/AddModsButton"]
 unique_name_in_owner = true
 title = "Open a File"
 ok_button_text = "Open"
@@ -110,6 +113,19 @@ file_mode = 0
 access = 2
 filters = PackedStringArray("*.zip")
 use_native_dialog = true
+
+[node name="RemoveModsButton" type="Button" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Remove Module"
+
+[node name="RemoveModsDialog" type="ConfirmationDialog" parent="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/VBoxContainer/RemoveModsButton"]
+unique_name_in_owner = true
+size = Vector2i(300, 106)
+ok_button_text = "Yes"
+dialog_text = "Do you want to remove this module?"
+dialog_autowrap = true
+cancel_button_text = "No"
 
 [node name="MarginReturnButton" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -121,8 +137,16 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Return to HomePage"
 
+[node name="ReloadGoboticsDialog" type="AcceptDialog" parent="."]
+unique_name_in_owner = true
+dialog_text = "Relaunch the application to update Gobotics"
+
 [connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/AssetPathContainer/OpenAssetFolderButton" to="." method="_on_open_asset_folder_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/ProjectPathContainer/OpenProjectFolderButton" to="." method="_on_open_project_folder_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/AddModsButton" to="." method="_on_add_mods_button_pressed"]
-[connection signal="file_selected" from="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/AddModsButton/AddModsDialog" to="." method="_on_add_mods_dialog_file_selected"]
+[connection signal="item_selected" from="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/ModsList" to="." method="_on_mods_list_item_selected"]
+[connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/VBoxContainer/AddModsButton" to="." method="_on_add_mods_button_pressed"]
+[connection signal="file_selected" from="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/VBoxContainer/AddModsButton/AddModsDialog" to="." method="_on_add_mods_dialog_file_selected"]
+[connection signal="pressed" from="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/VBoxContainer/RemoveModsButton" to="." method="_on_remove_mods_button_pressed"]
+[connection signal="confirmed" from="VBoxContainer/MarginContainer/VBoxContainer/ModsContainer/VBoxContainer/RemoveModsButton/RemoveModsDialog" to="." method="_on_remove_mods_dialog_confirmed"]
 [connection signal="pressed" from="VBoxContainer/MarginReturnButton/ReturnButton" to="." method="_on_return_button_pressed"]
+[connection signal="confirmed" from="ReloadGoboticsDialog" to="." method="_on_reload_gobotics_dialog_confirmed"]
