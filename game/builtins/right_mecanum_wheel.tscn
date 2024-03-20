@@ -1,38 +1,38 @@
 [gd_scene load_steps=9 format=3 uid="uid://e8lhppx8wuo2"]
 
-[ext_resource type="Material" uid="uid://dkxm1v2xwbpuq" path="res://game/builtins/materials/black.tres" id="1_hq3fk"]
-[ext_resource type="PhysicsMaterial" uid="uid://sfyhtcjishe3" path="res://game/builtins/physics/roller_physics.tres" id="2_cuwfn"]
-[ext_resource type="Shape3D" uid="uid://bsm8oe3pfueww" path="res://game/builtins/shapes/roller_005_shape.tres" id="3_6l8gd"]
-[ext_resource type="Shape3D" uid="uid://cn4jxe3if6hy8" path="res://game/builtins/shapes/roller_004_shape.tres" id="4_16csc"]
-[ext_resource type="PackedScene" uid="uid://cnitkuo1irjcy" path="res://game/builtins/shapes/roller.glb" id="5_dcx5p"]
+[ext_resource type="Material" uid="uid://dkxm1v2xwbpuq" path="res://game/builtins/materials/black.tres" id="1_20t8f"]
+[ext_resource type="PhysicsMaterial" uid="uid://sfyhtcjishe3" path="res://game/builtins/physics/roller_physics.tres" id="2_jy3lt"]
+[ext_resource type="Shape3D" uid="uid://bsm8oe3pfueww" path="res://game/builtins/shapes/roller_005_shape.tres" id="3_tplfl"]
+[ext_resource type="Shape3D" uid="uid://cn4jxe3if6hy8" path="res://game/builtins/shapes/roller_004_shape.tres" id="4_li2tk"]
+[ext_resource type="PackedScene" uid="uid://cnitkuo1irjcy" path="res://game/builtins/shapes/roller.glb" id="5_7eai3"]
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_iv5k4"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_m72if"]
 top_radius = 0.25
 bottom_radius = 0.25
 height = 0.1
 
-[sub_resource type="BoxMesh" id="BoxMesh_0xjg6"]
+[sub_resource type="BoxMesh" id="BoxMesh_ib165"]
 size = Vector3(0.1, 0.1, 0.2)
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_o5gdu"]
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_ht5yk"]
 height = 0.1
 radius = 0.25
 
-[node name="RightMecanumWheel" type="RigidBody3D"]
+[node name="right_mecanum_wheel" type="RigidBody3D" groups=["EXTENDS_LINK"]]
 collision_mask = 3
 mass = 0.2
 
 [node name="RimVisual" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-mesh = SubResource("CylinderMesh_iv5k4")
+mesh = SubResource("CylinderMesh_m72if")
 
 [node name="ShaftVisual" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_0xjg6")
-surface_material_override/0 = ExtResource("1_hq3fk")
+mesh = SubResource("BoxMesh_ib165")
+surface_material_override/0 = ExtResource("1_20t8f")
 
 [node name="RimCollision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-shape = SubResource("CylinderShape3D_o5gdu")
+shape = SubResource("CylinderShape3D_ht5yk")
 
 [node name="RollerJoint0" type="JoltHingeJoint3D" parent="."]
 motor_enabled = true
@@ -44,20 +44,20 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 
 [node name="RollerLink0" type="RigidBody3D" parent="RollerJoint0"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint0/RollerLink0"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint0/RollerLink0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint0/RollerLink0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint0/RollerLink0" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint0/RollerLink0" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint1" type="JoltHingeJoint3D" parent="."]
@@ -70,20 +70,20 @@ transform = Transform3D(0.866025, -0.353553, 0.353553, 0.5, 0.612372, -0.612372,
 [node name="RollerLink1" type="RigidBody3D" parent="RollerJoint1"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint1/RollerLink1"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint1/RollerLink1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint1/RollerLink1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint1/RollerLink1" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint1/RollerLink1" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint2" type="JoltHingeJoint3D" parent="."]
@@ -96,20 +96,20 @@ transform = Transform3D(0.5, -0.612372, 0.612372, 0.866025, 0.353553, -0.353553,
 [node name="RollerLink2" type="RigidBody3D" parent="RollerJoint2"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint2/RollerLink2"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint2/RollerLink2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint2/RollerLink2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint2/RollerLink2" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint2/RollerLink2" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint3" type="JoltHingeJoint3D" parent="."]
@@ -122,20 +122,20 @@ transform = Transform3D(-4.37114e-08, -0.707107, 0.707107, 1, -3.09086e-08, 3.09
 [node name="RollerLink3" type="RigidBody3D" parent="RollerJoint3"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint3/RollerLink3"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint3/RollerLink3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint3/RollerLink3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint3/RollerLink3" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint3/RollerLink3" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint4" type="JoltHingeJoint3D" parent="."]
@@ -148,20 +148,20 @@ transform = Transform3D(-0.5, -0.612372, 0.612372, 0.866025, -0.353553, 0.353553
 [node name="RollerLink4" type="RigidBody3D" parent="RollerJoint4"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint4/RollerLink4"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint4/RollerLink4"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint4/RollerLink4"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint4/RollerLink4" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint4/RollerLink4" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint5" type="JoltHingeJoint3D" parent="."]
@@ -174,20 +174,20 @@ transform = Transform3D(-0.866025, -0.353553, 0.353553, 0.5, -0.612372, 0.612372
 [node name="RollerLink5" type="RigidBody3D" parent="RollerJoint5"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint5/RollerLink5"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint5/RollerLink5"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint5/RollerLink5"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint5/RollerLink5" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint5/RollerLink5" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint6" type="JoltHingeJoint3D" parent="."]
@@ -200,20 +200,20 @@ transform = Transform3D(-1, 6.18172e-08, -6.18172e-08, -8.74228e-08, -0.707107, 
 [node name="RollerLink6" type="RigidBody3D" parent="RollerJoint6"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint6/RollerLink6"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint6/RollerLink6"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint6/RollerLink6"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint6/RollerLink6" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint6/RollerLink6" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint7" type="JoltHingeJoint3D" parent="."]
@@ -226,20 +226,20 @@ transform = Transform3D(-0.866025, 0.353553, -0.353553, -0.5, -0.612372, 0.61237
 [node name="RollerLink7" type="RigidBody3D" parent="RollerJoint7"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint7/RollerLink7"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint7/RollerLink7"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint7/RollerLink7"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint7/RollerLink7" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint7/RollerLink7" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint8" type="JoltHingeJoint3D" parent="."]
@@ -252,20 +252,20 @@ transform = Transform3D(-0.5, 0.612372, -0.612372, -0.866025, -0.353553, 0.35355
 [node name="RollerLink8" type="RigidBody3D" parent="RollerJoint8"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint8/RollerLink8"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint8/RollerLink8"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint8/RollerLink8"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint8/RollerLink8" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint8/RollerLink8" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint9" type="JoltHingeJoint3D" parent="."]
@@ -278,20 +278,20 @@ transform = Transform3D(1.19249e-08, 0.707107, -0.707107, -1, 8.43216e-09, -8.43
 [node name="RollerLink9" type="RigidBody3D" parent="RollerJoint9"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint9/RollerLink9"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint9/RollerLink9"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint9/RollerLink9"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint9/RollerLink9" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint9/RollerLink9" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint10" type="JoltHingeJoint3D" parent="."]
@@ -304,20 +304,20 @@ transform = Transform3D(0.5, 0.612372, -0.612372, -0.866025, 0.353553, -0.353553
 [node name="RollerLink10" type="RigidBody3D" parent="RollerJoint10"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint10/RollerLink10"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint10/RollerLink10"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint10/RollerLink10"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint10/RollerLink10" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint10/RollerLink10" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)
 
 [node name="RollerJoint11" type="JoltHingeJoint3D" parent="."]
@@ -330,18 +330,18 @@ transform = Transform3D(0.866025, 0.353554, -0.353554, -0.5, 0.612372, -0.612372
 [node name="RollerLink11" type="RigidBody3D" parent="RollerJoint11"]
 collision_mask = 3
 mass = 0.05
-physics_material_override = ExtResource("2_cuwfn")
+physics_material_override = ExtResource("2_jy3lt")
 
 [node name="RollerCol" type="CollisionShape3D" parent="RollerJoint11/RollerLink11"]
-shape = ExtResource("3_6l8gd")
+shape = ExtResource("3_tplfl")
 
 [node name="RollerColR" type="CollisionShape3D" parent="RollerJoint11/RollerLink11"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
 [node name="RollerColL" type="CollisionShape3D" parent="RollerJoint11/RollerLink11"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.074)
-shape = ExtResource("4_16csc")
+shape = ExtResource("4_li2tk")
 
-[node name="RollerMesh" type="Node3D" parent="RollerJoint11/RollerLink11" instance=ExtResource("5_dcx5p")]
+[node name="RollerMesh" type="Node3D" parent="RollerJoint11/RollerLink11" instance=ExtResource("5_7eai3")]
 transform = Transform3D(10, 0, 0, 0, -4.37114e-07, -10, 0, 10, -4.37114e-07, 0, 0, 0)

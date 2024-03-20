@@ -680,20 +680,14 @@ func parse_links(urdf_data: PackedByteArray, root_node: Node3D) -> int:
 						link_attrib[name] = value
 						
 					if "extends" in link_attrib:
-						match link_attrib.extends:
-							"right_mecanum_wheel":
-								#print("Right Mecanum Wheel")
-								link = load("res://game/builtins/right_mecanum_wheel.tscn").instantiate()
-							"left_mecanum_wheel":
-								#print("Left Mecanum Wheel")
-								link = load("res://game/builtins/left_mecanum_wheel.tscn").instantiate()
-							"omni_wheel":
-								#print("Omni Wheel parsed")
-								link = load("res://game/builtins/omni_wheel.tscn").instantiate()
-							_:
-								printerr("Unrecognized extends link!")
-								return ERR_PARSE_ERROR
-					
+						link = null
+						for custom_link in GSettings.custom_links:
+							if link_attrib.extends == custom_link.name:
+								link = load(custom_link.path).instantiate()
+								break
+						if link == null:
+							printerr("Unrecognized extends link!")
+							link = RigidBody3D.new()
 					else:
 						link = RigidBody3D.new()
 					var physics_material = PhysicsMaterial.new()

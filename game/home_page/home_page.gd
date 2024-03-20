@@ -8,6 +8,9 @@ func _ready() -> void:
 	var version: String = ProjectSettings.get_setting("application/config/version")
 	%GoboticsInfo.text = "%s v%s - Godot Engine %s" % [app_name, version, Engine.get_version_info().string]
 	connected_game_controllers = Input.get_connected_joypads()
+	
+	GSettings.load_mods()
+	GSettings.load_assets()
 
 
 func _on_exit_button_pressed():
