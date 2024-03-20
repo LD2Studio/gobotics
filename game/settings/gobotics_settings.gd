@@ -100,15 +100,21 @@ func _create_dir():
 		DirAccess.remove_absolute(temp_path)
 	DirAccess.make_dir_absolute(temp_path)
 		
+	# Creating Gobotics directory
+	if not OS.has_feature("editor") or ProjectSettings.get_setting("application/run/global"):
+		if not DirAccess.dir_exists_absolute(OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS).path_join("Gobotics")):
+			var err = DirAccess.make_dir_absolute(OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS).path_join("Gobotics"))
+			if err: printerr("unable to create Gobotics folder!")
 	# Creating assets directory
 	if not DirAccess.dir_exists_absolute(asset_path):
-		DirAccess.make_dir_absolute(asset_path)
+		var err = DirAccess.make_dir_absolute(asset_path)
+		if err: printerr("unable to create asset folder!")
 	if not DirAccess.dir_exists_absolute(asset_path.path_join("demo")):
-			DirAccess.make_dir_absolute(asset_path.path_join("demo"))
+			var err = DirAccess.make_dir_absolute(asset_path.path_join("demo"))
+			if err: printerr("unable to create demo folder!")
 	
 	const DEMO_ASSET_PATH = "res://game/assets/demo/"
 	var demo_asset_dir = DirAccess.open(DEMO_ASSET_PATH)
-	#var is_dev_mode: bool = not OS.has_feature("editor") or ProjectSettings.get_setting("application/config/use_user_path")
 	
 	if demo_asset_dir:
 		var demo_files = demo_asset_dir.get_files()
