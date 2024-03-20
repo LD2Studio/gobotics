@@ -376,6 +376,12 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Save Position"
 
+[node name="SavePositionConfirmationDialog" type="ConfirmationDialog" parent="SplitContainer/SceneView/SceneViewport/ToolBar/SavePositionButton"]
+unique_name_in_owner = true
+ok_button_text = "Yes"
+dialog_text = "Do you want to save the new asset positions?"
+cancel_button_text = "No"
+
 [node name="CameraViewButton" type="MenuButton" parent="SplitContainer/SceneView/SceneViewport/ToolBar"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -550,6 +556,7 @@ offset_bottom = 351.0
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/ToolBar/RunStopButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_run_stop_button_toggled"]
 [connection signal="pressed" from="SplitContainer/SceneView/SceneViewport/ToolBar/ReloadButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_reload_button_pressed"]
 [connection signal="pressed" from="SplitContainer/SceneView/SceneViewport/ToolBar/SavePositionButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_save_position_button_pressed"]
+[connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/ToolBar/SavePositionButton/SavePositionConfirmationDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_save_position_confirmation_dialog_confirmed"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/FrameCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_frame_check_box_toggled"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/JointCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_joint_check_box_toggled"]
 [connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_asset_delete_dialog_confirmed"]

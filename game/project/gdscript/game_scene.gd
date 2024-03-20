@@ -3,7 +3,6 @@ class_name GameScene extends Node3D
 var scene : Node3D
 var running: bool = false
 var asset_dragged: Node3D
-var game_area_pointed: bool = false
 var asset_focused : Node3D = null
 
 var _selected_asset: Node3D
@@ -623,7 +622,6 @@ func rename_asset():
 	rename_dialog.get_node("NameEdit").text = _selected_asset.name
 	rename_dialog.popup_centered()
 
-## Helper functions
 
 func get_base_link(asset: Node) -> RigidBody3D:
 	for child in asset.get_children():
@@ -728,34 +726,11 @@ func _on_reload_button_pressed():
 
 
 func _on_save_position_button_pressed() -> void:
+	%SavePositionConfirmationDialog.popup_centered()
+
+
+func _on_save_position_confirmation_dialog_confirmed() -> void:
 	save_project()
-
-
-#func _on_ground_input_event(_camera, event: InputEvent, mouse_position, _normal, _shape_idx):
-	#mouse_pos_on_area = mouse_position
-	#if event.is_action_pressed("EDIT"):
-		#asset_focused = null
-	#if asset_dragged:
-##		print("mouse position: ", mouse_position)
-		#asset_dragged.position = mouse_position + scene_view.offset_pos
-
-
-func _on_ground_mouse_entered():
-	print("[GS] mouse entered")
-	game_area_pointed = true
-
-func _on_ground_mouse_exited():
-	print("[GS] mouse exited")
-	game_area_pointed = false
-
-
-func _on_editable_mouse_entered():
-	owner.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	#print("[GS] mouse entered on %s" % [owner.mouse_default_cursor_shape])
-	
-func _on_editable_mouse_exited():
-	#print("[GS] mouse exited on %s" % [owner.mouse_default_cursor_shape])
-	owner.mouse_default_cursor_shape = Control.CURSOR_ARROW
 
 
 func get_available_udp_port():
@@ -787,13 +762,6 @@ func is_udp_port_available(udp_port: int) -> bool:
 		return false
 	else:
 		return true
-
-
-func _on_open_script_button_pressed() -> void:
-	if _selected_asset == null: return
-	if _selected_asset.is_in_group("PYTHON"):
-		%SourceCodeEdit.text = _selected_asset.source_code
-		%ScriptDialog.popup_centered()
 
 
 func _on_rename_dialog_confirmed() -> void:
