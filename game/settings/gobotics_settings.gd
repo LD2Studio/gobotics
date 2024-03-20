@@ -61,14 +61,10 @@ var database: GoboticsDB
 var settings_db: SettingsDB
 
 func _init() -> void:
-	create_dir()
+	_create_dir()
 	database = GoboticsDB.new()
-	
-	settings_db = ResourceLoader.load(setting_path.path_join("settings.tres"))
-	if settings_db == null:
-		printerr("Loading settings failed!")
-		settings_db = SettingsDB.new()
-		save_settings()
+	_load_settings()
+
 
 ## Loading modules for Gobotics
 func load_mods():
@@ -92,9 +88,9 @@ func save_settings():
 	settings_db.save_settings(setting_path.path_join("settings.tres"))
 
 
-## Create directory like assets and temp in res/user path.
-## Must be called first before creating database.
-func create_dir():
+# INFO: Create directory like assets and temp in res/user path.
+# WARNING: Must be called first before creating database.
+func _create_dir():
 	# Creating temp directory
 	if DirAccess.dir_exists_absolute(temp_path):
 		# delete all files before remove temp dir
@@ -142,6 +138,14 @@ func create_dir():
 	# Creating projects directory
 	if not DirAccess.dir_exists_absolute(project_path):
 		DirAccess.make_dir_absolute(project_path)
+
+
+func _load_settings():
+	if FileAccess.file_exists(setting_path.path_join("settings.tres")):
+		settings_db = ResourceLoader.load(setting_path.path_join("settings.tres"))
+	else:
+		settings_db = SettingsDB.new()
+		save_settings()
 
 
 func _load_custom_links():
