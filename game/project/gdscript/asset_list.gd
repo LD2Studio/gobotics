@@ -123,12 +123,32 @@ func _on_asset_fullname_edit_text_changed(new_asset_fullname: String) -> void:
 func _on_asset_duplicate_dialog_confirmed() -> void:
 	var asset_fullname = asset_duplicate_dialog.get_meta("asset_fullname")
 	if asset_fullname == null: return
-	var new_asset_fullname = asset_duplicate_dialog.get_node(
+	var new_asset_fullname: String = asset_duplicate_dialog.get_node(
 		"VBoxContainer/AssetFullnameEdit").text
-	DirAccess.copy_absolute(
+	
+	if not DirAccess.dir_exists_absolute(
+		GSettings.asset_path.path_join(new_asset_fullname).get_base_dir()):
+		DirAccess.make_dir_recursive_absolute(GSettings.asset_path.path_join(new_asset_fullname).get_base_dir())
+		
+	var err = DirAccess.copy_absolute(
 		GSettings.asset_path.path_join(asset_fullname),
 		GSettings.asset_path.path_join(new_asset_fullname)
 	)
+	if err:
+		printerr("Unable to duplicate asset (%d)" % [err])
+	var asset_name: String = new_asset_fullname.get_file().trim_suffix(".urdf")
+	#print("asset name: ", asset_name)
+	var replace_asset_name = func():
+		var urdf_content: String = FileAccess.get_file_as_string(GSettings.asset_path.path_join(new_asset_fullname))
+		var tags: PackedStringArray = urdf_content.split("\n", true, 1)
+		var new_robot_tag: String = "<robot name=\"%s\">\n" % [asset_name]
+		var new_urdf_content: String = new_robot_tag + tags[1]
+		#print(new_urdf_content)
+		var urdf_file = FileAccess.open(GSettings.asset_path.path_join(new_asset_fullname), FileAccess.WRITE)
+		urdf_file.store_string(new_urdf_content)
+		urdf_file.close()
+		
+	replace_asset_name.call()
 	update_assets_database()
 
 
