@@ -399,6 +399,7 @@ switch_on_hover = true
 
 [node name="RobotSelectedButton" type="MenuButton" parent="SplitContainer/SceneView/SceneViewport/ToolBar/RobotSelectedButton"]
 visible = false
+layout_mode = 0
 flat = false
 switch_on_hover = true
 
