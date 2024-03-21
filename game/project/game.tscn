@@ -441,6 +441,7 @@ text = "FPS: 60"
 
 [node name="PhysicsFrameLabel" type="Label" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Frame: 0"
 

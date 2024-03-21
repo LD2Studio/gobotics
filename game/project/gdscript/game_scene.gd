@@ -94,8 +94,8 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
-	GPSettings.physics_tick += 1
+	#%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
+	#GPSettings.physics_tick += 1
 	
 	if running and _robot_selected:
 		var robot_base: Node = _robot_selected.get_node_or_null("RobotBase")
