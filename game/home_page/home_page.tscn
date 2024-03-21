@@ -94,7 +94,7 @@ metadata/_edit_group_ = true
 
 [node name="NewProjectButton" type="Button" parent="HBoxContainer/LeftPanel/ButtonContainer"]
 layout_mode = 2
-text = "New Project"
+text = "Create Project"
 script = ExtResource("3_47auv")
 
 [node name="NewProjectDialog" type="ConfirmationDialog" parent="HBoxContainer/LeftPanel/ButtonContainer/NewProjectButton"]
