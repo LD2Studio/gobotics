@@ -385,8 +385,9 @@ func update_robot_select_menu():
 				return child.is_in_group("ROBOTS")
 	)
 	#print("robots: ", robots)
+	var robot_tex: Texture2D = preload("res://game/assets/tex/robot_icon.svg")
 	for robot in robots:
-		robot_popup.add_check_item(robot.name)
+		robot_popup.add_icon_check_item(robot_tex, robot.name)
 	_on_robot_selected(0)
 
 
