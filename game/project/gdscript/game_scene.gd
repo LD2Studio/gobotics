@@ -520,7 +520,7 @@ func save_project():
 func load_scene(path):
 	var scene_filename = path
 	#print("Load scene filename: ", scene_filename)
-	if scene_filename == "": return
+	
 	var json = JSON.new()
 	var json_scene = FileAccess.get_file_as_string(scene_filename)
 	var error = json.parse(json_scene)
@@ -709,10 +709,9 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 
 
 func _on_reload_button_pressed():
-	if owner.current_filename != "":
-		load_scene(owner.current_filename)
-		GPSettings.physics_tick = 0
-		%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
+	load_scene(GSettings.project_path.path_join(GPSettings.project_filename))
+	GPSettings.physics_tick = 0
+	%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
 
 
 func _on_save_position_button_pressed() -> void:
