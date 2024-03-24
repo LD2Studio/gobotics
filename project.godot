@@ -24,7 +24,7 @@ run/global=true
 
 [autoload]
 
-GPSettings="*res://game/settings/project_settings.gd"
+GPSettings="*res://game/project/singletons/project_settings.gd"
 GSettings="*res://game/settings/gobotics_settings.gd"
 
 [display]

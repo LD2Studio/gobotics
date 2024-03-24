@@ -50,8 +50,8 @@ func _on_load_button_pressed() -> void:
 	if selected_project_index.is_empty(): return
 	var project_file = get_item_text(selected_project_index[0]) + ".scene"
 
-	GPSettings.project_file = project_file
-	GPSettings.creating_new_project = false
+	GPSettings.project_filename = project_file
+	GPSettings.is_new_project = false
 	var err = get_tree().change_scene_to_file(project_scene_path)
 	if err != OK:
 		printerr("Changing scene failed")

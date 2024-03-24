@@ -16,10 +16,9 @@ func _on_new_game_dialog_confirmed():
 	
 	var idx = items[0] # First selected item
 	var env_path = environment_list.get_item_metadata(idx)
-	#print("env: ", env_path)
-	GPSettings.project_file = project_name_edit.text + ".scene"
+	GPSettings.project_filename = project_name_edit.text + ".scene"
 	GPSettings.env_path = env_path
-	GPSettings.creating_new_project = true
+	GPSettings.is_new_project = true
 	var err = get_tree().change_scene_to_file("res://game/project/game.tscn")
 	if err != OK:
 		printerr("Changing scene failed")

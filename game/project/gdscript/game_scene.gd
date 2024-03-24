@@ -463,19 +463,6 @@ func new_scene(environment_path: String) -> void:
 
 
 func save_project():
-	save_scene(GSettings.project_path.path_join(GPSettings.project_file))
-
-
-func save_scene(path: String):
-	if path.get_extension() != "scene":
-		game.current_filename = ""
-		return
-	if path.get_file().trim_suffix(".scene") == "":
-		game.current_filename = ""
-		return
-	var scene_filename = path
-	game.current_filename = path
-
 	# Take all blocks added in game scene for apply owner
 	var items = scene.get_children()
 	var scene_objects = {
@@ -524,7 +511,9 @@ func save_scene(path: String):
 	var scene_json = JSON.stringify(scene_objects, "\t", false)
 #		print("scene JSON: ", scene_json)
 	
-	var file = FileAccess.open(scene_filename, FileAccess.WRITE)
+	var file = FileAccess.open(
+		GSettings.project_path.path_join(GPSettings.project_filename),
+		FileAccess.WRITE)
 	file.store_string(scene_json)
 
 

@@ -11,26 +11,19 @@ var gravity_enabled: bool = true
 @onready var project_name: Label = %ProjectName
 
 
-var current_filename: String:
-	set(value):
-		current_filename = value
-		project_name.text = "%s" % [current_filename.get_file().get_basename()]
-
-
 func _ready():
 	var app_name: String = ProjectSettings.get_setting("application/config/name")
 	var version: String = ProjectSettings.get_setting("application/config/version")
 	%TitleApp.text = "%s v%s" % [app_name, version]
 	
 	assets_list.update_assets_list()
-	
-	if GPSettings.creating_new_project:
-		current_filename = GSettings.project_path.path_join(GPSettings.project_file)
+	project_name.text = "%s" % [GPSettings.project_filename.get_basename()]
+		
+	if GPSettings.is_new_project:
 		game_scene.new_scene(GPSettings.env_path)
-		game_scene.save_scene(current_filename)
+		game_scene.save_project()
 	else:
-		current_filename = GSettings.project_path.path_join(GPSettings.project_file)
-		game_scene.load_scene(current_filename)
+		game_scene.load_scene(GSettings.project_path.path_join(GPSettings.project_filename))
 		
 	if gravity_enabled:
 		PhysicsServer3D.area_set_param(get_viewport().find_world_3d().space, PhysicsServer3D.AREA_PARAM_GRAVITY, 98)

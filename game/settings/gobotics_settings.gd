@@ -169,7 +169,7 @@ func _load_custom_links():
 			for scene_file in scene_files:
 				var scene: PackedScene = load("res://game/builtins/".path_join(scene_file))
 				#print("scene: ", scene.get_state())
-				var node_count: int = scene.get_state().get_node_count()
+				#var node_count: int = scene.get_state().get_node_count()
 				#print("count: ", node_count)
 				#print("node 0: ", scene.get_state().get_node_name(0))
 				var groups: PackedStringArray = scene.get_state().get_node_groups(0)
@@ -199,7 +199,7 @@ func _load_custom_links():
 			for scene_file in scene_files:
 				var scene: PackedScene = load("res://game/builtins/".path_join(scene_file))
 				#print("scene: ", scene.get_state())
-				var node_count: int = scene.get_state().get_node_count()
+				#var node_count: int = scene.get_state().get_node_count()
 				#print("count: ", node_count)
 				#print("node 0: ", scene.get_state().get_node_name(0))
 				var groups: PackedStringArray = scene.get_state().get_node_groups(0)
@@ -233,7 +233,7 @@ func _load_custom_links():
 		for scene_file in scene_files:
 			var scene: PackedScene = load("res://mods/".path_join(scene_file))
 			#print("scene: ", scene.get_state())
-			var node_count: int = scene.get_state().get_node_count()
+			#var node_count: int = scene.get_state().get_node_count()
 			#print("count: ", node_count)
 			#print("node 0: ", scene.get_state().get_node_name(0))
 			var groups: PackedStringArray = scene.get_state().get_node_groups(0)
