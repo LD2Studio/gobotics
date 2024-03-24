@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://b4s6pohitqafc"]
+[gd_scene load_steps=28 format=3 uid="uid://b4s6pohitqafc"]
 
 [ext_resource type="Script" path="res://game/project/gdscript/game.gd" id="1_85jys"]
 [ext_resource type="Texture2D" uid="uid://kr5y1p8nf73q" path="res://game/icons/Add.svg" id="3_bkwo3"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://game/project/gdscript/top_2d_cam.gd" id="7_eidv5"]
 [ext_resource type="Script" path="res://game/project/gdscript/scene_view.gd" id="7_jksff"]
 [ext_resource type="Texture2D" uid="uid://jyx0ifv4wnkt" path="res://game/icons/Camera3D.svg" id="8_hvuby"]
+[ext_resource type="Texture2D" uid="uid://upsueact847t" path="res://game/icons/ReloadSmall.svg" id="10_1hdjp"]
 [ext_resource type="PackedScene" uid="uid://iem50p7y7tm3" path="res://game/ui/drive_panel.tscn" id="10_e872d"]
 [ext_resource type="StyleBox" uid="uid://die6ekhbco4pr" path="res://game/styles/HUD.tres" id="10_q2yc6"]
 [ext_resource type="PackedScene" uid="uid://dle2ijlcn4b0g" path="res://game/ui/joints_panel.tscn" id="11_g7qc1"]
@@ -451,6 +452,19 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "Frame: 0"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ElapsedTimeLabel" type="Label" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Time: "
+
+[node name="ResetTimeButton" type="Button" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+icon = ExtResource("10_1hdjp")
+flat = true
 
 [node name="InputsContainer" type="MarginContainer" parent="SplitContainer/SceneView/SceneViewport"]
 unique_name_in_owner = true
