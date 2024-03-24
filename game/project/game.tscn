@@ -453,15 +453,16 @@ visible = false
 layout_mode = 2
 text = "Frame: 0"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer"]
-layout_mode = 2
-
-[node name="ElapsedTimeLabel" type="Label" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer/HBoxContainer"]
+[node name="ElapsedTimeContainer" type="HBoxContainer" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Time: "
 
-[node name="ResetTimeButton" type="Button" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer/HBoxContainer"]
+[node name="ElapsedTimeLabel" type="Label" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer/ElapsedTimeContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Time: 0.00s"
+
+[node name="ResetTimeButton" type="Button" parent="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer/ElapsedTimeContainer"]
 layout_mode = 2
 icon = ExtResource("10_1hdjp")
 flat = true
@@ -581,6 +582,7 @@ offset_bottom = 351.0
 [connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/ToolBar/SavePositionButton/SavePositionConfirmationDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_save_position_confirmation_dialog_confirmed"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/FrameCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_frame_check_box_toggled"]
 [connection signal="toggled" from="SplitContainer/SceneView/SceneViewport/OptionsContainer/OptionsPanel/HBoxContainer/JointCheckBox" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_joint_check_box_toggled"]
+[connection signal="pressed" from="SplitContainer/SceneView/SceneViewport/StatisticsContainer/StatisticsPanel/VBoxContainer/ElapsedTimeContainer/ResetTimeButton" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_reset_time_button_pressed"]
 [connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/ConfirmDeleteDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_asset_delete_dialog_confirmed"]
 [connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/RenameDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_rename_dialog_confirmed"]
 [connection signal="confirmed" from="SplitContainer/SceneView/SceneViewport/GameScene/ScriptDialog" to="SplitContainer/SceneView/SceneViewport/GameScene" method="_on_script_dialog_confirmed"]

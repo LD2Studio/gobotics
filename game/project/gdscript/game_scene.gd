@@ -1,7 +1,7 @@
 class_name GameScene extends Node3D
 
 var scene : Node3D
-var running: bool = false
+var running: bool : set = set_running
 var asset_dragged: Node3D
 var asset_focused : Node3D = null
 
@@ -23,7 +23,7 @@ var _current_cam: int = 0
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 @onready var rename_dialog: ConfirmationDialog = %RenameDialog
 
-
+var chrono: ChronoMeter = ChronoMeter.new()
 var python_bridge_scene : PackedScene = preload("res://game/python_bridge/python_bridge.tscn")
 
 #region INIT
@@ -34,6 +34,8 @@ func _ready() -> void:
 	%ReloadButton.visible = true
 	%SavePositionButton.visible = true
 	%RobotSelectedButton.visible = false
+	chrono.start()
+	set_running(false)
 	
 	inputs_container.visible = false
 	_show_asset_properties(null)
@@ -91,7 +93,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
-
+	if running: %ElapsedTimeLabel.text = "Time: %.1fs" % [chrono.elapsed_time]
 
 func _physics_process(delta: float) -> void:
 	#%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
@@ -662,6 +664,15 @@ func reload():
 	
 func is_running() -> bool:
 	return running
+
+
+func set_running(value):
+	running = value
+	if running:
+		chrono.resume()
+	else:
+		chrono.pause()
+	
 	
 func is_robots_inside_scene() -> bool:
 	var robots = get_tree().get_nodes_in_group("ROBOTS")
@@ -817,3 +828,8 @@ func _on_asset_exited_scene(node: Node):
 		update_camera_view_menu()
 		save_project()
 		node.queue_free()
+
+
+func _on_reset_time_button_pressed() -> void:
+	chrono.start()
+	%ElapsedTimeLabel.text = "Time: %.1fs" % [chrono.elapsed_time]
