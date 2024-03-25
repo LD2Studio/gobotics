@@ -104,5 +104,8 @@ class OmniRobot(Robot):
                 response: float = 20):
         self.call("move_to", position, speed, precision, response)
     
+    def rotate_to(self, angle: float, speed: float):
+        self.call("rotate_to", angle, speed)
+    
     def finished_task(self) -> bool:
         return self.call("finished_task")

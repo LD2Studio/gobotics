@@ -15,13 +15,16 @@ enum Task {
 	IDLE,
 	MOVE,
 	MOVE_TO,
+	ROTATE_TO,
 }
 
 class RobotSettings:
 	var task: Task = Task.IDLE
 	var finished_task := true
 	var target_pos := Vector2.ZERO
+	var target_angle: float
 	var speed: float
+	var rotate_dir: float
 	var square_precision: float
 	var response: float
 
@@ -34,10 +37,10 @@ func _physics_process(_delta: float) -> void:
 	match robot_settings.task:
 		Task.IDLE:
 			pass
-			#print("IDLE (%s)" % [get_parent().name])
 		Task.MOVE_TO:
-			#print("MOVE TO (%s)" % [get_parent().name])
 			_move_to_process()
+		Task.ROTATE_TO:
+			_rotate_to_process()
 
 
 func setup():
@@ -111,6 +114,20 @@ func move_to(new_position: Vector2, new_speed: float,
 	robot_settings.response = response
 
 
+func rotate_to(new_angle: float, new_speed: float) -> void:
+	robot_settings.task = Task.ROTATE_TO
+	robot_settings.finished_task = false
+	robot_settings.target_angle = new_angle
+	robot_settings.speed = new_speed
+	var current_rotation = base_link.rotation.y
+	var err = robot_settings.target_angle - current_rotation
+	#print("err: ", err)
+	if err > 0:
+		robot_settings.rotate_dir = -1
+	else:
+		robot_settings.rotate_dir = 1
+
+
 func finished_task() -> bool:
 	return robot_settings.finished_task
 
@@ -134,6 +151,20 @@ func _move_to_process() -> void:
 		var v_y: float = -global_vel.x * sin(angle) + global_vel.y * cos(angle)
 		#print("v_x: %f, v_y: %f" % [v_x, v_y])
 		var wheels_speed: Array = get_wheel_speed(-v_x, v_y, 0)
+		set_wheels_speed(wheels_speed[0], wheels_speed[1], wheels_speed[2])
+	else:
+		set_wheels_speed(0,0,0)
+		robot_settings.task = Task.IDLE
+		robot_settings.finished_task = true
+
+
+func _rotate_to_process():
+	var current_rotation = base_link.rotation.y
+	var err = robot_settings.target_angle - current_rotation
+	
+	if abs(err) > 0.01:
+		var wheels_speed = get_wheel_speed(0, 0,
+			-robot_settings.speed/0.04 * robot_settings.rotate_dir);
 		set_wheels_speed(wheels_speed[0], wheels_speed[1], wheels_speed[2])
 	else:
 		set_wheels_speed(0,0,0)
