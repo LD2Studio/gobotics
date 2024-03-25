@@ -239,13 +239,16 @@ func update_assets_in_scene():
 			var asset_position = base_link.global_position
 			var asset_rotation = base_link.global_rotation
 			var asset_name = asset.name
+			var udp_port = asset.get_meta("udp_port", null) if asset.is_in_group("ROBOTS") else null
+			#print("udp port: ", udp_port)
 			game_scene.scene.remove_child(asset)
 			asset.queue_free()
 			
 			var asset_res = GSettings.database.get_asset_scene(updated_asset)
-			var new_asset = load(asset_res).instantiate()
+			var new_asset: Node3D = load(asset_res).instantiate()
 			new_asset.name = asset_name
-			
+			if new_asset.is_in_group("ROBOTS"):
+				new_asset.set_meta("udp_port", udp_port)
 			game_scene.scene.add_child(new_asset)
 			base_link = new_asset.get_children().filter(
 					func(child): return child is RigidBody3D).front()
