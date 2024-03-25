@@ -134,6 +134,9 @@ func _on_save_button_pressed():
 
 func save_asset():
 	var asset_path = GSettings.asset_path.path_join(asset_filename_edit.text)
+	var asset_dir: String = asset_path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(asset_dir):
+		DirAccess.make_dir_recursive_absolute(asset_dir)
 	var urdf_file = FileAccess.open(asset_path, FileAccess.WRITE)
 	if urdf_file == null:
 		printerr("urdf file failed to saving!")
@@ -146,10 +149,6 @@ func save_asset():
 	var asset_editor_dialog = get_parent()
 	if asset_editor_dialog:
 		asset_editor_dialog.set_meta("fullname", asset_filename_edit.text)
-		var asset_list = asset_editor_dialog.get_parent()
-		if asset_list:
-			asset_list.update_assets_list()
-			asset_list.update_assets_in_scene()
 	modified_asset = false
 
 

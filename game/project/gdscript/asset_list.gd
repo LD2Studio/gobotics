@@ -80,6 +80,7 @@ func _on_item_activated(index):
 func edit_asset(fullname: String):
 	var asset_editor: AssetEditor = preload("res://game/asset_editor/asset_editor.tscn").instantiate()
 	asset_editor.name = &"AssetEditor"
+	setup_asset_editor(asset_editor)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_fullname = fullname
 	asset_editor_dialog.add_child(asset_editor)
@@ -89,19 +90,20 @@ func edit_asset(fullname: String):
 func create_new_asset(asset_type: GSettings.AssetType):
 	var asset_editor: AssetEditor = preload("res://game/asset_editor/asset_editor.tscn").instantiate()
 	asset_editor.name = &"AssetEditor"
+	setup_asset_editor(asset_editor)
 	asset_editor.fullscreen_toggled.connect(_on_fullscreen_toggled)
 	asset_editor.asset_type = asset_type
 	asset_editor_dialog.add_child(asset_editor)
 	asset_editor_dialog.popup_centered_ratio(0.8)
+	
+
+func setup_asset_editor(asset_editor):
+	asset_editor.tree_exited.connect(_on_asset_editor_tree_existed)
 
 
-func _on_asset_editor_exited():
-	var asset_editor = %AssetEditorDialog.get_node_or_null("AssetEditor")
-	if asset_editor:
-		asset_editor_dialog.remove_child(asset_editor)
-		asset_editor.queue_free()
-		%AssetEditorDialog.visible = false
-		update_scene()
+func _on_asset_editor_tree_existed():
+	update_assets_list()
+	update_assets_in_scene()
 
 
 func duplicate_asset(fullname: String):
@@ -141,8 +143,9 @@ func _on_asset_duplicate_dialog_confirmed() -> void:
 	var replace_asset_name = func():
 		var urdf_content: String = FileAccess.get_file_as_string(GSettings.asset_path.path_join(new_asset_fullname))
 		var tags: PackedStringArray = urdf_content.split("\n", true, 1)
-		var new_robot_tag: String = "<robot name=\"%s\">\n" % [asset_name]
-		var new_urdf_content: String = new_robot_tag + tags[1]
+		var begin_tag: String = tags[0].get_slice("=", 0)
+		var new_tag: String = "%s=\"%s\">\n" % [begin_tag, asset_name]
+		var new_urdf_content: String = new_tag + tags[1]
 		#print(new_urdf_content)
 		var urdf_file = FileAccess.open(GSettings.asset_path.path_join(new_asset_fullname), FileAccess.WRITE)
 		urdf_file.store_string(new_urdf_content)
