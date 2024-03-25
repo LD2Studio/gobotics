@@ -92,3 +92,20 @@ class MecanumRobot(Robot):
 
     def move(self, front_right_vel: float, front_left_vel: float, back_right_vel: float, back_left_vel: float):
         self.call("move_mecanum_drive", front_right_vel, front_left_vel, back_right_vel, back_left_vel)
+
+# Omni Drive
+class OmniRobot(Robot):
+    
+    def move(self, wheel_1_vel: float, wheel_2_vel: float, wheel_3_vel: float):
+        self.call("move_omni_drive", wheel_1_vel, wheel_2_vel, wheel_3_vel)
+    
+    def move_to(self, position: tuple, speed: float,
+                precision: float = 0.01,
+                response: float = 20):
+        self.call("move_to", position, speed, precision, response)
+    
+    def rotate_to(self, angle: float, speed: float):
+        self.call("rotate_to", angle, speed)
+    
+    def finished_task(self) -> bool:
+        return self.call("finished_task")

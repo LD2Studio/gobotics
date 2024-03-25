@@ -1607,7 +1607,7 @@ func add_gobotics_control(root_node: Node3D, base_link: RigidBody3D):
 				"4_mecanum_drive":
 					add_4_mecanum_drive(root_node, control)
 				"3_omni_drive":
-					add_3_omni_drive(root_node, control)
+					add_3_omni_drive(root_node, base_link, control)
 
 func add_grouped_joints(root_node: Node3D, control):
 	var grouped_joints : Node = GroupedJoints.new()
@@ -1651,7 +1651,7 @@ func add_4_mecanum_drive(root_node: Node3D, control):
 	if root_node.get("behavior_nodes") != null:
 		root_node.behavior_nodes.append(mecanum_drive)
 
-func add_3_omni_drive(root_node: Node3D, control):
+func add_3_omni_drive(root_node: Node3D, base_link: RigidBody3D, control):
 	var omni_drive : Node = ThreeOmniDrive.new()
 	omni_drive.name = StringName(control.name.to_pascal_case())
 	omni_drive.set_meta("owner", true)
@@ -1659,6 +1659,7 @@ func add_3_omni_drive(root_node: Node3D, control):
 	omni_drive.wheel_2 = control.wheel_2_joint
 	omni_drive.wheel_3 = control.wheel_3_joint
 	omni_drive.max_speed = control.max_speed
+	omni_drive.base_link = base_link
 	root_node.add_child(omni_drive)
 
 	if root_node.get_node_or_null("PythonBridge"):
