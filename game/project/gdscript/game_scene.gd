@@ -587,6 +587,11 @@ func delete_scene():
 	scene_node.queue_free()
 
 
+func clear_chronometer():
+	chrono.start()
+	%ElapsedTimeLabel.text = "Time: %.1fs" % [chrono.elapsed_time]
+
+
 func set_physics(asset, frozen):
 	#print("script %s, %s, frozen: %s" % [asset.name, asset.get_script(), asset.get("frozen")])
 	if asset.get("frozen") == null:
@@ -595,7 +600,6 @@ func set_physics(asset, frozen):
 		asset.frozen = frozen
 		
 	_freeze_children(asset, frozen)
-	
 	get_tree().call_group("MAGNET", "set_physics", not frozen)
 
 
@@ -721,7 +725,7 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 
 func _on_reload_button_pressed():
 	load_scene(GSettings.project_path.path_join(GPSettings.project_filename))
-	GPSettings.physics_tick = 0
+	clear_chronometer()
 	%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
 
 
@@ -831,5 +835,4 @@ func _on_asset_exited_scene(node: Node):
 
 
 func _on_reset_time_button_pressed() -> void:
-	chrono.start()
-	%ElapsedTimeLabel.text = "Time: %.1fs" % [chrono.elapsed_time]
+	clear_chronometer()

@@ -3,7 +3,7 @@ from time import sleep
 from math import radians
 
 my_robot = DiffRobot(4243)
-
+app.reload()
 app.run()
 
 my_robot.set_pose(0,0,radians(45))
