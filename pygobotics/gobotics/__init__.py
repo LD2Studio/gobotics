@@ -1,5 +1,7 @@
 from gobotics.godotbridge import GodotBridge
 import time
+import numpy as np
+import cv2
 
 class Gobotics(GodotBridge):
     def run(self):
@@ -64,6 +66,12 @@ class Robot(GodotBridge):
     
     def get_image(self, name: str) -> bytearray:
         return self.call("get_image", name)
+    
+    def image_read(self, name: str):
+        img = self.call("get_image", name)
+        nparr = np.frombuffer(bytes(img), np.uint8)
+        return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
 
     # Diff Drive
 class DiffRobot(Robot):
