@@ -1,7 +1,7 @@
 class_name GameScene extends Node3D
 
 var scene : Node3D
-var running: bool = false
+var running: bool : set = set_running
 var asset_dragged: Node3D
 var asset_focused : Node3D = null
 
@@ -23,7 +23,7 @@ var _current_cam: int = 0
 @onready var confirm_delete_dialog: ConfirmationDialog = %ConfirmDeleteDialog
 @onready var rename_dialog: ConfirmationDialog = %RenameDialog
 
-
+var chrono: ChronoMeter = ChronoMeter.new()
 var python_bridge_scene : PackedScene = preload("res://game/python_bridge/python_bridge.tscn")
 
 #region INIT
@@ -34,6 +34,8 @@ func _ready() -> void:
 	%ReloadButton.visible = true
 	%SavePositionButton.visible = true
 	%RobotSelectedButton.visible = false
+	chrono.start()
+	set_running(false)
 	
 	inputs_container.visible = false
 	_show_asset_properties(null)
@@ -91,7 +93,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(_delta: float) -> void:
 	%FPSLabel.text = "FPS: %.1f" % [Engine.get_frames_per_second()]
-
+	if running: %ElapsedTimeLabel.text = "Time: %.1fs" % [chrono.elapsed_time]
 
 func _physics_process(delta: float) -> void:
 	#%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
@@ -585,6 +587,11 @@ func delete_scene():
 	scene_node.queue_free()
 
 
+func clear_chronometer():
+	chrono.start()
+	%ElapsedTimeLabel.text = "Time: %.1fs" % [chrono.elapsed_time]
+
+
 func set_physics(asset, frozen):
 	#print("script %s, %s, frozen: %s" % [asset.name, asset.get_script(), asset.get("frozen")])
 	if asset.get("frozen") == null:
@@ -593,7 +600,6 @@ func set_physics(asset, frozen):
 		asset.frozen = frozen
 		
 	_freeze_children(asset, frozen)
-	
 	get_tree().call_group("MAGNET", "set_physics", not frozen)
 
 
@@ -662,6 +668,15 @@ func reload():
 	
 func is_running() -> bool:
 	return running
+
+
+func set_running(value):
+	running = value
+	if running:
+		chrono.resume()
+	else:
+		chrono.pause()
+	
 	
 func is_robots_inside_scene() -> bool:
 	var robots = get_tree().get_nodes_in_group("ROBOTS")
@@ -710,7 +725,7 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 
 func _on_reload_button_pressed():
 	load_scene(GSettings.project_path.path_join(GPSettings.project_filename))
-	GPSettings.physics_tick = 0
+	clear_chronometer()
 	%PhysicsFrameLabel.text = "Frame: %d" % [GPSettings.physics_tick]
 
 
@@ -817,3 +832,7 @@ func _on_asset_exited_scene(node: Node):
 		update_camera_view_menu()
 		save_project()
 		node.queue_free()
+
+
+func _on_reset_time_button_pressed() -> void:
+	clear_chronometer()
