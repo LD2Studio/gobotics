@@ -14,9 +14,6 @@ try:
                 print(version)
 except FileNotFoundError:
     print("project.godot doesn't found")
-    
-
-py_version = "0.10.0"
 
 executable = {
     "linux": "gobotics.x86_64",
