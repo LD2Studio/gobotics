@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pygobotics
-Version: 0.12.0
+Version: 0.12.1
 Summary: Python API allowing remote control of simulated robots in the Gobotics application
 Author-email: Laurent Dethoor <ld2studiogame@gmail.com>
 Project-URL: Homepage, https://github.com/LD2Studio/gobotics
@@ -12,6 +12,7 @@ Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 License-File: LICENSE.md
 Requires-Dist: numpy
+Requires-Dist: opencv-python
 
 # pygobotics
 
