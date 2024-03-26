@@ -87,6 +87,9 @@ class DiffRobot(Robot):
     def finished_task(self) -> bool:
         return self.call("finished_task")
 
+    def stop_task(self):
+        self.call("stop_task")
+
 # 4 Mecanum Drive
 class MecanumRobot(Robot):
 
@@ -109,3 +112,6 @@ class OmniRobot(Robot):
     
     def finished_task(self) -> bool:
         return self.call("finished_task")
+    
+    def stop_task(self):
+        self.call("stop_task")

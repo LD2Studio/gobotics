@@ -132,6 +132,11 @@ func finished_task() -> bool:
 	return robot_settings.finished_task
 
 
+func stop_task() -> void:
+	robot_settings.task = Task.IDLE
+	robot_settings.finished_task = true
+
+
 func _move_to_process() -> void:
 	var current_pos := Vector2(
 			base_link.global_position.x/GPSettings.SCALE,

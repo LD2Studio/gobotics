@@ -4,7 +4,7 @@ class_name DiffDrive extends Node
 	set(value):
 		frozen = value
 		set_physics_process(!frozen)
-		if frozen and _move_to_settings != null:
+		if frozen and robot_settings != null:
 			if right_wheel_joint != null and left_wheel_joint != null:
 				move_diff_drive(0,0)
 
@@ -22,7 +22,7 @@ enum Task {
 	MOVE_TO,
 }
 
-class MoveToSettings:
+class RobotSettings:
 	var task: Task = Task.IDLE
 	var finished_task: bool = true
 	var target_pos := Vector2.ZERO
@@ -30,21 +30,19 @@ class MoveToSettings:
 	var square_precision: float
 	var response: float
 
-var _move_to_settings: MoveToSettings
+var robot_settings: RobotSettings
 
 func _ready() -> void:
 	set_physics_process(!frozen)
-	_move_to_settings = MoveToSettings.new()
+	robot_settings = RobotSettings.new()
 
 
 func _physics_process(_delta: float) -> void:
-	match _move_to_settings.task:
+	match robot_settings.task:
 		Task.IDLE:
 			pass
-			#print("IDLE (%s)" % [get_parent().name])
 		Task.MOVE_TO:
-			#print("MOVE TO (%s)" % [get_parent().name])
-			_path_control_process()
+			_move_to_process()
 
 
 #region PUBLIC METHODS
@@ -55,7 +53,7 @@ func setup():
 
 
 func command(_delta: float):
-	if _move_to_settings.task == Task.IDLE:
+	if robot_settings.task == Task.IDLE:
 		var speed = max_speed if Input.is_action_pressed("BOOST") else max_speed/2.0
 		
 		if Input.is_action_pressed("FORWARD"):
@@ -92,25 +90,30 @@ func command(_delta: float):
 
 func move_diff_drive(right_vel: float, left_vel: float):
 	_set_wheel_speed(right_vel, left_vel)
-	_move_to_settings.task = Task.MOVE
+	robot_settings.task = Task.MOVE
 	
 	if right_vel == 0.0 and left_vel == 0.0:
-		_move_to_settings.task = Task.IDLE
+		robot_settings.task = Task.IDLE
 
 
 func move_to(new_position: Vector2, new_speed: float,
 			precision: float = 0.01, response: float = 20.0):
 	#print("Move to %s at %f m/s" % [new_position, new_speed])
-	_move_to_settings.task = Task.MOVE_TO
-	_move_to_settings.finished_task = false
-	_move_to_settings.target_pos = new_position
-	_move_to_settings.speed = new_speed
-	_move_to_settings.square_precision = precision**2
-	_move_to_settings.response = response
+	robot_settings.task = Task.MOVE_TO
+	robot_settings.finished_task = false
+	robot_settings.target_pos = new_position
+	robot_settings.speed = new_speed
+	robot_settings.square_precision = precision**2
+	robot_settings.response = response
 
 
 func finished_task() -> bool:
-	return _move_to_settings.finished_task
+	return robot_settings.finished_task
+
+
+func stop_task() -> void:
+	robot_settings.task = Task.IDLE
+	robot_settings.finished_task = true
 
 #endregion
 
@@ -119,23 +122,22 @@ func _set_wheel_speed(right_vel: float, left_vel: float):
 	left_wheel_joint.target_velocity = left_vel
 
 
-func _path_control_process() -> void:
+func _move_to_process() -> void:
 	var current_pos := Vector2(
 			base_link.global_position.x/GPSettings.SCALE,
 			-base_link.global_position.z/GPSettings.SCALE)
-	var d_square = pow((_move_to_settings.target_pos.x - current_pos.x), 2)\
-			+ pow((_move_to_settings.target_pos.y - current_pos.y), 2)
-	#print(d_square)
+	var d_square = pow((robot_settings.target_pos.x - current_pos.x), 2)\
+			+ pow((robot_settings.target_pos.y - current_pos.y), 2)
 	
-	if d_square > _move_to_settings.square_precision:
+	if d_square > robot_settings.square_precision:
 		var forward_3d_dir :Vector3 = base_link.global_transform.basis.x
 		var dir := Vector2(forward_3d_dir.x, -forward_3d_dir.z)
-		var err_theta: float = dir.angle_to(_move_to_settings.target_pos - current_pos)
+		var err_theta: float = dir.angle_to(robot_settings.target_pos - current_pos)
 		const MAX_SPEED = 20
-		var omega_c: float = _move_to_settings.response * err_theta
-		_set_wheel_speed(clampf(_move_to_settings.speed + omega_c, -MAX_SPEED, MAX_SPEED),
-			clampf(_move_to_settings.speed - omega_c, -MAX_SPEED, MAX_SPEED))
+		var omega_c: float = robot_settings.response * err_theta
+		_set_wheel_speed(clampf(robot_settings.speed + omega_c, -MAX_SPEED, MAX_SPEED),
+			clampf(robot_settings.speed - omega_c, -MAX_SPEED, MAX_SPEED))
 	else:
 		_set_wheel_speed(0,0)
-		_move_to_settings.task = Task.IDLE
-		_move_to_settings.finished_task = true
+		robot_settings.task = Task.IDLE
+		robot_settings.finished_task = true
