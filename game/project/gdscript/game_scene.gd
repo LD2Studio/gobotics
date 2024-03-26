@@ -89,6 +89,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	if _is_moving:
 		_move_asset()
+		
+	if event.is_action_pressed("show_assets"):
+		%ControlContainer.visible = not %ControlContainer.visible
+		
+	if event.is_action_pressed("run_stop"):
+		running = not running
 
 
 func _process(_delta: float) -> void:
@@ -658,60 +664,46 @@ func iterate_root_node(parent: Node):
 ## Functions exposed to python bridge
 
 func run():
-	_on_run_stop_button_toggled(true)
+	running = true
+
 
 func stop():
-	_on_run_stop_button_toggled(false)
+	running = false
+
 
 func reload():
 	_on_reload_button_pressed()
-	
+
+
 func is_running() -> bool:
 	return running
 
 
 func set_running(value):
 	running = value
-	if running:
-		chrono.resume()
-	else:
-		chrono.pause()
-	
-	
-func is_robots_inside_scene() -> bool:
-	var robots = get_tree().get_nodes_in_group("ROBOTS")
-	if robots.is_empty():
-		return false
-	return true
-
-
-func _on_run_stop_button_toggled(button_pressed: bool) -> void:
-	if scene == null: return
-	
-	%ControlContainer.visible = not button_pressed
-	%ReloadButton.visible = not button_pressed
-	%SavePositionButton.visible = not button_pressed
-	%RobotSelectedButton.visible = button_pressed
+	%ReloadButton.visible = not running
+	%SavePositionButton.visible = not running
+	%RobotSelectedButton.visible = running
 	
 	var environments: Array = get_tree().get_nodes_in_group("ENVIRONMENT")
 	if environments.is_empty(): return
 	var environment: Node3D = environments[0]
 	
-	if button_pressed:
-		running = true
+	if running:
 		set_physics_process(true)
 		if (environment.has_signal("asset_exited")
 			and not environment.asset_exited.is_connected(_on_asset_out_of_bound_detected)):
 			environment.asset_exited.connect(_on_asset_out_of_bound_detected)
 		%RunStopButton.text = "STOP"
 		%RunStopButton.modulate = Color.RED
+		chrono.resume()
 	else:
-		running = false
 		set_physics_process(false)
 		if environment.has_signal("asset_exited"):
 			environment.asset_exited.disconnect(_on_asset_out_of_bound_detected)
 		%RunStopButton.text = "RUN"
 		%RunStopButton.modulate = Color.GREEN
+		chrono.pause()
 	
 	for asset in scene.get_children():
 		set_physics(asset, !running)
@@ -721,6 +713,17 @@ func _on_run_stop_button_toggled(button_pressed: bool) -> void:
 				asset.activate_python(running, asset.get_meta("udp_port"))
 	
 	_show_robot_command()
+
+
+func is_robots_inside_scene() -> bool:
+	var robots = get_tree().get_nodes_in_group("ROBOTS")
+	if robots.is_empty():
+		return false
+	return true
+
+
+func _on_run_stop_button_toggled(button_pressed: bool) -> void:
+	running = button_pressed
 
 
 func _on_reload_button_pressed():
