@@ -8,9 +8,41 @@ app.run()
 
 my_robot.set_pose(0, 0, 0)
 
-my_robot.move_to(position = (1,0), speed = 8,
+my_robot.move_to(position = (0.5,0.5), speed = 15,
                 precision = 0.01, response = 30)
 
+while True:
+    if my_robot.finished_task():
+        break
+
+my_robot.rotate_to(-2, speed = 15)
+while True:
+    if my_robot.finished_task():
+        break
+
+my_robot.rotate_to(2, speed = 15)
+while True:
+    if my_robot.finished_task():
+        break
+
+my_robot.rotate_to(-2, speed = 15)
+while True:
+    if my_robot.finished_task():
+        break
+
+# my_robot.rotate_to(-3.141, speed = 15)
+# while True:
+#     if my_robot.finished_task():
+#         break
+
+my_robot.move_to(position = (0,0), speed = 15,
+                precision = 0.01, response = 30)
+
+while True:
+    if my_robot.finished_task():
+        break
+
+my_robot.rotate_to(0.0, speed = 15)
 while True:
     if my_robot.finished_task():
         break
