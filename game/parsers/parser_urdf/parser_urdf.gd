@@ -1050,6 +1050,8 @@ func parse_links(urdf_data: PackedByteArray, root_node: Node3D) -> int:
 							color.a = rgba_arr[3]
 						var res = current_visual.get_surface_override_material(0)
 						if res:
+							if color.a != 1.0:
+								res.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 							res.albedo_color = color
 							current_visual.set_surface_override_material(0, res)
 						
