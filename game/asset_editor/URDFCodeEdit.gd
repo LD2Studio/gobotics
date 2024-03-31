@@ -11,6 +11,7 @@ enum Tag {
 	CYLINDER,
 	MESH,
 	INLINE_COLOR,
+	JOINT_FIXED,
 	JOINT_CONTINUOUS,
 	JOINT_REVOLUTE,
 	JOINT_PRISMATIC,
@@ -41,6 +42,7 @@ func _ready():
 	# Joints submenu
 	var submenu_joint = PopupMenu.new()
 	submenu_joint.name = "SubmenuJoint"
+	submenu_joint.add_item("Insert Fixed Joint", Tag.JOINT_FIXED)
 	submenu_joint.add_item("Insert Continuous Joint", Tag.JOINT_CONTINUOUS)
 	submenu_joint.add_item("Insert Revolute Joint", Tag.JOINT_REVOLUTE)
 	submenu_joint.add_item("Insert Prismatic Joint", Tag.JOINT_PRISMATIC)
@@ -102,6 +104,8 @@ func _on_item_pressed(id):
 			insert_text_at_caret(URDFTemplate.INERTIAL_MINIMAL_TAG)
 		Tag.MATERIAL:
 			insert_text_at_caret(URDFTemplate.MATERIAL_MINIMAL_TAG)
+		Tag.JOINT_FIXED:
+			insert_text_at_caret(URDFTemplate.JOINT_FIXED_TAG)
 		Tag.JOINT_PRISMATIC:
 			insert_text_at_caret(URDFTemplate.JOINT_PRISMATIC_TAG)
 		Tag.JOINT_CONTINUOUS:

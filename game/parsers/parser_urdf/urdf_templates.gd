@@ -42,6 +42,13 @@ const MATERIAL_MINIMAL_TAG = """
 		<color rgba="1 1 1 1"/>
 	</material>
 """
+const JOINT_FIXED_TAG = """
+	<joint name="joint_name" type="fixed">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<parent link=""/>
+		<child link=""/>
+	</joint>
+"""
 const JOINT_CONTINUOUS_TAG = """
 	<joint name="joint_name" type="continuous">
 		<origin xyz="0 0 0" rpy="0 0 0"/>
