@@ -29,7 +29,7 @@ for platform in ["linux", "windows"]:
 
     os.mkdir("exports/gobotics-"+ version +"-"+ platform+"-x86_64")
 
-    subprocess.run(["godot4_2" , "--export-debug", "Gobotics-"+ platform , "exports/gobotics-"+ version +"-"+ platform + "-x86_64/" + executable[platform], "--headless"])
+    subprocess.run(["godot4.2" , "--export-debug", "Gobotics-"+ platform , "exports/gobotics-"+ version +"-"+ platform + "-x86_64/" + executable[platform], "--headless"])
 
     shutil.make_archive("exports/gobotics-"+ version +"-"+ platform +"-x86_64", 'zip', "exports/gobotics-"+ version +"-" + platform + "-x86_64")
 
