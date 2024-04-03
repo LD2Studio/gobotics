@@ -14,7 +14,7 @@ dest_files=["res://.godot/imported/roller.glb-2e6bcdaa92c051c72cbeac97ce62738f.s
 [params]
 
 nodes/root_type="Node3D"
-nodes/root_name="Scene"
+nodes/root_name="Roller"
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
 meshes/ensure_tangents=true

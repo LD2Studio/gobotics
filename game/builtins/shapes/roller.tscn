@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://ct0kprk8ijtla"]
+
+[ext_resource type="PackedScene" uid="uid://cnitkuo1irjcy" path="res://game/builtins/shapes/roller.glb" id="1_arsr2"]
+
+[node name="Roller" instance=ExtResource("1_arsr2")]
+
+[node name="Roller" parent="." index="0" groups=["VISUAL"]]

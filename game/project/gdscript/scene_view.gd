@@ -5,6 +5,7 @@ extends SubViewportContainer
 var _offset_pos : Vector3
 var _base_link: RigidBody3D = null
 
+# INFO: Call every time asset has moved in the scene
 func _can_drop_data(_at_position: Vector2, node: Variant) -> bool:
 	#print("[SV] node: ", node)
 	var result = get_collider(game_scene)
@@ -14,11 +15,8 @@ func _can_drop_data(_at_position: Vector2, node: Variant) -> bool:
 			game_scene.asset_dragged = node.duplicate()
 			game_scene.set_physics(game_scene.asset_dragged, true)
 			game_scene.get_node("Scene").add_child(game_scene.asset_dragged)
-			if game_scene.asset_dragged.is_in_group("ROBOTS"):
-				_offset_pos = Vector3.ZERO
-			else:
-				_offset_pos = game_scene.asset_dragged.get_meta("offset_pos", Vector3.ZERO)
-			#print("[SV] offset pos: ", offset_pos)
+			var aabb = MeshTools.get_bounding_box(game_scene.asset_dragged)
+			_offset_pos = Vector3(0, -aabb.position.y, 0)
 			_base_link = game_scene.asset_dragged.get_children().filter(
 				func(child): return child.is_in_group("BASE_LINK")).front()
 		if _base_link:

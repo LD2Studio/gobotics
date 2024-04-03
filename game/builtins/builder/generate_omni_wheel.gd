@@ -12,7 +12,7 @@ var roller_1_shape: SphereShape3D = load("res://game/builtins/shapes/roller_005_
 var roller_2_shape: SphereShape3D = load("res://game/builtins/shapes/roller_004_shape.tres")
 var roller_mesh: SphereMesh = load("res://game/builtins/shapes/roller_005_mesh.tres")
 
-var roller_node3d = load("res://game/builtins/shapes/roller.glb")
+var roller_node3d = load("res://game/builtins/shapes/roller.tscn")
 
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
@@ -41,6 +41,7 @@ func generate_omni_wheel(name: String):
 	mecanum_wheel.collision_mask = 0b0011
 	# Visual
 	rim_visual.name = "RimVisual"
+	rim_visual.add_to_group("VISUAL", true)
 	var rim_mesh := CylinderMesh.new()
 	rim_mesh.top_radius = rim_radius; rim_mesh.bottom_radius = rim_radius; rim_mesh.height = rim_thickness
 	rim_visual.mesh = rim_mesh
@@ -48,6 +49,7 @@ func generate_omni_wheel(name: String):
 	mecanum_wheel.add_child(rim_visual)
 	rim_visual.owner = mecanum_wheel
 	shaft_visual.name = "ShaftVisual"
+	shaft_visual.add_to_group("VISUAL", true)
 	var shaft_mesh := BoxMesh.new()
 	shaft_mesh.size = Vector3(0.1, 0.1, 0.2)
 	shaft_visual.mesh = shaft_mesh
@@ -108,13 +110,7 @@ func generate_omni_wheel(name: String):
 		rollerL_col.position.z = -0.074
 		roller_link.add_child(rollerL_col)
 		rollerL_col.owner = mecanum_wheel
-		
-#		var roller_mesh_obj := MeshInstance3D.new()
-#		roller_mesh_obj.name = "RollerMesh"
-#		roller_mesh_obj.mesh = roller_mesh
-#		roller_mesh_obj.rotation.x = deg_to_rad(90)
-#		roller_link.add_child(roller_mesh_obj)
-#		roller_mesh_obj.owner = mecanum_wheel
+
 
 		var roller_instance : Node3D = roller_node3d.instantiate()
 		roller_instance.name = "RollerMesh"
@@ -123,6 +119,5 @@ func generate_omni_wheel(name: String):
 		roller_link.add_child(roller_instance)
 		roller_instance.owner = mecanum_wheel
 		
-#	mecanum_wheel.print_tree_pretty()
 	
 	return mecanum_wheel
